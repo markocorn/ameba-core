@@ -32,6 +32,11 @@ public class Cell implements Cloneable {
      *
      */
     public Cell() {
+        fitnessValue=0.0;
+        nodes = new ArrayList<Node>();
+        inpNodes = new ArrayList<Input>();
+        outNodes = new ArrayList<Output>();
+        edges = new ArrayList<Edge>();
     }
 
     /**

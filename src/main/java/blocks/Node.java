@@ -1,5 +1,8 @@
 package blocks;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.ArrayList;
 
 /**
@@ -25,6 +28,7 @@ public class Node implements Cloneable {
     /**
      * Mapped value of the node's signal.
      */
+    @JsonManagedReference
     private double signal;
     /**
      * Flag that indicates signal is reads to be sent to other blocks.nodes.
