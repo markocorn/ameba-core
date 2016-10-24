@@ -4,8 +4,7 @@ package blocks;
 import blocks.nodes.Input;
 import blocks.nodes.Output;
 
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
 
 public class Cell implements Cloneable {
     /**
@@ -67,7 +66,7 @@ public class Cell implements Cloneable {
      *
      * @return
      */
-    public ArrayList<Input> getInpNodes() {
+    public ArrayList<Input> getInputNodes() {
         return inpNodes;
     }
 
@@ -76,8 +75,17 @@ public class Cell implements Cloneable {
      *
      * @param inpNodes
      */
-    public void setInpNodes(ArrayList<Input> inpNodes) {
+    public void setInputNodes(ArrayList<Input> inpNodes) {
         this.inpNodes = inpNodes;
+    }
+
+    /**
+     * Add node of type Input.
+     *
+     * @param node
+     */
+    public void addInputNode(Input node) {
+        inpNodes.add(node);
     }
 
     /**
@@ -85,7 +93,7 @@ public class Cell implements Cloneable {
      *
      * @return
      */
-    public ArrayList<Output> getOutNodes() {
+    public ArrayList<Output> getOutputNodes() {
         return outNodes;
     }
 
@@ -94,10 +102,18 @@ public class Cell implements Cloneable {
      *
      * @param outNodes
      */
-    public void setOutNodes(ArrayList<Output> outNodes) {
+    public void setOutputNodes(ArrayList<Output> outNodes) {
         this.outNodes = outNodes;
     }
 
+    /**
+     * Add node of type Output.
+     *
+     * @param node
+     */
+    public void addOutputNode(Output node) {
+        outNodes.add(node);
+    }
     /**
      * Get cell's edges.
      *
@@ -131,6 +147,7 @@ public class Cell implements Cloneable {
         }
     }
 
+
     /**
      * Add edge to the cell.
      *
@@ -138,152 +155,128 @@ public class Cell implements Cloneable {
      */
     public void addEdge(Edge edge) {
         edges.add(edge);
+        edge.getSource().addOutputEdge(edge);
+        edge.getTarget().addInputEdge(edge);
     }
 
-    /**
-     * Add edges references to edges source and target nodes.
-     */
-    public void edgesAutoConnect() {
-        for (Edge edge : edges) {
-            edge.getSource().addOutputEdge(edge);
-            edge.getTarget().addInputEdge(edge);
-        }
-    }
 
     /**
-     * Remove edge and
+     * Remove edge from the cell.
      *
-     * @param edge
+     * @param edge Edge to be removed.
      */
     public void removeEdge(Edge edge) {
-        Iterator<Edge> iterator = edges.values().iterator();
-        Edge edgeIt;
-        while (iterator.hasNext()) {
-            edgeIt = iterator.next();
-            if (edgeIt == edge) {
-                edge.getSource().removeOutputEdge(edge);
-                edge.getTarget().removeInput(edge);
-                iterator.remove();
-            }
+        if (edges.contains(edge)) {
+            edges.remove(edge);
+            edge.getSource().removeOutputEdge(edge);
+            edge.getTarget().removeInputEdge(edge);
         }
     }
 
 
-    //Get input blocks.nodes
-    public ArrayList<nodes.Node> getInputs() {
+    /**
+     * Get nodes of type Input.
+     *
+     * @return
+     */
+    public ArrayList<Input> getInputs() {
         return inpNodes;
     }
 
-    //Get output blocks.nodes
-    public ArrayList<nodes.Node> getOutputs() {
+    /**
+     * Get nodes of type Output.
+     *
+     * @return
+     */
+    public ArrayList<Output> getOutputs() {
         return outNodes;
     }
 
-    //Remove node
-    public ArrayList<Edge> removeNode(nodes.Node node) {
-        ArrayList<Edge> outEdges = node.getOutputs();
-        //Remove input edges
-        while (node.getInputs().size() > 0) {
-            removeEdge(node.getInputs().get(0));
+    /**
+     * Remove the node with it's input edges from the cell and return nodes output edge's that has been left unconnected.
+     * <p>
+     * When removing node from the cell output edges won't be removed because they represent other nodes input edges. The will be left floating and they must be properly reconnected to other nodes in order for the cell to proper work.
+     *
+     * @param node Node to be removed.
+     * @return Unconnected output edges of the node that has been removed.
+     */
+    public ArrayList<Edge> removeNode(Node node) {
+        //Remove input edges of the node
+        for (Edge edge : node.getInputEdges()) {
+            removeEdge(edge);
         }
-        Iterator iterator = nodes.values().iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next() == node) {
-                iterator.remove();
-            }
+        //Disconnect output edges of the node
+        for (Edge edge : node.getOutputEdges()) {
+            edge.setSource(null);
         }
-        if (inpNodes.contains(node)) inpNodes.remove(node);
-        if (outNodes.contains(node)) outNodes.remove(node);
-
-        return outEdges;
+        //Remove node from the cell
+        nodes.remove(node);
+        return node.getOutputEdges();
     }
 
-    //Refresh edge
-
-    //Get blocks.nodes (without input and output)
-    public ArrayList<nodes.Node> getInnerNodes() {
-        ArrayList<nodes.Node> nodeList = new ArrayList<nodes.Node>();
-        for (Map.Entry<Integer, nodes.Node> entry : nodes.entrySet()) {
-            nodes.Node node = entry.getValue();
-            if (node instanceof nodes.Input || node instanceof nodes.Output) {
-            } else nodeList.add(node);
-        }
-        return nodeList;
-    }
-
-    //Simulate cell for one time event
-    public ArrayList<Double> simEventCell(ArrayList<Double> inpData) {
+    /**
+     * Calculate cell output data based on the provided input data for one discrete time event.
+     *
+     * @param inpData Input data to be mapped trough cell.
+     * @return Mapped data.
+     */
+    public double[] runEvent(double[] inpData) {
         setInpValues(inpData);
         clcCell();
         return getOutValues();
     }
 
-    //Simulate cell
-    public ArrayList<ArrayList<Double>> simCell(ArrayList<ArrayList<Double>> inpData) {
+    /**
+     * Calculate cell output stream of data based on the provided input stream of data.
+     *
+     * @param inpData Input stream of data to be mapped trough cell.
+     * @return Mapped stream data.
+     */
+    public double[][] run(double[][] inpData) {
         clearCell();
-        ArrayList<ArrayList<Double>> outData = new ArrayList<ArrayList<Double>>();
-        for (int i = 0; i < inpData.size(); i++) {
+        double[][] outData = new double[inpData.length][outNodes.size()];
+        for (int i = 0; i < inpData.length; i++) {
             rstCell();
-            outData.add(simEventCell(inpData.get(i)));
+            outData[i]=(runEvent(inpData[i]));
         }
         return outData;
     }
 
-    //Copy of object
-    public Cell copy() {
-        Object obj = null;
-        try {
-            // Write the object out to a byte array
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(bos);
-            out.writeObject(this);
-            out.flush();
-            out.close();
-
-            // Make an input stream from the byte array and read
-            // a copy of the object back in.
-            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
-            obj = in.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException cnfe) {
-            cnfe.printStackTrace();
-        }
-        return (Cell) obj;
-    }
-
-    //Set input data
-    private void setInpValues(ArrayList<Double> inp) {
+    /**
+     * Set signal values of Input nodes.
+     *
+     * @param inp Input data.
+     */
+    private void setInpValues(double[] inp) {
         for (int i = 0; i < inpNodes.size(); i++) {
-            ((nodes.Input) inpNodes.get(i)).importSignal(inp.get(i));
+            inpNodes.get(i).importSignal(inp[i]);
         }
     }
 
-    //Get output values
-    private ArrayList<Double> getOutValues() {
-        ArrayList<Double> out = new ArrayList();
-        for (nodes.Node node : outNodes) {
-            out.add(node.getOutputValue());
+    /**
+     * Get output signals of Output nodes.
+     *
+     * @return
+     */
+    private double[] getOutValues() {
+        double[] out = new double[outNodes.size()];
+        for (int i = 0; i < outNodes.size(); i++) {
+            out[i]=outNodes.get(i).getSignal();
         }
         return out;
     }
 
-    //Run cell
+    /**
+     * Execute calculation process of data transition trough nodes and edges of the cell.
+     */
     private void clcCell() {
         int nmbClcCell = 0;
-        //All blocks.nodes with initial values transmit data
-//        for (Node node:blocks.nodes.values()){
-//            if (node.getOutputFlag()){
-//
-//            }
-//        }
         while (true) {
             nmbClcCell++;
             int nmbClcNode = 0;
-            for (Map.Entry<Integer, nodes.Node> entry : nodes.entrySet()) {
-                nodes.Node node = entry.getValue();
+            for (Node node : nodes) {
                 node.clcNode();
-                if (node.getClcFlag()) {
+                if (node.isSignalReady()) {
                     nmbClcNode++;
                 }
             }
@@ -293,282 +286,22 @@ public class Cell implements Cloneable {
         }
     }
 
-    //Reset cell
+    /**
+     * Reset cell's nodes.
+     */
     private void rstCell() {
-        for (Map.Entry<Integer, nodes.Node> entry : nodes.entrySet()) {
-            nodes.Node node = entry.getValue();
+        for (Node node : nodes) {
             node.rstNode();
         }
     }
 
-    //Clear cell
+    /**
+     * Clear cell's nodes.
+     */
     private void clearCell() {
-
-        for (Map.Entry<Integer, nodes.Node> entry : nodes.entrySet()) {
-            nodes.Node node = entry.getValue();
+        for (Node node : nodes) {
             node.clearNode();
         }
-
     }
-
-    //Add fitness function
-    public void addFitnessValue(Double fitValue) {
-        this.fitnessValue = this.fitnessValue + fitValue;
-    }
-
-    //Get fitness function
-    public Double getFitnessValue() {
-        return this.fitnessValue;
-    }
-
-    //Set fitness function
-    public void setFitnessValue(double fitValue) {
-        this.fitnessValue = fitValue;
-    }
-
-    //Get random inner node
-    public nodes.Node getRandomInnerNode() {
-        ArrayList<nodes.Node> anode = new ArrayList<nodes.Node>();
-        for (Map.Entry<Integer, nodes.Node> entry : nodes.entrySet()) {
-            nodes.Node node = entry.getValue();
-            if (node.getClass().getSimpleName().equals("Input") || node.getClass().getSimpleName().equals("Output")) {
-            } else anode.add(node);
-        }
-        if (anode.size() > 0) {
-            return anode.get(rndGen.nextInt(anode.size()));
-        } else return null;
-    }
-
-    //Get random inner node with parameter
-    public nodes.Node getRandomInnerNodeParameter() {
-        ArrayList<nodes.Node> anode = new ArrayList<nodes.Node>();
-        for (Map.Entry<Integer, nodes.Node> entry : nodes.entrySet()) {
-            nodes.Node node = entry.getValue();
-            if (node.getClass().getSimpleName().equals("Input") || node.getClass().getSimpleName().equals("Output") || node.getPar() == null) {
-            } else anode.add(node);
-        }
-        if (anode.size() > 0) {
-            return anode.get(rndGen.nextInt(anode.size()));
-        } else return null;
-    }
-
-    //Get random  node with free output
-    public nodes.Node getRandomNodeOutput() {
-        ArrayList<nodes.Node> anode = new ArrayList<nodes.Node>();
-        for (Map.Entry<Integer, nodes.Node> entry : nodes.entrySet()) {
-            nodes.Node node = entry.getValue();
-            if (node.getClass().getSimpleName().equals("Output")) {
-            } else anode.add(node);
-        }
-        if (anode.size() > 0) {
-            return anode.get(rndGen.nextInt(anode.size()));
-        } else return null;
-    }
-
-    //Get random  node with free output
-    public nodes.Node getRandomNodeOutputExlude(ArrayList<nodes.Node> excludedNodes) {
-        ArrayList<nodes.Node> anode = new ArrayList<nodes.Node>();
-        for (Map.Entry<Integer, nodes.Node> entry : nodes.entrySet()) {
-            nodes.Node node = entry.getValue();
-            if (node.getClass().getSimpleName().equals("Output") || excludedNodes.contains(node)) {
-            } else anode.add(node);
-        }
-        if (anode.size() > 0) {
-            return anode.get(rndGen.nextInt(anode.size()));
-        } else return null;
-    }
-
-    //Get random  node with free output
-    public nodes.Node getRandomNode() {
-        return nodes.get(rndGen.nextInt(nodes.size()));
-    }
-
-    //Get random connection
-    public Edge getRandomEdge() {
-        List<Edge> list = new ArrayList<Edge>(edges.values());
-        if (edges.size() == 0) {
-            int t = 0;
-        }
-        return list.get(rndGen.nextInt(list.size()));
-    }
-
-    //Get key of edge
-    public Integer getEdgeKey(Edge edge) {
-        Integer key = 0;
-        for (Map.Entry<Integer, Edge> entry : edges.entrySet()) {
-            if (entry.getValue() == edge) key = entry.getKey();
-        }
-        return key;
-    }
-
-    //Get number of edges
-    public Integer getEdgeKeyNumber(Edge edge) {
-        Integer key = 0;
-        for (Map.Entry<Integer, Edge> entry : edges.entrySet()) {
-            if (entry.getValue() == edge) key++;
-        }
-        return key;
-    }
-
-    //Get key of node
-    public Integer getNodeKey(nodes.Node node) {
-        Integer key = 0;
-        for (Map.Entry<Integer, nodes.Node> entry : nodes.entrySet()) {
-            if (entry.getValue() == node) key = entry.getKey();
-        }
-        return key;
-    }
-
-    //Get list of connected blocks.nodes
-    public ArrayList<nodes.Node> getListConnectedNodes(nodes.Node node) {
-        ArrayList<nodes.Node> nodes = new ArrayList<nodes.Node>();
-        for (Edge edge : node.getInputs()) {
-            nodes.add(edge.getSource());
-        }
-        for (Edge edge : node.getOutputs()) {
-            nodes.add(edge.getTarget());
-        }
-        return nodes;
-    }
-
-    //Get list of connected blocks.nodes by layers
-    public ArrayList<ArrayList<nodes.Node>> getTreeMapNodes(nodes.Node node) {
-        ArrayList<ArrayList<nodes.Node>> nodes = new ArrayList<ArrayList<nodes.Node>>();
-        //First layer
-        nodes.add(new ArrayList<nodes.Node>(Arrays.asList(node)));
-        //Other layers
-        //Get list of all blocks.nodes of layer
-        int size = 0;
-        while (size < nodes.size()) {
-            size = nodes.size();
-            ArrayList<nodes.Node> nodeLayer = new ArrayList<nodes.Node>();
-            for (nodes.Node node1 : nodes.get(nodes.size() - 1)) {
-                ArrayList<nodes.Node> nodesOfNode1 = getListConnectedNodes(node1);
-                for (nodes.Node nodeOfNode1 : nodesOfNode1) {
-                    if (!chkNodeTreeMap(nodeOfNode1, nodes) && !nodeLayer.contains(nodeOfNode1) && !(nodeOfNode1 instanceof nodes.Input) && !(nodeOfNode1 instanceof nodes.Output)) {
-                        nodeLayer.add(nodeOfNode1);
-                    }
-                }
-            }
-            if (nodeLayer.size() > 0) {
-                nodes.add(nodeLayer);
-            }
-        }
-        return nodes;
-    }
-
-    public ArrayList<Edge> getInputEdgesTreeMap(ArrayList<nodes.Node> nodes) {
-        ArrayList<Edge> edges = new ArrayList<Edge>();
-        for (nodes.Node node : nodes) {
-            for (Edge edge : node.getInputs()) {
-                if (!nodes.contains(edge.getSource())) {
-                    edges.add(edge);
-                }
-            }
-        }
-        return edges;
-    }
-
-    public ArrayList<Edge> getOutputEdgesTreeMap(ArrayList<nodes.Node> nodes) {
-        ArrayList<Edge> edges = new ArrayList<Edge>();
-        for (nodes.Node node : nodes) {
-            for (Edge edge : node.getOutputs()) {
-                if (!nodes.contains(edge.getTarget())) {
-                    edges.add(edge);
-                }
-            }
-        }
-        return edges;
-    }
-
-    private boolean chkNodeTreeMap(nodes.Node node, ArrayList<ArrayList<nodes.Node>> nodes) {
-        for (ArrayList<nodes.Node> nodeArrayList : nodes) {
-            if (nodeArrayList.contains(node)) return true;
-        }
-        return false;
-    }
-
-    //Get list of connected input blocks.nodes
-    public ArrayList<nodes.Node> getListConnectedInputNodes(nodes.Node node) {
-        ArrayList<nodes.Node> nodes = new ArrayList<nodes.Node>();
-        for (Edge edge : node.getInputs()) {
-            nodes.add(edge.getSource());
-        }
-        return nodes;
-    }
-
-    //Get list of connected output blocks.nodes
-    public ArrayList<nodes.Node> getListConnectedOutputNodes(nodes.Node node) {
-        ArrayList<nodes.Node> nodes = new ArrayList<nodes.Node>();
-        for (Edge edge : node.getOutputs()) {
-            nodes.add(edge.getTarget());
-        }
-        return nodes;
-    }
-
-    //Check cell connections
-    public boolean checkCell() {
-        boolean wrong = false;
-        for (nodes.Node node : nodes.values()) {
-            if (node.getInputs() != null) {
-                for (Edge edge : node.getInputs()) {
-                    if (edge.getTarget() != node) {
-                        System.out.println("Node input: " + node + " is not connected to the edge: " + edge + " target");
-                        wrong = true;
-                    }
-                }
-            }
-        }
-        for (nodes.Node node : nodes.values()) {
-            if (node.getOutputs() != null) {
-                for (Edge edge : node.getOutputs()) {
-                    if (edge.getSource() != node) {
-                        System.out.println("Node output: " + node + " is not connected to the edge: " + edge + " source");
-                        wrong = true;
-                    }
-                }
-            }
-        }
-
-        for (Edge edge : edges.values()) {
-            if (!edge.getTarget().getInputs().contains(edge)) {
-                System.out.println("blocks.Edge target: " + edge + " is not connected to the node input: " + edge.getTarget());
-                wrong = true;
-            }
-            if (!edge.getSource().getOutputs().contains(edge)) {
-                System.out.println("blocks.Edge source: " + edge + " is not connected to the node output: " + edge.getSource());
-                wrong = true;
-            }
-        }
-
-        for (nodes.Node node : nodes.values()) {
-            if (!(node instanceof nodes.Input)) {
-                if (node.getInputs().size() > 1 && node instanceof Amplify) {
-                    System.out.println("Amplify node inputs: " + node.getInputs().size());
-                    wrong = true;
-                }
-                if (node.getInputs().size() > 1 && node instanceof nodes.Delay) {
-                    System.out.println("Delay node inputs: " + node.getInputs().size());
-                    wrong = true;
-                }
-                if (node.getInputs().size() > 1 && node instanceof nodes.Output) {
-                    System.out.println("Output node inputs: " + node.getInputs().size());
-                    wrong = true;
-                }
-            }
-        }
-        return wrong;
-    }
-
-    //Find next key
-    public Integer getNextKey(Set<Integer> keySet) {
-        for (int i = 0; i < keySet.size() + 1; i++) {
-            if (!keySet.contains(i)) {
-                return i;
-            }
-        }
-        return null;
-    }
-
 }
 

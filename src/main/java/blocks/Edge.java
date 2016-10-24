@@ -1,8 +1,6 @@
 package blocks;
 
-import java.io.Serializable;
-
-public class Edge implements Serializable {
+public class Edge implements Cloneable {
     /**
      * Source node of the edge.
      */
