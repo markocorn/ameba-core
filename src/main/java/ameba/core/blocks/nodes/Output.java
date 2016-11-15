@@ -17,7 +17,6 @@ public class Output extends Node {
     public Output() {
         super(1, 0);
     }
-
     //Calculate output value
     @Override
     public void clcNode() {

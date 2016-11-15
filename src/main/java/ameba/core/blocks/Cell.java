@@ -271,6 +271,7 @@ public class Cell implements Cloneable {
             if (nmbClcNode >= this.nodes.size() || nmbClcCell > this.nodes.size()) {
                 break;
             }
+
         }
     }
 
