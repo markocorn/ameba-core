@@ -217,7 +217,7 @@ public class Cell implements Cloneable {
     /**
      * Calculate cell output stream of data based on the provided input stream of data.
      *
-     * @param inpData Input stream of data to be mapped trough cell.
+     * @param inpData Input stream of data to be mapped trough cell where rows represents data series and columns represents inputs to cell.
      * @return Mapped stream data.
      */
     public double[][] run(double[][] inpData) {
