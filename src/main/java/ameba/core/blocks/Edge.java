@@ -122,4 +122,13 @@ public class Edge implements Cloneable {
     public boolean isSignalSend() {
         return signalSend;
     }
+
+    /**
+     * Set signal send flag.
+     *
+     * @param signalSend New value of send flag.
+     */
+    public void setSignalSend(boolean signalSend) {
+        this.signalSend = signalSend;
+    }
 }

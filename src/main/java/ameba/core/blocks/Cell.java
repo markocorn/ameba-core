@@ -210,8 +210,7 @@ public class Cell implements Cloneable {
      */
     public double[] runEvent(double[] inpData) {
         setInpValues(inpData);
-        clcCell();
-        return getOutValues();
+        return clcCell();
     }
 
     /**
@@ -242,22 +241,9 @@ public class Cell implements Cloneable {
     }
 
     /**
-     * Get output signals of Output nodes.
-     *
-     * @return
-     */
-    private double[] getOutValues() {
-        double[] out = new double[outNodes.size()];
-        for (int i = 0; i < outNodes.size(); i++) {
-            out[i]=outNodes.get(i).getSignal();
-        }
-        return out;
-    }
-
-    /**
      * Execute calculation process of data transition trough nodes and edges of the cell.
      */
-    private void clcCell() {
+    private double[] clcCell() {
         int nmbClcCell = 0;
         while (true) {
             nmbClcCell++;
@@ -273,15 +259,26 @@ public class Cell implements Cloneable {
             }
 
         }
+        double[] out = new double[outNodes.size()];
+        for (int i = 0; i < outNodes.size(); i++) {
+            out[i] = outNodes.get(i).getSignal();
+        }
+        return out;
     }
 
     /**
      * Reset cell's nodes.
      */
     private void rstCell() {
+        //Reset all nodes
         for (Node node : nodes) {
             node.rstNode();
         }
+        //Reset all edges
+        for (Edge edge : edges) {
+            edge.rstEdge();
+        }
+
     }
 
     /**
