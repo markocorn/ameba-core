@@ -29,7 +29,7 @@ public class Delay extends Node implements Serializable {
         super(1, maxOutputEdges);
         this.initValue = initValue;
         setIntegerParameters(new int[]{bufferSize});
-        buffer = new ArrayList<Double>(Collections.nCopies(bufferSize, new Double(initValue)));
+        buffer = new ArrayList<Double>(Collections.nCopies(bufferSize, initValue));
         setSignal(initValue);
         setSignalReady(true);
     }
@@ -39,7 +39,7 @@ public class Delay extends Node implements Serializable {
     public void clcNode() {
         if (getInputEdges().size() > 0) {
             //Signal from source node has to be ready and not send.
-            if (getInputEdges().get(0).isSignalReady() && !getInputEdges().get(0).isSignalSend()) {
+            if (isNodeClcReady()) {
                 setSignal(buffer.get(0));
                 buffer.add(getInputEdges().get(0).getSignal());
                 buffer.remove(0);
@@ -49,7 +49,7 @@ public class Delay extends Node implements Serializable {
 
     @Override
     public void clearNode() {
-        buffer = new ArrayList<Double>(Collections.nCopies(buffer.size(), new Double(initValue)));
+        buffer = new ArrayList<Double>(Collections.nCopies(buffer.size(), initValue));
         rstNode();
         setSignal(initValue);
     }

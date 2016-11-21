@@ -310,5 +310,43 @@ public class Node implements Cloneable {
     public void setBooleanParameters(boolean[] booleanParameters) {
         this.booleanParameters = booleanParameters;
     }
+
+    /**
+     * Check if all nodes connected as source have signal ready for this node's output calculation.
+     *
+     * @return
+     */
+    public boolean isSourcesSignalReady() {
+        for (Edge edge : inputEdges) {
+            if (!edge.isSignalReady()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if input edges didn't transfer their sources nodes output signal.
+     *
+     * @return
+     */
+    public boolean isSourcesSignalSend() {
+        for (Edge edge : inputEdges) {
+            if (edge.isSignalSend()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if node's inputs are ready for node calculation.
+     * That includes this node's source nodes has to be signal ready and connecting edges must be transfer free (signal not send via them).
+     *
+     * @return
+     */
+    public boolean isNodeClcReady() {
+        return isSourcesSignalReady() && isSourcesSignalSend();
+    }
 }
 
