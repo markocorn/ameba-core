@@ -10,14 +10,13 @@ package ameba.core.blocks.nodes;
 
 import ameba.core.blocks.Node;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
  * @author Marko
  */
-public class Delay extends Node implements Serializable {
+public class Delay extends Node {
 
     private ArrayList<Double> buffer;
     //Maximum length of buffer
@@ -25,8 +24,14 @@ public class Delay extends Node implements Serializable {
     //Initial value
     private double initValue = 0;
 
-    public Delay(int maxOutputEdges, double initValue, int bufferSize) {
-        super(1, maxOutputEdges);
+    /**
+     * @param minOutputEdges
+     * @param maxOutputEdges
+     * @param initValue
+     * @param bufferSize
+     */
+    public Delay(int minOutputEdges, int maxOutputEdges, double initValue, int bufferSize) {
+        super(1, 1, minOutputEdges, maxOutputEdges);
         this.initValue = initValue;
         setIntegerParameters(new int[]{bufferSize});
         buffer = new ArrayList<Double>(Collections.nCopies(bufferSize, initValue));
@@ -40,9 +45,9 @@ public class Delay extends Node implements Serializable {
         if (getInputEdges().size() > 0) {
             //Signal from source node has to be ready and not send.
             if (isNodeClcReady()) {
-                setSignal(buffer.get(0));
                 buffer.add(getInputEdges().get(0).getSignal());
                 buffer.remove(0);
+                setSignal(buffer.get(0));
             }
         }
     }
@@ -57,7 +62,6 @@ public class Delay extends Node implements Serializable {
     @Override
     public void rstNode() {
         setSignalReady(true);
-        setSignal(buffer.get(0));
     }
 }
 

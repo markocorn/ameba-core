@@ -214,10 +214,10 @@ public class Cell implements Cloneable {
     }
 
     /**
-     * Calculate cell output stream of data based on the provided input stream of data.
+     * Calculate cell output Stream of data based on the provided input Stream of data.
      *
-     * @param inpData Input stream of data to be mapped trough cell where rows represents data series and columns represents inputs to cell.
-     * @return Mapped stream data.
+     * @param inpData Input Stream of data to be mapped trough cell where rows represents data series and columns represents inputs to cell.
+     * @return Mapped Stream data.
      */
     public double[][] run(double[][] inpData) {
         clearCell();
@@ -257,7 +257,6 @@ public class Cell implements Cloneable {
             if (nmbClcNode >= this.nodes.size() || nmbClcCell > this.nodes.size()) {
                 break;
             }
-
         }
         double[] out = new double[outNodes.size()];
         for (int i = 0; i < outNodes.size(); i++) {
@@ -278,7 +277,6 @@ public class Cell implements Cloneable {
         for (Edge edge : edges) {
             edge.rstEdge();
         }
-
     }
 
     /**

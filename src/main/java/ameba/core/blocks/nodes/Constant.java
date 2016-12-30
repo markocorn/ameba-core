@@ -5,13 +5,13 @@ import ameba.core.blocks.Node;
 
 public class Constant extends Node {
     /**
-     * Node of type Constant.
      *
-     * @param constant       Node decimal parameter.
-     * @param maxOutputEdges Maximum number of output edges.
+     * @param minOutputEdges
+     * @param maxOutputEdges
+     * @param constant
      */
-    public Constant(double constant, int maxOutputEdges) {
-        super(0, maxOutputEdges);
+    public Constant(int minOutputEdges, int maxOutputEdges, double constant) {
+        super(0, 0, minOutputEdges, maxOutputEdges);
         setDecimalParameters(new double[]{constant});
     }
 
@@ -24,6 +24,17 @@ public class Constant extends Node {
             setSignal(getDecimalParameters()[0]);
             setSignalReady(true);
         }
+    }
+
+    @Override
+    public void clearNode() {
+        rstNode();
+        setSignal(0.0);
+    }
+
+    @Override
+    public void rstNode() {
+        setSignalReady(false);
     }
 }
 

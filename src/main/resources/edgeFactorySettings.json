@@ -1,0 +1,10 @@
+{
+  "weightIntervalInitial": [
+    -1.0,
+    1.0
+  ],
+  "weightIntervalLimits": [
+    -10.0,
+    10.0
+  ]
+}

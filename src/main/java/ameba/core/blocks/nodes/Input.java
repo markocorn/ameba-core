@@ -11,8 +11,8 @@ public class Input extends Node {
     /**
      * Construct Input object.
      */
-    public Input() {
-        super(0, 1);
+    public Input(int minOutputEdges, int maxOutputEdges) {
+        super(0, 0, minOutputEdges, maxOutputEdges);
         importSignal = false;
     }
 
@@ -24,7 +24,6 @@ public class Input extends Node {
     public void importSignal(double signal) {
         setSignal(signal);
         importSignal = true;
-
     }
 
     /**
@@ -42,7 +41,15 @@ public class Input extends Node {
      */
     @Override
     public void rstNode() {
-        super.rstNode();
+        setSignalReady(false);
         importSignal = false;
     }
+
+    @Override
+    public void clearNode() {
+        rstNode();
+        setSignal(0.0);
+    }
+
+
 }

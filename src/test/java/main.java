@@ -1,35 +1,29 @@
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.Edge;
-import ameba.core.blocks.Node;
-import ameba.core.blocks.nodes.Delay;
-import ameba.core.blocks.nodes.Input;
-import ameba.core.blocks.nodes.Output;
+import ameba.core.factories.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by marko on 10/24/16.
  */
 public class main {
     public static void main(String[] args) {
-        Cell cell = new Cell();
-        Node inp = new Input();
-        Node out = new Output();
-        Node del = new Delay(100, 0.0, 2);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode jsonSettings = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core/src/main/resources/settings.json"));
+            EdgeFactory edgeFactory = new EdgeFactory(new EdgeFactorySettings(jsonSettings.get("edgeFactorySettings").toString()));
+            NodeFactory nodeFactory = new NodeFactory(NodeFactorySettings.genNodeFactorySettingsHashMap(jsonSettings.get("nodeFactorySettings").toString()));
+            CellFactory factory = new CellFactory(new CellFactorySettings(jsonSettings.get("cellFactorySettings").toString()), nodeFactory, edgeFactory);
+            Cell cell1 = factory.genCellRnd();
+            System.out.println(CellFactory.verifyCellConnections(cell1));
 
 
-        cell.addNode(inp);
-        cell.addNode(out);
-        cell.addNode(del);
-        cell.addEdge(new Edge(inp, del, 1.0));
-        cell.addEdge(new Edge(del, out, 1.0));
-
-
-        //Simulation
-        double[][] inpData = new double[][]{{1.0}, {2.0}, {3.0}, {4.0}, {5.0}, {6.0}, {7.0}, {8.0}, {9.0}, {10.0}};
-        double[][] outData = cell.run(inpData);
-
-
-        for (double[] o : outData) {
-            System.out.println(o[0]);
+            System.out.println("Program ending");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

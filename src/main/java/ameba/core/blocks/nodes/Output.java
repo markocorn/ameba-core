@@ -14,9 +14,10 @@ public class Output extends Node {
     /**
      * Construct Output object
      */
-    public Output() {
-        super(1, 0);
+    public Output(int minOutputEdges, int maxOutputEdges) {
+        super(1, 1, 0, 0);
     }
+
     //Calculate output value
     @Override
     public void clcNode() {
@@ -26,5 +27,16 @@ public class Output extends Node {
                 setSignalReady(true);
             }
         }
+    }
+
+    @Override
+    public void clearNode() {
+        rstNode();
+        setSignal(0.0);
+    }
+
+    @Override
+    public void rstNode() {
+        setSignalReady(false);
     }
 }

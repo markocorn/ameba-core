@@ -1,0 +1,202 @@
+{
+  "cellFactorySettings": {
+    "nodeInitial": 10,
+    "nodeInputs": 1,
+    "nodeOutputs": 1,
+    "nodeMax": 100
+  },
+  "edgeFactorySettings": {
+    "weightIntervalInitial": [
+      -1.0,
+      1.0
+    ],
+    "weightIntervalLimits": [
+      -10.0,
+      10.0
+    ]
+  },
+  "nodeFactorySettings": [
+    {
+      "nodeType": "Constant",
+      "maxInputEdges": 0,
+      "minInputEdges": 0,
+      "maxOutputEdges": 10,
+      "minOutputEdges": 1,
+      "available": true,
+      "initialValue": 0.0,
+      "initialDecimalParametersLimits": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "initialIntegralParametersLimits": null,
+      "initialBooleanParametersLimits": null,
+      "decimalParametersLimits": [
+        [
+          -10.0,
+          10.0
+        ]
+      ],
+      "integralParametersLimits": null,
+      "booleanParametersLimits": null
+    },
+    {
+      "nodeType": "Delay",
+      "maxInputEdges": 1,
+      "minInputEdges": 1,
+      "maxOutputEdges": 10,
+      "minOutputEdges": 1,
+      "available": true,
+      "initialValue": 0.0,
+      "initialDecimalParametersLimits": null,
+      "initialIntegralParametersLimits": [
+        [
+          0,
+          3
+        ]
+      ],
+      "initialBooleanParametersLimits": null,
+      "decimalParametersLimits": null,
+      "integralParametersLimits": [
+        [
+          0,
+          10
+        ]
+      ],
+      "booleanParametersLimits": null
+    },
+    {
+      "nodeType": "Derivative",
+      "maxInputEdges": 1,
+      "minInputEdges": 1,
+      "maxOutputEdges": 10,
+      "minOutputEdges": 1,
+      "available": true,
+      "initialValue": 0.0,
+      "initialDecimalParametersLimits": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "initialIntegralParametersLimits": null,
+      "initialBooleanParametersLimits": null,
+      "decimalParametersLimits": [
+        [
+          -10.0,
+          10.0
+        ]
+      ],
+      "integralParametersLimits": null,
+      "booleanParametersLimits": null
+    },
+    {
+      "nodeType": "Integral",
+      "maxInputEdges": 1,
+      "minInputEdges": 1,
+      "maxOutputEdges": 10,
+      "minOutputEdges": 1,
+      "available": true,
+      "initialValue": 0,
+      "initialDecimalParametersLimits": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "initialIntegralParametersLimits": null,
+      "initialBooleanParametersLimits": null,
+      "decimalParametersLimits": [
+        [
+          -10.0,
+          10.0
+        ]
+      ],
+      "integralParametersLimits": null,
+      "booleanParametersLimits": null
+    },
+    {
+      "nodeType": "Add",
+      "maxInputEdges": 10,
+      "minInputEdges": 2,
+      "maxOutputEdges": 10,
+      "minOutputEdges": 1,
+      "available": true,
+      "initialValue": 0,
+      "initialDecimalParametersLimits": null,
+      "initialIntegralParametersLimits": null,
+      "initialBooleanParametersLimits": null,
+      "decimalParametersLimits": null,
+      "integralParametersLimits": null,
+      "booleanParametersLimits": null
+    },
+    {
+      "nodeType": "Divide",
+      "maxInputEdges": 10,
+      "minInputEdges": 2,
+      "maxOutputEdges": 10,
+      "minOutputEdges": 1,
+      "available": true,
+      "initialValue": 0,
+      "initialDecimalParametersLimits": null,
+      "initialIntegralParametersLimits": null,
+      "initialBooleanParametersLimits": null,
+      "decimalParametersLimits": null,
+      "integralParametersLimits": null,
+      "booleanParametersLimits": null
+    },
+    {
+      "nodeType": "Multiply",
+      "maxInputEdges": 10,
+      "minInputEdges": 0,
+      "maxOutputEdges": 10,
+      "minOutputEdges": 1,
+      "available": true,
+      "initialValue": 0,
+      "initialDecimalParametersLimits": null,
+      "initialIntegralParametersLimits": null,
+      "initialBooleanParametersLimits": null,
+      "decimalParametersLimits": null,
+      "integralParametersLimits": null,
+      "booleanParametersLimits": null
+    },
+    {
+      "nodeType": "Input",
+      "maxInputEdges": 0,
+      "minInputEdges": 0,
+      "maxOutputEdges": 10,
+      "minOutputEdges": 1,
+      "available": true,
+      "initialValue": 0,
+      "initialDecimalParametersLimits": null,
+      "initialIntegralParametersLimits": null,
+      "initialBooleanParametersLimits": null,
+      "decimalParametersLimits": null,
+      "integralParametersLimits": null,
+      "booleanParametersLimits": null
+    },
+    {
+      "nodeType": "Output",
+      "maxInputEdges": 1,
+      "minInputEdges": 1,
+      "maxOutputEdges": 0,
+      "minOutputEdges": 0,
+      "available": true,
+      "initialValue": 0,
+      "initialDecimalParametersLimits": null,
+      "initialIntegralParametersLimits": null,
+      "initialBooleanParametersLimits": null,
+      "decimalParametersLimits": null,
+      "integralParametersLimits": null,
+      "booleanParametersLimits": null
+    }
+  ],
+  "reproductionSettings": [
+    {
+      "type": "mutation",
+      "name": "AddValue",
+      "probability": 10
+    }
+  ]
+}

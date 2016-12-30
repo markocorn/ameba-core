@@ -5,8 +5,8 @@ import ameba.core.blocks.Node;
 
 public class Add extends Node {
 
-    public Add(int maxInputEdges, int maxOutputEdges) {
-        super(maxInputEdges, maxOutputEdges);
+    public Add(int minInputEdges, int maxInputEdges, int minOutputEdges, int maxOutputEdges) {
+        super(minInputEdges, maxInputEdges, minOutputEdges, maxOutputEdges);
     }
 
     //Calculate output value
@@ -23,6 +23,17 @@ public class Add extends Node {
                 setSignalReady(true);
             }
         }
+    }
+
+    @Override
+    public void clearNode() {
+        rstNode();
+        setSignal(0.0);
+    }
+
+    @Override
+    public void rstNode() {
+        setSignalReady(false);
     }
 }
 

@@ -1,7 +1,5 @@
 package ameba.core.blocks;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import java.util.ArrayList;
 
 /**
@@ -13,9 +11,17 @@ public class Node implements Cloneable {
      */
     private int maxInputEdges;
     /**
+     * Minimum number of input connection of the node.
+     */
+    private int minInputEdges;
+    /**
      * Maximum number on output connection of the node.
      */
     private int maxOutputEdges;
+    /**
+     * Minimum number of output connection of the node.
+     */
+    private int minOutputEdges;
     /**
      * List of input edges of the node.
      */
@@ -27,7 +33,6 @@ public class Node implements Cloneable {
     /**
      * Mapped value of the node's signal.
      */
-    @JsonManagedReference
     private double signal;
     /**
      * Flag that indicates signal is reads to be sent to other ameba.core.blocks.nodes.
@@ -52,8 +57,10 @@ public class Node implements Cloneable {
      * @param maxInputEdges  Maximum number of input edges.
      * @param maxOutputEdges Maximum number of output edges.
      */
-    public Node(int maxInputEdges, int maxOutputEdges) {
+    public Node(int minInputEdges, int maxInputEdges, int minOutputEdges, int maxOutputEdges) {
+        this.minInputEdges = minInputEdges;
         this.maxInputEdges = maxInputEdges;
+        this.minOutputEdges = minOutputEdges;
         this.maxOutputEdges = maxOutputEdges;
         inputEdges = new ArrayList<Edge>();
         outputEdges = new ArrayList<Edge>();
@@ -201,30 +208,9 @@ public class Node implements Cloneable {
     }
 
     /**
-     * Calculate node's output signal trough it's mapping function if the input edges contains signals from their source ameba.core.blocks.nodes.
-     */
-    public void clcNode() {
-    }
-
-    /**
-     * Reset node's flags {@link Node#signalReady}.
-     */
-    public void rstNode() {
-        signalReady = false;
-    }
-
-    /**
-     * Clear node reset's node and reset also the signal value.
-     */
-    public void clearNode() {
-        rstNode();
-        signal = 0.0;
-    }
-
-    /**
      * Get maximum number of input edges of the node.
      *
-     * @return
+     * @return Maximum number of input edges.
      */
     public int getMaxInputEdges() {
         return maxInputEdges;
@@ -240,9 +226,45 @@ public class Node implements Cloneable {
     }
 
     /**
+     * Get minimum number of input edges.
+     *
+     * @return Minimum number of input edges.
+     */
+    public int getMinInputEdges() {
+        return minInputEdges;
+    }
+
+    /**
+     * Set minimum number of input edges
+     *
+     * @param minInputEdges Minimum number of input edges.
+     */
+    public void setMinInputEdges(int minInputEdges) {
+        this.minInputEdges = minInputEdges;
+    }
+
+    /**
+     * Get minimum number of output edges.
+     *
+     * @return Minimum number of output edges.
+     */
+    public int getMinOutputEdges() {
+        return minOutputEdges;
+    }
+
+    /**
+     * Set minimum number of output edges.
+     *
+     * @param minOutputEdges Minimum number of input edges.
+     */
+    public void setMinOutputEdges(int minOutputEdges) {
+        this.minOutputEdges = minOutputEdges;
+    }
+
+    /**
      * Get maximum number of output edges of the node.
      *
-     * @return
+     * @return Maximum number of output edges.
      */
     public int getMaxOutputEdges() {
         return maxOutputEdges;
@@ -260,7 +282,7 @@ public class Node implements Cloneable {
     /**
      * Get decimal parameters of the node.
      *
-     * @return
+     * @return Decimal parameters of node.
      */
     public double[] getDecimalParameters() {
         return decimalParameters;
@@ -273,6 +295,26 @@ public class Node implements Cloneable {
      */
     public void setDecimalParameters(double[] decimalParameters) {
         this.decimalParameters = decimalParameters;
+    }
+
+    /**
+     * Get decimal parameter of the node.
+     *
+     * @param ind Index of the parameter array.
+     * @return Decimal parameter of node.
+     */
+    public double getDecimalParameter(int ind) {
+        return decimalParameters[ind];
+    }
+
+    /**
+     * Set decimal parameter of the node.
+     *
+     * @param ind Index of the parameter array.
+     * @param par New value of the parameter.
+     */
+    public void setDecimalParameter(int ind, double par) {
+        this.decimalParameters[ind] = par;
     }
 
     /**
@@ -347,6 +389,54 @@ public class Node implements Cloneable {
      */
     public boolean isNodeClcReady() {
         return isSourcesSignalReady() && isSourcesSignalSend();
+    }
+
+    /**
+     * Get the difference between minimum and actual number of input edges.
+     *
+     * @return Difference.
+     */
+    public int getMinInputEdgesDifference() {
+        return minInputEdges - inputEdges.size();
+    }
+
+    /**
+     * Get the difference between minimum and actual number of output edges.
+     *
+     * @return Difference.
+     */
+    public int getMinOutputEdgesDifference() {
+        return minOutputEdges - outputEdges.size();
+    }
+
+    /**
+     * Get the difference between maximum and actual number of input edges.
+     *
+     * @return Difference.
+     */
+    public int getMaxInputEdgesDifference() {
+        return maxInputEdges - inputEdges.size();
+    }
+
+    /**
+     * Get the difference between maximum and actual number of output edges.
+     *
+     * @return Difference.
+     */
+    public int getMaxOutputEdgesDifference() {
+        return maxOutputEdges - outputEdges.size();
+    }
+
+    public void clcNode() {
+
+    }
+
+    public void clearNode() {
+
+    }
+
+    public void rstNode() {
+
     }
 }
 
