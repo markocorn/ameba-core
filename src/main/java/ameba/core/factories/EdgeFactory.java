@@ -1,7 +1,7 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.Edge;
-import ameba.core.blocks.Node;
+import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.nodes.Node;
 
 import java.util.Random;
 
@@ -36,7 +36,7 @@ public class EdgeFactory {
     }
 
     /**
-     * @return Decimal number within the specified initial interval.
+     * @return decimal number within the specified initial interval.
      */
     private double genDouble() {
         return rndGen.nextDouble() * (edgeFactorySettings.getWeightIntervalInitial()[1] - edgeFactorySettings.getWeightIntervalInitial()[0]) + edgeFactorySettings.getWeightIntervalInitial()[0];

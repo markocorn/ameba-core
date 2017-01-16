@@ -1,6 +1,5 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.Node;
 import ameba.core.blocks.nodes.*;
 
 import java.util.ArrayList;
@@ -71,8 +70,8 @@ public class NodeFactory {
                 case "Divide":
                     node = new Divide(settings.get(nodeType).getMinInputEdges(), settings.get(nodeType).getMaxInputEdges(), settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxInputEdges());
                     break;
-                case "Input":
-                    node = new Input(settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxOutputEdges());
+                case "InputDec":
+                    node = new InputDec(settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxOutputEdges());
                     break;
                 case "Integral":
                     node = new Integral(settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxOutputEdges(), settings.get(nodeType).getInitialValue(), genDecimalInitial(nodeType, 0));
@@ -80,8 +79,8 @@ public class NodeFactory {
                 case "Multiply":
                     node = new Multiply(settings.get(nodeType).getMinInputEdges(), settings.get(nodeType).getMaxInputEdges(), settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxOutputEdges());
                     break;
-                case "Output":
-                    node = new Output(settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxOutputEdges());
+                case "OutputDec":
+                    node = new OutputDec(settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxOutputEdges());
                     break;
             }
         }
@@ -89,7 +88,7 @@ public class NodeFactory {
     }
 
     /**
-     * Build node of rndGen type excluded Input, Output node and nodes that aren't selected in settings.
+     * Build node of rndGen type excluded InputDec, OutputDec node and nodes that aren't selected in settings.
      *
      * @return Node of randomly generated type.
      */

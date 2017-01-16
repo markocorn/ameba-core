@@ -1,7 +1,6 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.Edge;
-import ameba.core.blocks.Node;
+import ameba.core.blocks.edges.Edge;
 
 public class Multiply extends Node {
 

@@ -1,8 +1,6 @@
 package ameba.core.blocks.nodes;
 
 
-import ameba.core.blocks.Node;
-
 public class Constant extends Node {
     /**
      *

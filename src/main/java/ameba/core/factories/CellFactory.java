@@ -1,8 +1,8 @@
 package ameba.core.factories;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.Edge;
-import ameba.core.blocks.Node;
+import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.nodes.Node;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -54,13 +54,13 @@ public class CellFactory {
      */
     public Cell genCellRnd() {
         Cell cell = new Cell();
-        //Add nodes of type Input
-        //Add nodes of type Output
+        //Add nodes of type InputDec
+        //Add nodes of type OutputDec
         for (int i = 0; i < cellFactorySettings.getNodeInputs(); i++) {
-            cell.addNode(nodeFactory.genNode("Input"));
+            cell.addNode(nodeFactory.genNode("InputDec"));
         }
         for (int i = 0; i < cellFactorySettings.getNodeOutputs(); i++) {
-            cell.addNode(nodeFactory.genNode("Output"));
+            cell.addNode(nodeFactory.genNode("OutputDec"));
         }
         //Determine initial number of nodes
         int numNodes = genNmbNodesInitial();
@@ -74,7 +74,7 @@ public class CellFactory {
             while (node.getMinInputEdgesDifference() > 0) {
                 Node source = getNodeRndFreeOutput(cell);
                 Edge edge = edgeFactory.genEdge(source, node);
-                node.addInputEdge(edge);
+                node.addEdgeInput(edge);
                 source.addOutputEdge(edge);
             }
         }
@@ -103,7 +103,47 @@ public class CellFactory {
                 nodes.add(node);
             }
         }
-        return nodes.get(rndGen.nextInt(nodes.size()));
+        if (nodes.size() > 0) {
+            return nodes.get(rndGen.nextInt(nodes.size()));
+        } else return null;
+    }
+
+    /**
+     * Get node from cell that can add output edge to it's output connections not taking in account input argument node.
+     *
+     * @param cell Cell to select node from.
+     * @return Selected node.
+     * @Param node Node that can't be selected.
+     */
+    public Node getNodeRndFreeOutput(Cell cell, Node node) {
+        ArrayList<Node> nodes = new ArrayList<>();
+        for (Node node1 : cell.getNodes()) {
+            if (node1.getMaxOutputEdgesDifference() > 0 && !node1.equals(node)) {
+                nodes.add(node);
+            }
+        }
+        if (nodes.size() > 0) {
+            return nodes.get(rndGen.nextInt(nodes.size()));
+        } else return null;
+    }
+
+    /**
+     * Get node from cell that can add input edge to it's output connections not taking in account input argument node.
+     *
+     * @param cell Cell to select node from.
+     * @return Selected node.
+     * @Param node Node that can't be selected.
+     */
+    public Node getNodeRndFreeInput(Cell cell, Node node) {
+        ArrayList<Node> nodes = new ArrayList<>();
+        for (Node node1 : cell.getNodes()) {
+            if (node1.getMaxInputEdgesDifference() > 0 && !node1.equals(node)) {
+                nodes.add(node);
+            }
+        }
+        if (nodes.size() > 0) {
+            return nodes.get(rndGen.nextInt(nodes.size()));
+        } else return null;
     }
 
     /**
@@ -116,5 +156,6 @@ public class CellFactory {
         }
         return null;
     }
+
 
 }

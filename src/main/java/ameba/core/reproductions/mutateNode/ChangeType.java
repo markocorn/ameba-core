@@ -1,7 +1,7 @@
 package ameba.core.reproductions.mutateNode;
 
-import ameba.core.blocks.Edge;
-import ameba.core.blocks.Node;
+import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.NodeFactory;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class ChangeType implements IMutateNode {
             //Copy input edges
             for (Edge edge : node.getInputEdges()) {
                 edge.setTarget(node2);
-                node2.addInputEdge(edge);
+                node2.addEdgeInput(edge);
             }
             //Copy output edges
             for (Edge edge : node.getOutputEdges()) {

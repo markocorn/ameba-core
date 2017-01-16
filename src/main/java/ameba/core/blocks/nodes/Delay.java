@@ -8,8 +8,6 @@ package ameba.core.blocks.nodes;
  * To change this template use File | Settings | File Templates.
  */
 
-import ameba.core.blocks.Node;
-
 import java.util.ArrayList;
 import java.util.Collections;
 
