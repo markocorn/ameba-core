@@ -15,9 +15,9 @@ public class ParDecAddValue implements IMutateNode {
 
     @Override
     public Node mutate(Node node) {
-        if (node.getDecimalParameters().length > 0) {
-            node.setDecimalParameter(0, addValue.mutate(node.getDecimalParameter(0)));
-        }
+//        if (node.getParamsDec().length > 0) {
+//            node.setDecimalParameter(0, addValue.mutate(node.getDecimalParameter(0)));
+//        }
         return node;
     }
 }

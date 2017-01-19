@@ -1,22 +1,24 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.Collector;
+import ameba.core.blocks.connections.*;
 
 import java.util.ArrayList;
 
 /**
  * Base node class.
  */
-public class Node implements Cloneable {
+public class Node implements INode, Cloneable {
     /**
      * List of input collectors of the node.
      */
-    private ArrayList<Collector<Double>> inpCollectorsDec;
-    private ArrayList<Collector<Integer>> inpCollectorsInt;
-    private ArrayList<Collector<Boolean>> inpCollectorsBin;
-    private ArrayList<Collector<Double>> outCollectorsDec;
-    private ArrayList<Collector<Integer>> outCollectorsInt;
-    private ArrayList<Collector<Boolean>> outCollectorsBin;
+    private ArrayList<CollectorInp> inpCollectors;
+    private ArrayList<CollectorOut> outCollectors;
+    private ArrayList<ICollector<Double>> inpICollectorsDec;
+    private ArrayList<ICollector<Integer>> inpICollectorsInt;
+    private ArrayList<ICollector<Boolean>> inpICollectorsBin;
+    private ArrayList<ICollector<Double>> outICollectorsDec;
+    private ArrayList<ICollector<Integer>> outICollectorsInt;
+    private ArrayList<ICollector<Boolean>> outICollectorsBin;
 
     /**
      * Mapped value of the node's signal.
@@ -29,23 +31,45 @@ public class Node implements Cloneable {
      */
     private boolean signalReady;
     /**
-     * List of decimal parameters.
+     * List of decimal paramsDec.
      */
-    private ArrayList<Double> decimalParameters;
+    private ArrayList<Double> paramsDec;
     /**
-     * List of integer parameters.
+     * List of integer paramsDec.
      */
-    private ArrayList<Integer> integerParameters;
+    private ArrayList<Integer> paramsInt;
     /**
-     * List of boolean parameters.
+     * List of boolean paramsDec.
      */
-    private ArrayList<Boolean> booleanParameters;
+    private ArrayList<Boolean> paramsBin;
+
+    public Node() {
+        inpCollectors = new ArrayList<>();
+        outCollectors = new ArrayList<>();
+        inpICollectorsDec = new ArrayList<>();
+        inpICollectorsInt = new ArrayList<>();
+        inpICollectorsBin = new ArrayList<>();
+        outICollectorsDec = new ArrayList<>();
+        outICollectorsInt = new ArrayList<>();
+        outICollectorsBin = new ArrayList<>();
+
+        signalDec = 0.0;
+        signalInt = 0;
+        signalBin = false;
+
+        signalReady = false;
+
+        paramsDec = new ArrayList<>();
+        paramsInt = new ArrayList<>();
+        paramsBin = new ArrayList<>();
+    }
 
     /**
      * Check if node's flag to indicate that node has prepared it's output signal is set.
      *
      * @return
      */
+
     public boolean isSignalReady() {
         return signalReady;
     }
@@ -59,53 +83,64 @@ public class Node implements Cloneable {
         this.signalReady = signalReady;
     }
 
-    public ArrayList<Collector<Double>> getInpCollectorsDec() {
-        return inpCollectorsDec;
+    public <T> void addInpCollector(Class<T> tClass, CollectorInp collector) {
+        inpCollectors.add(collector);
+        if (tClass.isAssignableFrom(Double.class)) {
+            inpICollectorsDec.add(collector);
+        }
+        if (tClass.isAssignableFrom(Integer.class)) {
+            inpICollectorsInt.add(collector);
+        }
+        if (tClass.isAssignableFrom(Boolean.class)) {
+            inpICollectorsBin.add(collector);
+        }
     }
 
-    public void setInpCollectorsDec(ArrayList<Collector<Double>> inpCollectorsDec) {
-        this.inpCollectorsDec = inpCollectorsDec;
+    public <T> void addOutCollector(Class<T> tClass, CollectorOut collector) {
+        outCollectors.add(collector);
+        if (tClass.isAssignableFrom(Double.class)) {
+            outICollectorsDec.add(collector);
+        }
+        if (tClass.isAssignableFrom(Integer.class)) {
+            outICollectorsInt.add(collector);
+        }
+        if (tClass.isAssignableFrom(Boolean.class)) {
+            outICollectorsBin.add(collector);
+        }
     }
 
-    public ArrayList<Collector<Integer>> getInpCollectorsInt() {
-        return inpCollectorsInt;
+    public ArrayList<CollectorInp> getInpCollectors() {
+        return inpCollectors;
     }
 
-    public void setInpCollectorsInt(ArrayList<Collector<Integer>> inpCollectorsInt) {
-        this.inpCollectorsInt = inpCollectorsInt;
+    public ArrayList<CollectorOut> getOutCollectors() {
+        return outCollectors;
     }
 
-    public ArrayList<Collector<Boolean>> getInpCollectorsBin() {
-        return inpCollectorsBin;
-    }
-
-    public void setInpCollectorsBin(ArrayList<Collector<Boolean>> inpCollectorsBin) {
-        this.inpCollectorsBin = inpCollectorsBin;
-    }
-
-    public ArrayList<Collector<Double>> getOutCollectorsDec() {
-        return outCollectorsDec;
-    }
-
-    public void setOutCollectorsDec(ArrayList<Collector<Double>> outCollectorsDec) {
-        this.outCollectorsDec = outCollectorsDec;
-    }
-
-    public ArrayList<Collector<Integer>> getOutCollectorsInt() {
-        return outCollectorsInt;
-    }
-
-    public void setOutCollectorsInt(ArrayList<Collector<Integer>> outCollectorsInt) {
-        this.outCollectorsInt = outCollectorsInt;
-    }
-
-    public ArrayList<Collector<Boolean>> getOutCollectorsBin() {
-        return outCollectorsBin;
-    }
-
-    public void setOutCollectorsBin(ArrayList<Collector<Boolean>> outCollectorsBin) {
-        this.outCollectorsBin = outCollectorsBin;
-    }
+//    public ArrayList<Collector<Boolean>> getInpCollectorsBin() {
+//        return inpCollectorsBin;
+//    }
+//
+//    public ArrayList<Collector<Double>> getOutCollectorsDec() {
+//        return outCollectorsDec;
+//    }
+//
+//
+//    public ArrayList<Collector<Integer>> getOutCollectorsInt() {
+//        return outCollectorsInt;
+//    }
+//
+//    public void setOutCollectorsInt(ArrayList<Collector<Integer>> outCollectorsInt) {
+//        this.outCollectorsInt = outCollectorsInt;
+//    }
+//
+//    public ArrayList<Collector<Boolean>> getOutCollectorsBin() {
+//        return outCollectorsBin;
+//    }
+//
+//    public void setOutCollectorsBin(ArrayList<Collector<Boolean>> outCollectorsBin) {
+//        this.outCollectorsBin = outCollectorsBin;
+//    }
 
     //    public void addInpEdge(int collector, Edge edge) throws Exception {
 //        if (edge instanceof Edge<Double>){
@@ -121,13 +156,13 @@ public class Node implements Cloneable {
 //
 //    public void removeInputEdge(Edge edge) throws Exception {
 //        for (Collector collector : inputCollectors) {
-//            collector.removeInpEdge(edge);
+//            collector.removeEdge(edge);
 //        }
 //    }
 //
 //    public void removeOutputEdge(Edge edge) throws Exception {
 //        for (Collector collector : outputCollectors) {
-//            collector.removeInpEdge(edge);
+//            collector.removeEdge(edge);
 //        }
 //    }
 
@@ -140,21 +175,21 @@ public class Node implements Cloneable {
 //    }
 
     /**
-     * Get decimal parameters of the node.
+     * Get decimal paramsDec of the node.
      *
-     * @return decimal parameters of node.
+     * @return decimal paramsDec of node.
      */
-    public ArrayList<Double> getDecimalParameters() {
-        return decimalParameters;
+    public ArrayList<Double> getParamsDec() {
+        return paramsDec;
     }
 
     /**
-     * Set decimal parameters of the node.
+     * Set decimal paramsDec of the node.
      *
-     * @param decimalParameters
+     * @param paramsDec
      */
-    public void setDecimalParameters(ArrayList<Double> decimalParameters) {
-        this.decimalParameters = decimalParameters;
+    public void setParamsDec(ArrayList<Double> paramsDec) {
+        this.paramsDec = paramsDec;
     }
 
     /**
@@ -164,7 +199,7 @@ public class Node implements Cloneable {
      * @return decimal parameter of node.
      */
     public double getDecimalParameter(int ind) {
-        return decimalParameters.get(ind);
+        return paramsDec.get(ind);
     }
 
     /**
@@ -174,43 +209,43 @@ public class Node implements Cloneable {
      * @param par New value of the parameter.
      */
     public void setDecimalParameter(int ind, double par) {
-        this.decimalParameters.set(ind, par);
+        this.paramsDec.set(ind, par);
     }
 
     /**
-     * Get integer parameters of the node.
+     * Get integer paramsDec of the node.
      *
      * @return
      */
-    public ArrayList<Integer> getIntegerParameters() {
-        return integerParameters;
+    public ArrayList<Integer> getParamsInt() {
+        return paramsInt;
     }
 
     /**
-     * Set integer parameters of the node.
+     * Set integer paramsDec of the node.
      *
-     * @param integerParameters
+     * @param paramsInt
      */
-    public void setIntegerParameters(ArrayList<Integer> integerParameters) {
-        this.integerParameters = integerParameters;
+    public void setParamsInt(ArrayList<Integer> paramsInt) {
+        this.paramsInt = paramsInt;
     }
 
     /**
-     * Get boolean parameters of the node.
+     * Get boolean paramsDec of the node.
      *
      * @return
      */
-    public ArrayList<Boolean> getBooleanParameters() {
-        return booleanParameters;
+    public ArrayList<Boolean> getParamsBin() {
+        return paramsBin;
     }
 
     /**
-     * Set boolean parameters of the node.
+     * Set boolean paramsDec of the node.
      *
-     * @param booleanParameters
+     * @param paramsBin
      */
-    public void setBooleanParameters(ArrayList<Boolean> booleanParameters) {
-        this.booleanParameters = booleanParameters;
+    public void setParamsBin(ArrayList<Boolean> paramsBin) {
+        this.paramsBin = paramsBin;
     }
 
     /**
@@ -228,28 +263,32 @@ public class Node implements Cloneable {
 //    }
 
     /**
-     * Check if input edges didn't transfer their sources nodes output signal.
+     * Check if input connections didn't transfer their sources nodes output signal.
      *
      * @return
      */
-//    public boolean isSignalSend() {
-//        for (Edge edge : inputEdges) {
-//            if (edge.isSignalSend()) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
+    public boolean isSignalSend() {
+        for (CollectorInp collectorInp : inpCollectors) {
+            for (Edge edge : collectorInp.getEdges()) {
+                if (edge.isSignalSend()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     /**
      * Check if node's inputs are ready for node calculation.
-     * That includes this node's source nodes has to be signal ready and connecting edges must be transfer free (signal not send via them).
+     * That includes this node's source nodes has to be signal ready and connecting connections must be transfer free (signal not send via them).
      *
      * @return
      */
-//    public boolean isNodeClcReady() {
-//        return isSignalReady() && isSignalSend();
-//    }
+    public boolean isNodeClcReady() {
+        return isSignalReady() && isSignalSend();
+    }
+
+
     public double getSignalDec() {
         return signalDec;
     }
@@ -274,17 +313,78 @@ public class Node implements Cloneable {
         this.signalBin = signalBin;
     }
 
-    public Object getSignal(Object type) {
-        if (type instanceof Double) {
-            return signalDec;
+    public <T> T getSignal(Class<T> tClass) {
+        if (tClass.isAssignableFrom(Double.class)) {
+            return tClass.cast(signalDec);
         }
-        if (type instanceof Integral) {
-            return signalInt;
+        if (tClass.isAssignableFrom(Integer.class)) {
+            return tClass.cast(signalInt);
         }
-        if (type instanceof Boolean) {
-            return signalBin;
+        if (tClass.isAssignableFrom(Boolean.class)) {
+            return tClass.cast(signalBin);
         }
         return null;
+    }
+
+    @Override
+    public void clcNode() {
+
+    }
+
+    @Override
+    public void clearNode() {
+        rstNode();
+        setSignalDec(0.0);
+        setSignalInt(0);
+        setSignalBin(false);
+    }
+
+    @Override
+    public void rstNode() {
+
+    }
+
+    public <T> boolean hasInpCollector(Class<T> tClass) {
+        if (tClass.isAssignableFrom(Double.class)) {
+            if (inpICollectorsDec.size() > 0) return true;
+            else return false;
+        }
+        if (tClass.isAssignableFrom(Integer.class)) {
+            if (inpICollectorsInt.size() > 0) return true;
+            else return false;
+        }
+        if (tClass.isAssignableFrom(Boolean.class)) {
+            if (inpICollectorsBin.size() > 0) return true;
+            else return false;
+        }
+        return false;
+    }
+
+    public <T> boolean hasOutCollector(Class<T> tClass) {
+        if (tClass.isAssignableFrom(Double.class)) {
+            if (outICollectorsDec.size() > 0) return true;
+            else return false;
+        }
+        if (tClass.isAssignableFrom(Integer.class)) {
+            if (outICollectorsInt.size() > 0) return true;
+            else return false;
+        }
+        if (tClass.isAssignableFrom(Boolean.class)) {
+            if (outICollectorsBin.size() > 0) return true;
+            else return false;
+        }
+        return false;
+    }
+
+    public boolean hasAllEdgesSend() {
+        for (Collector collector : inpCollectors) {
+            for (Edge edge : collector.getEdges()) {
+                if (!edge.isSignalSend()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
 

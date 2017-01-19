@@ -1,9 +1,7 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.Collector;
+import ameba.core.blocks.connections.CollectorInp;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,20 +11,16 @@ import java.util.Arrays;
  * To change this template use File | Settings | File Templates.
  */
 
-public class OutputDec extends Node implements INode {
-
-
-    public OutputDec(int minInpEdgesDec, int maxInpEdgesDec) {
-        Collector<Double> collector = new Collector<>(minInpEdgesDec, maxInpEdgesDec, 0, 0, this);
-        setInpCollectorsDec(new ArrayList<Collector<Double>>(Arrays.asList(collector)));
+public class OutputDec extends Node implements INode, INodeOutput {
+    public OutputDec() {
+        super();
+        addInpCollector(Double.class, new CollectorInp(1, 1, this));
     }
 
     @Override
     public void clcNode() {
-        if (getInpCollectorsDec().get(0).isSignalReady()) {
-            if (getInpCollectorsDec().get(0).getInpEdges().get(0).isSignalSend()) {
-                setSignalDec(getInpCollectorsDec().get(0).getInpEdges().get(0).getSignal());
-            }
+        if (getInpCollectors().get(0).isSignalReady()) {
+            setSignalDec((Double) getInpCollectors().get(0).getSignal(Double.class));
         }
     }
 
@@ -39,5 +33,10 @@ public class OutputDec extends Node implements INode {
     @Override
     public void rstNode() {
         setSignalReady(false);
+    }
+
+    @Override
+    public <T> T exportSignal() {
+        return (T) getSignal(Double.class);
     }
 }

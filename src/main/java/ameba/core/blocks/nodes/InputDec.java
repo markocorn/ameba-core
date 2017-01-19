@@ -1,37 +1,21 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.Collector;
-import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.connections.CollectorOut;
 
-import java.util.ArrayList;
-
-public class InputDec extends Node implements INode {
+public class InputDec extends Node implements INodeInput {
     /**
      * Flag that indicates signal has been imported.
      */
+
     private boolean signalImported;
 
     /**
      * Construct InputDec object.
      */
 
-    public InputDec(final int minOutputEdges, final int maxOutputEdges) {
-        super(new ArrayList<Collector<? extends Edge>>(), new ArrayList<Collector<? extends Edge>>() {{
-            add(new Collector<Edge<Double>>(minOutputEdges, maxOutputEdges));
-        }});
-        signalImported = false;
-    }
-
-    /**
-     * Method to set input signal imported from outside of the agent.
-     *
-     * @param signal Value to be imported.
-     */
-    public void importSignal(Object signal) {
-        if (signal instanceof Double) {
-            setSignalDec((Double) signal);
-        }
-        signalImported = true;
+    public InputDec(int minOutEdges, int maxOutEdges) {
+        super();
+        addOutCollector(Double.class, new CollectorOut(minOutEdges, maxOutEdges, this));
     }
 
     /**
@@ -39,8 +23,11 @@ public class InputDec extends Node implements INode {
      */
     @Override
     public void clcNode() {
-        if (signalImported) {
-            setSignalReady(true);
+        setSignalReady(true);
+        if (hasOutCollector(Double.class)) {
+            if (!signalImported) {
+                setSignalReady(false);
+            }
         }
     }
 
@@ -53,11 +40,12 @@ public class InputDec extends Node implements INode {
         signalImported = false;
     }
 
+
     @Override
-    public void clearNode() {
-        rstNode();
-        setSignalDec(0.0);
+    public <T> void importSignal(Class<T> tClass, Object signal) {
+        if (tClass.isAssignableFrom(Double.class)) {
+            setSignalDec((Double) signal);
+            signalImported = true;
+        }
     }
-
-
 }

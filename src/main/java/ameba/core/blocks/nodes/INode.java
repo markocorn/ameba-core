@@ -9,4 +9,6 @@ public interface INode {
     void clearNode();
 
     void rstNode();
+
+
 }

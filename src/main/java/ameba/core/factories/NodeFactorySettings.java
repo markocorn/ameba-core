@@ -23,7 +23,7 @@ public class NodeFactorySettings {
      */
     private int maxInputEdges;
     /**
-     * Minimum number of input edges.
+     * Minimum number of input connections.
      */
     private int minInputEdges;
     /**
@@ -31,7 +31,7 @@ public class NodeFactorySettings {
      */
     private int maxOutputEdges;
     /**
-     * Minimum number of output edges.
+     * Minimum number of output connections.
      */
     private int minOutputEdges;
     /**

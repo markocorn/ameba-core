@@ -15,9 +15,9 @@ public class ParDecRandValue implements IMutateNode {
 
     @Override
     public Node mutate(Node node) {
-        if (node.getDecimalParameters().length > 0) {
-            node.setDecimalParameter(0, randValue.mutate(node.getDecimalParameter(0)));
-        }
+//        if (node.getParamsDec().length > 0) {
+//            node.setDecimalParameter(0, randValue.mutate(node.getDecimalParameter(0)));
+//        }
         return node;
     }
 }

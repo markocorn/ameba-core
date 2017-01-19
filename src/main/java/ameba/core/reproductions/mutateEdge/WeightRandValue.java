@@ -1,6 +1,6 @@
 package ameba.core.reproductions.mutateEdge;
 
-import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.connections.Edge;
 import ameba.core.reproductions.parametersOperations.genParDecMutation.RandValue;
 
 /**
@@ -15,7 +15,7 @@ public class WeightRandValue implements IMutateEdge {
 
     @Override
     public Edge mutate(Edge edge) {
-        edge.setWeight(randValue.mutate(edge.getWeight()));
+//        edge.setWeight(randValue.mutate(edge.getWeight()));
         return edge;
     }
 }

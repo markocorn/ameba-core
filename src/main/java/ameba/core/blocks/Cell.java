@@ -1,10 +1,11 @@
 package ameba.core.blocks;
 
 
-import ameba.core.blocks.edges.Edge;
-import ameba.core.blocks.nodes.InputDec;
+import ameba.core.blocks.connections.Collector;
+import ameba.core.blocks.connections.Edge;
+import ameba.core.blocks.nodes.INodeInput;
+import ameba.core.blocks.nodes.INodeOutput;
 import ameba.core.blocks.nodes.Node;
-import ameba.core.blocks.nodes.OutputDec;
 import com.rits.cloning.Cloner;
 
 import java.util.ArrayList;
@@ -19,27 +20,34 @@ public class Cell {
      */
     private ArrayList<Node> nodes;
     /**
+     * List of input nodes interfaces.
+     */
+    private ArrayList<INodeInput> inpNodes;
+    /**
      * List of input nodes.
      */
-    private ArrayList<InputDec> inpNodes;
-    /**
-     * List of output nodes.
-     */
-    private ArrayList<OutputDec> outNodes;
-    /**
-     * List of inpEdges.
-     */
+    private ArrayList<INodeOutput> outNodes;
+
     private ArrayList<Edge> edges;
+
+    private int maxNodes;
+
+    private ArrayList<Object> importedValues;
+    private ArrayList<Object> exportedValues;
+
 
     /**
      *
      */
-    public Cell() {
-        fitnessValue=0.0;
-        nodes = new ArrayList<Node>();
-        inpNodes = new ArrayList<InputDec>();
-        outNodes = new ArrayList<OutputDec>();
-        edges = new ArrayList<Edge>();
+    public Cell(int maxNodes) {
+        fitnessValue = 0.0;
+        nodes = new ArrayList<>();
+        inpNodes = new ArrayList<>();
+        outNodes = new ArrayList<>();
+        edges = new ArrayList<>();
+        this.maxNodes = maxNodes;
+        importedValues = new ArrayList<>();
+        exportedValues = new ArrayList<>();
     }
 
     /**
@@ -74,39 +82,10 @@ public class Cell {
      *
      * @return
      */
-    public ArrayList<InputDec> getInputNodes() {
-        return inpNodes;
-    }
+
 
     /**
-     * Set cell's input nodes.
-     *
-     * @param inpNodes
-     */
-    public void setInputNodes(ArrayList<InputDec> inpNodes) {
-        this.inpNodes = inpNodes;
-    }
-
-    /**
-     * Get cell's output nodes.
-     *
-     * @return
-     */
-    public ArrayList<OutputDec> getOutputNodes() {
-        return outNodes;
-    }
-
-    /**
-     * Set cell's output nodes.
-     *
-     * @param outNodes
-     */
-    public void setOutputNodes(ArrayList<OutputDec> outNodes) {
-        this.outNodes = outNodes;
-    }
-
-    /**
-     * Get cell's inpEdges.
+     * Get cell's connections.
      *
      * @return
      */
@@ -115,7 +94,7 @@ public class Cell {
     }
 
     /**
-     * Set cell's inpEdges.
+     * Set cell's connections.
      *
      * @param edges
      */
@@ -128,28 +107,27 @@ public class Cell {
      *
      * @param node
      */
-    public void addNode(Node node) {
-        if (node instanceof InputDec) {
-            inpNodes.add((InputDec) node);
-            return;
-        }
-        if (node instanceof OutputDec) {
-            outNodes.add((OutputDec) node);
-            return;
-        }
-        nodes.add(node);
+    public void addNode(Node node) throws Exception {
+        if (nodes.size() < maxNodes) {
+            nodes.add(node);
+            if (node instanceof INodeInput) {
+                inpNodes.add((INodeInput) node);
+            }
+            if (node instanceof INodeOutput) {
+                outNodes.add((INodeOutput) node);
+            }
+        } else throw new Exception("Maximum number of nodes exceeded");
     }
-
 
     /**
      * Add edge to the cell.
      *
      * @param edge
      */
-    public void addEdge(Edge edge) {
+    public void addEdge(Edge edge) throws Exception {
         edges.add(edge);
-        edge.getSource().addOutputEdge(edge);
-        edge.getTarget().addEdgeInput(edge);
+        edge.getSource().addEdge(edge);
+        edge.getTarget().addEdge(edge);
     }
 
 
@@ -158,11 +136,11 @@ public class Cell {
      *
      * @param edge Edge to be removed.
      */
-    public void removeEdge(Edge edge) {
+    public void removeEdge(Edge edge) throws Exception {
         if (edges.contains(edge)) {
             edges.remove(edge);
-            edge.getSource().removeOutputEdge(edge);
-            edge.getTarget().removeInputEdge(edge);
+            edge.getSource().removeEdge(edge);
+            edge.getTarget().removeEdge(edge);
         }
     }
 
@@ -172,7 +150,7 @@ public class Cell {
      *
      * @return
      */
-    public ArrayList<InputDec> getInputs() {
+    public ArrayList<INodeInput> getInputs() {
         return inpNodes;
     }
 
@@ -181,93 +159,93 @@ public class Cell {
      *
      * @return
      */
-    public ArrayList<OutputDec> getOutputs() {
+    public ArrayList<INodeOutput> getOutputs() {
         return outNodes;
     }
 
     /**
-     * Remove the node with it's input inpEdges from the cell and return nodes output edge's that has been left unconnected.
+     * Remove the node with it's input connections from the cell and return nodes output edge's that has been left unconnected.
      * <p>
-     * When removing node from the cell output inpEdges won't be removed because they represent other nodes input inpEdges. The will be left floating and they must be properly reconnected to other nodes in order for the cell to proper work.
+     * When removing node from the cell output connections won't be removed because they represent other nodes input connections. The will be left floating and they must be properly reconnected to other nodes in order for the cell to proper work.
      *
      * @param node Node to be removed.
-     * @return Unconnected output inpEdges of the node that has been removed.
+     * @return Unconnected output connections of the node that has been removed.
      */
-    public ArrayList<Edge> removeNode(Node node) {
-        //Remove input inpEdges of the node
-        for (Edge edge : node.getInputEdges()) {
-            removeEdge(edge);
+    public void removeNode(Node node) throws Exception {
+        //Remove input Edges of the node from collectors
+        for (Collector collector : node.getInpCollectors()) {
+            collector.removeEdges();
         }
-        //Disconnect output inpEdges of the node
-        for (Edge edge : node.getOutputEdges()) {
-            edge.setSource(null);
+        for (Collector collector : node.getOutCollectors()) {
+            collector.removeEdges();
         }
         //Remove node from the cell
         nodes.remove(node);
-        return node.getOutputEdges();
     }
 
-    /**
-     * Calculate cell output data based on the provided input data for one discrete time event.
-     *
-     * @param inpData InputDec data to be mapped trough cell.
-     * @return Mapped data.
-     */
-    public double[] runEvent(double[] inpData) {
-        setInpValues(inpData);
-        return clcCell();
+    //    /**
+//     * Calculate cell output data based on the provided input data for one discrete time event.
+//     *
+//     * @param inpData InputDec data to be mapped trough cell.
+//     * @return Mapped data.
+//     */
+    public void runEvent(ArrayList<Object> values) throws Exception {
+        importSignals(values);
+        clcCell();
     }
 
-    /**
-     * Calculate cell output Stream of data based on the provided input Stream of data.
-     *
-     * @param inpData InputDec Stream of data to be mapped trough cell where rows represents data series and columns represents inputs to cell.
-     * @return Mapped Stream data.
-     */
-    public double[][] run(double[][] inpData) {
+    public ArrayList<ArrayList<Object>> run(ArrayList<ArrayList<Object>> inputs) throws Exception {
         clearCell();
-        double[][] outData = new double[inpData.length][outNodes.size()];
-        for (int i = 0; i < inpData.length; i++) {
+        ArrayList<ArrayList<Object>> out = new ArrayList<>();
+        for (ArrayList<Object> data : inputs) {
             rstCell();
-            outData[i]=(runEvent(inpData[i]));
-        }
-        return outData;
-    }
-
-    /**
-     * Set signal values of InputDec nodes.
-     *
-     * @param inp InputDec data.
-     */
-    private void setInpValues(double[] inp) {
-        for (int i = 0; i < inpNodes.size(); i++) {
-            inpNodes.get(i).importSignal(inp[i]);
-        }
-    }
-
-    /**
-     * Execute calculation process of data transition trough nodes and inpEdges of the cell.
-     */
-    private double[] clcCell() {
-        int nmbClcCell = 0;
-        while (true) {
-            nmbClcCell++;
-            int nmbClcNode = 0;
-            for (Node node : nodes) {
-                node.clcNode();
-                if (node.isSignalReady()) {
-                    nmbClcNode++;
-                }
-            }
-            if (nmbClcNode >= this.nodes.size() || nmbClcCell > this.nodes.size()) {
-                break;
-            }
-        }
-        double[] out = new double[outNodes.size()];
-        for (int i = 0; i < outNodes.size(); i++) {
-            out[i] = outNodes.get(i).getSignal();
+            runEvent(data);
+            out.add((ArrayList<Object>) exportedValues.clone());
         }
         return out;
+    }
+
+
+    private void importSignals(ArrayList<Object> values) throws Exception {
+        if (values.size() == inpNodes.size()) {
+            importedValues = values;
+            for (int i = 0; i < values.size(); i++) {
+                if (values.get(i) instanceof Double) {
+                    inpNodes.get(i).importSignal(Double.class, values.get(i));
+                }
+                if (values.get(i) instanceof Integer) {
+                    inpNodes.get(i).importSignal(Integer.class, values.get(i));
+                }
+                if (values.get(i) instanceof Boolean) {
+                    inpNodes.get(i).importSignal(Boolean.class, values.get(i));
+                }
+            }
+
+        } else throw new Exception("Input array not equal to the number of input nodes");
+    }
+
+    /**
+     * Execute calculation process of data transition trough nodes and connections of the cell.
+     */
+    private void clcCell() {
+        boolean in = true;
+        while (in) {
+            in = false;
+            for (Node node : nodes) {
+                node.clcNode();
+                if (!node.hasAllEdgesSend()) {
+                    in = true;
+                }
+            }
+        }
+        exportedValues.clear();
+        for (INodeOutput node : outNodes) {
+            exportedValues.add(node.exportSignal());
+        }
+    }
+
+    public ArrayList<Object> getExportedValues() {
+        return exportedValues;
     }
 
     /**
@@ -291,7 +269,7 @@ public class Cell {
         for (Node node : nodes) {
             node.rstNode();
         }
-        //Reset all inpEdges
+        //Reset all connections
         for (Edge edge : edges) {
             edge.rstEdge();
         }

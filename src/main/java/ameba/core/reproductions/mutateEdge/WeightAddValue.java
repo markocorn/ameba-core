@@ -1,6 +1,6 @@
 package ameba.core.reproductions.mutateEdge;
 
-import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.connections.Edge;
 
 /**
  * Created by marko on 12/28/16.
@@ -14,7 +14,7 @@ public class WeightAddValue implements IMutateEdge {
 
     @Override
     public Edge mutate(Edge edge) {
-        edge.setWeight(addValue.mutate(edge.getWeight()));
+//        edge.setWeight(addValue.mutate(edge.getWeight()));
         return edge;
     }
 }
