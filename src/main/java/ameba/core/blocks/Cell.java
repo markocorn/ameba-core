@@ -3,6 +3,7 @@ package ameba.core.blocks;
 
 import ameba.core.blocks.connections.Collector;
 import ameba.core.blocks.connections.Edge;
+import ameba.core.blocks.connections.Signal;
 import ameba.core.blocks.nodes.INodeInput;
 import ameba.core.blocks.nodes.INodeOutput;
 import ameba.core.blocks.nodes.Node;
@@ -32,8 +33,8 @@ public class Cell {
 
     private int maxNodes;
 
-    private ArrayList<Object> importedValues;
-    private ArrayList<Object> exportedValues;
+    private ArrayList<Signal> importedValues;
+    private ArrayList<Signal> exportedValues;
 
 
     /**
@@ -183,42 +184,28 @@ public class Cell {
         nodes.remove(node);
     }
 
-    //    /**
-//     * Calculate cell output data based on the provided input data for one discrete time event.
-//     *
-//     * @param inpData InputDec data to be mapped trough cell.
-//     * @return Mapped data.
-//     */
-    public void runEvent(ArrayList<Object> values) throws Exception {
+    public void runEvent(ArrayList<Signal> values) throws Exception {
         importSignals(values);
         clcCell();
     }
 
-    public ArrayList<ArrayList<Object>> run(ArrayList<ArrayList<Object>> inputs) throws Exception {
+    public ArrayList<ArrayList<Signal>> run(ArrayList<ArrayList<Signal>> inputs) throws Exception {
         clearCell();
-        ArrayList<ArrayList<Object>> out = new ArrayList<>();
-        for (ArrayList<Object> data : inputs) {
+        ArrayList<ArrayList<Signal>> out = new ArrayList<>();
+        for (ArrayList<Signal> data : inputs) {
             rstCell();
             runEvent(data);
-            out.add((ArrayList<Object>) exportedValues.clone());
+            out.add((ArrayList<Signal>) exportedValues.clone());
         }
         return out;
     }
 
 
-    private void importSignals(ArrayList<Object> values) throws Exception {
+    private void importSignals(ArrayList<Signal> values) throws Exception {
         if (values.size() == inpNodes.size()) {
             importedValues = values;
             for (int i = 0; i < values.size(); i++) {
-                if (values.get(i) instanceof Double) {
-                    inpNodes.get(i).importSignal(Double.class, values.get(i));
-                }
-                if (values.get(i) instanceof Integer) {
-                    inpNodes.get(i).importSignal(Integer.class, values.get(i));
-                }
-                if (values.get(i) instanceof Boolean) {
-                    inpNodes.get(i).importSignal(Boolean.class, values.get(i));
-                }
+                inpNodes.get(i).importSignal(values.get(i));
             }
 
         } else throw new Exception("Input array not equal to the number of input nodes");
@@ -227,15 +214,10 @@ public class Cell {
     /**
      * Execute calculation process of data transition trough nodes and connections of the cell.
      */
-    private void clcCell() {
-        boolean in = true;
-        while (in) {
-            in = false;
+    private void clcCell() throws Exception {
+        while (!isNodesEndState()) {
             for (Node node : nodes) {
                 node.clcNode();
-                if (!node.hasAllEdgesSend()) {
-                    in = true;
-                }
             }
         }
         exportedValues.clear();
@@ -244,7 +226,7 @@ public class Cell {
         }
     }
 
-    public ArrayList<Object> getExportedValues() {
+    public ArrayList<Signal> getExportedValues() {
         return exportedValues;
     }
 
@@ -269,10 +251,6 @@ public class Cell {
         for (Node node : nodes) {
             node.rstNode();
         }
-        //Reset all connections
-        for (Edge edge : edges) {
-            edge.rstEdge();
-        }
     }
 
     /**
@@ -288,6 +266,15 @@ public class Cell {
     public Cell clone() {
         Cloner cloner = new Cloner();
         return cloner.deepClone(this);
+    }
+
+    public boolean isNodesEndState() {
+        for (Node node : nodes) {
+            if (node.getState() != 4) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 

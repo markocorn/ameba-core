@@ -61,8 +61,8 @@
 //                case "Constant":
 //                    node = new Constant(settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxOutputEdges(), genDecimalInitial(nodeType, 0));
 //                    break;
-//                case "DelayDec":
-//                    node = new DelayDec(settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxOutputEdges(), settings.get(nodeType).getInitialValue(), genIntegerInitial(nodeType, 0));
+//                case "Delay":
+//                    node = new Delay(settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxOutputEdges(), settings.get(nodeType).getInitialValue(), genIntegerInitial(nodeType, 0));
 //                    break;
 //                case "Derivative":
 //                    node = new Derivative(settings.get(nodeType).getMinOutputEdges(), settings.get(nodeType).getMaxOutputEdges(), settings.get(nodeType).getInitialValue(), genDecimalInitial(nodeType, 0));

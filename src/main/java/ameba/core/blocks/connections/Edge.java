@@ -1,6 +1,6 @@
 package ameba.core.blocks.connections;
 
-public class Edge<T1> implements IEdge, Cloneable {
+public class Edge implements Cloneable {
     /**
      * Source collector of the edge.
      */
@@ -10,14 +10,9 @@ public class Edge<T1> implements IEdge, Cloneable {
      */
     private CollectorInp target;
 
-    /**
-     * Flag that indicates signal was signalSend trough the edge.
-     */
-    private boolean signalSend;
+    private Signal weight;
 
-    private T1 weight;
-
-    public Edge(CollectorOut source, CollectorInp target, T1 weight) {
+    public Edge(CollectorOut source, CollectorInp target, Signal weight) {
         this.source = source;
         this.target = target;
         this.weight = weight;
@@ -60,61 +55,19 @@ public class Edge<T1> implements IEdge, Cloneable {
         return source.isSignalReady();
     }
 
-    /**
-     * Reset edge's send flag.
-     */
-    public void rstEdge() {
-        signalSend = false;
+
+    public Signal getWeight() {
+        return weight;
     }
 
-    /**
-     * Check if the signal has been send trough edge.
-     *
-     * @return
-     */
-    public boolean isSignalSend() {
-        return signalSend;
+    public void setWeight(Signal weight) {
+        this.weight = weight;
     }
 
-    /**
-     * Set signal send flag.
-     *
-     * @param signalSend New value of send flag.
-     */
-    public void setSignalSend(boolean signalSend) {
-        this.signalSend = signalSend;
-    }
-
-
-    @Override
-    public <T> T getWeight() {
-        return (T) weight;
-    }
-
-    @Override
-    public <T> void setWeight(T weight) {
-        this.weight = (T1) weight;
-    }
-
-    @Override
-    public <T> T getSignal(Class<T> tClass) {
+    public Signal getSignal() throws Exception {
         if (isSignalReady()) {
-            setSignalSend(true);
-            if (tClass.isAssignableFrom(Double.class)) {
-                Double out = (Double) getSource().getSignal(tClass) * (Double) weight;
-                return (T) out;
-            }
-            if (tClass.isAssignableFrom(Integer.class)) {
-                Integer out = (Integer) getSource().getSignal(tClass) * (Integer) weight;
-                return (T) out;
-            }
-            if (tClass.isAssignableFrom(Boolean.class)) {
-                Boolean out = (Boolean) getSource().getSignal(tClass);
-                if ((Boolean) weight) {
-                    out = !out;
-                }
-                return (T) out;
-            }
+            source.getNodeAttached().setSignalSend(true);
+            return Signal.multiplySignal(source.getSignal(), weight);
         }
         return null;
     }

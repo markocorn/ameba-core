@@ -7,35 +7,13 @@ import ameba.core.blocks.nodes.Node;
  */
 public class CollectorInp extends Collector implements ICollector {
 
-    public CollectorInp(int minEdges, int maxEdges, Node node) {
-        super(minEdges, maxEdges, node);
+    public CollectorInp(Signal signal, Node node) {
+        super(signal, 1, 1, node);
     }
 
     @Override
-    public Object getSignal(Class aClass) {
-        if (aClass.isAssignableFrom(Double.class)) {
-            Double sum = 0.0;
-            for (Edge edge : getEdges()) {
-                sum += (Double) edge.getSignal(Double.class);
-            }
-            return sum;
-        }
-        if (aClass.isAssignableFrom(Integer.class)) {
-            Integer sum = 0;
-            for (Edge edge : getEdges()) {
-                sum += (Integer) edge.getSignal(Integer.class);
-            }
-            return sum;
-        }
-        if (aClass.isAssignableFrom(Boolean.class)) {
-            for (Edge edge : getEdges()) {
-                if ((Boolean) edge.getSignal(Boolean.class)) {
-                    return Boolean.valueOf(true);
-                }
-            }
-            return Boolean.valueOf(false);
-        }
-        return null;
+    public Signal getSignal() throws Exception {
+        return getEdges().get(0).getSignal();
     }
 
     @Override

@@ -8,17 +8,31 @@ import java.util.ArrayList;
  * Created by marko on 1/10/17.
  */
 public class Collector {
-    ArrayList<Edge> edges;
+    private ArrayList<Edge> edges;
     private int minEdges;
     private int maxEdges;
     private Node nodeAttached;
+    private Signal signal;
 
 
-    public Collector(int minEdges, int maxEdges, Node node) {
+    public Collector(Signal signal, int minEdges, int maxEdges, Node node) {
         this.minEdges = minEdges;
         this.maxEdges = maxEdges;
         edges = new ArrayList<>();
         nodeAttached = node;
+        this.signal = signal;
+    }
+
+    public <T> Class<T> getType() {
+        return signal.gettClass();
+    }
+
+    public Signal getSignal() throws Exception {
+        return signal;
+    }
+
+    public void setSignal(Signal signal) {
+        this.signal = signal;
     }
 
     public Node getNodeAttached() {
@@ -67,5 +81,4 @@ public class Collector {
                 removeEdge(edge);
             }
     }
-
 }

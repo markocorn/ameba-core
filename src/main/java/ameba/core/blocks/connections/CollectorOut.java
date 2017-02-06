@@ -7,13 +7,14 @@ import ameba.core.blocks.nodes.Node;
  */
 public class CollectorOut extends Collector implements ICollector {
 
-    public CollectorOut(int minEdges, int maxEdges, Node node) {
-        super(minEdges, maxEdges, node);
+
+    public CollectorOut(Signal signal, int minEdges, int maxEdges, Node node) {
+        super(signal, minEdges, maxEdges, node);
     }
 
     @Override
-    public Object getSignal(Class aClass) {
-        return getNodeAttached().getSignal(aClass);
+    public Signal getSignal() throws Exception {
+        return super.getSignal();
     }
 
     @Override
