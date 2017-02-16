@@ -1,4 +1,4 @@
-package ameba.core.blocks.connections;
+package ameba.core.blocks.conectivity;
 
 import ameba.core.blocks.nodes.Node;
 
@@ -8,12 +8,15 @@ import ameba.core.blocks.nodes.Node;
 public class CollectorInp extends Collector implements ICollector {
 
     public CollectorInp(Signal signal, Node node) {
-        super(signal, 1, 1, node);
+        super(signal, node);
     }
 
     @Override
     public Signal getSignal() throws Exception {
-        return getEdges().get(0).getSignal();
+        if (getEdges().size() > 0) {
+            return getEdges().get(0).getSignal();
+        } else return null;
+
     }
 
     @Override

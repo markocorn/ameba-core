@@ -1,22 +1,22 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 /**
  * Created by marko on 2/1/17.
  */
 public class Switch2Const extends Node {
 
-    public Switch2Const(Signal type, int minOutputEdges, int maxOutputEdges, Signal const1, Signal[] const1Limits, Signal const2, Signal[] const2Limits) throws Exception {
+    public Switch2Const(Signal type, Signal par1, Signal[] par1Limits, Signal par2, Signal[] par2Limits) throws Exception {
         super(1, 1, 1, 1);
         addInpCollector(new CollectorInp(Signal.createBoolean(), this));
-        addOutCollector(new CollectorOut(type, minOutputEdges, maxOutputEdges, this));
-        getParams().add(const1);
-        getParamsLimits().add(const1Limits);
-        getParams().add(const2);
-        getParamsLimits().add(const2Limits);
+        addOutCollector(new CollectorOut(type, this));
+        getParams().add(par1);
+        getParamsLimits().add(par1Limits);
+        getParams().add(par2);
+        getParamsLimits().add(par2Limits);
     }
 
     //Calculate output value
@@ -25,7 +25,7 @@ public class Switch2Const extends Node {
         switch (getState()) {
             case 0:
                 if (isSignalInputsReady()) {
-                    if (getInpCollectors().get(0).getSignal().getValueBoolean()) {
+                    if (getInpCollectorsConn().get(0).getSignal().getValueBoolean()) {
                         getOutCollectors().get(0).setSignal(getParams().get(1));
                     } else {
                         getOutCollectors().get(0).setSignal(getParams().get(0));

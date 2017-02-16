@@ -1,6 +1,6 @@
 package ameba.core.reproductions.mutateEdge;
 
-import ameba.core.blocks.connections.Edge;
+import ameba.core.blocks.conectivity.Edge;
 import ameba.core.reproductions.parametersOperations.genParDecMutation.RandValue;
 
 /**

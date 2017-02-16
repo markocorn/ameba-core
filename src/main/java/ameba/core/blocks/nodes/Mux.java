@@ -1,8 +1,8 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 /**
  * Created by marko on 2/6/17.
@@ -10,27 +10,15 @@ import ameba.core.blocks.connections.Signal;
 public class Mux extends Node {
 
 
-    public Mux(int minInpCollectors, int maxInpCollectors, int minOutputEdges, int maxOutputEdges, Signal const1, Signal[] const1Limits) throws Exception {
+    public Mux(int minInpCollectors, int maxInpCollectors, Signal par, Signal[] parLimits) throws Exception {
         super(minInpCollectors, maxInpCollectors, 1, 1);
-
-        addInpCollector(new CollectorInp(Signal.createInteger(), this));
-        addOutCollector(new CollectorOut(const1.clone(), minOutputEdges, maxOutputEdges, this));
-
-        getParams().add(const1);
-        getParamsLimits().add(const1Limits);
-    }
-
-    @Override
-    public void addInpCollector(CollectorInp collector) throws Exception {
-        if (getInpCollectors().size() == 0) {
-            super.addInpCollector(collector);
-        } else {
-            if (getParams().get(0).gettClass().equals(collector.getType())) {
-                super.addInpCollector(collector);
-            } else {
-                throw new Exception("Input collector's signal must be of type: " + getParams().get(0).gettClass().getSimpleName());
-            }
+        for (int i = 0; i < maxInpCollectors; i++) {
+            addInpCollector(new CollectorInp(par.clone(), this));
         }
+        addOutCollector(new CollectorOut(par.clone(), this));
+
+        getParams().add(par);
+        getParamsLimits().add(parLimits);
     }
 
     //Calculate output value
@@ -39,12 +27,12 @@ public class Mux extends Node {
         switch (getState()) {
             case 0:
                 if (isSignalInputsReady()) {
-                    Signal[] list = new Signal[getInpCollectors().size()];
-                    for (int i = 0; i < getInpCollectors().size(); i++) {
-                        list[i] = getInpCollectors().get(i).getSignal();
+                    Signal[] list = new Signal[getInpCollectorsConn().size()];
+                    for (int i = 0; i < getInpCollectorsConn().size(); i++) {
+                        list[i] = getInpCollectorsConn().get(i).getSignal();
                     }
-                    if (list[0].getValueInteger() >= 0 && list[0].getValueInteger() < getInpCollectors().size() - 1) {
-                        getOutCollectors().get(0).setSignal(getInpCollectors().get(list[0].getValueInteger() + 1).getSignal());
+                    if (list[0].getValueInteger() >= 0 && list[0].getValueInteger() < getInpCollectorsConn().size() - 1) {
+                        getOutCollectors().get(0).setSignal(getInpCollectorsConn().get(list[0].getValueInteger() + 1).getSignal());
                     } else {
                         getOutCollectors().get(0).setSignal(getParams().get(0));
                     }

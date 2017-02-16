@@ -1,67 +1,66 @@
-//import ameba.core.blocks.Cell;
-//import ameba.core.blocks.connections.Edge;
-//import ameba.core.blocks.nodes.Node;
-//import ameba.core.factories.*;
-//import ameba.core.reproductions.mutateCell.ReplaceNode;
-//import com.fasterxml.jackson.databind.JsonNode;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//
-//import java.io.File;
-//import java.io.IOException;
-//
-///**
-// * Created by marko on 10/24/16.
-// */
-//public class main {
-//    public static void main(String[] args) {
-//        ObjectMapper mapper = new ObjectMapper();
-//        try {
-//            JsonNode jsonSettings = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core/src/main/resources/settings.json"));
-//            EdgeFactory edgeFactory = new EdgeFactory(new EdgeFactorySettings(jsonSettings.get("edgeFactorySettings").toString()));
-//            NodeFactory nodeFactory = new NodeFactory(NodeFactorySettings.genNodeFactorySettingsHashMap(jsonSettings.get("nodeFactorySettings").toString()));
-//            CellFactory cellFactory = new CellFactory(new CellFactorySettings(jsonSettings.get("cellFactorySettings").toString()), nodeFactory, edgeFactory);
-//            Cell cell1 = cellFactory.genCellRnd();
-//            System.out.println(CellFactory.verifyCellConnections(cell1));
-//
-//            Node inp1 = nodeFactory.genNode("InputDec");
-//            Node inp2 = nodeFactory.genNode("InputDec");
-//            Node inp3 = nodeFactory.genNode("InputDec");
-//            Node out1 = nodeFactory.genNode("OutputDec");
-//            Node out2 = nodeFactory.genNode("OutputDec");
-//            Node out3 = nodeFactory.genNode("OutputDec");
-//
-//            Node add = nodeFactory.genNode("Add");
-//
-//            Edge edge1 = edgeFactory.genEdge(inp1, add);
-//            Edge edge2 = edgeFactory.genEdge(inp2, add);
-//            Edge edge3 = edgeFactory.genEdge(inp3, add);
-//            Edge edge4 = edgeFactory.genEdge(add, out1);
-//            Edge edge5 = edgeFactory.genEdge(add, out2);
-//            Edge edge6 = edgeFactory.genEdge(add, out3);
-//
-//
-//            Cell cell = new Cell();
-//            cell.addNode(inp1);
-//            cell.addNode(inp2);
-//            cell.addNode(inp3);
-//            cell.addNode(add);
-//            cell.addNode(out1);
-//            cell.addNode(out2);
-//            cell.addNode(out3);
-//            cell.addEdge(edge1);
-//            cell.addEdge(edge2);
-//            cell.addEdge(edge3);
-//            cell.addEdge(edge4);
-//            cell.addEdge(edge5);
-//            cell.addEdge(edge6);
-//
-//
-//            ReplaceNode replaceNode = new ReplaceNode(nodeFactory, cellFactory, edgeFactory);
-//            Cell cell2 = replaceNode.mutate(cell);
-//
-//            System.out.println("Program ending");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+import ameba.core.blocks.Cell;
+import ameba.core.blocks.conectivity.Signal;
+import ameba.core.factories.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+
+/**
+ * Created by marko on 10/24/16.
+ */
+public class main {
+    public static void main(String[] args) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonSettings = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core (copy)/src/main/resources/settings.json"));
+        FactoryNode factoryNode = new FactoryNode();
+        factoryNode.loadSettings(jsonSettings.get("nodeFactorySettings").toString());
+        FactoryEdge factoryEdge = new FactoryEdge(mapper.readValue(jsonSettings.get("edgeFactorySettings").toString(), FactoryEdgeSettings.class));
+        FactoryCell factoryCell = new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), factoryNode, factoryEdge);
+
+        factoryCell.getCellFactorySettings().setNodeInpDec(1);
+        factoryCell.getCellFactorySettings().setNodeInpInt(0);
+        factoryCell.getCellFactorySettings().setNodeInpBin(0);
+        factoryCell.getCellFactorySettings().setNodeOutDec(1);
+        factoryCell.getCellFactorySettings().setNodeOutInt(0);
+        factoryCell.getCellFactorySettings().setNodeOutBin(0);
+        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{1, 1});
+
+        ArrayList<ArrayList<Signal>> inputs = new ArrayList<>();
+        inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(1.0))));
+        inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(2.0))));
+        inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(3.0))));
+        inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(4.0))));
+
+        try {
+            Cell cell = factoryCell.genCellRnd();
+
+            ArrayList<ArrayList<Signal>> outputs = cell.run(inputs);
+
+            for (ArrayList<Signal> out : outputs) {
+                for (Signal obj : out) {
+                    System.out.print(obj.getValue());
+                    System.out.print(":");
+                }
+                System.out.println();
+            }
+            System.out.println();
+            System.out.println("Program ending");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
 //    }
-//}
+
+
+//            FactoryEdge edgeFactory = new FactoryEdge(new FactoryEdgeSettings(jsonSettings.get("edgeFactorySettings").toString()));
+//            FactoryNode factoryNode = new FactoryNode(NodeFactorySettings.genNodeFactorySettingsHashMap(jsonSettings.get("nodeFactorySettings").toString()));
+//            FactoryCell cellFactory = new FactoryCell(new FactoryCellSettings(jsonSettings.get("cellFactorySettings").toString()), factoryNode, edgeFactory);
+//            Cell cell1 = cellFactory.genCellRnd();
+
+    }
+}

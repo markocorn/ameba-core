@@ -1,4 +1,4 @@
-package ameba.core.blocks.connections;
+package ameba.core.blocks.conectivity;
 
 import com.rits.cloning.Cloner;
 

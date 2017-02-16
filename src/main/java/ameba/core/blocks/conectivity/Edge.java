@@ -1,4 +1,4 @@
-package ameba.core.blocks.connections;
+package ameba.core.blocks.conectivity;
 
 public class Edge implements Cloneable {
     /**

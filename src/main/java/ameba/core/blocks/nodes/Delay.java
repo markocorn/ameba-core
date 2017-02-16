@@ -8,9 +8,9 @@ package ameba.core.blocks.nodes;
  * To change this template use File | Settings | File Templates.
  */
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,21 +24,15 @@ public class Delay extends Node {
     //Initial value
     private Signal initValue;
 
-    /**
-     * @param minOutputEdges
-     * @param maxOutputEdges
-     * @param initValue
-     * @param bufferSize
-     */
-    public Delay(Signal signalType, int minOutputEdges, int maxOutputEdges, Signal initValue, int bufferSize, int[] bufferSizeLimits) throws Exception {
+    public Delay(Signal initial, int par, int[] parLimits) throws Exception {
         super(1, 1, 1, 1);
-        this.initValue = initValue;
-        getParams().add(Signal.createInteger(bufferSize));
-        getParamsLimits().add(new Signal[]{Signal.createInteger(bufferSizeLimits[0]), Signal.createInteger(bufferSizeLimits[1])});
+        this.initValue = initial;
+        getParams().add(Signal.createInteger(par));
+        getParamsLimits().add(new Signal[]{Signal.createInteger(parLimits[0]), Signal.createInteger(parLimits[1])});
 
-        addInpCollector(new CollectorInp(signalType.clone(), this));
-        addOutCollector(new CollectorOut(signalType.clone(), minOutputEdges, maxOutputEdges, this));
-        buffer = new ArrayList(Collections.nCopies(bufferSize, initValue));
+        addInpCollector(new CollectorInp(initial.clone(), this));
+        addOutCollector(new CollectorOut(initial.clone(), this));
+        buffer = new ArrayList(Collections.nCopies(par, initial));
         clearNode();
     }
 
@@ -56,7 +50,7 @@ public class Delay extends Node {
                 }
             case 2:
                 if (isSignalInputsReady()) {
-                    buffer.add(getInpCollectors().get(0).getSignal());
+                    buffer.add(getInpCollectorsConn().get(0).getSignal());
                     buffer.remove(buffer.get(0));
                     getOutCollectors().get(0).setSignal(buffer.get(0));
                     setState(3);

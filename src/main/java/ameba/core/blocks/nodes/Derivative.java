@@ -8,9 +8,9 @@ package ameba.core.blocks.nodes;
  * To change this template use File | Settings | File Templates.
  */
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 /**
  * @author Marko
@@ -21,12 +21,12 @@ public class Derivative extends Node {
     private Signal initValue;
     private Signal signalOld;
 
-    public Derivative(Signal signalType, int minOutputEdges, int maxOutputEdges, Signal initValue, Signal par, Signal[] parLimits) throws Exception {
-        super(1, 1, minOutputEdges, maxOutputEdges);
-        this.initValue = initValue;
-        signalOld = initValue.clone();
-        addInpCollector(new CollectorInp(signalType.clone(), this));
-        addOutCollector(new CollectorOut(signalType.clone(), minOutputEdges, maxOutputEdges, this));
+    public Derivative(Signal initial, Signal par, Signal[] parLimits) throws Exception {
+        super(1, 1, 1, 1);
+        this.initValue = initial;
+        signalOld = initial.clone();
+        addInpCollector(new CollectorInp(initial.clone(), this));
+        addOutCollector(new CollectorOut(initial.clone(), this));
 
 
         getParams().add(par);
@@ -49,20 +49,20 @@ public class Derivative extends Node {
                 }
             case 2:
                 if (isSignalInputsReady()) {
-                    if (getInpCollectors().get(0).getSignal().gettClass().isAssignableFrom(Double.class)) {
-                        getOutCollectors().get(0).getSignal().setValueDouble((getInpCollectors().get(0).getSignal().getValueDouble() - signalOld.getValueDouble()) / getParams().get(0).getValueDouble());
-                        signalOld = getInpCollectors().get(0).getSignal();
+                    if (getInpCollectorsConn().get(0).getSignal().gettClass().isAssignableFrom(Double.class)) {
+                        getOutCollectors().get(0).getSignal().setValueDouble((getInpCollectorsConn().get(0).getSignal().getValueDouble() - signalOld.getValueDouble()) / getParams().get(0).getValueDouble());
+                        signalOld = getInpCollectorsConn().get(0).getSignal();
                     }
-                    if (getInpCollectors().get(0).getSignal().gettClass().isAssignableFrom(Integer.class)) {
-                        getOutCollectors().get(0).getSignal().setValueInteger((getInpCollectors().get(0).getSignal().getValueInteger() - signalOld.getValueInteger()) / getParams().get(0).getValueInteger());
-                        signalOld = getInpCollectors().get(0).getSignal();
+                    if (getInpCollectorsConn().get(0).getSignal().gettClass().isAssignableFrom(Integer.class)) {
+                        getOutCollectors().get(0).getSignal().setValueInteger((getInpCollectorsConn().get(0).getSignal().getValueInteger() - signalOld.getValueInteger()) / getParams().get(0).getValueInteger());
+                        signalOld = getInpCollectorsConn().get(0).getSignal();
                     }
-                    if (getInpCollectors().get(0).getSignal().gettClass().isAssignableFrom(Boolean.class)) {
+                    if (getInpCollectorsConn().get(0).getSignal().gettClass().isAssignableFrom(Boolean.class)) {
                         getOutCollectors().get(0).getSignal().setValueBoolean(getParams().get(0).getValueBoolean());
-                        if (!signalOld.getValueBoolean().equals(getInpCollectors().get(0).getSignal().getValueBoolean())) {
+                        if (!signalOld.getValueBoolean().equals(getInpCollectorsConn().get(0).getSignal().getValueBoolean())) {
                             getOutCollectors().get(0).getSignal().setValueBoolean(!getParams().get(0).getValueBoolean());
                         }
-                        signalOld = getInpCollectors().get(0).getSignal();
+                        signalOld = getInpCollectorsConn().get(0).getSignal();
                     }
                     setState(3);
                     setSignalClcDone(true);

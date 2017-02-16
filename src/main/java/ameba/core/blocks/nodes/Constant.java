@@ -1,15 +1,18 @@
 package ameba.core.blocks.nodes;
 
 
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 public class Constant extends Node {
 
-    public Constant(Signal outSignal, int minOutputEdges, int maxOutputEdges, Signal constant) throws Exception {
+    public Constant(Signal par, Signal[] parLimits) throws Exception {
         super(0, 0, 0, 10);
-        addOutCollector(new CollectorOut(outSignal, minOutputEdges, maxOutputEdges, this));
-        getOutCollectors().get(0).setSignal(constant);
+        addOutCollector(new CollectorOut(par.clone(), this));
+
+
+        getParams().add(par);
+        getParamsLimits().add(parLimits);
     }
 
     /**
@@ -20,10 +23,11 @@ public class Constant extends Node {
         switch (getState()) {
             case 0:
                 if (isSignalReady()) {
+                    getOutCollectors().get(0).setSignal(getParams().get(0));
                     setState(1);
                 }
             case 1:
-                if (isSignalSend()) {
+                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() > 0) {
                     setState(4);
                 }
             case 4:

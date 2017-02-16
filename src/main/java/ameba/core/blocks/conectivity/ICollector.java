@@ -1,4 +1,4 @@
-package ameba.core.blocks.connections;
+package ameba.core.blocks.conectivity;
 
 /**
  * Created by marko on 1/19/17.

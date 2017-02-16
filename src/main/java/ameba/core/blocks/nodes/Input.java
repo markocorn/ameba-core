@@ -1,15 +1,15 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 public class Input extends Node implements INodeInput {
     /**
      * Construct InputDec object.
      */
-    public Input(Signal signal, int minOutEdges, int maxOutEdges) throws Exception {
+    public Input(Signal type) throws Exception {
         super(0, 0, 1, 1);
-        addOutCollector(new CollectorOut(signal.clone(), minOutEdges, maxOutEdges, this));
+        addOutCollector(new CollectorOut(type.clone(), this));
     }
 
     /**

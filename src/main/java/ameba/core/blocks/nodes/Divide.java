@@ -1,18 +1,21 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 public class Divide extends Node {
 
-    public Divide(Signal outSignal, int minInpCollectors, int maxInpCollectors, int minOutputEdges, int maxOutputEdges) throws Exception {
+    public Divide(Signal type, int minInpCollectors, int maxInpCollectors) throws Exception {
         super(minInpCollectors, maxInpCollectors, 1, 1);
-        addOutCollector(new CollectorOut(outSignal.clone(), minOutputEdges, maxOutputEdges, this));
-        if (outSignal.gettClass().isAssignableFrom(Boolean.class))
-            throw new Exception("Multiply node is not allowed as Boolean type node");
-        if (outSignal.gettClass().isAssignableFrom(Integer.class))
-            throw new Exception("Multiply node is not allowed as Integer type node");
+        for (int i = 0; i < maxInpCollectors; i++) {
+            addInpCollector(new CollectorInp(type.clone(), this));
+        }
+        addOutCollector(new CollectorOut(type.clone(), this));
+        if (type.gettClass().isAssignableFrom(Boolean.class))
+            throw new Exception("Divide node is not allowed as Boolean type node");
+        if (type.gettClass().isAssignableFrom(Integer.class))
+            throw new Exception("Divide node is not allowed as Integer type node");
 
     }
 
@@ -24,7 +27,7 @@ public class Divide extends Node {
                 if (isSignalInputsReady()) {
                     if (getOutCollectors().get(0).getSignal().gettClass().isAssignableFrom(Double.class)) {
                         getOutCollectors().get(0).getSignal().setValueDouble(1.0);
-                        for (CollectorInp collectorInp : getInpCollectors()) {
+                        for (CollectorInp collectorInp : getInpCollectorsConn()) {
                             //Add all sources signals together.
                             if (collectorInp.getSignal().getValueDouble().equals(0.0)) {
                                 getOutCollectors().get(0).getSignal().setValueDouble(0.0);

@@ -1,14 +1,17 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 public class OrBin extends Node {
 
-    public OrBin(int minInpCollectors, int maxInpCollectors, int minOutputEdges, int maxOutputEdges) throws Exception {
+    public OrBin(int minInpCollectors, int maxInpCollectors) throws Exception {
         super(minInpCollectors, maxInpCollectors, 1, 1);
-        addOutCollector(new CollectorOut(Signal.createBoolean(), minOutputEdges, maxOutputEdges, this));
+        for (int i = 0; i < maxInpCollectors; i++) {
+            addInpCollector(new CollectorInp(Signal.createBoolean(), this));
+        }
+        addOutCollector(new CollectorOut(Signal.createBoolean(), this));
     }
 
     //Calculate output value
@@ -18,7 +21,7 @@ public class OrBin extends Node {
             case 0:
                 if (isSignalInputsReady()) {
                     getOutCollectors().get(0).getSignal().setValueBoolean(false);
-                    for (CollectorInp collectorInp : getInpCollectors()) {
+                    for (CollectorInp collectorInp : getInpCollectorsConn()) {
                         //Add all sources signals together.
                         if (collectorInp.getSignal().getValueBoolean())
                             getOutCollectors().get(0).getSignal().setValueBoolean(true);

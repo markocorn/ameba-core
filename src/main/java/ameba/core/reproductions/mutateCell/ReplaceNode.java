@@ -1,11 +1,11 @@
 //package ameba.core.reproductions.mutateCell;
 //
 //import ameba.core.blocks.Cell;
-//import ameba.core.blocks.connections.Edge;
+//import ameba.core.blocks.conectivity.Edge;
 //import ameba.core.blocks.nodes.Node;
-//import ameba.core.factories.CellFactory;
-//import ameba.core.factories.EdgeFactory;
-//import ameba.core.factories.NodeFactory;
+//import ameba.core.factories.FactoryCell;
+//import ameba.core.factories.FactoryEdge;
+//import ameba.core.factories.FactoryNode;
 //
 //import java.util.Collections;
 //import java.util.Random;
@@ -14,12 +14,12 @@
 // * Created by marko on 12/30/16.
 // */
 //public class ReplaceNode implements IMutateCell {
-//    NodeFactory nodeFactory;
-//    CellFactory cellFactory;
-//    EdgeFactory edgeFactory;
+//    FactoryNode nodeFactory;
+//    FactoryCell cellFactory;
+//    FactoryEdge edgeFactory;
 //    Random random;
 //
-//    public ReplaceNode(NodeFactory nodeFactory, CellFactory cellFactory, EdgeFactory edgeFactory) {
+//    public ReplaceNode(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory) {
 //        this.nodeFactory = nodeFactory;
 //        this.cellFactory = cellFactory;
 //        this.edgeFactory = edgeFactory;
@@ -30,18 +30,18 @@
 //        Cell old = cell.clone();
 //        Node nodeOld = cellFactory.getNodeRndInner(cell);
 ////        Node nodeNew = nodeFactory.genNodeRnd();
-//        Node nodeNew = nodeFactory.genNode("Integral");
-//        //******************InputDec connections***************************************
+//        Node nodeNew = nodeFactory.genNodeRndPar("Integral");
+//        //******************InputDec conectivity***************************************
 //        Collections.shuffle(nodeOld.getInputEdges());
-//        //Number of connections is smaller than minimum number of connections of new node
-//        if (nodeOld.getInputEdges().size() < nodeNew.getMinInputEdges()) {
-//            //Reconnect old connections to new node
+//        //Number of conectivity is smaller than minimum number of conectivity of new node
+//        if (nodeOld.getInputEdges().size() < nodeNew.getMinInpCollectors()) {
+//            //Reconnect old conectivity to new node
 //            for (int i = 0; i < nodeOld.getInputEdges().size(); i++) {
 //                nodeNew.addEdgeInput(nodeOld.getInputEdges().get(i));
 //                nodeOld.getInputEdges().get(i).setTarget(nodeNew);
 //            }
-//            //Remaining connections to minimum constrain satisfaction must be generated
-//            for (int i = 0; i < nodeNew.getMinInputEdges() - nodeOld.getInputEdges().size(); i++) {
+//            //Remaining conectivity to minimum constrain satisfaction must be generated
+//            for (int i = 0; i < nodeNew.getMinInpCollectors() - nodeOld.getInputEdges().size(); i++) {
 //                Node node = cellFactory.getNodeRndFreeOutput(cell, nodeNew);
 //                if (node != null) {
 //                    Edge edge = edgeFactory.genEdge(node, nodeNew);
@@ -53,22 +53,22 @@
 //                }
 //            }
 //        }
-//        //Number of connections ig greater than minimum number of connections and smaller than max number of connections
-//        if (nodeOld.getInputEdges().size() >= nodeNew.getMinInputEdges() && nodeOld.getInputEdges().size() <= nodeNew.getMaxInputEdgesDec()) {
-//            //Reconnect old connections to new node
+//        //Number of conectivity ig greater than minimum number of conectivity and smaller than max number of conectivity
+//        if (nodeOld.getInputEdges().size() >= nodeNew.getMinInpCollectors() && nodeOld.getInputEdges().size() <= nodeNew.getMaxInputEdgesDec()) {
+//            //Reconnect old conectivity to new node
 //            for (int i = 0; i < nodeOld.getInputEdges().size(); i++) {
 //                nodeNew.addEdgeInput(nodeOld.getInputEdges().get(i));
 //                nodeOld.getInputEdges().get(i).setTarget(nodeNew);
 //            }
 //        }
-//        //Number of connections is greater than maximum number of connections of new node
+//        //Number of conectivity is greater than maximum number of conectivity of new node
 //        if (nodeOld.getInputEdges().size() > nodeNew.getMaxInputEdgesDec()) {
-//            //Reconnect old connections to new node
+//            //Reconnect old conectivity to new node
 //            for (int i = 0; i < nodeNew.getMaxInputEdgesDec(); i++) {
 //                nodeNew.addEdgeInput(nodeOld.getInputEdges().get(i));
 //                nodeOld.getInputEdges().get(i).setTarget(nodeNew);
 //            }
-//            //Rest of the connections has to be deleted or reconnected
+//            //Rest of the conectivity has to be deleted or reconnected
 //            for (int i = nodeNew.getMaxInputEdgesDec(); i < nodeOld.getInputEdges().size(); i++) {
 //                Edge edge = nodeOld.getInputEdges().get(i);
 //                //Check if edge can be deleted
@@ -91,16 +91,16 @@
 //            }
 //        }
 //
-//        //******************OutputDec connections***************************************
+//        //******************OutputDec conectivity***************************************
 //        Collections.shuffle(nodeOld.getOutputEdges());
-//        //Number of connections is smaller than minimum number of connections of new node
+//        //Number of conectivity is smaller than minimum number of conectivity of new node
 //        if (nodeOld.getOutputEdges().size() < nodeNew.getMinOutputEdges()) {
-//            //Reconnect old connections to new node
+//            //Reconnect old conectivity to new node
 //            for (int i = 0; i > nodeOld.getOutputEdges().size(); i++) {
 //                nodeNew.addOutputEdge(nodeOld.getOutputEdges().get(i));
 //                nodeOld.getOutputEdges().get(i).setSource(nodeNew);
 //            }
-//            //Remaining connections to minimum constrain satisfaction must be generated
+//            //Remaining conectivity to minimum constrain satisfaction must be generated
 //            for (int i = 0; i < nodeNew.getMinOutputEdges() - nodeOld.getOutputEdges().size(); i++) {
 //                Node node = cellFactory.getNodeRndFreeInput(cell, nodeNew);
 //                if (node != null) {
@@ -113,23 +113,23 @@
 //                }
 //            }
 //        }
-//        //Number of connections ig greater than minimum number of connections and smaller than max number of connections
-//        if (nodeOld.getOutputEdges().size() >= nodeNew.getMinOutputEdges() && nodeOld.getOutputEdges().size() <= nodeNew.getMaxOutputEdges()) {
-//            //Reconnect old connections to new node
+//        //Number of conectivity ig greater than minimum number of conectivity and smaller than max number of conectivity
+//        if (nodeOld.getOutputEdges().size() >= nodeNew.getMinOutputEdges() && nodeOld.getOutputEdges().size() <= nodeNew.getMaxOutCollectors()) {
+//            //Reconnect old conectivity to new node
 //            for (int i = 0; i < nodeOld.getOutputEdges().size(); i++) {
 //                nodeNew.addOutputEdge(nodeOld.getOutputEdges().get(i));
 //                nodeOld.getOutputEdges().get(i).setSource(nodeNew);
 //            }
 //        }
-//        //Number of connections is greater than maximum number of connections of new node
-//        if (nodeOld.getOutputEdges().size() > nodeNew.getMaxOutputEdges()) {
-//            //Reconnect old connections to new node
-//            for (int i = 0; i > nodeNew.getMaxOutputEdges(); i++) {
+//        //Number of conectivity is greater than maximum number of conectivity of new node
+//        if (nodeOld.getOutputEdges().size() > nodeNew.getMaxOutCollectors()) {
+//            //Reconnect old conectivity to new node
+//            for (int i = 0; i > nodeNew.getMaxOutCollectors(); i++) {
 //                nodeNew.addOutputEdge(nodeOld.getOutputEdges().get(i));
 //                nodeOld.getOutputEdges().get(i).setSource(nodeNew);
 //            }
-//            //Rest of the connections has to be deleted or reconnected
-//            for (int i = nodeNew.getMaxOutputEdges(); i < nodeOld.getOutputEdges().size(); i++) {
+//            //Rest of the conectivity has to be deleted or reconnected
+//            for (int i = nodeNew.getMaxOutCollectors(); i < nodeOld.getOutputEdges().size(); i++) {
 //                Edge edge = nodeOld.getOutputEdges().get(i);
 //                //Check if edge can be deleted
 //                if (edge.getTarget().getMaxInputEdgesDifference() > 0) {

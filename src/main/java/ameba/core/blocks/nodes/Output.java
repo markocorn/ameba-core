@@ -1,8 +1,8 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 
 /**
@@ -16,10 +16,10 @@ import ameba.core.blocks.connections.Signal;
 public class Output extends Node implements INode, INodeOutput {
 
 
-    public Output(Signal signalType) throws Exception {
+    public Output(Signal type) throws Exception {
         super(1, 1, 1, 1);
-        addInpCollector(new CollectorInp(signalType.clone(), this));
-        addOutCollector(new CollectorOut(signalType.clone(), 0, 0, this));
+        addInpCollector(new CollectorInp(type.clone(), this));
+        addOutCollector(new CollectorOut(type.clone(), this));
     }
 
     @Override
@@ -27,7 +27,7 @@ public class Output extends Node implements INode, INodeOutput {
         switch (getState()) {
             case 0:
                 if (isSignalInputsReady()) {
-                    getOutCollectors().get(0).setSignal(getInpCollectors().get(0).getSignal());
+                    getOutCollectors().get(0).setSignal(getInpCollectorsConn().get(0).getSignal());
                     setSignalClcDone(true);
                     setState(1);
                 }

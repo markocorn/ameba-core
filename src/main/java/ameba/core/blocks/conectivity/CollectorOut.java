@@ -1,4 +1,4 @@
-package ameba.core.blocks.connections;
+package ameba.core.blocks.conectivity;
 
 import ameba.core.blocks.nodes.Node;
 
@@ -7,9 +7,8 @@ import ameba.core.blocks.nodes.Node;
  */
 public class CollectorOut extends Collector implements ICollector {
 
-
-    public CollectorOut(Signal signal, int minEdges, int maxEdges, Node node) {
-        super(signal, minEdges, maxEdges, node);
+    public CollectorOut(Signal signal, Node node) {
+        super(signal, node);
     }
 
     @Override

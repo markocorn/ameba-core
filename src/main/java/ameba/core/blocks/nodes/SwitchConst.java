@@ -1,21 +1,21 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 /**
  * Created by marko on 2/1/17.
  */
 public class SwitchConst extends Node {
 
-    public SwitchConst(Signal type, int minOutputEdges, int maxOutputEdges, Signal const1, Signal[] const1Limits) throws Exception {
+    public SwitchConst(Signal type, Signal par, Signal[] par2Limits) throws Exception {
         super(2, 2, 1, 1);
         addInpCollector(new CollectorInp(Signal.createBoolean(), this));
         addInpCollector(new CollectorInp(Signal.createDouble(), this));
-        addOutCollector(new CollectorOut(type, minOutputEdges, maxOutputEdges, this));
-        getParams().add(const1);
-        getParamsLimits().add(const1Limits);
+        addOutCollector(new CollectorOut(type, this));
+        getParams().add(par);
+        getParamsLimits().add(par2Limits);
     }
 
     //Calculate output value
@@ -24,11 +24,11 @@ public class SwitchConst extends Node {
         switch (getState()) {
             case 0:
                 if (isSignalInputsReady()) {
-                    if (!getInpCollectors().get(0).getSignal().getValueBoolean()) {
-                        getOutCollectors().get(0).setSignal(getInpCollectors().get(1).getSignal());
+                    if (!getInpCollectorsConn().get(0).getSignal().getValueBoolean()) {
+                        getOutCollectors().get(0).setSignal(getInpCollectorsConn().get(1).getSignal());
                     } else {
                         //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-                        getInpCollectors().get(1).getSignal();
+                        getInpCollectorsConn().get(1).getSignal();
                         getOutCollectors().get(0).setSignal(getParams().get(0));
                     }
                     setSignalClcDone(true);

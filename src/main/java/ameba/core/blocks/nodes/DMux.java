@@ -1,37 +1,36 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 /**
  * Created by marko on 2/6/17.
  */
 public class DMux extends Node {
-    int minOutputEdgesPerOutputCollector;
-    int maxOutputEdgesPerOutputCollector;
 
-    public DMux(int minOutCollectors, int maxOutCollectors, int minOutputEdgesPerOutputCollector, int maxOutputEdgesPerOutputCollector, Signal const1, Signal[] const1Limits) throws Exception {
+    public DMux(int minOutCollectors, int maxOutCollectors, Signal par, Signal[] parLimits) throws Exception {
         super(2, 2, minOutCollectors, maxOutCollectors);
-        this.minOutputEdgesPerOutputCollector = minOutputEdgesPerOutputCollector;
-        this.maxOutputEdgesPerOutputCollector = maxOutputEdgesPerOutputCollector;
         addInpCollector(new CollectorInp(Signal.createInteger(), this));
-        addInpCollector(new CollectorInp(const1.clone(), this));
-
-        getParams().add(const1);
-        getParamsLimits().add(const1Limits);
-    }
-
-
-    @Override
-    public void addOutCollector(CollectorOut collector) throws Exception {
-        if (getParams().get(0).gettClass().equals(collector.getType())) {
-            super.addOutCollector(new CollectorOut(new Signal(getParams().get(0).gettClass()), minOutputEdgesPerOutputCollector, maxOutputEdgesPerOutputCollector, this));
-        } else {
-            throw new Exception("Output collector's signal must be of type: " + getParams().get(0).gettClass().getSimpleName());
+        addInpCollector(new CollectorInp(par.clone(), this));
+        for (int i = 0; i < maxOutCollectors; i++) {
+            addOutCollector(new CollectorOut(par.clone(), this));
         }
 
+        getParams().add(par);
+        getParamsLimits().add(parLimits);
     }
+
+
+//    @Override
+//    public void addOutCollector(CollectorOut collector) throws Exception {
+//        if (getParams().get(0).gettClass().equals(collector.getType())) {
+//            super.addOutCollector(new CollectorOut(new Signal(getParams().get(0).gettClass()), this));
+//        } else {
+//            throw new Exception("Output collector's signal must be of type: " + getParams().get(0).gettClass().getSimpleName());
+//        }
+//
+//    }
 
     //Calculate output value
     @Override
@@ -39,9 +38,9 @@ public class DMux extends Node {
         switch (getState()) {
             case 0:
                 if (isSignalInputsReady()) {
-                    Signal[] list = new Signal[getInpCollectors().size()];
-                    for (int i = 0; i < getInpCollectors().size(); i++) {
-                        list[i] = getInpCollectors().get(i).getSignal();
+                    Signal[] list = new Signal[getInpCollectorsConn().size()];
+                    for (int i = 0; i < getInpCollectorsConn().size(); i++) {
+                        list[i] = getInpCollectorsConn().get(i).getSignal();
                     }
                     for (int i = 0; i < getOutCollectors().size(); i++) {
                         if (i == list[0].getValueInteger()) {

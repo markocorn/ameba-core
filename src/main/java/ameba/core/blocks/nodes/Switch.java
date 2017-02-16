@@ -1,20 +1,20 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 /**
  * Created by marko on 2/1/17.
  */
 public class Switch extends Node {
 
-    public Switch(Signal type, int minOutputEdges, int maxOutputEdges) throws Exception {
+    public Switch(Signal type) throws Exception {
         super(3, 3, 1, 1);
         addInpCollector(new CollectorInp(Signal.createBoolean(), this));
         addInpCollector(new CollectorInp(Signal.createDouble(), this));
         addInpCollector(new CollectorInp(Signal.createDouble(), this));
-        addOutCollector(new CollectorOut(type, minOutputEdges, maxOutputEdges, this));
+        addOutCollector(new CollectorOut(type, this));
     }
 
     //Calculate output value
@@ -23,14 +23,14 @@ public class Switch extends Node {
         switch (getState()) {
             case 0:
                 if (isSignalInputsReady()) {
-                    if (!getInpCollectors().get(0).getSignal().getValueBoolean()) {
-                        getOutCollectors().get(0).setSignal(getInpCollectors().get(1).getSignal());
+                    if (!getInpCollectorsConn().get(0).getSignal().getValueBoolean()) {
+                        getOutCollectors().get(0).setSignal(getInpCollectorsConn().get(1).getSignal());
                         //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-                        getInpCollectors().get(2).getSignal();
+                        getInpCollectorsConn().get(2).getSignal();
                     } else {
-                        getOutCollectors().get(0).setSignal(getInpCollectors().get(2).getSignal());
+                        getOutCollectors().get(0).setSignal(getInpCollectorsConn().get(2).getSignal());
                         //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-                        getInpCollectors().get(1).getSignal();
+                        getInpCollectorsConn().get(1).getSignal();
                     }
                     setSignalClcDone(true);
                     setState(1);

@@ -1,4 +1,4 @@
-package ameba.core.blocks.connections;
+package ameba.core.blocks.conectivity;
 
 import ameba.core.blocks.nodes.Node;
 
@@ -9,15 +9,11 @@ import java.util.ArrayList;
  */
 public class Collector {
     private ArrayList<Edge> edges;
-    private int minEdges;
-    private int maxEdges;
     private Node nodeAttached;
     private Signal signal;
 
 
-    public Collector(Signal signal, int minEdges, int maxEdges, Node node) {
-        this.minEdges = minEdges;
-        this.maxEdges = maxEdges;
+    public Collector(Signal signal, Node node) {
         edges = new ArrayList<>();
         nodeAttached = node;
         this.signal = signal;
@@ -44,11 +40,7 @@ public class Collector {
     }
 
     public void addEdge(Edge edge) throws Exception {
-        if (maxEdges > edges.size()) {
-            edges.add(edge);
-        } else {
-            throw new Exception("Edge can't be added.");
-        }
+        edges.add(edge);
     }
 
     public ArrayList<Edge> getEdges() {
@@ -56,19 +48,11 @@ public class Collector {
     }
 
     public void setEdges(ArrayList<Edge> edges) throws Exception {
-        if (edges.size() > maxEdges) {
-            throw new Exception("Points number is greater than allowed");
-        }
-        if (edges.size() < minEdges) {
-            throw new Exception("Points number is less than allowed");
-        }
         this.edges = edges;
     }
 
     public void removeEdge(Edge edge) throws Exception {
-        if (edges.size() >= minEdges) {
-            edges.remove(edge);
-        } else throw new Exception("Can't remove edge. Violation of minimum number of connections.");
+        edges.remove(edge);
     }
 
     public void setEdge(Edge edge) {
@@ -76,9 +60,8 @@ public class Collector {
     }
 
     public void removeEdges() throws Exception {
-        if (edges.size() >= minEdges)
-            for (Edge edge : edges) {
-                removeEdge(edge);
-            }
+        for (Edge edge : edges) {
+            removeEdge(edge);
+        }
     }
 }

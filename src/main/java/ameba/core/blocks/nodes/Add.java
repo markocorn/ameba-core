@@ -1,15 +1,19 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 
 public class Add extends Node {
 
-    public Add(Signal outSignal, int minInpCollectors, int maxInpCollectors, int minOutputEdges, int maxOutputEdges) throws Exception {
+    public Add(Signal type, int minInpCollectors, int maxInpCollectors) throws Exception {
         super(minInpCollectors, maxInpCollectors, 1, 1);
-        addOutCollector(new CollectorOut(outSignal.clone(), minOutputEdges, maxOutputEdges, this));
+
+        for (int i = 0; i < maxInpCollectors; i++) {
+            addInpCollector(new CollectorInp(type.clone(), this));
+        }
+        addOutCollector(new CollectorOut(type.clone(), this));
     }
 
     //Calculate output value
@@ -20,7 +24,7 @@ public class Add extends Node {
                 if (isSignalInputsReady()) {
                     if (getOutCollectors().get(0).getSignal().gettClass().isAssignableFrom(Double.class)) {
                         getOutCollectors().get(0).getSignal().setValueDouble(0.0);
-                        for (CollectorInp collectorInp : getInpCollectors()) {
+                        for (CollectorInp collectorInp : getInpCollectorsConn()) {
                             //Add all sources signals together.
                             getOutCollectors().get(0).getSignal().setValueDouble(
                                     getOutCollectors().get(0).getSignal().getValueDouble() +
@@ -29,7 +33,7 @@ public class Add extends Node {
                     }
                     if (getOutCollectors().get(0).getSignal().gettClass().isAssignableFrom(Integer.class)) {
                         getOutCollectors().get(0).getSignal().setValueInteger(0);
-                        for (CollectorInp collectorInp : getInpCollectors()) {
+                        for (CollectorInp collectorInp : getInpCollectorsConn()) {
                             //Add all sources signals together.
                             getOutCollectors().get(0).getSignal().setValueInteger(
                                     getOutCollectors().get(0).getSignal().getValueInteger() +
@@ -49,7 +53,7 @@ public class Add extends Node {
                     setState(3);
                 }
             case 3:
-                if (isSignalSend()) {
+                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() > 0) {
                     setState(4);
                 }
             case 4:

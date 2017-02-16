@@ -1,9 +1,9 @@
 package ameba.core.blocks;
 
 
-import ameba.core.blocks.connections.Collector;
-import ameba.core.blocks.connections.Edge;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.Collector;
+import ameba.core.blocks.conectivity.Edge;
+import ameba.core.blocks.conectivity.Signal;
 import ameba.core.blocks.nodes.INodeInput;
 import ameba.core.blocks.nodes.INodeOutput;
 import ameba.core.blocks.nodes.Node;
@@ -86,7 +86,7 @@ public class Cell {
 
 
     /**
-     * Get cell's connections.
+     * Get cell's conectivity.
      *
      * @return
      */
@@ -95,7 +95,7 @@ public class Cell {
     }
 
     /**
-     * Set cell's connections.
+     * Set cell's conectivity.
      *
      * @param edges
      */
@@ -165,16 +165,16 @@ public class Cell {
     }
 
     /**
-     * Remove the node with it's input connections from the cell and return nodes output edge's that has been left unconnected.
+     * Remove the node with it's input conectivity from the cell and return nodes output edge's that has been left unconnected.
      * <p>
-     * When removing node from the cell output connections won't be removed because they represent other nodes input connections. The will be left floating and they must be properly reconnected to other nodes in order for the cell to proper work.
+     * When removing node from the cell output conectivity won't be removed because they represent other nodes input conectivity. The will be left floating and they must be properly reconnected to other nodes in order for the cell to proper work.
      *
      * @param node Node to be removed.
-     * @return Unconnected output connections of the node that has been removed.
+     * @return Unconnected output conectivity of the node that has been removed.
      */
     public void removeNode(Node node) throws Exception {
         //Remove input Edges of the node from collectors
-        for (Collector collector : node.getInpCollectors()) {
+        for (Collector collector : node.getInpCollectorsConn()) {
             collector.removeEdges();
         }
         for (Collector collector : node.getOutCollectors()) {
@@ -212,7 +212,7 @@ public class Cell {
     }
 
     /**
-     * Execute calculation process of data transition trough nodes and connections of the cell.
+     * Execute calculation process of data transition trough nodes and conectivity of the cell.
      */
     private void clcCell() throws Exception {
         while (!isNodesEndState()) {

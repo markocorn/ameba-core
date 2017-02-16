@@ -1,15 +1,18 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Signal;
 
 public class Multiply extends Node {
 
-    public Multiply(Signal outSignal, int minInpCollectors, int maxInpCollectors, int minOutputEdges, int maxOutputEdges) throws Exception {
+    public Multiply(Signal type, int minInpCollectors, int maxInpCollectors) throws Exception {
         super(minInpCollectors, maxInpCollectors, 1, 1);
-        addOutCollector(new CollectorOut(outSignal.clone(), minOutputEdges, maxOutputEdges, this));
-        if (outSignal.gettClass().isAssignableFrom(Boolean.class))
+        for (int i = 0; i < maxInpCollectors; i++) {
+            addInpCollector(new CollectorInp(type.clone(), this));
+        }
+        addOutCollector(new CollectorOut(type.clone(), this));
+        if (type.gettClass().isAssignableFrom(Boolean.class))
             throw new Exception("Multiply node is not allowed as Double type node");
 
     }
@@ -22,7 +25,7 @@ public class Multiply extends Node {
                 if (isSignalInputsReady()) {
                     if (getOutCollectors().get(0).getSignal().gettClass().isAssignableFrom(Double.class)) {
                         getOutCollectors().get(0).getSignal().setValueDouble(1.0);
-                        for (CollectorInp collectorInp : getInpCollectors()) {
+                        for (CollectorInp collectorInp : getInpCollectorsConn()) {
                             //Add all sources signals together.
                             getOutCollectors().get(0).getSignal().setValueDouble(
                                     getOutCollectors().get(0).getSignal().getValueDouble() *
@@ -31,7 +34,7 @@ public class Multiply extends Node {
                     }
                     if (getOutCollectors().get(0).getSignal().gettClass().isAssignableFrom(Integer.class)) {
                         getOutCollectors().get(0).getSignal().setValueInteger(1);
-                        for (CollectorInp collectorInp : getInpCollectors()) {
+                        for (CollectorInp collectorInp : getInpCollectorsConn()) {
                             //Add all sources signals together.
                             getOutCollectors().get(0).getSignal().setValueInteger(
                                     getOutCollectors().get(0).getSignal().getValueInteger() *

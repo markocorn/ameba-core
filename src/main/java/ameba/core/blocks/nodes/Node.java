@@ -1,9 +1,9 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.connections.CollectorInp;
-import ameba.core.blocks.connections.CollectorOut;
-import ameba.core.blocks.connections.Edge;
-import ameba.core.blocks.connections.Signal;
+import ameba.core.blocks.conectivity.CollectorInp;
+import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Edge;
+import ameba.core.blocks.conectivity.Signal;
 
 import java.util.ArrayList;
 
@@ -123,8 +123,18 @@ public class Node implements INode, Cloneable {
             throw new Exception("Collector can't be added. Maximum output collectors limitation of node: " + this.getClass().getSimpleName());
     }
 
-    public void addOutCollector(Signal signal, int minEdges, int maxEdges) throws Exception {
-        addOutCollector(new CollectorOut(signal, minEdges, maxEdges, this));
+    public void addOutCollector(Signal signal) throws Exception {
+        addOutCollector(new CollectorOut(signal, this));
+    }
+
+    public ArrayList<CollectorInp> getInpCollectorsConn() {
+        ArrayList<CollectorInp> collectorInps = new ArrayList<>();
+        for (CollectorInp collectorInp : inpCollectors) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorInps.add(collectorInp);
+            }
+        }
+        return collectorInps;
     }
 
     public ArrayList<CollectorInp> getInpCollectors() {
