@@ -21,17 +21,6 @@ public class DMux extends Node {
         getParamsLimits().add(parLimits);
     }
 
-
-//    @Override
-//    public void addOutCollector(CollectorOut collector) throws Exception {
-//        if (getParams().get(0).gettClass().equals(collector.getType())) {
-//            super.addOutCollector(new CollectorOut(new Signal(getParams().get(0).gettClass()), this));
-//        } else {
-//            throw new Exception("Output collector's signal must be of type: " + getParams().get(0).gettClass().getSimpleName());
-//        }
-//
-//    }
-
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
@@ -52,19 +41,23 @@ public class DMux extends Node {
                     setSignalClcDone(true);
                     setState(1);
                 }
+                break;
             case 1:
                 if (isSignalClcDone()) {
                     setSignalReady(true);
                     setState(2);
                 }
+                break;
             case 2:
                 if (isSignalReady()) {
                     setState(3);
                 }
+                break;
             case 3:
-                if (isSignalSend()) {
+                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() == 0) {
                     setState(4);
                 }
+                break;
             case 4:
         }
     }

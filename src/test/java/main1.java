@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.Random;
 
 /**
  * Created by marko on 10/24/16.
  */
-public class main {
+public class main1 {
     public static void main(String[] args) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonSettings = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core (copy)/src/main/resources/settings.json"));
@@ -22,21 +22,22 @@ public class main {
         FactoryCell factoryCell = new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), factoryNode, factoryEdge);
 
         factoryCell.getCellFactorySettings().setNodeInpDec(1);
-        factoryCell.getCellFactorySettings().setNodeInpInt(0);
-        factoryCell.getCellFactorySettings().setNodeInpBin(0);
+        factoryCell.getCellFactorySettings().setNodeInpInt(1);
+        factoryCell.getCellFactorySettings().setNodeInpBin(1);
         factoryCell.getCellFactorySettings().setNodeOutDec(1);
-        factoryCell.getCellFactorySettings().setNodeOutInt(0);
-        factoryCell.getCellFactorySettings().setNodeOutBin(0);
-        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{3, 3});
+        factoryCell.getCellFactorySettings().setNodeOutInt(1);
+        factoryCell.getCellFactorySettings().setNodeOutBin(1);
+        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{1, 100});
+
+        Random random = new Random();
 
         ArrayList<ArrayList<Signal>> inputs = new ArrayList<>();
-        inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(1.0))));
-        inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(2.0))));
-        inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(3.0))));
-        inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(4.0))));
+        for (int i = 0; i < 1000; i++) {
+            inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(random.nextDouble() * 20.0 - 10.0), Signal.createInteger(random.nextInt(20) - 10), Signal.createBoolean(random.nextBoolean()))));
+        }
 
         try {
-            for (int i = 0; i < 10000; i++) {
+            for (int i = 0; i < 1000; i++) {
                 System.out.println(i + " Run number");
                 Cell cell = factoryCell.genCellRnd();
                 String test = FactoryCell.checkCell(cell);

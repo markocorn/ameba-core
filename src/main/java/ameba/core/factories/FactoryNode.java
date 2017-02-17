@@ -72,6 +72,7 @@ public class FactoryNode {
         bagOutColInt.clear();
         bagOutColBin.clear();
         for (FactoryNodeSettings settings : settings.values()) {
+            settings.setProbability(1);
             if (settings.getAvailable().equals(true)) {
                 for (int i = 0; i < settings.getProbability(); i++) {
                     bag.add(settings.getType());

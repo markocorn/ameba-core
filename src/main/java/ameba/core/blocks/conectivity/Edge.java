@@ -12,7 +12,9 @@ public class Edge implements Cloneable {
 
     private Signal weight;
 
-    public Edge(CollectorOut source, CollectorInp target, Signal weight) {
+    public Edge(CollectorOut source, CollectorInp target, Signal weight) throws Exception {
+        if (!source.getType().equals(target.getType()))
+            throw new Exception("Collectors types doesn't match. Source: " + source.getType().getSimpleName() + " Target: " + target.getType().getSimpleName());
         this.source = source;
         this.target = target;
         this.weight = weight;

@@ -1,7 +1,7 @@
 package ameba.core.reproductions.mutateNode;
 
 import ameba.core.blocks.nodes.Node;
-import ameba.core.reproductions.parametersOperations.genParDecMutation.AddValue;
+import ameba.core.reproductions.parametersOperations.genParMutation.AddValue;
 
 /**
  * Created by marko on 12/28/16.

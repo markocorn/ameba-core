@@ -212,12 +212,20 @@ public class Cell {
     }
 
     /**
-     * Execute calculation process of data transition trough nodes and conectivity of the cell.
+     * Execute calculation process of data transition trough nodes and connectivity of the cell.
      */
     private void clcCell() throws Exception {
+        int sumStateOld;
+        int sumState = 0;
         while (!isNodesEndState()) {
+            sumStateOld = sumState;
+            sumState = 0;
             for (Node node : nodes) {
                 node.clcNode();
+                sumState += node.getState();
+            }
+            if (sumStateOld == sumState) {
+                break;
             }
         }
         exportedValues.clear();
@@ -276,5 +284,7 @@ public class Cell {
         }
         return true;
     }
+
+
 }
 

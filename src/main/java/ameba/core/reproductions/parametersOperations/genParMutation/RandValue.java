@@ -1,11 +1,11 @@
-package ameba.core.reproductions.parametersOperations.genParDecMutation;
+package ameba.core.reproductions.parametersOperations.genParMutation;
 
 import java.util.Random;
 
 /**
  * Created by marko on 12/27/16.
  */
-public class RandValue implements IMutateDec {
+public class RandValue implements IMutate {
     private Random random;
     private double maxChange;
     private double minChange;

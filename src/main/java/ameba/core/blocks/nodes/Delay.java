@@ -44,10 +44,12 @@ public class Delay extends Node {
                 if (isSignalReady()) {
                     setState(1);
                 }
+                break;
             case 1:
-                if (isSignalSend()) {
+                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() == 0) {
                     setState(2);
                 }
+                break;
             case 2:
                 if (isSignalInputsReady()) {
                     buffer.add(getInpCollectorsConn().get(0).getSignal());
@@ -56,11 +58,14 @@ public class Delay extends Node {
                     setState(3);
                     setSignalClcDone(true);
                 }
+                break;
             case 3:
                 if (isSignalClcDone()) {
                     setState(4);
                 }
+                break;
             case 4:
+                break;
         }
     }
 

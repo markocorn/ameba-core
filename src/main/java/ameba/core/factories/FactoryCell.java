@@ -3,6 +3,7 @@ package ameba.core.factories;
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.conectivity.CollectorInp;
 import ameba.core.blocks.conectivity.CollectorOut;
+import ameba.core.blocks.conectivity.Edge;
 import ameba.core.blocks.conectivity.Signal;
 import ameba.core.blocks.nodes.Input;
 import ameba.core.blocks.nodes.Node;
@@ -29,32 +30,21 @@ public class FactoryCell {
         rndGen = new Random();
     }
 
+    static public String checkCell(Cell cell) {
+        for (Edge edge : cell.getEdges()) {
+            if (!edge.getSource().getType().equals(edge.getWeight().gettClass())) {
+                return "Node: " + edge.getSource().getNodeAttached().getClass().getSimpleName() + " out collector of type: " + edge.getSource().getType().getSimpleName() + " not matched with edge weight type: " + edge.getWeight().gettClass().getSimpleName();
+            }
+            if (!edge.getTarget().getType().equals(edge.getWeight().gettClass())) {
+                return "Node: " + edge.getTarget().getNodeAttached().getClass().getSimpleName() + " inp collector of type: " + edge.getTarget().getType().getSimpleName() + " not matched with edge weight type: " + edge.getWeight().gettClass().getSimpleName();
+            }
+        }
+        return "";
+    }
+
     public FactoryCellSettings getCellFactorySettings() {
         return cellFactorySettings;
     }
-
-    //    public static String verifyCellConnections(Cell cell) {
-//        String out = "OK";
-//        for (Edge edge : cell.getEdges()) {
-//            //Check source side of conectivity
-//            for (Edge outEdge : edge.getSource().getOutputEdges()) {
-//                out = "Edge: " + edge.toString() + " not registered as output edge of node:" + edge.getSource().toString();
-//                if (outEdge == edge) {
-//                    out = "OK";
-//                    break;
-//                }
-//            }
-//            //Check target side of conectivity
-//            for (Edge outEdge : edge.getTarget().getInputEdges()) {
-//                out = "Edge: " + edge.toString() + " not registered as input edge of node:" + edge.getTarget().toString();
-//                if (outEdge == edge) {
-//                    out = "OK";
-//                    break;
-//                }
-//            }
-//        }
-//        return out;
-//    }
 
     /**
      * Build cell with random number of nodes and randomly connected edges.
@@ -105,8 +95,13 @@ public class FactoryCell {
             if (collectorInp == null) {
                 break;
             }
+
             CollectorOut collectorOut = getCollectorOutRndNoNode(collectorInp.getType(), cell, collectorInp.getNodeAttached());
+
             if (collectorOut != null) {
+                if (collectorOut.getType().isAssignableFrom(Double.class) && collectorInp.getType().isAssignableFrom(Boolean.class)) {
+                    int t = 0;
+                }
                 cell.addEdge(edgeFactory.genEdge(collectorInp.getType(), collectorOut, collectorInp));
             } else {
                 if (collectorInp.getType().isAssignableFrom(Double.class)) {
@@ -226,11 +221,14 @@ public class FactoryCell {
     public CollectorInp getCollectorInpMinRnd(Cell cell) throws Exception {
         ArrayList<CollectorInp> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
+            if (node.getClass().getSimpleName().equals("Mux")) {
+                int t = 0;
+            }
             int min = 0;
             for (CollectorInp collector : node.getInpCollectors()) {
+                min++;
                 if (collector.getEdges().size() == 0) {
                     collectors.add(collector);
-                    min++;
                 }
                 if (min >= node.getMinInpCollectors()) {
                     break;

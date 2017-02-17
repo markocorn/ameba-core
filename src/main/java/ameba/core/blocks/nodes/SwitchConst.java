@@ -12,7 +12,7 @@ public class SwitchConst extends Node {
     public SwitchConst(Signal type, Signal par, Signal[] par2Limits) throws Exception {
         super(2, 2, 1, 1);
         addInpCollector(new CollectorInp(Signal.createBoolean(), this));
-        addInpCollector(new CollectorInp(Signal.createDouble(), this));
+        addInpCollector(new CollectorInp(type, this));
         addOutCollector(new CollectorOut(type, this));
         getParams().add(par);
         getParamsLimits().add(par2Limits);
@@ -34,20 +34,24 @@ public class SwitchConst extends Node {
                     setSignalClcDone(true);
                     setState(1);
                 }
+                break;
             case 1:
                 if (isSignalClcDone()) {
                     setSignalReady(true);
                     setState(2);
                 }
+                break;
             case 2:
                 if (isSignalReady()) {
                     setState(3);
                 }
+                break;
             case 3:
-                if (isSignalSend()) {
+                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() == 0) {
                     setState(4);
                 }
             case 4:
+                break;
         }
     }
 }

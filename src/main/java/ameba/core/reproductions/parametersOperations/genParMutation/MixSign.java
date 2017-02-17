@@ -1,26 +1,26 @@
-package ameba.core.reproductions.parametersOperations.genParDecMutation;
+package ameba.core.reproductions.parametersOperations.genParMutation;
 
 /**
  * Created by marko on 12/27/16.
  */
-public class InverseValue implements IMutateDec {
+public class MixSign implements IMutate {
     private double minValue;
     private double maxValue;
 
-    public InverseValue(double minValue, double maxValue) {
+    public MixSign(double minValue, double maxValue) {
         this.minValue = minValue;
         this.maxValue = maxValue;
     }
 
     /**
-     * Mutation changes value of parameter by calculating it's inverse value.
+     * Mutation changes sign of parameter.
      *
      * @param par Parameter to be changed.
      * @return Mutated parameter
      */
     @Override
     public double mutate(double par) {
-        par = 1.0 / par;
+        par *= -1.0;
         if (par > maxValue) {
             par = maxValue;
         }

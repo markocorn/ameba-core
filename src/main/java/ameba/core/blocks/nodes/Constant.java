@@ -26,11 +26,14 @@ public class Constant extends Node {
                     getOutCollectors().get(0).setSignal(getParams().get(0));
                     setState(1);
                 }
+                break;
             case 1:
-                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() > 0) {
+                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() == 0) {
                     setState(4);
                 }
+                break;
             case 4:
+                break;
         }
     }
 

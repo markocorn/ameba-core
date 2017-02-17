@@ -42,10 +42,12 @@ public class Integral extends Node {
                 if (isSignalReady()) {
                     setState(1);
                 }
+                break;
             case 1:
-                if (isSignalSend()) {
+                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() == 0) {
                     setState(2);
                 }
+                break;
             case 2:
                 if (isSignalInputsReady()) {
                     if (getInpCollectorsConn().get(0).getSignal().gettClass().isAssignableFrom(Double.class)) {
@@ -70,10 +72,12 @@ public class Integral extends Node {
                     setState(3);
                     setSignalClcDone(true);
                 }
+                break;
             case 3:
                 if (isSignalClcDone()) {
                     setState(4);
                 }
+                break;
             case 4:
         }
     }

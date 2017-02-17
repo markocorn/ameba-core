@@ -11,7 +11,8 @@ public class Mux extends Node {
 
 
     public Mux(int minInpCollectors, int maxInpCollectors, Signal par, Signal[] parLimits) throws Exception {
-        super(minInpCollectors, maxInpCollectors, 1, 1);
+        super(minInpCollectors, maxInpCollectors + 1, 1, 1);
+        addInpCollector(new CollectorInp(Signal.createInteger(), this));
         for (int i = 0; i < maxInpCollectors; i++) {
             addInpCollector(new CollectorInp(par.clone(), this));
         }
@@ -39,19 +40,23 @@ public class Mux extends Node {
                     setSignalClcDone(true);
                     setState(1);
                 }
+                break;
             case 1:
                 if (isSignalClcDone()) {
                     setSignalReady(true);
                     setState(2);
                 }
+                break;
             case 2:
                 if (isSignalReady()) {
                     setState(3);
                 }
+                break;
             case 3:
-                if (isSignalSend()) {
+                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() == 0) {
                     setState(4);
                 }
+                break;
             case 4:
         }
     }

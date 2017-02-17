@@ -12,8 +12,8 @@ public class Switch extends Node {
     public Switch(Signal type) throws Exception {
         super(3, 3, 1, 1);
         addInpCollector(new CollectorInp(Signal.createBoolean(), this));
-        addInpCollector(new CollectorInp(Signal.createDouble(), this));
-        addInpCollector(new CollectorInp(Signal.createDouble(), this));
+        addInpCollector(new CollectorInp(type, this));
+        addInpCollector(new CollectorInp(type, this));
         addOutCollector(new CollectorOut(type, this));
     }
 
@@ -35,19 +35,23 @@ public class Switch extends Node {
                     setSignalClcDone(true);
                     setState(1);
                 }
+                break;
             case 1:
                 if (isSignalClcDone()) {
                     setSignalReady(true);
                     setState(2);
                 }
+                break;
             case 2:
                 if (isSignalReady()) {
                     setState(3);
                 }
+                break;
             case 3:
-                if (isSignalSend()) {
+                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() == 0) {
                     setState(4);
                 }
+                break;
             case 4:
         }
     }

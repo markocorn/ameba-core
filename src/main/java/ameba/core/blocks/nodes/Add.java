@@ -43,19 +43,23 @@ public class Add extends Node {
                     setSignalClcDone(true);
                     setState(1);
                 }
+                break;
             case 1:
                 if (isSignalClcDone()) {
                     setSignalReady(true);
                     setState(2);
                 }
+                break;
             case 2:
                 if (isSignalReady()) {
                     setState(3);
                 }
+                break;
             case 3:
-                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() > 0) {
+                if (isSignalSend() || getOutCollectors().get(0).getEdges().size() == 0) {
                     setState(4);
                 }
+                break;
             case 4:
         }
     }
