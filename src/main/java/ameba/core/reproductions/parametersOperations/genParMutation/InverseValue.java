@@ -1,13 +1,15 @@
 package ameba.core.reproductions.parametersOperations.genParMutation;
 
+import ameba.core.blocks.Signal;
+
 /**
  * Created by marko on 12/27/16.
  */
 public class InverseValue implements IMutate {
-    private double minValue;
-    private double maxValue;
+    private Signal minValue;
+    private Signal maxValue;
 
-    public InverseValue(double minValue, double maxValue) {
+    public InverseValue(Signal minValue, Signal maxValue) {
         this.minValue = minValue;
         this.maxValue = maxValue;
     }
@@ -19,14 +21,17 @@ public class InverseValue implements IMutate {
      * @return Mutated parameter
      */
     @Override
-    public double mutate(double par) {
-        par = 1.0 / par;
-        if (par > maxValue) {
-            par = maxValue;
+    public Signal mutate(Signal par) throws Exception {
+        if (par.gettClass().isAssignableFrom(Double.class)) {
+            par.setValueDouble(1.0 / par.getValueDouble());
+            if (par.getValueDouble() > maxValue.getValueDouble()) {
+                par.setValueDouble(maxValue.getValueDouble());
+            }
+            if (par.getValueDouble() < minValue.getValueDouble()) {
+                par.setValueDouble(minValue.getValueDouble());
+            }
+            return par;
         }
-        if (par < minValue) {
-            par = minValue;
-        }
-        return par;
+        throw new Exception("Input parameter not of allowed type.");
     }
 }

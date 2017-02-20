@@ -6,5 +6,5 @@ import ameba.core.blocks.Cell;
  * Created by marko on 12/30/16.
  */
 public interface IMutateCell {
-    Cell mutate(Cell cell);
+    Cell mutate(Cell cell) throws Exception;
 }

@@ -1,4 +1,4 @@
-package ameba.core.blocks.conectivity;
+package ameba.core.blocks;
 
 import com.rits.cloning.Cloner;
 
@@ -63,7 +63,7 @@ public class Signal<T> {
         return new Signal(Boolean.class, value);
     }
 
-    public static Signal multiplySignal(Signal signal1, Signal signal2) throws Exception {
+    public static Signal mulSignal(Signal signal1, Signal signal2) throws Exception {
         if (signal1.gettClass() != signal2.gettClass())
             throw new Exception("Signal generic types of classes must be same.");
         if (signal1.gettClass().isAssignableFrom(Double.class)) {
@@ -76,6 +76,51 @@ public class Signal<T> {
             if (signal2.getValueBoolean()) {
                 return Signal.createBoolean(!signal1.getValueBoolean());
             } else return Signal.createBoolean(signal1.getValueBoolean());
+        }
+        throw new Exception("Signal generic type has to be Double, Integer, Boolean");
+    }
+
+    public static Signal addSignal(Signal signal1, Signal signal2) throws Exception {
+        if (signal1.gettClass() != signal2.gettClass())
+            throw new Exception("Signal generic types of classes must be same.");
+        if (signal1.gettClass().isAssignableFrom(Double.class)) {
+            return Signal.createDouble(signal1.getValueDouble() + signal2.getValueDouble());
+        }
+        if (signal1.gettClass().isAssignableFrom(Integer.class)) {
+            return Signal.createInteger(signal1.getValueInteger() + signal2.getValueInteger());
+        }
+        if (signal1.gettClass().isAssignableFrom(Boolean.class)) {
+            throw new Exception("Cand add signals of type boolean");
+        }
+        throw new Exception("Signal generic type has to be Double, Integer, Boolean");
+    }
+
+    public static Signal subSignal(Signal signal1, Signal signal2) throws Exception {
+        if (signal1.gettClass() != signal2.gettClass())
+            throw new Exception("Signal generic types of classes must be same.");
+        if (signal1.gettClass().isAssignableFrom(Double.class)) {
+            return Signal.createDouble(signal1.getValueDouble() - signal2.getValueDouble());
+        }
+        if (signal1.gettClass().isAssignableFrom(Integer.class)) {
+            return Signal.createInteger(signal1.getValueInteger() - signal2.getValueInteger());
+        }
+        if (signal1.gettClass().isAssignableFrom(Boolean.class)) {
+            throw new Exception("Can't subtracts signals of type boolean");
+        }
+        throw new Exception("Signal generic type has to be Double, Integer, Boolean");
+    }
+
+    public static Signal divSignal(Signal signal1, Signal signal2) throws Exception {
+        if (signal1.gettClass() != signal2.gettClass())
+            throw new Exception("Signal generic types of classes must be same.");
+        if (signal1.gettClass().isAssignableFrom(Double.class)) {
+            return Signal.createDouble(signal1.getValueDouble() / signal2.getValueDouble());
+        }
+        if (signal1.gettClass().isAssignableFrom(Integer.class)) {
+            throw new Exception("Can't divide signals of type integer");
+        }
+        if (signal1.gettClass().isAssignableFrom(Boolean.class)) {
+            throw new Exception("Can't divide signals of type boolean");
         }
         throw new Exception("Signal generic type has to be Double, Integer, Boolean");
     }

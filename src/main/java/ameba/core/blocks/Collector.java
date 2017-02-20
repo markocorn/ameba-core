@@ -1,4 +1,4 @@
-package ameba.core.blocks.conectivity;
+package ameba.core.blocks;
 
 import ameba.core.blocks.nodes.Node;
 

@@ -1,7 +1,7 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.conectivity.CollectorOut;
-import ameba.core.blocks.conectivity.Signal;
+import ameba.core.blocks.CollectorOut;
+import ameba.core.blocks.Signal;
 
 public class Input extends Node implements INodeInput {
     /**

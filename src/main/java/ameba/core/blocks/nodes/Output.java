@@ -1,7 +1,7 @@
 package ameba.core.blocks.nodes;
 
-import ameba.core.blocks.conectivity.CollectorInp;
-import ameba.core.blocks.conectivity.Signal;
+import ameba.core.blocks.CollectorInp;
+import ameba.core.blocks.Signal;
 
 
 /**

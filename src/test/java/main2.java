@@ -1,6 +1,6 @@
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.conectivity.Edge;
-import ameba.core.blocks.conectivity.Signal;
+import ameba.core.blocks.Edge;
+import ameba.core.blocks.Signal;
 import ameba.core.blocks.nodes.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

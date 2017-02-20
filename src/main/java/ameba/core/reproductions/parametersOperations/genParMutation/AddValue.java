@@ -1,6 +1,6 @@
 package ameba.core.reproductions.parametersOperations.genParMutation;
 
-import ameba.core.blocks.conectivity.Signal;
+import ameba.core.blocks.Signal;
 
 import java.util.Random;
 
@@ -29,16 +29,40 @@ public class AddValue implements IMutate {
      * @return Mutated parameter
      */
     @Override
-    public double mutate(Signal par) {
+    public Signal mutate(Signal par) throws Exception {
         //Add random value with constrains to parameter
+        if (par.gettClass().isAssignableFrom(Double.class)) {
+            double p = random.nextDouble() * (maxChange.getValueDouble() - minChange.getValueDouble()) + minChange.getValueDouble();
+            p += par.getValueDouble();
+            if (p > maxValue.getValueDouble()) {
+                p = maxValue.getValueDouble();
+            }
+            if (p < minValue.getValueDouble()) {
+                p = minValue.getValueDouble();
+            }
+            return Signal.createDouble(p);
+        }
+        if (par.gettClass().isAssignableFrom(Integer.class)) {
+            int p = random.nextInt(maxChange.getValueInteger() - minChange.getValueInteger()) + minChange.getValueInteger();
+            p += par.getValueInteger();
+            if (p > maxValue.getValueInteger()) {
+                p = maxValue.getValueInteger();
+            }
+            if (p < minValue.getValueInteger()) {
+                p = minValue.getValueInteger();
+            }
+            return Signal.createInteger(p);
+        }
+        if (par.gettClass().isAssignableFrom(Boolean.class)) {
+            if (maxValue.getValueDouble().equals(false)) {
+                return Signal.createBoolean(false);
+            }
+            if (minValue.getValueBoolean().equals(true)) {
+                return Signal.createBoolean(true);
+            }
+            return Signal.createBoolean(!par.getValueBoolean());
+        }
+        throw new Exception("Input parameter not of allowed type.");
 
-        par += random.nextDouble() * (maxChange - minChange) + minChange;
-        if (par > maxValue) {
-            par = maxValue;
-        }
-        if (par < minValue) {
-            par = minValue;
-        }
-        return par;
     }
 }

@@ -1,10 +1,6 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.Cell;
-import ameba.core.blocks.conectivity.CollectorInp;
-import ameba.core.blocks.conectivity.CollectorOut;
-import ameba.core.blocks.conectivity.Edge;
-import ameba.core.blocks.conectivity.Signal;
+import ameba.core.blocks.*;
 import ameba.core.blocks.nodes.Input;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.Output;

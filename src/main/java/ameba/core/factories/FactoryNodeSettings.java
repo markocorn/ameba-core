@@ -17,21 +17,16 @@ public class FactoryNodeSettings {
      */
     private String type;
     /**
-     * Maximum number of input connection of the node.
+     * Maximum number of input connection of the node
      */
-    private Integer maxInpCollectors;
-    /**
-     * Minimum number of input conectivity.
-     */
-    private Integer minInpCollectors;
-    /**
-     * Maximum number on output connection of the node.
-     */
-    private Integer maxOutCollectors;
-    /**
-     * Minimum number of output conectivity.
-     */
-    private Integer minOutCollectors;
+    private Integer[] inpColLimitDec;
+    private Integer[] inpColLimitInt;
+    private Integer[] inpColLimitBin;
+
+    private Integer[] outColLimitDec;
+    private Integer[] outColLimitInt;
+    private Integer[] outColLimitBin;
+
     /**
      * Node availability for the cell generation.
      */
@@ -57,12 +52,14 @@ public class FactoryNodeSettings {
     public FactoryNodeSettings() {
     }
 
-    public FactoryNodeSettings(String type, Integer maxInpCollectors, Integer minInpCollectors, Integer maxOutCollectors, Integer minOutCollectors, Boolean available, Integer probability, Double initialValueDec, Integer initialValueInt, Boolean initialValueBin, Double[] parametersDec, Integer[] parametersInt, Boolean[] parametersBin, Double[][] parametersLimitsDec, Integer[][] parametersLimitsInt, Boolean[][] parametersLimitsBin) {
+    public FactoryNodeSettings(String type, Integer[] inpColDecLimitDec, Integer[] inpColLimitInt, Integer[] inpColLimitBin, Integer[] outColLimitDec, Integer[] outColLimitInt, Integer[] outColLimitBin, Boolean available, Integer probability, Double initialValueDec, Integer initialValueInt, Boolean initialValueBin, Double[] parametersDec, Integer[] parametersInt, Boolean[] parametersBin, Double[][] parametersLimitsDec, Integer[][] parametersLimitsInt, Boolean[][] parametersLimitsBin) {
         this.type = type;
-        this.maxInpCollectors = maxInpCollectors;
-        this.minInpCollectors = minInpCollectors;
-        this.maxOutCollectors = maxOutCollectors;
-        this.minOutCollectors = minOutCollectors;
+        this.inpColLimitDec = inpColDecLimitDec;
+        this.inpColLimitInt = inpColLimitInt;
+        this.inpColLimitBin = inpColLimitBin;
+        this.outColLimitDec = outColLimitDec;
+        this.outColLimitInt = outColLimitInt;
+        this.outColLimitBin = outColLimitBin;
         this.available = available;
         this.probability = probability;
         this.initialValueDec = initialValueDec;
@@ -95,36 +92,28 @@ public class FactoryNodeSettings {
         this.type = type;
     }
 
-    public Integer getMaxInpCollectors() {
-        return maxInpCollectors;
+    public Integer[] getInpColLimitDec() {
+        return inpColLimitDec;
     }
 
-    public void setMaxInpCollectors(Integer maxInpCollectors) {
-        this.maxInpCollectors = maxInpCollectors;
+    public void setInpColLimitDec(Integer[] inpColLimitDec) {
+        this.inpColLimitDec = inpColLimitDec;
     }
 
-    public Integer getMinInpCollectors() {
-        return minInpCollectors;
+    public Integer[] getInpColLimitInt() {
+        return inpColLimitInt;
     }
 
-    public void setMinInpCollectors(Integer minInpCollectors) {
-        this.minInpCollectors = minInpCollectors;
+    public void setInpColLimitInt(Integer[] inpColLimitInt) {
+        this.inpColLimitInt = inpColLimitInt;
     }
 
-    public Integer getMaxOutCollectors() {
-        return maxOutCollectors;
+    public Integer[] getInpColLimitBin() {
+        return inpColLimitBin;
     }
 
-    public void setMaxOutCollectors(Integer maxOutCollectors) {
-        this.maxOutCollectors = maxOutCollectors;
-    }
-
-    public Integer getMinOutCollectors() {
-        return minOutCollectors;
-    }
-
-    public void setMinOutCollectors(Integer minOutCollectors) {
-        this.minOutCollectors = minOutCollectors;
+    public void setInpColLimitBin(Integer[] inpColLimitBin) {
+        this.inpColLimitBin = inpColLimitBin;
     }
 
     public Boolean getAvailable() {
@@ -213,5 +202,29 @@ public class FactoryNodeSettings {
 
     public void setProbability(Integer probability) {
         this.probability = probability;
+    }
+
+    public Integer[] getOutColLimitDec() {
+        return outColLimitDec;
+    }
+
+    public void setOutColLimitDec(Integer[] outColLimitDec) {
+        this.outColLimitDec = outColLimitDec;
+    }
+
+    public Integer[] getOutColLimitInt() {
+        return outColLimitInt;
+    }
+
+    public void setOutColLimitInt(Integer[] outColLimitInt) {
+        this.outColLimitInt = outColLimitInt;
+    }
+
+    public Integer[] getOutColLimitBin() {
+        return outColLimitBin;
+    }
+
+    public void setOutColLimitBin(Integer[] outColLimitBin) {
+        this.outColLimitBin = outColLimitBin;
     }
 }

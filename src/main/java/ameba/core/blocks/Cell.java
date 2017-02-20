@@ -1,9 +1,6 @@
 package ameba.core.blocks;
 
 
-import ameba.core.blocks.conectivity.Collector;
-import ameba.core.blocks.conectivity.Edge;
-import ameba.core.blocks.conectivity.Signal;
 import ameba.core.blocks.nodes.INodeInput;
 import ameba.core.blocks.nodes.INodeOutput;
 import ameba.core.blocks.nodes.Node;

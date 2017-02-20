@@ -1,4 +1,4 @@
-package ameba.core.blocks.conectivity;
+package ameba.core.blocks;
 
 public class Edge implements Cloneable {
     /**
@@ -69,7 +69,7 @@ public class Edge implements Cloneable {
     public Signal getSignal() throws Exception {
         if (isSignalReady()) {
             source.getNodeAttached().setSignalSend(true);
-            return Signal.multiplySignal(source.getSignal(), weight);
+            return Signal.mulSignal(source.getSignal(), weight);
         }
         return null;
     }

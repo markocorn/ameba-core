@@ -8,9 +8,9 @@ package ameba.core.blocks.nodes;
  * To change this template use File | Settings | File Templates.
  */
 
-import ameba.core.blocks.conectivity.CollectorInp;
-import ameba.core.blocks.conectivity.CollectorOut;
-import ameba.core.blocks.conectivity.Signal;
+import ameba.core.blocks.CollectorInp;
+import ameba.core.blocks.CollectorOut;
+import ameba.core.blocks.Signal;
 
 /**
  * @author Marko

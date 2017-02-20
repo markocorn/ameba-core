@@ -1,8 +1,8 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.conectivity.CollectorInp;
-import ameba.core.blocks.conectivity.CollectorOut;
-import ameba.core.blocks.conectivity.Signal;
+import ameba.core.blocks.CollectorInp;
+import ameba.core.blocks.CollectorOut;
+import ameba.core.blocks.Signal;
 import ameba.core.blocks.nodes.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -168,24 +168,24 @@ public class FactoryNode {
                 case "AddDec":
                     node = new Add(
                             Signal.createDouble(),
-                            settings.get(nodeType).getMinInpCollectors(),
-                            settings.get(nodeType).getMaxInpCollectors());
+                            settings.get(nodeType).getInpColLimitDec()[0],
+                            settings.get(nodeType).getInpColLimitDec()[1]);
                     break;
                 case "AddInt":
                     node = new Add(
                             Signal.createInteger(),
-                            settings.get(nodeType).getMinInpCollectors(),
-                            settings.get(nodeType).getMaxInpCollectors());
+                            settings.get(nodeType).getInpColLimitInt()[0],
+                            settings.get(nodeType).getInpColLimitInt()[1]);
                     break;
                 case "AndBin":
                     node = new AndBin(
-                            settings.get(nodeType).getMinInpCollectors(),
-                            settings.get(nodeType).getMaxInpCollectors());
+                            settings.get(nodeType).getInpColLimitBin()[0],
+                            settings.get(nodeType).getInpColLimitBin()[1]);
                     break;
                 case "OrBin":
                     node = new AndBin(
-                            settings.get(nodeType).getMinInpCollectors(),
-                            settings.get(nodeType).getMaxInpCollectors());
+                            settings.get(nodeType).getInpColLimitBin()[0],
+                            settings.get(nodeType).getInpColLimitBin()[1]);
                     break;
                 case "CompareDec":
                     node = new Compare(
@@ -263,63 +263,60 @@ public class FactoryNode {
                 case "Divide":
                     node = new Divide(
                             Signal.createDouble(),
-                            settings.get(nodeType).getMinInpCollectors(),
-                            settings.get(nodeType).getMaxInpCollectors()
-                    );
+                            settings.get(nodeType).getInpColLimitDec()[0],
+                            settings.get(nodeType).getInpColLimitDec()[1]);
                     break;
                 case "MultiplyDec":
                     node = new Multiply(
                             Signal.createDouble(),
-                            settings.get(nodeType).getMinInpCollectors(),
-                            settings.get(nodeType).getMaxInpCollectors()
-                    );
+                            settings.get(nodeType).getInpColLimitDec()[0],
+                            settings.get(nodeType).getInpColLimitDec()[1]);
                     break;
                 case "MultiplyInt":
                     node = new Multiply(
                             Signal.createInteger(),
-                            settings.get(nodeType).getMinInpCollectors(),
-                            settings.get(nodeType).getMaxInpCollectors()
-                    );
+                            settings.get(nodeType).getInpColLimitInt()[0],
+                            settings.get(nodeType).getInpColLimitInt()[1]);
                     break;
                 case "MuxDec":
                     node = new Mux(
-                            settings.get(nodeType).getMinInpCollectors(),
-                            settings.get(nodeType).getMaxInpCollectors(),
+                            settings.get(nodeType).getInpColLimitDec()[0],
+                            settings.get(nodeType).getInpColLimitDec()[1],
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
                     break;
                 case "MuxInt":
                     node = new Mux(
-                            settings.get(nodeType).getMinInpCollectors(),
-                            settings.get(nodeType).getMaxInpCollectors(),
+                            settings.get(nodeType).getInpColLimitInt()[0],
+                            settings.get(nodeType).getInpColLimitInt()[1],
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
                     break;
                 case "MuxBin":
                     node = new Mux(
-                            settings.get(nodeType).getMinInpCollectors(),
-                            settings.get(nodeType).getMaxInpCollectors(),
+                            settings.get(nodeType).getInpColLimitInt()[0],
+                            settings.get(nodeType).getInpColLimitInt()[1],
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
                     break;
                 case "DMuxDec":
                     node = new DMux(
-                            settings.get(nodeType).getMinOutCollectors(),
-                            settings.get(nodeType).getMaxOutCollectors(),
+                            settings.get(nodeType).getOutColLimitDec()[0],
+                            settings.get(nodeType).getOutColLimitDec()[1],
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
                     break;
                 case "DMuxInt":
                     node = new DMux(
-                            settings.get(nodeType).getMinOutCollectors(),
-                            settings.get(nodeType).getMaxOutCollectors(),
+                            settings.get(nodeType).getOutColLimitInt()[0],
+                            settings.get(nodeType).getOutColLimitInt()[1],
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
                     break;
                 case "DMuxBin":
                     node = new DMux(
-                            settings.get(nodeType).getMinOutCollectors(),
-                            settings.get(nodeType).getMaxOutCollectors(),
+                            settings.get(nodeType).getOutColLimitBin()[0],
+                            settings.get(nodeType).getOutColLimitBin()[1],
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
                     break;
@@ -480,59 +477,7 @@ public class FactoryNode {
         }
         throw new Exception();
     }
-//
-//    /**
-//     * Get list of allowed nodes.
-//     *
-//     * @return List of allowed nodes.
-//     */
-//    public ArrayList<String> getAllowedNodes() {
-//        ArrayList<String> nodes = new ArrayList<>();
-//        for (FactoryNodeSettings settings : settings.values()) {
-//            if (settings.isAvailable()) {
-//                nodes.add(settings.getType());
-//            }
-//        }
-//        return nodes;
-//    }
-//
-//    /**
-//     * Get list of nodes that are allowed for usage and their maximum input conectivity is greater or equal to first input variable and their minimum output conectivity is greater or equal to second input variable.
-//     *
-//     * @param numInputs
-//     * @param numOutputs
-//     * @return
-//     */
-//    public ArrayList<String> getAllowedNodes(int numInputs, int numOutputs) {
-//        ArrayList<String> nodes = new ArrayList<>();
-//        for (FactoryNodeSettings settings : settings.values()) {
-//            if (settings.isAvailable() && settings.getMaxInpCollectors() >= numInputs && settings.getMaxOutCollectors() >= numOutputs) {
-//                nodes.add(settings.getType());
-//            }
-//        }
-//        return nodes;
-//    }
-//
-//    /**
-//     * Get list of nodes that are allowed for usage and their maximum input conectivity is greater or equal to first input variable and their minimum output conectivity is greater or equal to second input variable and is not of type of third input variable.
-//     *
-//     * @param numInputs
-//     * @param numOutputs
-//     * @param nodeType
-//     * @return
-//     */
-//    public ArrayList<String> getAllowedNodes(int numInputs, int numOutputs, String nodeType) {
-//        ArrayList<String> nodes = new ArrayList<>();
-//        for (FactoryNodeSettings settings : settings.values()) {
-//            if (settings.isAvailable() &&
-//                    settings.getMaxInpCollectors() >= numInputs &&
-//                    settings.getMaxOutCollectors() >= numOutputs &&
-//                    !settings.getType().equals(nodeType)) {
-//                nodes.add(settings.getType());
-//            }
-//        }
-//        return nodes;
-//    }
+
 
     public Signal genRndSignal(Signal min, Signal max) throws Exception {
         if (min.gettClass().isAssignableFrom(Double.class) && max.gettClass().isAssignableFrom(Double.class)) {

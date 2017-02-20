@@ -12,7 +12,6 @@
     "nodeOutBin": 1,
     "nodeMax": 120
   },
-
   "edgeFactorySettings": {
     "weightInitialDec": [
       -1.0,
@@ -39,33 +38,40 @@
       true
     ]
   },
-
   "nodeFactorySettings": [
     {
       "type": "AddDec",
-      "maxInpCollectors": 10,
-      "minInpCollectors": 0,
+      "inpColLimitDec": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100
     },
     {
       "type": "AddInt",
-      "maxInpCollectors": 10,
-      "minInpCollectors": 0,
+      "inpColLimitInt": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100
     },
     {
       "type": "AndBin",
-      "maxInpCollectors": 10,
-      "minInpCollectors": 0,
+      "inpColLimitBin": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100
     },
     {
       "type": "OrBin",
-      "maxInpCollectors": 10,
-      "minInpCollectors": 0,
+      "inpColLimitBin": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100
     },
@@ -273,15 +279,23 @@
     },
     {
       "type": "Divide",
-      "maxInpCollectors": 10,
-      "minInpCollectors": 0,
+      "inpColLimitDec": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100
     },
     {
       "type": "MuxDec",
-      "maxInpCollectors": 10,
-      "minInpCollectors": 3,
+      "inpColLimitInt": [
+        1,
+        1
+      ],
+      "inpColLimitDec": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100,
       "parametersDec": [
@@ -296,8 +310,10 @@
     },
     {
       "type": "MuxInt",
-      "maxInpCollectors": 10,
-      "minInpCollectors": 3,
+      "inpColLimitInt": [
+        3,
+        10
+      ],
       "available": true,
       "probability": 100,
       "parametersInt": [
@@ -312,8 +328,14 @@
     },
     {
       "type": "MuxBin",
-      "maxInpCollectors": 10,
-      "minInpCollectors": 3,
+      "inpColLimitInt": [
+        1,
+        1
+      ],
+      "inpColLimitBin": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100,
       "parametersBin": [
@@ -328,8 +350,10 @@
     },
     {
       "type": "DMuxDec",
-      "maxOutCollectors": 10,
-      "minOutCollectors": 0,
+      "outColLimitDec": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100,
       "parametersDec": [
@@ -344,8 +368,10 @@
     },
     {
       "type": "DMuxInt",
-      "maxOutCollectors": 10,
-      "minOutCollectors": 0,
+      "outColLimitInt": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100,
       "parametersInt": [
@@ -360,8 +386,10 @@
     },
     {
       "type": "DMuxBin",
-      "maxOutCollectors": 10,
-      "minOutCollectors": 0,
+      "outColLimitBin": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100,
       "parametersBin": [
@@ -497,15 +525,19 @@
     },
     {
       "type": "MultiplyDec",
-      "maxInpCollectors": 10,
-      "minInpCollectors": 0,
+      "inpColLimitDec": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100
     },
     {
       "type": "MultiplyInt",
-      "maxInpCollectors": 10,
-      "minInpCollectors": 0,
+      "inpColLimitInt": [
+        2,
+        10
+      ],
       "available": true,
       "probability": 100
     },

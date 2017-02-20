@@ -1,5 +1,7 @@
 package ameba.core.reproductions.parametersOperations.genParMutation;
 
+import ameba.core.blocks.Signal;
+
 import java.util.Random;
 
 /**
@@ -7,34 +9,33 @@ import java.util.Random;
  */
 public class RandValue implements IMutate {
     private Random random;
-    private double maxChange;
-    private double minChange;
-    private double minValue;
-    private double maxValue;
+    private Signal minValue;
+    private Signal maxValue;
 
-    public RandValue(double maxChange, double minChange, double minValue, double maxValue) {
-        this.maxChange = maxChange;
-        this.minChange = minChange;
+    public RandValue(Signal minValue, Signal maxValue) {
         this.minValue = minValue;
         this.maxValue = maxValue;
         random = new Random();
     }
 
-    /**
-     * Mutation that generate new random value of the parameter par.
-     *
-     * @param par Parameter to be changed.
-     * @return Mutated parameter
-     */
     @Override
-    public double mutate(double par) {
-        par = random.nextDouble() * (maxChange - minChange) + minChange;
-        if (par > maxValue) {
-            par = maxValue;
+    public Signal mutate(Signal par) throws Exception {
+        if (par.gettClass().isAssignableFrom(Double.class)) {
+            return Signal.createDouble(random.nextDouble() * (maxValue.getValueDouble() - minValue.getValueDouble()) + minValue.getValueDouble());
         }
-        if (par < minValue) {
-            par = minValue;
+        if (par.gettClass().isAssignableFrom(Integer.class)) {
+            return Signal.createInteger(random.nextInt(maxValue.getValueInteger() - minValue.getValueInteger()) + minValue.getValueInteger());
         }
-        return par;
+        if (par.gettClass().isAssignableFrom(Boolean.class)) {
+            if (maxValue.getValueDouble().equals(false)) {
+                return Signal.createBoolean(false);
+            }
+            if (minValue.getValueBoolean().equals(true)) {
+                return Signal.createBoolean(true);
+            }
+            return Signal.createBoolean(!par.getValueBoolean());
+        }
+        throw new Exception("Input parameter not of allowed type.");
+
     }
 }
