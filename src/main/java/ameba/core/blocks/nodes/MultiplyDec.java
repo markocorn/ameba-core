@@ -18,7 +18,7 @@ public class MultiplyDec extends Node {
     @Override
     public void clcNode() throws Exception {
         getOutCollectorsDec().get(0).getSignal().setValueDouble(1.0);
-        for (CollectorInp collectorInp : getInpCollectors()) {
+        for (CollectorInp collectorInp : getInpCollectorsConnected(Double.class)) {
             getOutCollectorsDec().get(0).getSignal().setValueDouble(getOutCollectorsDec().get(0).getSignal().getValueDouble() * collectorInp.getSignal().getValueDouble());
         }
     }

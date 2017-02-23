@@ -21,7 +21,7 @@ public class CompareDec extends Node {
         switch (getParams().get(0).getValueInteger()) {
             //Greater than par
             case 0: {
-                getOutCollectorsDec().get(0).setSignal(Signal.createBoolean(false));
+                getOutCollectorsBin().get(0).setSignal(Signal.createBoolean(false));
                 if (getInpCollectorsDec().get(0).getSignal().getValueDouble() > getInpCollectorsDec().get(1).getSignal().getValueDouble()) {
                     getOutCollectorsBin().get(0).setSignal(Signal.createBoolean(true));
                 }
@@ -29,7 +29,7 @@ public class CompareDec extends Node {
             break;
             //Less than par
             case 1: {
-                getOutCollectorsDec().get(0).setSignal(Signal.createBoolean(false));
+                getOutCollectorsBin().get(0).setSignal(Signal.createBoolean(false));
                 if (getInpCollectorsDec().get(0).getSignal().getValueDouble() < getInpCollectorsDec().get(1).getSignal().getValueDouble()) {
                     getOutCollectorsBin().get(0).setSignal(Signal.createBoolean(true));
                 }
@@ -37,7 +37,7 @@ public class CompareDec extends Node {
             break;
             //Equal to par
             case 2: {
-                getOutCollectorsDec().get(0).setSignal(Signal.createBoolean(false));
+                getOutCollectorsBin().get(0).setSignal(Signal.createBoolean(false));
                 if (getInpCollectorsDec().get(0).getSignal().getValueDouble().equals(getInpCollectorsDec().get(1).getSignal().getValueDouble())) {
                     getOutCollectorsBin().get(0).setSignal(Signal.createBoolean(true));
                 }

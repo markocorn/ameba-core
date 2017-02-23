@@ -18,7 +18,7 @@ public class Divide extends Node {
     @Override
     public void clcNode() throws Exception {
         getOutCollectorsDec().get(0).getSignal().setValueDouble(1.0);
-        for (CollectorInp collectorInp : getInpCollectorsDec()) {
+        for (CollectorInp collectorInp : getInpCollectorsConnected(Double.class)) {
             if (collectorInp.getSignal().getValueDouble().equals(0.0)) {
                 getOutCollectorsDec().get(0).getSignal().setValueDouble(0.0);
                 break;

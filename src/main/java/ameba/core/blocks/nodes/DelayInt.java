@@ -41,7 +41,7 @@ public class DelayInt extends NodeMem {
     public void clcNode() throws Exception {
         buffer.add(getInpCollectorsInt().get(0).getSignal());
         buffer.remove(buffer.get(0));
-        getOutCollectorsDec().get(0).setSignal(buffer.get(0));
+        getOutCollectorsInt().get(0).setSignal(buffer.get(0));
     }
 
     @Override

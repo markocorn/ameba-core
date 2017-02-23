@@ -33,12 +33,12 @@ public class main1 {
         Random random = new Random();
 
         ArrayList<ArrayList<Signal>> inputs = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1000; i++) {
             inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(random.nextDouble() * 20.0 - 10.0), Signal.createInteger(random.nextInt(20) - 10), Signal.createBoolean(random.nextBoolean()))));
         }
 
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 10000; i++) {
                 System.out.println(i + " Run number");
                 Cell cell = factoryCell.genCellRnd();
                 String test = FactoryCell.checkCell(cell);
@@ -51,6 +51,7 @@ public class main1 {
                     outputs = cell.run(inputs);
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                    outputs = cell.run(inputs);
                 }
                 for (ArrayList<Signal> out : outputs) {
                     for (Signal obj : out) {

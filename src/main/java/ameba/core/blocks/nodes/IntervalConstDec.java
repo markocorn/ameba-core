@@ -22,9 +22,9 @@ public class IntervalConstDec extends Node {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        double[] inputs = new double[]{getInpCollectors().get(0).getSignal().getValueDouble(), getInpCollectors().get(1).getSignal().getValueDouble(), getParams().get(0).getValueDouble()};
+        double[] inputs = new double[]{getInpCollectorsDec().get(0).getSignal().getValueDouble(), getInpCollectorsDec().get(1).getSignal().getValueDouble(), getParams().get(0).getValueDouble()};
         if (inputs[1] <= inputs[0] && inputs[0] <= inputs[2]) {
-            getOutCollectorsDec().get(0).setSignal(Signal.createBoolean(true));
-        } else getOutCollectorsDec().get(0).setSignal(Signal.createBoolean(false));
+            getOutCollectorsBin().get(0).setSignal(Signal.createBoolean(true));
+        } else getOutCollectorsBin().get(0).setSignal(Signal.createBoolean(false));
     }
 }

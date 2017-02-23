@@ -21,12 +21,12 @@ public class SwitchConstBin extends Node {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        if (!getInpCollectors().get(0).getSignal().getValueBoolean()) {
-            getOutCollectorsDec().get(0).setSignal(getInpCollectors().get(1).getSignal());
+        if (!getInpCollectorsBin().get(0).getSignal().getValueBoolean()) {
+            getOutCollectorsBin().get(0).setSignal(getInpCollectorsBin().get(1).getSignal());
         } else {
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-            getInpCollectors().get(1).getSignal();
-            getOutCollectorsDec().get(0).setSignal(getParams().get(0));
+            getInpCollectorsBin().get(1).getSignal();
+            getOutCollectorsBin().get(0).setSignal(getParams().get(0));
         }
     }
 }

@@ -18,7 +18,7 @@ public class ConstantBin extends NodeMem {
      */
     @Override
     public void clcNode() {
-        getOutCollectorsDec().get(0).setSignal(getParams().get(0));
+        getOutCollectorsBin().get(0).setSignal(getParams().get(0));
         setState(1);
     }
 }

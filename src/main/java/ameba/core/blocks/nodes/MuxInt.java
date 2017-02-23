@@ -4,6 +4,8 @@ import ameba.core.blocks.CollectorInp;
 import ameba.core.blocks.CollectorOut;
 import ameba.core.blocks.Signal;
 
+import java.util.ArrayList;
+
 /**
  * Created by marko on 2/6/17.
  */
@@ -25,12 +27,13 @@ public class MuxInt extends Node {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        Signal[] list = new Signal[getInpCollectors().size()];
-        for (int i = 0; i < getInpCollectors().size(); i++) {
-            list[i] = getInpCollectors().get(i).getSignal();
+        ArrayList<CollectorInp> col = getInpCollectorsConnected(Integer.class);
+        Signal[] list = new Signal[col.size()];
+        for (int i = 0; i < col.size(); i++) {
+            list[i] = col.get(i).getSignal();
         }
-        if (list[0].getValueInteger() >= 0 && list[0].getValueInteger() < getInpCollectors().size() - 1) {
-            getOutCollectorsInt().get(0).setSignal(getInpCollectors().get(list[0].getValueInteger() + 1).getSignal());
+        if (list[0].getValueInteger() >= 0 && list[0].getValueInteger() < col.size() - 1) {
+            getOutCollectorsInt().get(0).setSignal(col.get(list[0].getValueInteger() + 1).getSignal());
         } else {
             getOutCollectorsInt().get(0).setSignal(getParams().get(0));
         }

@@ -17,11 +17,11 @@ public class OrBin extends Node {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        getOutCollectorsDec().get(0).getSignal().setValueBoolean(false);
+        getOutCollectorsBin().get(0).getSignal().setValueBoolean(false);
         for (CollectorInp collectorInp : getInpCollectorsConnected(Boolean.class)) {
             //AddDec all sources signals together.
             if (collectorInp.getSignal().getValueBoolean())
-                getOutCollectorsDec().get(0).getSignal().setValueBoolean(true);
+                getOutCollectorsBin().get(0).getSignal().setValueBoolean(true);
         }
     }
 }

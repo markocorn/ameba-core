@@ -406,7 +406,7 @@ public class Node implements INode, Cloneable {
 
     public boolean isSignalInputsReady() {
         signalInputsReady = true;
-        for (CollectorInp collectorInp : inpCollectorsDec) {
+        for (CollectorInp collectorInp : inpCollectors) {
             for (Edge edge : collectorInp.getEdges()) {
                 if (!edge.isSignalReady()) {
                     signalInputsReady = false;
