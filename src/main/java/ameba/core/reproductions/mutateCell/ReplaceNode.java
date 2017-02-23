@@ -1,16 +1,11 @@
 package ameba.core.reproductions.mutateCell;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.CollectorInp;
-import ameba.core.blocks.CollectorOut;
-import ameba.core.blocks.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 import ameba.core.factories.FactoryEdge;
 import ameba.core.factories.FactoryNode;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -35,40 +30,26 @@ public class ReplaceNode implements IMutateCell {
         Node nodeOld = cellFactory.getNodeRndInner(cell);
         Node nodeNew = nodeFactory.genNodeRnd();
 
-        ArrayList<CollectorInp> inpColOldDec = nodeOld.getInpCollectorConnected(Double.class);
-        ArrayList<CollectorInp> inpColOldInt = nodeOld.getInpCollectorConnected(Integer.class);
-        ArrayList<CollectorInp> inpColOldBin = nodeOld.getInpCollectorConnected(Boolean.class);
-        ArrayList<CollectorOut> outColOldDec = nodeOld.getOutCollectorConnected(Double.class);
-        ArrayList<CollectorOut> outColOldInt = nodeOld.getOutCollectorConnected(Integer.class);
-        ArrayList<CollectorOut> outColOldBin = nodeOld.getOutCollectorConnected(Boolean.class);
-
-        ArrayList<CollectorInp> inpColNewDec = nodeNew.getInpColLimitDec()[0];
-        ArrayList<CollectorInp> inpColNewInt = nodeNew.getInpCollector(Integer.class);
-        ArrayList<CollectorInp> inpColNewBin = nodeNew.getInpCollector(Boolean.class);
-        ArrayList<CollectorOut> outColNewDec = nodeNew.getOutCollector(Double.class);
-        ArrayList<CollectorOut> outColNewInt = nodeNew.getOutCollector(Integer.class);
-        ArrayList<CollectorOut> outColNewBin = nodeNew.getOutCollector(Boolean.class);
-
         /**
          * Decimal type of connections
          */
-        Collections.shuffle(inpColOldDec);
-        int diff = inpColOldDec.size() - inpColNewDec.size();
-        int same = Math.abs(diff);
-        for (int i = 0; i < same; i++) {
-            Edge edge = inpColOldDec.get(i).getEdges().get(0);
-            edge.setTarget(inpColNewDec.get(i));
-            inpColNewDec.get(i).addEdge(edge);
-        }
-        //Left old input collectors remove edges from cell
-        for (int i = 0; i < diff; i++) {
-
-
-        }
-        //Left new input collectors
-        for (int i = 0; i < -diff; i++) {
-
-        }
+//        Collections.shuffle(inpColOldDec);
+//        int diff = inpColOldDec.size() - inpColNewDec.size();
+//        int same = Math.abs(diff);
+//        for (int i = 0; i < same; i++) {
+//            Edge edge = inpColOldDec.get(i).getEdges().get(0);
+//            edge.setTarget(inpColNewDec.get(i));
+//            inpColNewDec.get(i).addEdge(edge);
+//        }
+//        //Left old input collectors remove edges from cell
+//        for (int i = 0; i < diff; i++) {
+//
+//
+//        }
+//        //Left new input collectors
+//        for (int i = 0; i < -diff; i++) {
+//
+//        }
 
 
 //        //Number of old connectors is smaller than minimum number of conectivity of new node

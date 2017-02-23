@@ -26,7 +26,7 @@ public class CombineOr implements ICrossover {
                 }
                 return Signal.createBoolean(par1.getValueBoolean() || par2.getValueBoolean());
             }
-            throw new Exception("Input parameter not of allowed type.");
+            throw new Exception("InputDec parameter not of allowed type.");
         } else throw new Exception("Parameter1 and parameter2 not same type");
     }
 }

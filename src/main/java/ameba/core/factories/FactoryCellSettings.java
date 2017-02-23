@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class FactoryCellSettings {
     /**
-     * Interval that limits random number of nodes generated at cell building process.
+     * IntervalDec that limits random number of nodes generated at cell building process.
      */
     private Integer[] nodeInitial;
     /**

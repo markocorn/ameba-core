@@ -30,7 +30,7 @@ public class AddValue implements IMutate {
      */
     @Override
     public Signal mutate(Signal par) throws Exception {
-        //Add random value with constrains to parameter
+        //AddDec random value with constrains to parameter
         if (par.gettClass().isAssignableFrom(Double.class)) {
             double p = random.nextDouble() * (maxChange.getValueDouble() - minChange.getValueDouble()) + minChange.getValueDouble();
             p += par.getValueDouble();
@@ -62,7 +62,7 @@ public class AddValue implements IMutate {
             }
             return Signal.createBoolean(!par.getValueBoolean());
         }
-        throw new Exception("Input parameter not of allowed type.");
+        throw new Exception("InputDec parameter not of allowed type.");
 
     }
 }

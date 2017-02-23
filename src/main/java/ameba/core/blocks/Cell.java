@@ -101,7 +101,7 @@ public class Cell {
     }
 
     /**
-     * Add node to the cell.
+     * AddDec node to the cell.
      *
      * @param node
      */
@@ -118,7 +118,7 @@ public class Cell {
     }
 
     /**
-     * Add edge to the cell.
+     * AddDec edge to the cell.
      *
      * @param edge
      */
@@ -171,10 +171,10 @@ public class Cell {
      */
     public void removeNode(Node node) throws Exception {
         //Remove input Edges of the node from collectors
-        for (Collector collector : node.getInpCollectorsConn()) {
+        for (Collector collector : node.getInpCollectors()) {
             collector.removeEdges();
         }
-        for (Collector collector : node.getOutCollectors()) {
+        for (Collector collector : node.getOutCollectorsDec()) {
             collector.removeEdges();
         }
         //Remove node from the cell
@@ -205,7 +205,7 @@ public class Cell {
                 inpNodes.get(i).importSignal(values.get(i));
             }
 
-        } else throw new Exception("Input array not equal to the number of input nodes");
+        } else throw new Exception("InputDec array not equal to the number of input nodes");
     }
 
     /**
@@ -218,7 +218,7 @@ public class Cell {
             sumStateOld = sumState;
             sumState = 0;
             for (Node node : nodes) {
-                node.clcNode();
+                node.processNode();
                 sumState += node.getState();
             }
             if (sumStateOld == sumState) {

@@ -27,17 +27,18 @@ public class main1 {
         factoryCell.getCellFactorySettings().setNodeOutDec(1);
         factoryCell.getCellFactorySettings().setNodeOutInt(1);
         factoryCell.getCellFactorySettings().setNodeOutBin(1);
-        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{1, 100});
+        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{5, 10});
+
 
         Random random = new Random();
 
         ArrayList<ArrayList<Signal>> inputs = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(random.nextDouble() * 20.0 - 10.0), Signal.createInteger(random.nextInt(20) - 10), Signal.createBoolean(random.nextBoolean()))));
         }
 
         try {
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 10; i++) {
                 System.out.println(i + " Run number");
                 Cell cell = factoryCell.genCellRnd();
                 String test = FactoryCell.checkCell(cell);
@@ -53,8 +54,13 @@ public class main1 {
                 }
                 for (ArrayList<Signal> out : outputs) {
                     for (Signal obj : out) {
-                        System.out.print(obj.getValue());
-                        System.out.print(":");
+                        try {
+                            System.out.print(obj.getValue());
+                            System.out.print(":");
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            outputs = cell.run(inputs);
+                        }
                     }
                     System.out.println();
                 }

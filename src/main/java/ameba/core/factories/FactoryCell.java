@@ -1,9 +1,10 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.*;
-import ameba.core.blocks.nodes.Input;
-import ameba.core.blocks.nodes.Node;
-import ameba.core.blocks.nodes.Output;
+import ameba.core.blocks.Cell;
+import ameba.core.blocks.CollectorInp;
+import ameba.core.blocks.CollectorOut;
+import ameba.core.blocks.Edge;
+import ameba.core.blocks.nodes.*;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -49,30 +50,30 @@ public class FactoryCell {
      */
     public Cell genCellRnd() throws Exception {
         Cell cell = new Cell(cellFactorySettings.getNodeMax());
-        //Add input nodes
+        //AddDec input nodes
         for (int i = 0; i < cellFactorySettings.getNodeInpDec(); i++) {
-            cell.addNode(new Input(Signal.createDouble()));
+            cell.addNode(new InputDec());
         }
         for (int i = 0; i < cellFactorySettings.getNodeInpInt(); i++) {
-            cell.addNode(new Input(Signal.createInteger()));
+            cell.addNode(new InputInt());
         }
         for (int i = 0; i < cellFactorySettings.getNodeInpBin(); i++) {
-            cell.addNode(new Input(Signal.createBoolean()));
+            cell.addNode(new InputBin());
         }
-        //Add output nodes
+        //AddDec output nodes
         for (int i = 0; i < cellFactorySettings.getNodeOutDec(); i++) {
-            cell.addNode(new Output(Signal.createDouble()));
+            cell.addNode(new OutputDec());
         }
         for (int i = 0; i < cellFactorySettings.getNodeOutInt(); i++) {
-            cell.addNode(new Output(Signal.createInteger()));
+            cell.addNode(new OutputInt());
         }
         for (int i = 0; i < cellFactorySettings.getNodeOutBin(); i++) {
-            cell.addNode(new Output(Signal.createBoolean()));
+            cell.addNode(new OutputBin());
         }
         //Determine initial number of nodes
         int numNodes = genNmbNodesInitial();
-        //Add initial number of new nodes that connects to the free inputs of existing nodes
-        for (int i = 0; i < numNodes; i++) {
+
+        for (int i = 0; i < 1; i++) {
             //Get collector that must be connected
             CollectorInp collectorInp = getCollectorInpMinRnd(cell);
             Node node;
@@ -148,7 +149,7 @@ public class FactoryCell {
     public CollectorOut getCollectorOutRnd(Class type, Cell cell) throws Exception {
         ArrayList<CollectorOut> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorOut collector : node.getOutCollectors()) {
+            for (CollectorOut collector : node.getOutCollectorsDec()) {
                 if (collector.getSignal().gettClass().equals(type)) {
                     collectors.add(collector);
                 }
@@ -176,7 +177,7 @@ public class FactoryCell {
     public CollectorOut getCollectorOutRnd(Cell cell) throws Exception {
         ArrayList<CollectorOut> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorOut collector : node.getOutCollectors()) {
+            for (CollectorOut collector : node.getOutCollectorsDec()) {
                 collectors.add(collector);
             }
         }
@@ -196,7 +197,7 @@ public class FactoryCell {
     public CollectorInp getCollectorInpRnd(Class type, Cell cell) throws Exception {
         ArrayList<CollectorInp> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorInp collector : node.getInpCollectors()) {
+            for (CollectorInp collector : node.getInpCollectorsDec()) {
                 if (collector.getSignal().gettClass().equals(type) && collector.getEdges().size() == 0) {
                     collectors.add(collector);
                 }
@@ -217,19 +218,7 @@ public class FactoryCell {
     public CollectorInp getCollectorInpMinRnd(Cell cell) throws Exception {
         ArrayList<CollectorInp> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            if (node.getClass().getSimpleName().equals("Mux")) {
-                int t = 0;
-            }
-            int min = 0;
-            for (CollectorInp collector : node.getInpCollectors()) {
-                min++;
-                if (collector.getEdges().size() == 0) {
-                    collectors.add(collector);
-                }
-                if (min >= node.getMinInpCollectors()) {
-                    break;
-                }
-            }
+            collectors.addAll(node.getInpCollectorsMinConnect());
         }
         if (collectors.size() > 0) {
             return collectors.get(rndGen.nextInt(collectors.size()));
@@ -247,7 +236,7 @@ public class FactoryCell {
     public CollectorInp getCollectorInpOneRnd(Class type, Cell cell) throws Exception {
         ArrayList<CollectorInp> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorInp collector : node.getInpCollectorsConn()) {
+            for (CollectorInp collector : node.getInpCollectors()) {
                 if (collector.getSignal().gettClass().equals(type) && collector.getEdges().size() == 0) {
                     collectors.add(collector);
                     break;

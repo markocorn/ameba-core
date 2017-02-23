@@ -142,38 +142,36 @@ public class FactoryNode {
         if (settings.containsKey(nodeType)) {
             switch (nodeType) {
                 case "InputDec":
-                    node = new Input(
-                            Signal.createDouble());
+                    node = new InputDec();
                     break;
+
                 case "InputInt":
-                    node = new Input(
-                            Signal.createInteger());
+                    node = new InputInt();
                     break;
+
                 case "InputBin":
-                    node = new Input(
-                            Signal.createBoolean());
+                    node = new InputBin();
                     break;
+
                 case "OutputDec":
-                    node = new Output(
-                            Signal.createDouble());
+                    node = new OutputDec();
                     break;
+
                 case "OutputInt":
-                    node = new Output(
-                            Signal.createInteger());
+                    node = new OutputInt();
                     break;
+
                 case "OutputBin":
-                    node = new Output(
-                            Signal.createBoolean());
+                    node = new OutputBin();
                     break;
                 case "AddDec":
-                    node = new Add(
-                            Signal.createDouble(),
+                    node = new AddDec(
                             settings.get(nodeType).getInpColLimitDec()[0],
                             settings.get(nodeType).getInpColLimitDec()[1]);
                     break;
+
                 case "AddInt":
-                    node = new Add(
-                            Signal.createInteger(),
+                    node = new AddInt(
                             settings.get(nodeType).getInpColLimitInt()[0],
                             settings.get(nodeType).getInpColLimitInt()[1]);
                     break;
@@ -183,251 +181,237 @@ public class FactoryNode {
                             settings.get(nodeType).getInpColLimitBin()[1]);
                     break;
                 case "OrBin":
-                    node = new AndBin(
+                    node = new OrBin(
+                            settings.get(nodeType).getInpColLimitBin()[0],
+                            settings.get(nodeType).getInpColLimitBin()[1]);
+                    break;
+                case "XrrBin":
+                    node = new XorBin(
                             settings.get(nodeType).getInpColLimitBin()[0],
                             settings.get(nodeType).getInpColLimitBin()[1]);
                     break;
                 case "CompareDec":
-                    node = new Compare(
-                            Signal.createDouble(),
+                    node = new CompareDec(
                             settings.get(nodeType).getParametersInt()[0]);
                     break;
                 case "CompareInt":
-                    node = new Compare(
-                            Signal.createInteger(),
+                    node = new CompareInt(
                             settings.get(nodeType).getParametersInt()[0]);
                     break;
                 case "CompareConstDec":
-                    node = new CompareConst(
+                    node = new CompareConstDec(
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]),
                             settings.get(nodeType).getParametersInt()[0]);
                     break;
                 case "CompareConstInt":
-                    node = new CompareConst(
+                    node = new CompareConstInt(
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[1]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]),
                             settings.get(nodeType).getParametersInt()[0]);
                     break;
                 case "ConstantDec":
-                    node = new Constant(
+                    node = new ConstantDec(
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
                     break;
                 case "ConstantInt":
-                    node = new Constant(
+                    node = new ConstantInt(
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
                     break;
                 case "ConstantBin":
-                    node = new Constant(
+                    node = new ConstantBin(
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
                     break;
                 case "DelayDec":
-                    node = new Delay(
+                    node = new DelayDec(
                             Signal.createDouble(settings.get(nodeType).getInitialValueDec()),
                             settings.get(nodeType).getParametersInt()[0],
                             new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DelayInt":
-                    node = new Delay(
+                    node = new DelayInt(
                             Signal.createInteger(settings.get(nodeType).getInitialValueInt()),
                             settings.get(nodeType).getParametersInt()[0],
                             new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DelayBin":
-                    node = new Delay(
+                    node = new DelayBin(
                             Signal.createBoolean(settings.get(nodeType).getInitialValueBin()),
                             settings.get(nodeType).getParametersInt()[0],
                             new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DerivativeDec":
-                    node = new Derivative(
+                    node = new DerivativeDec(
                             Signal.createDouble(settings.get(nodeType).getInitialValueDec()),
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
                     break;
                 case "DerivativeInt":
-                    node = new Derivative(
+                    node = new DerivativeInt(
                             Signal.createInteger(settings.get(nodeType).getInitialValueInt()),
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
                     break;
                 case "DerivativeBin":
-                    node = new Derivative(
+                    node = new DerivativeBin(
                             Signal.createBoolean(settings.get(nodeType).getInitialValueBin()),
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
                     break;
                 case "Divide":
                     node = new Divide(
-                            Signal.createDouble(),
                             settings.get(nodeType).getInpColLimitDec()[0],
                             settings.get(nodeType).getInpColLimitDec()[1]);
                     break;
                 case "MultiplyDec":
-                    node = new Multiply(
-                            Signal.createDouble(),
+                    node = new MultiplyDec(
                             settings.get(nodeType).getInpColLimitDec()[0],
                             settings.get(nodeType).getInpColLimitDec()[1]);
                     break;
                 case "MultiplyInt":
-                    node = new Multiply(
-                            Signal.createInteger(),
+                    node = new MultiplyInt(
                             settings.get(nodeType).getInpColLimitInt()[0],
                             settings.get(nodeType).getInpColLimitInt()[1]);
                     break;
                 case "MuxDec":
-                    node = new Mux(
+                    node = new MuxDec(
                             settings.get(nodeType).getInpColLimitDec()[0],
                             settings.get(nodeType).getInpColLimitDec()[1],
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
                     break;
                 case "MuxInt":
-                    node = new Mux(
+                    node = new MuxInt(
                             settings.get(nodeType).getInpColLimitInt()[0],
                             settings.get(nodeType).getInpColLimitInt()[1],
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
                     break;
                 case "MuxBin":
-                    node = new Mux(
+                    node = new MuxBin(
                             settings.get(nodeType).getInpColLimitInt()[0],
                             settings.get(nodeType).getInpColLimitInt()[1],
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
                     break;
                 case "DMuxDec":
-                    node = new DMux(
+                    node = new DMuxDec(
                             settings.get(nodeType).getOutColLimitDec()[0],
                             settings.get(nodeType).getOutColLimitDec()[1],
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
                     break;
                 case "DMuxInt":
-                    node = new DMux(
+                    node = new DMuxInt(
                             settings.get(nodeType).getOutColLimitInt()[0],
                             settings.get(nodeType).getOutColLimitInt()[1],
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
                     break;
                 case "DMuxBin":
-                    node = new DMux(
+                    node = new DMuxBin(
                             settings.get(nodeType).getOutColLimitBin()[0],
                             settings.get(nodeType).getOutColLimitBin()[1],
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
                     break;
                 case "IntegralDec":
-                    node = new Integral(
+                    node = new IntegralDec(
                             Signal.createDouble(settings.get(nodeType).getInitialValueDec()),
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
                     break;
                 case "IntegralInt":
-                    node = new Integral(
+                    node = new IntegralInt(
                             Signal.createInteger(settings.get(nodeType).getInitialValueInt()),
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
                     break;
                 case "IntegralBin":
-                    node = new Integral(
+                    node = new IntegralBin(
                             Signal.createBoolean(settings.get(nodeType).getInitialValueBin()),
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
                     break;
                 case "IntervalDec":
-                    node = new Interval(
-                            Signal.createDouble());
+                    node = new IntervalDec();
                     break;
                 case "IntervalInt":
-                    node = new Interval(
-                            Signal.createInteger());
+                    node = new IntervalInt();
                     break;
                 case "IntervalConstDec":
-                    node = new IntervalConst(
-                            Signal.createDouble(),
+                    node = new IntervalConstDec(
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
                     break;
                 case "IntervalConstInt":
-                    node = new IntervalConst(
-                            Signal.createInteger(),
+                    node = new IntervalConstInt(
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
                     break;
                 case "Interval2ConstDec":
-                    node = new Interval2Const(
-                            Signal.createDouble(),
+                    node = new Interval2ConstDec(
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]),
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[1]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[1][0], settings.get(nodeType).getParametersLimitsDec()[1][1]));
                     break;
                 case "Interval2ConstInt":
-                    node = new Interval2Const(
-                            Signal.createInteger(),
+                    node = new Interval2ConstInt(
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]),
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[1]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]));
                     break;
                 case "SwitchDec":
-                    node = new Switch(
-                            Signal.createDouble());
+                    node = new SwitchDec();
                     break;
                 case "SwitchInt":
-                    node = new Switch(
-                            Signal.createInteger());
+                    node = new SwitchInt();
                     break;
                 case "SwitchBin":
-                    node = new Switch(
-                            Signal.createBoolean());
+                    node = new SwitchBin();
                     break;
                 case "SwitchConstDec":
-                    node = new SwitchConst(
-                            Signal.createDouble(),
+                    node = new SwitchConstDec(
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
                     break;
                 case "SwitchConstInt":
-                    node = new SwitchConst(
-                            Signal.createInteger(),
+                    node = new SwitchConstInt(
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
                     break;
                 case "SwitchConstBin":
-                    node = new SwitchConst(
-                            Signal.createBoolean(),
+                    node = new SwitchConstBin(
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
                     break;
                 case "Switch2ConstDec":
-                    node = new Switch2Const(
-                            Signal.createDouble(),
+                    node = new Switch2ConstDec(
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]),
                             Signal.createDouble(settings.get(nodeType).getParametersDec()[1]),
                             Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[1][0], settings.get(nodeType).getParametersLimitsDec()[1][1]));
                     break;
                 case "Switch2ConstInt":
-                    node = new Switch2Const(
-                            Signal.createInteger(),
+                    node = new Switch2ConstInt(
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]),
                             Signal.createInteger(settings.get(nodeType).getParametersInt()[1]),
                             Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]));
                     break;
                 case "Switch2ConstBin":
-                    node = new Switch2Const(
-                            Signal.createBoolean(),
+                    node = new Switch2ConstBin(
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]),
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[1]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[1][0], settings.get(nodeType).getParametersLimitsBin()[1][1]));
                     break;
+
             }
         }
         return node;

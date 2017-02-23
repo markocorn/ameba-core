@@ -17,6 +17,20 @@ public class Node implements INode, Cloneable {
      */
     private ArrayList<CollectorInp> inpCollectors;
     private ArrayList<CollectorOut> outCollectors;
+    private ArrayList<CollectorInp> inpCollectorsDec;
+    private ArrayList<CollectorInp> inpCollectorsInt;
+    private ArrayList<CollectorInp> inpCollectorsBin;
+    private ArrayList<CollectorOut> outCollectorsDec;
+    private ArrayList<CollectorOut> outCollectorsInt;
+    private ArrayList<CollectorOut> outCollectorsBin;
+
+    private Integer[] inpColLimitDec;
+    private Integer[] inpColLimitInt;
+    private Integer[] inpColLimitBin;
+
+    private Integer[] outColLimitDec;
+    private Integer[] outColLimitInt;
+    private Integer[] outColLimitBin;
 
     /**
      * Flag that indicates signal is reads to be sent to other ameba.core.blocks.nodes.
@@ -31,13 +45,6 @@ public class Node implements INode, Cloneable {
     private ArrayList<Signal> params;
     private ArrayList<Signal[]> paramsLimits;
 
-    private Integer[] inpColLimitDec;
-    private Integer[] inpColLimitInt;
-    private Integer[] inpColLimitBin;
-
-    private Integer[] outColLimitDec;
-    private Integer[] outColLimitInt;
-    private Integer[] outColLimitBin;
 
     public Node(Integer[] inpColLimitDec, Integer[] inpColLimitInt, Integer[] inpColLimitBin, Integer[] outColLimitDec, Integer[] outColLimitInt, Integer[] outColLimitBin) {
         this.inpColLimitDec = inpColLimitDec;
@@ -49,6 +56,12 @@ public class Node implements INode, Cloneable {
 
         inpCollectors = new ArrayList<>();
         outCollectors = new ArrayList<>();
+        inpCollectorsDec = new ArrayList<>();
+        inpCollectorsInt = new ArrayList<>();
+        inpCollectorsBin = new ArrayList<>();
+        outCollectorsDec = new ArrayList<>();
+        outCollectorsInt = new ArrayList<>();
+        outCollectorsBin = new ArrayList<>();
 
         signalReady = false;
         signalInputsReady = false;
@@ -64,49 +77,31 @@ public class Node implements INode, Cloneable {
         return inpColLimitDec;
     }
 
-    public void setInpColLimitDec(Integer[] inpColLimitDec) {
-        this.inpColLimitDec = inpColLimitDec;
-    }
 
     public Integer[] getInpColLimitInt() {
         return inpColLimitInt;
     }
 
-    public void setInpColLimitInt(Integer[] inpColLimitInt) {
-        this.inpColLimitInt = inpColLimitInt;
-    }
 
     public Integer[] getInpColLimitBin() {
         return inpColLimitBin;
     }
 
-    public void setInpColLimitBin(Integer[] inpColLimitBin) {
-        this.inpColLimitBin = inpColLimitBin;
-    }
 
     public Integer[] getOutColLimitDec() {
         return outColLimitDec;
     }
 
-    public void setOutColLimitDec(Integer[] outColLimitDec) {
-        this.outColLimitDec = outColLimitDec;
-    }
 
     public Integer[] getOutColLimitInt() {
         return outColLimitInt;
     }
 
-    public void setOutColLimitInt(Integer[] outColLimitInt) {
-        this.outColLimitInt = outColLimitInt;
-    }
 
     public Integer[] getOutColLimitBin() {
         return outColLimitBin;
     }
 
-    public void setOutColLimitBin(Integer[] outColLimitBin) {
-        this.outColLimitBin = outColLimitBin;
-    }
 
     /**
      * Check if node's flag to indicate that node has prepared it's output signal is set.
@@ -129,45 +124,47 @@ public class Node implements INode, Cloneable {
 
     public void addInpCollector(CollectorInp collector) throws Exception {
         if (collector.getType().isAssignableFrom(Double.class)) {
-            if (inpCollectors.size() < inpColLimitDec[1]) {
+            if (inpCollectorsDec.size() < inpColLimitDec[1]) {
+                inpCollectorsDec.add(collector);
                 inpCollectors.add(collector);
             } else
                 throw new Exception("Collector can't be added. Maximum input collectors limitation of node: " + this.getClass().getSimpleName());
         }
         if (collector.getType().isAssignableFrom(Integer.class)) {
-            if (inpCollectors.size() < inpColLimitInt[1]) {
+            if (inpCollectorsInt.size() < inpColLimitInt[1]) {
+                inpCollectorsInt.add(collector);
                 inpCollectors.add(collector);
             } else
                 throw new Exception("Collector can't be added. Maximum input collectors limitation of node: " + this.getClass().getSimpleName());
         }
         if (collector.getType().isAssignableFrom(Boolean.class)) {
-            if (inpCollectors.size() < inpColLimitBin[1]) {
+            if (inpCollectorsBin.size() < inpColLimitBin[1]) {
+                inpCollectorsBin.add(collector);
                 inpCollectors.add(collector);
             } else
                 throw new Exception("Collector can't be added. Maximum input collectors limitation of node: " + this.getClass().getSimpleName());
         }
 
-    }
-
-    public void addInpCollector(Signal signal) throws Exception {
-        addInpCollector(new CollectorInp(signal, this));
     }
 
     public void addOutCollector(CollectorOut collector) throws Exception {
         if (collector.getType().isAssignableFrom(Double.class)) {
-            if (outCollectors.size() < outColLimitDec[1]) {
+            if (outCollectorsDec.size() < outColLimitDec[1]) {
+                outCollectorsDec.add(collector);
                 outCollectors.add(collector);
             } else
                 throw new Exception("Collector can't be added. Maximum output collectors limitation of node: " + this.getClass().getSimpleName());
         }
         if (collector.getType().isAssignableFrom(Integer.class)) {
-            if (outCollectors.size() < outColLimitInt[1]) {
+            if (outCollectorsInt.size() < outColLimitInt[1]) {
+                outCollectorsInt.add(collector);
                 outCollectors.add(collector);
             } else
                 throw new Exception("Collector can't be added. Maximum output collectors limitation of node: " + this.getClass().getSimpleName());
         }
         if (collector.getType().isAssignableFrom(Boolean.class)) {
-            if (outCollectors.size() < outColLimitBin[1]) {
+            if (outCollectorsBin.size() < outColLimitBin[1]) {
+                outCollectorsBin.add(collector);
                 outCollectors.add(collector);
             } else
                 throw new Exception("Collector can't be added. Maximum output collectors limitation of node: " + this.getClass().getSimpleName());
@@ -175,86 +172,157 @@ public class Node implements INode, Cloneable {
     }
 
 
-    public void addOutCollector(Signal signal) throws Exception {
-        addOutCollector(new CollectorOut(signal, this));
-    }
-
-    public ArrayList<CollectorInp> getInpCollectorsConn() {
+    public ArrayList<CollectorInp> getInpCollectorsConnected(Class type) {
         ArrayList<CollectorInp> collectorInps = new ArrayList<>();
-        for (CollectorInp collectorInp : inpCollectors) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorInps.add(collectorInp);
+        if (type.isAssignableFrom(Double.class)) {
+            for (CollectorInp collectorInp : inpCollectorsDec) {
+                if (collectorInp.getEdges().size() > 0) {
+                    collectorInps.add(collectorInp);
+                }
             }
+        }
+        if (type.isAssignableFrom(Integer.class)) {
+            for (CollectorInp collectorInp : inpCollectorsInt) {
+                if (collectorInp.getEdges().size() > 0) {
+                    collectorInps.add(collectorInp);
+                }
+            }
+        }
+        if (type.isAssignableFrom(Boolean.class)) {
+            for (CollectorInp collectorInp : inpCollectorsBin) {
+                if (collectorInp.getEdges().size() > 0) {
+                    collectorInps.add(collectorInp);
+                }
+            }
+
         }
         return collectorInps;
     }
 
-    public ArrayList<CollectorInp> getInpCollector(Class type) {
-        ArrayList<CollectorInp> collectors = new ArrayList<>();
-        for (CollectorInp collector : inpCollectors) {
-            if (collector.getType().equals(type)) {
-                collectors.add(collector);
-            }
-        }
-        return collectors;
-    }
 
-    public ArrayList<CollectorInp> getInpCollectorConnected(Class type) {
-        ArrayList<CollectorInp> collectors = new ArrayList<>();
-        for (CollectorInp collector : inpCollectors) {
-            if (collector.getType().equals(type) && collector.getEdges().size() > 0) {
-                collectors.add(collector);
-            }
-        }
-        return collectors;
-    }
-
-    public ArrayList<CollectorOut> getOutCollector(Class type) {
+    public ArrayList<CollectorOut> getOutCollectorsConnected(Class type) {
         ArrayList<CollectorOut> collectors = new ArrayList<>();
-        for (CollectorOut collector : outCollectors) {
-            if (collector.getType().equals(type)) {
-                collectors.add(collector);
-            }
-        }
-        return collectors;
-    }
-
-    public ArrayList<CollectorOut> getOutCollectorConnected(Class type) {
-        ArrayList<CollectorOut> collectors = new ArrayList<>();
-        for (CollectorOut collector : outCollectors) {
-            if (collector.getType().equals(type) && collector.getEdges().size() > 0) {
-                collectors.add(collector);
-            }
-        }
-        return collectors;
-    }
-
-    public ArrayList<CollectorInp> getInpCollectorMin(Class type) {
-        ArrayList<CollectorInp> collectors = new ArrayList<>();
-        int num =
-        if (type.isAssignableFrom(Double.class))
-            for (CollectorInp collector : inpCollectors) {
-                if (collector.getType().equals(type) && collector.getEdges().size() > 0) {
+        if (type.isAssignableFrom(Double.class)) {
+            for (CollectorOut collector : outCollectorsDec) {
+                if (collector.getEdges().size() > 0) {
                     collectors.add(collector);
                 }
             }
+        }
+        if (type.isAssignableFrom(Double.class)) {
+            for (CollectorOut collector : outCollectorsInt) {
+                if (collector.getEdges().size() > 0) {
+                    collectors.add(collector);
+                }
+            }
+        }
+        if (type.isAssignableFrom(Double.class)) {
+            for (CollectorOut collector : outCollectorsBin) {
+                if (collector.getEdges().size() > 0) {
+                    collectors.add(collector);
+                }
+            }
+        }
         return collectors;
     }
 
-    public ArrayList<CollectorInp> getInpCollectors() {
-        return inpCollectors;
+    public ArrayList<CollectorInp> getInpCollectorsMin(Class type) {
+        ArrayList<CollectorInp> collectors = new ArrayList<>();
+        int num = 0;
+        if (type.isAssignableFrom(Double.class)) {
+            num = getInpColLimitDec()[0];
+        }
+        if (type.isAssignableFrom(Integer.class)) {
+            num = getInpColLimitInt()[0];
+        }
+        if (type.isAssignableFrom(Boolean.class)) {
+            num = getInpColLimitBin()[0];
+        }
+        for (CollectorInp collector : inpCollectorsDec) {
+            if (collector.getType().equals(type) && collector.getEdges().size() > 0) {
+                collectors.add(collector);
+                num--;
+            }
+            if (num <= 0) {
+                break;
+            }
+        }
+        return collectors;
     }
 
-    public void setInpCollectors(ArrayList<CollectorInp> inpCollectors) {
-        this.inpCollectors = inpCollectors;
+    public ArrayList<CollectorInp> getInpCollectorsMinConnect() {
+        ArrayList<CollectorInp> collectors = new ArrayList<>();
+        int min = 0;
+        for (CollectorInp collector : inpCollectorsBin) {
+            min++;
+            if (collector.getEdges().size() == 0) {
+                collectors.add(collector);
+            }
+            if (min >= getInpColLimitBin()[0]) {
+                break;
+            }
+        }
+        min = 0;
+        for (CollectorInp collector : inpCollectorsInt) {
+            min++;
+            if (collector.getEdges().size() == 0) {
+                collectors.add(collector);
+            }
+            if (min >= getInpColLimitInt()[0]) {
+                break;
+            }
+        }
+        min = 0;
+        for (CollectorInp collector : inpCollectorsDec) {
+            min++;
+            if (collector.getEdges().size() == 0) {
+                collectors.add(collector);
+            }
+            if (min >= getInpColLimitDec()[0]) {
+                break;
+            }
+        }
+        return collectors;
+    }
+    public ArrayList<CollectorInp> getInpCollectors() {
+        return inpCollectors;
     }
 
     public ArrayList<CollectorOut> getOutCollectors() {
         return outCollectors;
     }
 
-    public void setOutCollectors(ArrayList<CollectorOut> outCollectors) {
-        this.outCollectors = outCollectors;
+    public ArrayList<CollectorInp> getInpCollectorsDec() {
+        return inpCollectorsDec;
+    }
+
+    public ArrayList<CollectorInp> getInpCollectorsInt() {
+        return inpCollectorsInt;
+    }
+
+    public ArrayList<CollectorInp> getInpCollectorsBin() {
+        return inpCollectorsBin;
+    }
+
+    public ArrayList<CollectorOut> getOutCollectorsDec() {
+        return outCollectorsDec;
+    }
+
+    public ArrayList<CollectorOut> getOutCollectorsInt() {
+        return outCollectorsInt;
+    }
+
+    public ArrayList<CollectorOut> getOutCollectorsBin() {
+        return outCollectorsBin;
+    }
+
+    public boolean isOutConnected() {
+        for (CollectorOut collector : outCollectors) {
+            if (collector.getEdges().size() > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public ArrayList<Signal> getParams() {
@@ -287,7 +355,34 @@ public class Node implements INode, Cloneable {
     }
 
     @Override
-    public void clcNode() throws Exception {
+    public void processNode() throws Exception {
+        switch (getState()) {
+            case 0:
+                if (isSignalInputsReady()) {
+                    clcNode();
+                    setSignalClcDone(true);
+                    setState(1);
+                }
+                break;
+            case 1:
+                if (isSignalClcDone()) {
+                    setSignalReady(true);
+                    setState(2);
+                }
+                break;
+            case 2:
+                if (isSignalReady()) {
+                    setState(3);
+                }
+                break;
+            case 3:
+                if (isSignalSend() || !isOutConnected()) {
+                    setState(4);
+                }
+
+                break;
+            case 4:
+        }
     }
 
     @Override
@@ -304,9 +399,14 @@ public class Node implements INode, Cloneable {
         state = 0;
     }
 
+    @Override
+    public void clcNode() throws Exception {
+
+    }
+
     public boolean isSignalInputsReady() {
         signalInputsReady = true;
-        for (CollectorInp collectorInp : inpCollectors) {
+        for (CollectorInp collectorInp : inpCollectorsDec) {
             for (Edge edge : collectorInp.getEdges()) {
                 if (!edge.isSignalReady()) {
                     signalInputsReady = false;

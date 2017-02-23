@@ -11,13 +11,13 @@ import java.io.IOException;
  */
 public class FactoryEdgeSettings {
     /**
-     * Interval of values for the weight initial value during rndGen generation.
+     * IntervalDec of values for the weight initial value during rndGen generation.
      */
     private Double[] weightInitialDec;
     private Integer[] weightInitialInt;
     private Boolean[] weightInitialBin;
     /**
-     * Interval of limit values for the
+     * IntervalDec of limit values for the
      */
     private Double[] weighLimitsDec;
     private Integer[] weighLimitsInt;

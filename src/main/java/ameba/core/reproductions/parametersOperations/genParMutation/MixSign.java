@@ -42,6 +42,6 @@ public class MixSign implements IMutate {
             }
             return par;
         }
-        throw new Exception("Input parameter not of allowed type.");
+        throw new Exception("InputDec parameter not of allowed type.");
     }
 }

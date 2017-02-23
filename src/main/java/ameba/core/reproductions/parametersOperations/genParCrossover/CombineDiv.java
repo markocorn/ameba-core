@@ -17,7 +17,7 @@ public class CombineDiv implements ICrossover {
     @Override
     public Signal crossover(Signal par1, Signal par2) throws Exception {
         if (par1.gettClass().equals(par2.gettClass())) {
-            //Add random value with constrains to parameter
+            //AddDec random value with constrains to parameter
             if (par1.gettClass().isAssignableFrom(Double.class)) {
                 par1.setValue(Signal.divSignal(par1, par2));
                 if (par1.getValueDouble() > maxValue.getValueDouble()) {
@@ -28,7 +28,7 @@ public class CombineDiv implements ICrossover {
                 }
                 return par1;
             }
-            throw new Exception("Input parameter not of allowed type.");
+            throw new Exception("InputDec parameter not of allowed type.");
         } else throw new Exception("Parameter1 and parameter2 not same type");
     }
 }

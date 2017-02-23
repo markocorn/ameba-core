@@ -35,7 +35,7 @@ public class RandValue implements IMutate {
             }
             return Signal.createBoolean(!par.getValueBoolean());
         }
-        throw new Exception("Input parameter not of allowed type.");
+        throw new Exception("InputDec parameter not of allowed type.");
 
     }
 }
