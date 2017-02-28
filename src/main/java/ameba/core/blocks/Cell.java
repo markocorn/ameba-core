@@ -17,6 +17,7 @@ public class Cell {
      * List of nodes without InputDec and OutputDec type.
      */
     private ArrayList<Node> nodes;
+    private ArrayList<Node> innerNodes;
     /**
      * List of input nodes interfaces.
      */
@@ -40,6 +41,7 @@ public class Cell {
     public Cell(int maxNodes) {
         fitnessValue = 0.0;
         nodes = new ArrayList<>();
+        innerNodes = new ArrayList<>();
         inpNodes = new ArrayList<>();
         outNodes = new ArrayList<>();
         edges = new ArrayList<>();
@@ -110,11 +112,18 @@ public class Cell {
             nodes.add(node);
             if (node instanceof INodeInput) {
                 inpNodes.add((INodeInput) node);
+                return;
             }
             if (node instanceof INodeOutput) {
                 outNodes.add((INodeOutput) node);
+                return;
             }
+            innerNodes.add(node);
         } else throw new Exception("Maximum number of nodes exceeded");
+    }
+
+    public ArrayList<Node> getInnerNodes() {
+        return innerNodes;
     }
 
     /**
@@ -179,6 +188,7 @@ public class Cell {
         }
         //Remove node from the cell
         nodes.remove(node);
+        innerNodes.remove(node);
     }
 
     public void runEvent(ArrayList<Signal> values) throws Exception {

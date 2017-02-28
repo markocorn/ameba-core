@@ -24,11 +24,7 @@ public class OutputDec extends Node implements INode, INodeOutput {
 
     @Override
     public void clcNode() throws Exception {
-        try {
-            value = getInpCollectorsDec().get(0).getSignal();
-        } catch (Exception ex) {
-            value = getInpCollectorsDec().get(0).getSignal();
-        }
+        value = getInpCollectorsDec().get(0).getSignal();
     }
 
 

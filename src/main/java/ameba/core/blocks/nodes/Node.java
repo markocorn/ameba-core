@@ -77,6 +77,21 @@ public class Node implements INode, Cloneable {
         return inpColLimitDec;
     }
 
+    public Integer[] getInpColLimit(Class type) throws Exception {
+        if (type.isAssignableFrom(Double.class)) return inpColLimitDec;
+        if (type.isAssignableFrom(Integer.class)) return inpColLimitInt;
+        if (type.isAssignableFrom(Boolean.class)) return inpColLimitBin;
+        throw new Exception("No input collectors limits of type: " + type.getSimpleName());
+    }
+
+    public Integer[] getOutColLimit(Class type) throws Exception {
+        if (type.isAssignableFrom(Double.class)) return outColLimitDec;
+        if (type.isAssignableFrom(Integer.class)) return outColLimitInt;
+        if (type.isAssignableFrom(Boolean.class)) return outColLimitBin;
+        throw new Exception("No output collectors limits of type: " + type.getSimpleName());
+    }
+
+
 
     public Integer[] getInpColLimitInt() {
         return inpColLimitInt;
@@ -231,22 +246,41 @@ public class Node implements INode, Cloneable {
         int num = 0;
         if (type.isAssignableFrom(Double.class)) {
             num = getInpColLimitDec()[0];
+            for (CollectorInp collector : inpCollectorsDec) {
+                if (collector.getEdges().size() == 0) {
+                    collectors.add(collector);
+                    num--;
+                }
+                if (num <= 0) {
+                    break;
+                }
+            }
         }
         if (type.isAssignableFrom(Integer.class)) {
             num = getInpColLimitInt()[0];
+            for (CollectorInp collector : inpCollectorsInt) {
+                if (collector.getEdges().size() == 0) {
+                    collectors.add(collector);
+                    num--;
+                }
+                if (num <= 0) {
+                    break;
+                }
+            }
         }
         if (type.isAssignableFrom(Boolean.class)) {
             num = getInpColLimitBin()[0];
-        }
-        for (CollectorInp collector : inpCollectorsDec) {
-            if (collector.getType().equals(type) && collector.getEdges().size() > 0) {
-                collectors.add(collector);
-                num--;
+            for (CollectorInp collector : inpCollectorsBin) {
+                if (collector.getEdges().size() == 0) {
+                    collectors.add(collector);
+                    num--;
+                }
+                if (num <= 0) {
+                    break;
+                }
             }
-            if (num <= 0) {
-                break;
-            }
         }
+
         return collectors;
     }
 
@@ -284,12 +318,27 @@ public class Node implements INode, Cloneable {
         }
         return collectors;
     }
+
     public ArrayList<CollectorInp> getInpCollectors() {
         return inpCollectors;
     }
 
+    public ArrayList<CollectorInp> getInpCollectors(Class type) throws Exception {
+        if (type.isAssignableFrom(Double.class)) return inpCollectorsDec;
+        if (type.isAssignableFrom(Integer.class)) return inpCollectorsInt;
+        if (type.isAssignableFrom(Boolean.class)) return inpCollectorsBin;
+        throw new Exception("No input collectors of type: " + type.getSimpleName());
+    }
+
     public ArrayList<CollectorOut> getOutCollectors() {
         return outCollectors;
+    }
+
+    public ArrayList<CollectorOut> getOutCollectors(Class type) throws Exception {
+        if (type.isAssignableFrom(Double.class)) return outCollectorsDec;
+        if (type.isAssignableFrom(Integer.class)) return outCollectorsInt;
+        if (type.isAssignableFrom(Boolean.class)) return outCollectorsBin;
+        throw new Exception("No output collectors of type: " + type.getSimpleName());
     }
 
     public ArrayList<CollectorInp> getInpCollectorsDec() {

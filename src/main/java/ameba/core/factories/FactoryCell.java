@@ -28,14 +28,24 @@ public class FactoryCell {
     }
 
     static public String checkCell(Cell cell) {
+        //Check edges
         for (Edge edge : cell.getEdges()) {
+            //Check edges types and sources
             if (!edge.getSource().getType().equals(edge.getWeight().gettClass())) {
                 return "Node: " + edge.getSource().getNodeAttached().getClass().getSimpleName() + " out collector of type: " + edge.getSource().getType().getSimpleName() + " not matched with edge weight type: " + edge.getWeight().gettClass().getSimpleName();
             }
+            //Check edges types and targets
             if (!edge.getTarget().getType().equals(edge.getWeight().gettClass())) {
                 return "Node: " + edge.getTarget().getNodeAttached().getClass().getSimpleName() + " inp collector of type: " + edge.getTarget().getType().getSimpleName() + " not matched with edge weight type: " + edge.getWeight().gettClass().getSimpleName();
             }
+            //Check edge connection and sources
+            if (!edge.getSource().getEdges().contains(edge))
+                return "Output collector:" + edge.getSource().getClass().getSimpleName() + " not connected to the source of edge: " + edge.getClass().getSimpleName();
+            if (!edge.getTarget().getEdges().contains(edge))
+                return "Input collector:" + edge.getSource().getClass().getSimpleName() + " not connected to the target of edge: " + edge.getClass().getSimpleName();
+
         }
+
         return "";
     }
 
@@ -73,7 +83,7 @@ public class FactoryCell {
         //Determine initial number of nodes
         int numNodes = genNmbNodesInitial();
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < numNodes; i++) {
             //Get collector that must be connected
             CollectorInp collectorInp = getCollectorInpMinRnd(cell);
             Node node;
@@ -87,6 +97,13 @@ public class FactoryCell {
             if (node == null) throw new Exception("Not possible to generate nodes");
             cell.addNode(node);
         }
+        connectsMinFreeInputs(cell);
+
+
+        return cell;
+    }
+
+    public void connectsMinFreeInputs(Cell cell) throws Exception {
         while (true) {
             CollectorInp collectorInp = getCollectorInpMinRnd(cell);
             if (collectorInp == null) {
@@ -121,8 +138,6 @@ public class FactoryCell {
                 }
             }
         }
-
-        return cell;
     }
 
     /**
@@ -130,7 +145,7 @@ public class FactoryCell {
      *
      * @return Randomly generated number with constrains from cell settings.
      */
-    private int genNmbNodesInitial() {
+    public int genNmbNodesInitial() {
         if (Objects.equals(cellFactorySettings.getNodeInitial()[1], cellFactorySettings.getNodeInitial()[0])) {
             return cellFactorySettings.getNodeInitial()[1];
         } else {
@@ -254,7 +269,7 @@ public class FactoryCell {
      */
     public Node getNodeRndInner(Cell cell) {
         if (cell.getNodes().size() > 0) {
-            return cell.getNodes().get(rndGen.nextInt(cell.getNodes().size()));
+            return cell.getInnerNodes().get(rndGen.nextInt(cell.getInnerNodes().size()));
         }
         return null;
     }

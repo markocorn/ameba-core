@@ -1,7 +1,5 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.CollectorInp;
-import ameba.core.blocks.CollectorOut;
 import ameba.core.blocks.Signal;
 import ameba.core.blocks.nodes.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,6 +29,17 @@ public class FactoryNode {
     ArrayList<String> bagOutColDec = new ArrayList<>();
     ArrayList<String> bagOutColInt = new ArrayList<>();
     ArrayList<String> bagOutColBin = new ArrayList<>();
+
+    ArrayList<String> bagColBinBin = new ArrayList<>();
+    ArrayList<String> bagColBinDec = new ArrayList<>();
+    ArrayList<String> bagColBinInt = new ArrayList<>();
+    ArrayList<String> bagColIntBin = new ArrayList<>();
+    ArrayList<String> bagColIntDec = new ArrayList<>();
+    ArrayList<String> bagColIntInt = new ArrayList<>();
+    ArrayList<String> bagColDecBin = new ArrayList<>();
+    ArrayList<String> bagColDecDec = new ArrayList<>();
+    ArrayList<String> bagColDecInt = new ArrayList<>();
+
 
     /**
      * Default constructor.
@@ -71,6 +80,17 @@ public class FactoryNode {
         bagOutColDec.clear();
         bagOutColInt.clear();
         bagOutColBin.clear();
+
+        bagColBinBin.clear();
+        bagColBinDec.clear();
+        bagColBinInt.clear();
+        bagColIntBin.clear();
+        bagColIntDec.clear();
+        bagColIntInt.clear();
+        bagColDecBin.clear();
+        bagColDecDec.clear();
+        bagColDecInt.clear();
+
         for (FactoryNodeSettings settings : settings.values()) {
             settings.setProbability(1);
             if (settings.getAvailable().equals(true)) {
@@ -78,53 +98,78 @@ public class FactoryNode {
                     bag.add(settings.getType());
                 }
                 Node node1 = genNode(settings.getType());
-                boolean[] included = new boolean[]{false, false, false};
-                for (CollectorInp collectorInp : node1.getInpCollectors()) {
-                    if (collectorInp.getType().isAssignableFrom(Double.class) && !included[0]) {
-                        included[0] = true;
-                        for (int i = 0; i < settings.getProbability(); i++) {
-                            bagInpColDec.add(settings.getType());
-                        }
-                    }
-                    if (collectorInp.getType().isAssignableFrom(Integer.class) && !included[1]) {
-                        included[1] = true;
-                        for (int i = 0; i < settings.getProbability(); i++) {
-                            bagInpColInt.add(settings.getType());
-                        }
-                    }
-                    if (collectorInp.getType().isAssignableFrom(Boolean.class) && !included[2]) {
-                        included[2] = true;
-                        for (int i = 0; i < settings.getProbability(); i++) {
-                            bagInpColBin.add(settings.getType());
-                        }
 
+                if (node1.getInpCollectors(Boolean.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
+                    for (int i = 0; i < settings.getProbability(); i++) {
+                        bagColBinBin.add(settings.getType());
                     }
                 }
-                included = new boolean[]{false, false, false};
-                for (CollectorOut collectorOut : node1.getOutCollectors()) {
-                    if (collectorOut.getType().isAssignableFrom(Double.class) && !included[0]) {
-                        included[0] = true;
-                        for (int i = 0; i < settings.getProbability(); i++) {
-                            bagOutColDec.add(settings.getType());
-                        }
-                    }
-                    if (collectorOut.getType().isAssignableFrom(Integer.class) && !included[1]) {
-                        included[1] = true;
-                        for (int i = 0; i < settings.getProbability(); i++) {
-                            bagOutColInt.add(settings.getType());
-                        }
-                    }
-                    if (collectorOut.getType().isAssignableFrom(Boolean.class) && !included[2]) {
-                        included[2] = true;
-                        for (int i = 0; i < settings.getProbability(); i++) {
-                            bagOutColBin.add(settings.getType());
-                        }
+                if (node1.getInpCollectors(Boolean.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
+                    for (int i = 0; i < settings.getProbability(); i++) {
+                        bagColBinDec.add(settings.getType());
                     }
                 }
+                if (node1.getInpCollectors(Boolean.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
+                    for (int i = 0; i < settings.getProbability(); i++) {
+                        bagColBinInt.add(settings.getType());
+                    }
+                }
+                if (node1.getInpCollectors(Integer.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
+                    for (int i = 0; i < settings.getProbability(); i++) {
+                        bagColIntBin.add(settings.getType());
+                    }
+                }
+                if (node1.getInpCollectors(Integer.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
+                    for (int i = 0; i < settings.getProbability(); i++) {
+                        bagColIntDec.add(settings.getType());
+                    }
+                }
+                if (node1.getInpCollectors(Integer.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
+                    for (int i = 0; i < settings.getProbability(); i++) {
+                        bagColIntInt.add(settings.getType());
+                    }
+                }
+                if (node1.getInpCollectors(Double.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
+                    for (int i = 0; i < settings.getProbability(); i++) {
+                        bagColDecBin.add(settings.getType());
+                    }
+                }
+                if (node1.getInpCollectors(Double.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
+                    for (int i = 0; i < settings.getProbability(); i++) {
+                        bagColDecDec.add(settings.getType());
+                    }
+                }
+                if (node1.getInpCollectors(Double.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
+                    for (int i = 0; i < settings.getProbability(); i++) {
+                        bagColDecInt.add(settings.getType());
+                    }
+                }
+
+                bagInpColDec.addAll(bagColDecBin);
+                bagInpColDec.addAll(bagColDecInt);
+                bagInpColDec.addAll(bagColDecDec);
+
+                bagInpColInt.addAll(bagColIntBin);
+                bagInpColInt.addAll(bagColIntInt);
+                bagInpColInt.addAll(bagColIntDec);
+
+                bagInpColBin.addAll(bagColBinBin);
+                bagInpColBin.addAll(bagColBinInt);
+                bagInpColBin.addAll(bagColBinDec);
+
+                bagOutColDec.addAll(bagColBinDec);
+                bagOutColDec.addAll(bagColIntDec);
+                bagOutColDec.addAll(bagColDecDec);
+
+                bagOutColInt.addAll(bagColBinInt);
+                bagOutColInt.addAll(bagColIntInt);
+                bagOutColInt.addAll(bagColDecInt);
+
+                bagOutColBin.addAll(bagColBinBin);
+                bagOutColBin.addAll(bagColIntBin);
+                bagOutColBin.addAll(bagColDecBin);
             }
         }
-
-
     }
 
     public HashMap<String, FactoryNodeSettings> getSettings() {
@@ -292,8 +337,8 @@ public class FactoryNode {
                     break;
                 case "MuxBin":
                     node = new MuxBin(
-                            settings.get(nodeType).getInpColLimitInt()[0],
-                            settings.get(nodeType).getInpColLimitInt()[1],
+                            settings.get(nodeType).getInpColLimitBin()[0],
+                            settings.get(nodeType).getInpColLimitBin()[1],
                             Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
                             Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
                     break;
@@ -427,6 +472,44 @@ public class FactoryNode {
         return node;
     }
 
+    public boolean isConstantAvaliable(Class type) throws Exception {
+        if (type.isAssignableFrom(Double.class)) return settings.get("ConstantDec").getAvailable();
+        if (type.isAssignableFrom(Integer.class)) return settings.get("ConstantInt").getAvailable();
+        if (type.isAssignableFrom(Boolean.class)) return settings.get("ConstantBin").getAvailable();
+        throw new Exception("Unknown type of Constant node: " + type.getSimpleName());
+    }
+
+    public Node genConstant(Class type) throws Exception {
+        if (type.isAssignableFrom(Double.class)) {
+            Node node = genNode("ConstantDec");
+            //Randomize parameters
+            for (int i = 0; i < node.getParams().size(); i++) {
+                node.getParams().set(i, genRndSignal(node.getParamsLimits().get(i)[0], node.getParamsLimits().get(i)[1]));
+            }
+            node.clearNode();
+            return node;
+        }
+        if (type.isAssignableFrom(Integer.class)) {
+            Node node = genNode("ConstantInt");
+            //Randomize parameters
+            for (int i = 0; i < node.getParams().size(); i++) {
+                node.getParams().set(i, genRndSignal(node.getParamsLimits().get(i)[0], node.getParamsLimits().get(i)[1]));
+            }
+            node.clearNode();
+            return node;
+        }
+        if (type.isAssignableFrom(Boolean.class)) {
+            Node node = genNode("ConstantBin");
+            //Randomize parameters
+            for (int i = 0; i < node.getParams().size(); i++) {
+                node.getParams().set(i, genRndSignal(node.getParamsLimits().get(i)[0], node.getParamsLimits().get(i)[1]));
+            }
+            node.clearNode();
+            return node;
+        }
+        throw new Exception("Unknown type of Constant node: " + type.getSimpleName());
+    }
+
     /**
      * Build node of rndGen type excluded InputDec, OutputDec node and nodes that aren't selected in settings.
      *
@@ -460,6 +543,39 @@ public class FactoryNode {
             return genNodeRndPar(bagOutColBin.get(rndGen.nextInt(bagOutColBin.size())));
         }
         throw new Exception();
+    }
+
+    public Node genNodeRndColType(Class typeInp, Class typeOut) throws Exception {
+        if (typeInp.isAssignableFrom(Boolean.class) && typeOut.isAssignableFrom(Boolean.class)) {
+            return genNodeRndPar(bagColBinBin.get(rndGen.nextInt(bagColBinBin.size())));
+        }
+        if (typeInp.isAssignableFrom(Boolean.class) && typeOut.isAssignableFrom(Integer.class)) {
+            return genNodeRndPar(bagColBinInt.get(rndGen.nextInt(bagColBinInt.size())));
+        }
+        if (typeInp.isAssignableFrom(Boolean.class) && typeOut.isAssignableFrom(Double.class)) {
+            return genNodeRndPar(bagColBinDec.get(rndGen.nextInt(bagColBinDec.size())));
+        }
+
+        if (typeInp.isAssignableFrom(Integer.class) && typeOut.isAssignableFrom(Boolean.class)) {
+            return genNodeRndPar(bagColIntBin.get(rndGen.nextInt(bagColIntBin.size())));
+        }
+        if (typeInp.isAssignableFrom(Integer.class) && typeOut.isAssignableFrom(Integer.class)) {
+            return genNodeRndPar(bagColIntInt.get(rndGen.nextInt(bagColIntInt.size())));
+        }
+        if (typeInp.isAssignableFrom(Integer.class) && typeOut.isAssignableFrom(Double.class)) {
+            return genNodeRndPar(bagColIntDec.get(rndGen.nextInt(bagColIntDec.size())));
+        }
+
+        if (typeInp.isAssignableFrom(Double.class) && typeOut.isAssignableFrom(Boolean.class)) {
+            return genNodeRndPar(bagColDecBin.get(rndGen.nextInt(bagColDecBin.size())));
+        }
+        if (typeInp.isAssignableFrom(Double.class) && typeOut.isAssignableFrom(Integer.class)) {
+            return genNodeRndPar(bagColDecInt.get(rndGen.nextInt(bagColDecInt.size())));
+        }
+        if (typeInp.isAssignableFrom(Double.class) && typeOut.isAssignableFrom(Double.class)) {
+            return genNodeRndPar(bagColDecDec.get(rndGen.nextInt(bagColDecDec.size())));
+        }
+        throw new Exception("Type does not exists.");
     }
 
 
