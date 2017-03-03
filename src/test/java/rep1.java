@@ -1,10 +1,7 @@
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.Signal;
 import ameba.core.factories.*;
-import ameba.core.reproductions.mutateCell.AddNode1;
-import ameba.core.reproductions.mutateCell.AddNode2;
-import ameba.core.reproductions.mutateCell.AddNode3;
-import ameba.core.reproductions.mutateCell.ReplaceNode;
+import ameba.core.reproductions.mutateCell.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -31,12 +28,17 @@ public class rep1 {
         factoryCell.getCellFactorySettings().setNodeOutDec(1);
         factoryCell.getCellFactorySettings().setNodeOutInt(1);
         factoryCell.getCellFactorySettings().setNodeOutBin(1);
-        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{1, 1});
+        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{10, 10});
 
         ReplaceNode replaceNode = new ReplaceNode(factoryNode, factoryCell, factoryEdge);
-        AddNode1 addNode1 = new AddNode1(factoryNode, factoryCell, factoryEdge);
-        AddNode2 addNode2 = new AddNode2(factoryNode, factoryCell, factoryEdge);
+        AddNode1 addNode1 = new AddNode1(factoryNode, factoryCell);
+        AddNode2 addNode2 = new AddNode2(factoryNode, factoryCell);
         AddNode3 addNode3 = new AddNode3(factoryNode, factoryCell, factoryEdge);
+        RemoveNode removeNode = new RemoveNode(factoryCell);
+        RemoveNode1 removeNode1 = new RemoveNode1(factoryCell);
+        SwitchEdges1 switchEdges1 = new SwitchEdges1();
+        SwitchEdges2 switchEdges2 = new SwitchEdges2();
+        RemoveNodesGroup removeNodesGroup = new RemoveNodesGroup(factoryCell, 5);
 
         ArrayList<ArrayList<Signal>> inputs = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -46,18 +48,18 @@ public class rep1 {
         try {
             Cell cell = factoryCell.genCellRnd();
             Cell cell1 = cell;
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 10; i++) {
                 System.out.println(i + " Run number");
 
                 try {
 //                    cell1 = replaceNode.mutate(cell);
-                    cell1 = addNode3.mutate(cell1);
+                    cell1 = removeNodesGroup.mutate(cell1);
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    cell1 = addNode3.mutate(cell1);
+                    cell1 = removeNodesGroup.mutate(cell1);
                 }
 
-                String test = FactoryCell.checkCell(cell1);
+                String test = cell1.checkCell();
                 System.out.println(test);
                 if (!test.equals("")) {
                     int t = 0;

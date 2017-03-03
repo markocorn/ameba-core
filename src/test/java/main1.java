@@ -41,7 +41,7 @@ public class main1 {
             for (int i = 0; i < 1000; i++) {
                 System.out.println(i + " Run number");
                 Cell cell = factoryCell.genCellRnd();
-                String test = FactoryCell.checkCell(cell);
+                String test = cell.checkCell();
                 System.out.println(test);
                 if (!test.equals("")) {
                     int t = 0;

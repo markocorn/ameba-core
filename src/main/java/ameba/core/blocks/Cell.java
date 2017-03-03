@@ -7,6 +7,8 @@ import ameba.core.blocks.nodes.Node;
 import com.rits.cloning.Cloner;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class Cell {
     /**
@@ -102,6 +104,16 @@ public class Cell {
         this.edges = edges;
     }
 
+    public ArrayList<Edge> getEdges(Class type) {
+        ArrayList<Edge> edges = new ArrayList<>();
+        for (Edge edge : getEdges()) {
+            if (edge.getType().equals(type)) {
+                edges.add(edge);
+            }
+        }
+        return edges;
+    }
+
     /**
      * AddDec node to the cell.
      *
@@ -178,7 +190,7 @@ public class Cell {
      * @param node Node to be removed.
      * @return Unconnected output conectivity of the node that has been removed.
      */
-    public void removeNode(Node node) throws Exception {
+    public void removeNodeSafe(Node node) throws Exception {
         //Remove input Edges of the node from collectors
         for (Collector collector : node.getInpCollectors()) {
             collector.removeEdges();
@@ -190,6 +202,13 @@ public class Cell {
         nodes.remove(node);
         innerNodes.remove(node);
     }
+
+    public void removeNode(Node node) throws Exception {
+        //Remove node from the cell
+        nodes.remove(node);
+        innerNodes.remove(node);
+    }
+
 
     public void runEvent(ArrayList<Signal> values) throws Exception {
         importSignals(values);
@@ -290,6 +309,142 @@ public class Cell {
             }
         }
         return true;
+    }
+
+    public ArrayList<ArrayList<Node>> getGroup(Node nodeStart, int maxNum) throws Exception {
+        ArrayList<Node> nodes = getInnerNodes();
+        ArrayList<ArrayList<Node>> group = new ArrayList<>();
+        if (nodes.size() < maxNum) maxNum = nodes.size();
+        if (!nodes.contains(nodeStart)) throw new Exception("Initial node not member of cell");
+        ArrayList<Node> currentLevel = new ArrayList<>();
+        currentLevel.add(nodeStart);
+        group.add(currentLevel);
+        ArrayList<Node> nextLevel = new ArrayList<>();
+        while (countGroup(group) < maxNum) {
+
+            for (Node node : currentLevel) {
+                if (node.getInpCollectors().size() > 0) {
+                    for (CollectorInp collectorInp : node.getInpCollectors()) {
+                        if (collectorInp.getEdges().size() > 0) {
+                            Node candidate = collectorInp.getEdges().get(0).getSource().getNodeAttached();
+                            if (!containsNodeGroup(group, candidate) && nodes.contains(candidate))
+                                nextLevel.add(candidate);
+                        }
+                    }
+                }
+                if (node.getOutCollectors().size() > 0) {
+                    for (CollectorOut collectorOut : node.getOutCollectors()) {
+                        for (Edge edge : collectorOut.getEdges()) {
+                            if (collectorOut.getEdges().size() > 0) {
+                                Node candidate = edge.getTarget().getNodeAttached();
+                                if (!containsNodeGroup(group, candidate) && nodes.contains(candidate))
+                                    nextLevel.add(candidate);
+                            }
+                        }
+                    }
+                }
+                Collections.shuffle(nextLevel);
+                int remain = maxNum - countGroup(group);
+                if (remain == 0) break;
+                if (remain > nextLevel.size()) {
+                    group.add(nextLevel);
+                } else {
+                    group.add(new ArrayList<>(nextLevel.subList(0, remain)));
+                }
+            }
+
+            currentLevel = new ArrayList<>();
+            currentLevel.addAll(nextLevel);
+        }
+        return group;
+    }
+
+    public HashMap<String, ArrayList<Edge>> getGroupBorderEdges(ArrayList<ArrayList<Node>> group) {
+        ArrayList<Edge> edgesInpBin = new ArrayList<>();
+        ArrayList<Edge> edgesInpInt = new ArrayList<>();
+        ArrayList<Edge> edgesInpDec = new ArrayList<>();
+        ArrayList<Edge> edgesOutBin = new ArrayList<>();
+        ArrayList<Edge> edgesOutInt = new ArrayList<>();
+        ArrayList<Edge> edgesOutDec = new ArrayList<>();
+
+        for (ArrayList<Node> levels : group) {
+            for (Node node : levels) {
+                for (CollectorInp collectorInp : node.getInpCollectors()) {
+                    if (!containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
+                        if (collectorInp.getEdges().get(0).getType().isAssignableFrom(Double.class)) {
+                            edgesInpDec.add(collectorInp.getEdges().get(0));
+                        }
+                        if (collectorInp.getEdges().get(0).getType().isAssignableFrom(Integer.class)) {
+                            edgesInpInt.add(collectorInp.getEdges().get(0));
+                        }
+                        if (collectorInp.getEdges().get(0).getType().isAssignableFrom(Boolean.class)) {
+                            edgesInpBin.add(collectorInp.getEdges().get(0));
+                        }
+
+                    }
+                }
+                for (CollectorOut collectorOut : node.getOutCollectors()) {
+                    for (Edge edge : collectorOut.getEdges()) {
+                        if (!containsNodeGroup(group, edge.getSource().getNodeAttached())) {
+                            if (edge.getType().isAssignableFrom(Double.class)) {
+                                edgesOutDec.add(edge);
+                            }
+                            if (edge.getType().isAssignableFrom(Integer.class)) {
+                                edgesOutInt.add(edge);
+                            }
+                            if (edge.getType().isAssignableFrom(Boolean.class)) {
+                                edgesOutBin.add(edge);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        HashMap<String, ArrayList<Edge>> out = new HashMap<>();
+        out.put("edgesInpDec", edgesInpDec);
+        out.put("edgesInpInt", edgesInpInt);
+        out.put("edgesInpBin", edgesInpBin);
+        out.put("edgesOutDec", edgesOutDec);
+        out.put("edgesOutInt", edgesOutInt);
+        out.put("edgesOutBin", edgesOutBin);
+        return out;
+    }
+
+    private int countGroup(ArrayList<ArrayList<Node>> group) {
+        int size = 0;
+        for (ArrayList<Node> list : group) {
+            size += list.size();
+        }
+        return size;
+    }
+
+    private boolean containsNodeGroup(ArrayList<ArrayList<Node>> group, Node node) {
+        for (ArrayList<Node> list : group) {
+            if (list.contains(node)) return true;
+        }
+        return false;
+    }
+
+    public String checkCell() {
+        //Check edges
+        for (Edge edge : getEdges()) {
+            //Check edges types and sources
+            if (!edge.getSource().getType().equals(edge.getWeight().gettClass())) {
+                return "Node: " + edge.getSource().getNodeAttached().getClass().getSimpleName() + " out collector of type: " + edge.getSource().getType().getSimpleName() + " not matched with edge weight type: " + edge.getWeight().gettClass().getSimpleName();
+            }
+            //Check edges types and targets
+            if (!edge.getTarget().getType().equals(edge.getWeight().gettClass())) {
+                return "Node: " + edge.getTarget().getNodeAttached().getClass().getSimpleName() + " inp collector of type: " + edge.getTarget().getType().getSimpleName() + " not matched with edge weight type: " + edge.getWeight().gettClass().getSimpleName();
+            }
+            //Check edge connection and sources
+            if (!edge.getSource().getEdges().contains(edge))
+                return "Output collector:" + edge.getSource().getClass().getSimpleName() + " not connected to the source of edge: " + edge.getClass().getSimpleName();
+            if (!edge.getTarget().getEdges().contains(edge))
+                return "Input collector:" + edge.getSource().getClass().getSimpleName() + " not connected to the target of edge: " + edge.getClass().getSimpleName();
+
+        }
+        return "";
     }
 
 

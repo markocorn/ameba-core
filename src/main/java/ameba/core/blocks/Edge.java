@@ -73,4 +73,8 @@ public class Edge implements Cloneable {
         }
         return null;
     }
+
+    public Class getType() {
+        return weight.gettClass();
+    }
 }

@@ -5,7 +5,6 @@ import ameba.core.blocks.CollectorOut;
 import ameba.core.blocks.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
-import ameba.core.factories.FactoryEdge;
 import ameba.core.factories.FactoryNode;
 
 import java.util.Random;
@@ -16,13 +15,11 @@ import java.util.Random;
 public class AddNode1 implements IMutateCell {
     FactoryNode nodeFactory;
     FactoryCell cellFactory;
-    FactoryEdge edgeFactory;
     Random random;
 
-    public AddNode1(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory) {
+    public AddNode1(FactoryNode nodeFactory, FactoryCell cellFactory) {
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
-        this.edgeFactory = edgeFactory;
         random = new Random();
     }
 

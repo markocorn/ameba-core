@@ -214,6 +214,16 @@ public class Node implements INode, Cloneable {
         return collectorInps;
     }
 
+    public ArrayList<CollectorInp> getInpCollectorsConnected() {
+        ArrayList<CollectorInp> collectorInps = new ArrayList<>();
+        for (CollectorInp collectorInp : inpCollectors) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorInps.add(collectorInp);
+            }
+        }
+        return collectorInps;
+    }
+
 
     public ArrayList<CollectorOut> getOutCollectorsConnected(Class type) {
         ArrayList<CollectorOut> collectors = new ArrayList<>();

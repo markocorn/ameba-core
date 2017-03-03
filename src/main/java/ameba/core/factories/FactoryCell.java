@@ -3,7 +3,6 @@ package ameba.core.factories;
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.CollectorInp;
 import ameba.core.blocks.CollectorOut;
-import ameba.core.blocks.Edge;
 import ameba.core.blocks.nodes.*;
 
 import java.util.ArrayList;
@@ -25,28 +24,6 @@ public class FactoryCell {
         this.nodeFactory = nodeFactory;
         this.edgeFactory = edgeFactory;
         rndGen = new Random();
-    }
-
-    static public String checkCell(Cell cell) {
-        //Check edges
-        for (Edge edge : cell.getEdges()) {
-            //Check edges types and sources
-            if (!edge.getSource().getType().equals(edge.getWeight().gettClass())) {
-                return "Node: " + edge.getSource().getNodeAttached().getClass().getSimpleName() + " out collector of type: " + edge.getSource().getType().getSimpleName() + " not matched with edge weight type: " + edge.getWeight().gettClass().getSimpleName();
-            }
-            //Check edges types and targets
-            if (!edge.getTarget().getType().equals(edge.getWeight().gettClass())) {
-                return "Node: " + edge.getTarget().getNodeAttached().getClass().getSimpleName() + " inp collector of type: " + edge.getTarget().getType().getSimpleName() + " not matched with edge weight type: " + edge.getWeight().gettClass().getSimpleName();
-            }
-            //Check edge connection and sources
-            if (!edge.getSource().getEdges().contains(edge))
-                return "Output collector:" + edge.getSource().getClass().getSimpleName() + " not connected to the source of edge: " + edge.getClass().getSimpleName();
-            if (!edge.getTarget().getEdges().contains(edge))
-                return "Input collector:" + edge.getSource().getClass().getSimpleName() + " not connected to the target of edge: " + edge.getClass().getSimpleName();
-
-        }
-
-        return "";
     }
 
     public FactoryCellSettings getCellFactorySettings() {
@@ -113,9 +90,6 @@ public class FactoryCell {
             CollectorOut collectorOut = getCollectorOutRndNoNode(collectorInp.getType(), cell, collectorInp.getNodeAttached());
 
             if (collectorOut != null) {
-                if (collectorOut.getType().isAssignableFrom(Double.class) && collectorInp.getType().isAssignableFrom(Boolean.class)) {
-                    int t = 0;
-                }
                 cell.addEdge(edgeFactory.genEdge(collectorInp.getType(), collectorOut, collectorInp));
             } else {
                 if (collectorInp.getType().isAssignableFrom(Double.class)) {
@@ -138,6 +112,17 @@ public class FactoryCell {
                 }
             }
         }
+    }
+
+    public CollectorOut getRndCollector(Class type, ArrayList<CollectorOut> collectorOuts) {
+        ArrayList<CollectorOut> outs = new ArrayList<>();
+        for (CollectorOut collectorOut : collectorOuts) {
+            if (collectorOut.getType().isAssignableFrom(type)) {
+                outs.add(collectorOut);
+            }
+        }
+        if (outs.size() > 0) return outs.get(rndGen.nextInt(outs.size()));
+        return null;
     }
 
     /**
