@@ -40,7 +40,6 @@ public class RemoveNodesGroup implements IMutateCell {
             }
         }
         return cell1;
-
     }
 
     private void reconnectEdges(Class type, Cell cell, HashMap<String, ArrayList<Edge>> borderEdges) throws Exception {
