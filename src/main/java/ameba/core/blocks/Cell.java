@@ -3,6 +3,7 @@ package ameba.core.blocks;
 
 import ameba.core.blocks.nodes.INodeInput;
 import ameba.core.blocks.nodes.INodeOutput;
+import ameba.core.blocks.nodes.IntegralBin;
 import ameba.core.blocks.nodes.Node;
 import com.rits.cloning.Cloner;
 
@@ -321,40 +322,34 @@ public class Cell {
         group.add(currentLevel);
         ArrayList<Node> nextLevel = new ArrayList<>();
         while (countGroup(group) < maxNum) {
-
+            if (currentLevel.size() == 0) {
+                break;
+            }
             for (Node node : currentLevel) {
-                if (node.getInpCollectors().size() > 0) {
-                    for (CollectorInp collectorInp : node.getInpCollectors()) {
-                        if (collectorInp.getEdges().size() > 0) {
-                            Node candidate = collectorInp.getEdges().get(0).getSource().getNodeAttached();
-                            if (!containsNodeGroup(group, candidate) && nodes.contains(candidate))
-                                nextLevel.add(candidate);
-                        }
-                    }
+                for (CollectorInp collectorInp : node.getInpCollectorsConnected()) {
+                    Node candidate = collectorInp.getEdges().get(0).getSource().getNodeAttached();
+                    if (!containsNodeGroup(group, candidate) && nodes.contains(candidate) && !nextLevel.contains(candidate))
+                        nextLevel.add(candidate);
                 }
-                if (node.getOutCollectors().size() > 0) {
-                    for (CollectorOut collectorOut : node.getOutCollectors()) {
-                        for (Edge edge : collectorOut.getEdges()) {
-                            if (collectorOut.getEdges().size() > 0) {
-                                Node candidate = edge.getTarget().getNodeAttached();
-                                if (!containsNodeGroup(group, candidate) && nodes.contains(candidate))
-                                    nextLevel.add(candidate);
-                            }
-                        }
+                for (CollectorOut collectorOut : node.getOutCollectorsConnected()) {
+                    for (Edge edge : collectorOut.getEdges()) {
+                        Node candidate = edge.getTarget().getNodeAttached();
+                        if (!containsNodeGroup(group, candidate) && nodes.contains(candidate) && !nextLevel.contains(candidate))
+                            nextLevel.add(candidate);
                     }
-                }
-                Collections.shuffle(nextLevel);
-                int remain = maxNum - countGroup(group);
-                if (remain == 0) break;
-                if (remain > nextLevel.size()) {
-                    group.add(nextLevel);
-                } else {
-                    group.add(new ArrayList<>(nextLevel.subList(0, remain)));
                 }
             }
+            Collections.shuffle(nextLevel);
+            int remain = maxNum - countGroup(group);
+            if (remain == 0) break;
+            if (remain >= nextLevel.size()) {
+                group.add(nextLevel);
+            } else {
+                group.add(new ArrayList<>(nextLevel.subList(0, remain)));
+            }
 
-            currentLevel = new ArrayList<>();
-            currentLevel.addAll(nextLevel);
+            currentLevel = nextLevel;
+            nextLevel = new ArrayList<>();
         }
         return group;
     }
@@ -369,35 +364,41 @@ public class Cell {
 
         for (ArrayList<Node> levels : group) {
             for (Node node : levels) {
-                for (CollectorInp collectorInp : node.getInpCollectors()) {
+                for (CollectorInp collectorInp : node.getInpCollectorsConnected(Double.class)) {
                     if (!containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
-                        if (collectorInp.getEdges().get(0).getType().isAssignableFrom(Double.class)) {
-                            edgesInpDec.add(collectorInp.getEdges().get(0));
-                        }
-                        if (collectorInp.getEdges().get(0).getType().isAssignableFrom(Integer.class)) {
-                            edgesInpInt.add(collectorInp.getEdges().get(0));
-                        }
-                        if (collectorInp.getEdges().get(0).getType().isAssignableFrom(Boolean.class)) {
-                            edgesInpBin.add(collectorInp.getEdges().get(0));
-                        }
-
+                        edgesInpDec.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorOut collectorOut : node.getOutCollectors()) {
+                for (CollectorInp collectorInp : node.getInpCollectorsConnected(Integer.class)) {
+                    if (!containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
+                        edgesInpInt.add(collectorInp.getEdges().get(0));
+                    }
+                }
+                for (CollectorInp collectorInp : node.getInpCollectorsConnected(Boolean.class)) {
+                    if (!containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
+                        edgesInpBin.add(collectorInp.getEdges().get(0));
+                    }
+                }
+                for (CollectorOut collectorOut : node.getOutCollectorsConnected(Double.class)) {
                     for (Edge edge : collectorOut.getEdges()) {
-                        if (!containsNodeGroup(group, edge.getSource().getNodeAttached())) {
-                            if (edge.getType().isAssignableFrom(Double.class)) {
-                                edgesOutDec.add(edge);
-                            }
-                            if (edge.getType().isAssignableFrom(Integer.class)) {
-                                edgesOutInt.add(edge);
-                            }
-                            if (edge.getType().isAssignableFrom(Boolean.class)) {
-                                edgesOutBin.add(edge);
-                            }
+                        if (!containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
+                            edgesOutDec.add(edge);
                         }
                     }
-
+                }
+                for (CollectorOut collectorOut : node.getOutCollectorsConnected(Integer.class)) {
+                    for (Edge edge : collectorOut.getEdges()) {
+                        if (!containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
+                            edgesOutInt.add(edge);
+                        }
+                    }
+                }
+                for (CollectorOut collectorOut : node.getOutCollectorsConnected(Boolean.class)) {
+                    for (Edge edge : collectorOut.getEdges()) {
+                        if (!containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
+                            edgesOutBin.add(edge);
+                        }
+                    }
                 }
             }
         }

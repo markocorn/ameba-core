@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class rep1 {
     public static void main(String[] args) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core (copy)/src/main/resources/settings.json"));
+        JsonNode jsonSettings = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core/src/main/resources/settings.json"));
         FactoryNode factoryNode = new FactoryNode();
         factoryNode.loadSettings(jsonSettings.get("nodeFactorySettings").toString());
         FactoryEdge factoryEdge = new FactoryEdge(mapper.readValue(jsonSettings.get("edgeFactorySettings").toString(), FactoryEdgeSettings.class));
@@ -28,7 +28,7 @@ public class rep1 {
         factoryCell.getCellFactorySettings().setNodeOutDec(1);
         factoryCell.getCellFactorySettings().setNodeOutInt(1);
         factoryCell.getCellFactorySettings().setNodeOutBin(1);
-        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{10, 10});
+        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{15, 15});
 
         ReplaceNode replaceNode = new ReplaceNode(factoryNode, factoryCell, factoryEdge);
         AddNode1 addNode1 = new AddNode1(factoryNode, factoryCell);
@@ -48,12 +48,12 @@ public class rep1 {
         try {
             Cell cell = factoryCell.genCellRnd();
             Cell cell1 = cell;
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 1000; i++) {
                 System.out.println(i + " Run number");
 
                 try {
 //                    cell1 = replaceNode.mutate(cell);
-                    cell1 = removeNodesGroup.mutate(cell1);
+                    cell1 = removeNodesGroup.mutate(factoryCell.genCellRnd());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     cell1 = removeNodesGroup.mutate(cell1);

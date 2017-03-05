@@ -224,6 +224,16 @@ public class Node implements INode, Cloneable {
         return collectorInps;
     }
 
+    public ArrayList<CollectorOut> getOutCollectorsConnected() {
+        ArrayList<CollectorOut> collectorOuts = new ArrayList<>();
+        for (CollectorOut collectorOut : outCollectors) {
+            if (collectorOut.getEdges().size() > 0) {
+                collectorOuts.add(collectorOut);
+            }
+        }
+        return collectorOuts;
+    }
+
 
     public ArrayList<CollectorOut> getOutCollectorsConnected(Class type) {
         ArrayList<CollectorOut> collectors = new ArrayList<>();
@@ -234,14 +244,14 @@ public class Node implements INode, Cloneable {
                 }
             }
         }
-        if (type.isAssignableFrom(Double.class)) {
+        if (type.isAssignableFrom(Integer.class)) {
             for (CollectorOut collector : outCollectorsInt) {
                 if (collector.getEdges().size() > 0) {
                     collectors.add(collector);
                 }
             }
         }
-        if (type.isAssignableFrom(Double.class)) {
+        if (type.isAssignableFrom(Boolean.class)) {
             for (CollectorOut collector : outCollectorsBin) {
                 if (collector.getEdges().size() > 0) {
                     collectors.add(collector);
