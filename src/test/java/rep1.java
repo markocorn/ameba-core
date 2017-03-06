@@ -28,7 +28,7 @@ public class rep1 {
         factoryCell.getCellFactorySettings().setNodeOutDec(1);
         factoryCell.getCellFactorySettings().setNodeOutInt(1);
         factoryCell.getCellFactorySettings().setNodeOutBin(1);
-        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{15, 15});
+        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{2, 2});
 
         ReplaceNode replaceNode = new ReplaceNode(factoryNode, factoryCell, factoryEdge);
         AddNode1 addNode1 = new AddNode1(factoryNode, factoryCell);
@@ -39,6 +39,7 @@ public class rep1 {
         SwitchEdges1 switchEdges1 = new SwitchEdges1();
         SwitchEdges2 switchEdges2 = new SwitchEdges2();
         RemoveNodesGroup removeNodesGroup = new RemoveNodesGroup(factoryCell, 5);
+        AddNodesGroup addNodesGroup = new AddNodesGroup(factoryNode, factoryCell, factoryEdge, 2);
 
         ArrayList<ArrayList<Signal>> inputs = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -53,10 +54,10 @@ public class rep1 {
 
                 try {
 //                    cell1 = replaceNode.mutate(cell);
-                    cell1 = removeNodesGroup.mutate(factoryCell.genCellRnd());
+                    cell1 = addNodesGroup.mutate(factoryCell.genCellRnd());
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    cell1 = removeNodesGroup.mutate(cell1);
+                    cell1 = addNodesGroup.mutate(cell1);
                 }
 
                 String test = cell1.checkCell();

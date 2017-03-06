@@ -3,7 +3,6 @@ package ameba.core.blocks;
 
 import ameba.core.blocks.nodes.INodeInput;
 import ameba.core.blocks.nodes.INodeOutput;
-import ameba.core.blocks.nodes.IntegralBin;
 import ameba.core.blocks.nodes.Node;
 import com.rits.cloning.Cloner;
 
@@ -53,6 +52,21 @@ public class Cell {
         exportedValues = new ArrayList<>();
     }
 
+    public static int countGroup(ArrayList<ArrayList<Node>> group) {
+        int size = 0;
+        for (ArrayList<Node> list : group) {
+            size += list.size();
+        }
+        return size;
+    }
+
+    public static boolean containsNodeGroup(ArrayList<ArrayList<Node>> group, Node node) {
+        for (ArrayList<Node> list : group) {
+            if (list.contains(node)) return true;
+        }
+        return false;
+    }
+
     /**
      * Set cell's fitness function value.
      *
@@ -61,6 +75,12 @@ public class Cell {
     public void setFitnessValue(Double fitnessValue) {
         this.fitnessValue = fitnessValue;
     }
+
+    /**
+     * Get cell's nodes of class InputDec
+     *
+     * @return
+     */
 
     /**
      * Get cell's nodes
@@ -79,13 +99,6 @@ public class Cell {
     public void setNodes(ArrayList<Node> nodes) {
         this.nodes = nodes;
     }
-
-    /**
-     * Get cell's nodes of class InputDec
-     *
-     * @return
-     */
-
 
     /**
      * Get cell's conectivity.
@@ -150,7 +163,6 @@ public class Cell {
         edge.getTarget().addEdge(edge);
     }
 
-
     /**
      * Remove edge from the cell.
      *
@@ -163,7 +175,6 @@ public class Cell {
             edge.getTarget().removeEdge(edge);
         }
     }
-
 
     /**
      * Get nodes of type InputDec.
@@ -210,7 +221,6 @@ public class Cell {
         innerNodes.remove(node);
     }
 
-
     public void runEvent(ArrayList<Signal> values) throws Exception {
         importSignals(values);
         clcCell();
@@ -226,7 +236,6 @@ public class Cell {
         }
         return out;
     }
-
 
     private void importSignals(ArrayList<Signal> values) throws Exception {
         if (values.size() == inpNodes.size()) {
@@ -297,7 +306,6 @@ public class Cell {
         }
     }
 
-
     public Cell clone() {
         Cloner cloner = new Cloner();
         return cloner.deepClone(this);
@@ -354,7 +362,59 @@ public class Cell {
         return group;
     }
 
-    public HashMap<String, ArrayList<Edge>> getGroupBorderEdges(ArrayList<ArrayList<Node>> group) {
+    public HashMap<String, ArrayList<Edge>> getGroupEdgesInner(ArrayList<ArrayList<Node>> group) {
+        ArrayList<Edge> edgesBin = new ArrayList<>();
+        ArrayList<Edge> edgesInt = new ArrayList<>();
+        ArrayList<Edge> edgesDec = new ArrayList<>();
+
+        for (ArrayList<Node> levels : group) {
+            for (Node node : levels) {
+                for (CollectorInp collectorInp : node.getInpCollectorsConnected(Double.class)) {
+                    if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
+                        edgesDec.add(collectorInp.getEdges().get(0));
+                    }
+                }
+                for (CollectorInp collectorInp : node.getInpCollectorsConnected(Integer.class)) {
+                    if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
+                        edgesInt.add(collectorInp.getEdges().get(0));
+                    }
+                }
+                for (CollectorInp collectorInp : node.getInpCollectorsConnected(Boolean.class)) {
+                    if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
+                        edgesBin.add(collectorInp.getEdges().get(0));
+                    }
+                }
+                for (CollectorOut collectorOut : node.getOutCollectorsConnected(Double.class)) {
+                    for (Edge edge : collectorOut.getEdges()) {
+                        if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
+                            edgesDec.add(edge);
+                        }
+                    }
+                }
+                for (CollectorOut collectorOut : node.getOutCollectorsConnected(Integer.class)) {
+                    for (Edge edge : collectorOut.getEdges()) {
+                        if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
+                            edgesInt.add(edge);
+                        }
+                    }
+                }
+                for (CollectorOut collectorOut : node.getOutCollectorsConnected(Boolean.class)) {
+                    for (Edge edge : collectorOut.getEdges()) {
+                        if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
+                            edgesBin.add(edge);
+                        }
+                    }
+                }
+            }
+        }
+        HashMap<String, ArrayList<Edge>> out = new HashMap<>();
+        out.put("edgesDec", edgesDec);
+        out.put("edgesInt", edgesInt);
+        out.put("edgesBin", edgesBin);
+        return out;
+    }
+
+    public HashMap<String, ArrayList<Edge>> getGroupEdgesBorder(ArrayList<ArrayList<Node>> group) {
         ArrayList<Edge> edgesInpBin = new ArrayList<>();
         ArrayList<Edge> edgesInpInt = new ArrayList<>();
         ArrayList<Edge> edgesInpDec = new ArrayList<>();
@@ -410,21 +470,6 @@ public class Cell {
         out.put("edgesOutInt", edgesOutInt);
         out.put("edgesOutBin", edgesOutBin);
         return out;
-    }
-
-    private int countGroup(ArrayList<ArrayList<Node>> group) {
-        int size = 0;
-        for (ArrayList<Node> list : group) {
-            size += list.size();
-        }
-        return size;
-    }
-
-    private boolean containsNodeGroup(ArrayList<ArrayList<Node>> group, Node node) {
-        for (ArrayList<Node> list : group) {
-            if (list.contains(node)) return true;
-        }
-        return false;
     }
 
     public String checkCell() {

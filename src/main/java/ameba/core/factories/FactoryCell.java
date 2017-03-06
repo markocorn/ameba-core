@@ -4,6 +4,7 @@ import ameba.core.blocks.Cell;
 import ameba.core.blocks.CollectorInp;
 import ameba.core.blocks.CollectorOut;
 import ameba.core.blocks.nodes.*;
+import com.rits.cloning.Cloner;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -257,6 +258,11 @@ public class FactoryCell {
             return cell.getInnerNodes().get(rndGen.nextInt(cell.getInnerNodes().size()));
         }
         return null;
+    }
+
+    public FactoryCell clone() {
+        Cloner cloner = new Cloner();
+        return cloner.deepClone(this);
     }
 
 
