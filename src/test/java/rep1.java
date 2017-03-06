@@ -60,11 +60,11 @@ public class rep1 {
                     cell1 = addNodesGroup.mutate(cell1);
                 }
 
-                String test = cell1.checkCell();
-                System.out.println(test);
-                if (!test.equals("")) {
-                    int t = 0;
-                }
+//                String test = cell1.checkCell();
+//                System.out.println(test);
+//                if (!test.equals("")) {
+//                    int t = 0;
+//                }
                 ArrayList<ArrayList<Signal>> outputs = new ArrayList<>();
                 try {
                     outputs = cell1.run(inputs);

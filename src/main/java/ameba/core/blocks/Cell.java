@@ -472,25 +472,26 @@ public class Cell {
         return out;
     }
 
-    public String checkCell() {
+    public ArrayList<String> checkCell() {
+        ArrayList<String> out=new ArrayList<>();
         //Check edges
         for (Edge edge : getEdges()) {
             //Check edges types and sources
             if (!edge.getSource().getType().equals(edge.getWeight().gettClass())) {
-                return "Node: " + edge.getSource().getNodeAttached().getClass().getSimpleName() + " out collector of type: " + edge.getSource().getType().getSimpleName() + " not matched with edge weight type: " + edge.getWeight().gettClass().getSimpleName();
+                out.add("Node: " + edge.getSource().getNodeAttached().toString()+ " out collector of type: " + edge.getSource().getType().toString() + " not matched with edge weight type: " + edge.getWeight().toString());
             }
             //Check edges types and targets
             if (!edge.getTarget().getType().equals(edge.getWeight().gettClass())) {
-                return "Node: " + edge.getTarget().getNodeAttached().getClass().getSimpleName() + " inp collector of type: " + edge.getTarget().getType().getSimpleName() + " not matched with edge weight type: " + edge.getWeight().gettClass().getSimpleName();
+                out.add("Node: " + edge.getTarget().getNodeAttached().toString() + " inp collector of type: " + edge.getTarget().getType().toString() + " not matched with edge weight type: " + edge.getWeight().toString());
             }
             //Check edge connection and sources
             if (!edge.getSource().getEdges().contains(edge))
-                return "Output collector:" + edge.getSource().getClass().getSimpleName() + " not connected to the source of edge: " + edge.getClass().getSimpleName();
+                out.add("Output collector:" + edge.getSource().toString() + " not connected to the source of edge: " + edge.toString());
             if (!edge.getTarget().getEdges().contains(edge))
-                return "Input collector:" + edge.getSource().getClass().getSimpleName() + " not connected to the target of edge: " + edge.getClass().getSimpleName();
+                out.add("Input collector:" + edge.getSource().toString() + " not connected to the target of edge: " + edge.toString());
 
         }
-        return "";
+        return out;
     }
 
 

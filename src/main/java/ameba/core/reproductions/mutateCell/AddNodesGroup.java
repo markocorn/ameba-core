@@ -67,10 +67,6 @@ public class AddNodesGroup implements IMutateCell {
             cell.addEdge(edge);
         }
 
-
-        //Connect free remaining nodes
-        cellFactory.connectsMinFreeInputs(cell);
-
         return cell;
     }
 
@@ -88,6 +84,8 @@ public class AddNodesGroup implements IMutateCell {
         for (int i = 0; i < same; i++) {
             Edge edge1 = cell.getEdges(type).get(i);
             Edge edge2 = borderEdges.get("edgesInp" + ind).get(i);
+            //Remove edge 2 from source
+            edge2.getSource().removeEdge(edge2);
             //Set new source for edge 2
             edge2.setSource(edge1.getSource());
             edge2.getSource().addEdge(edge2);
@@ -111,7 +109,7 @@ public class AddNodesGroup implements IMutateCell {
             edge1.setSource(edge2.getSource());
             edge1.getSource().addEdge(edge1);
             edge1.getSource().removeEdge(edge2);
-
+            cellFactory.connectsMinFreeInputs(cell);
         }
         if (diff > 0) {
             for (int i = same; i < same + diff; i++) {
@@ -120,6 +118,8 @@ public class AddNodesGroup implements IMutateCell {
         } else {
             for (int i = same; i < same - diff; i++) {
                 remains.get(i).getTarget().removeEdge(remains.get(i));
+                cell.removeEdge(remains.get(i));
+                cellFactory.connectsMinFreeInputs(cell);
             }
         }
     }

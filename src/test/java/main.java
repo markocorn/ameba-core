@@ -39,11 +39,11 @@ public class main {
             for (int i = 0; i < 10000; i++) {
                 System.out.println(i + " Run number");
                 Cell cell = factoryCell.genCellRnd();
-                String test = cell.checkCell();
-                System.out.println(test);
-                if (!test.equals("")) {
-                    int t = 0;
-                }
+//                String test = cell.checkCell();
+//                System.out.println(test);
+//                if (!test.equals("")) {
+//                    int t = 0;
+//                }
                 ArrayList<ArrayList<Signal>> outputs = new ArrayList<>();
                 try {
                     outputs = cell.run(inputs);
