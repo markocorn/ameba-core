@@ -1,17 +1,16 @@
 package ameba.core.reproductions.parametersOperations.genParMutation;
 
 import ameba.core.blocks.Signal;
+import ameba.core.reproductions.parametersOperations.RepParSettings;
 
 /**
  * Created by marko on 12/27/16.
  */
 public class MixSign implements IMutate {
-    private Signal minValue;
-    private Signal maxValue;
+    RepParSettings repParSettings;
 
-    public MixSign(Signal minValue, Signal maxValue) {
-        this.minValue = minValue;
-        this.maxValue = maxValue;
+    public MixSign(RepParSettings repParSettings) {
+        this.repParSettings = repParSettings;
     }
 
     /**
@@ -24,24 +23,23 @@ public class MixSign implements IMutate {
     public Signal mutate(Signal par) throws Exception {
         if (par.gettClass().isAssignableFrom(Double.class)) {
             par.setValueDouble(-par.getValueDouble());
-            if (par.getValueDouble() > maxValue.getValueDouble()) {
-                par.setValueDouble(maxValue.getValueDouble());
+            if (par.getValueDouble() > repParSettings.getValueLimitDec()[1]) {
+                par.setValueDouble(repParSettings.getValueLimitDec()[1]);
             }
-            if (par.getValueDouble() < minValue.getValueDouble()) {
-                par.setValueDouble(minValue.getValueDouble());
+            if (par.getValueDouble() < repParSettings.getValueLimitDec()[0]) {
+                par.setValueDouble(repParSettings.getValueLimitDec()[0]);
             }
-            return par;
         }
         if (par.gettClass().isAssignableFrom(Integer.class)) {
             par.setValueInteger(-par.getValueInteger());
-            if (par.getValueInteger() > maxValue.getValueInteger()) {
-                par.setValueInteger(maxValue.getValueInteger());
+            if (par.getValueInteger() > repParSettings.getValueLimitInt()[1]) {
+                par.setValueInteger(repParSettings.getValueLimitInt()[1]);
             }
-            if (par.getValueInteger() < minValue.getValueInteger()) {
-                par.setValueInteger(minValue.getValueInteger());
+            if (par.getValueInteger() < repParSettings.getValueLimitInt()[0]) {
+                par.setValueInteger(repParSettings.getValueLimitInt()[0]);
             }
             return par;
         }
-        throw new Exception("InputDec parameter not of allowed type.");
+        throw new Exception("Input parameter not of allowed type.");
     }
 }

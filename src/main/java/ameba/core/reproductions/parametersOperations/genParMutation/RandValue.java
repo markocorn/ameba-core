@@ -27,7 +27,7 @@ public class RandValue implements IMutate {
             return Signal.createInteger(random.nextInt(maxValue.getValueInteger() - minValue.getValueInteger()) + minValue.getValueInteger());
         }
         if (par.gettClass().isAssignableFrom(Boolean.class)) {
-            if (maxValue.getValueDouble().equals(false)) {
+            if (maxValue.getValueBoolean().equals(false)) {
                 return Signal.createBoolean(false);
             }
             if (minValue.getValueBoolean().equals(true)) {

@@ -28,7 +28,7 @@ public class rep1 {
         factoryCell.getCellFactorySettings().setNodeOutDec(1);
         factoryCell.getCellFactorySettings().setNodeOutInt(1);
         factoryCell.getCellFactorySettings().setNodeOutBin(1);
-        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{2, 2});
+        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{5, 5});
 
         ReplaceNode replaceNode = new ReplaceNode(factoryNode, factoryCell, factoryEdge);
         AddNode1 addNode1 = new AddNode1(factoryNode, factoryCell);
@@ -39,7 +39,7 @@ public class rep1 {
         SwitchEdges1 switchEdges1 = new SwitchEdges1();
         SwitchEdges2 switchEdges2 = new SwitchEdges2();
         RemoveNodesGroup removeNodesGroup = new RemoveNodesGroup(factoryCell, 5);
-        AddNodesGroup addNodesGroup = new AddNodesGroup(factoryNode, factoryCell, factoryEdge, 2);
+        AddNodesGroup addNodesGroup = new AddNodesGroup(factoryNode, factoryCell, factoryEdge, 5);
 
         ArrayList<ArrayList<Signal>> inputs = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -49,22 +49,20 @@ public class rep1 {
         try {
             Cell cell = factoryCell.genCellRnd();
             Cell cell1 = cell;
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 100; i++) {
                 System.out.println(i + " Run number");
 
                 try {
 //                    cell1 = replaceNode.mutate(cell);
-                    cell1 = addNodesGroup.mutate(factoryCell.genCellRnd());
+//                    cell1 = addNodesGroup.mutate(factoryCell.genCellRnd());
+                    cell1 = addNodesGroup.mutate(cell1);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     cell1 = addNodesGroup.mutate(cell1);
                 }
 
-//                String test = cell1.checkCell();
-//                System.out.println(test);
-//                if (!test.equals("")) {
-//                    int t = 0;
-//                }
+                ArrayList<String> test = cell1.checkCell();
+                System.out.println(test);
                 ArrayList<ArrayList<Signal>> outputs = new ArrayList<>();
                 try {
                     outputs = cell1.run(inputs);

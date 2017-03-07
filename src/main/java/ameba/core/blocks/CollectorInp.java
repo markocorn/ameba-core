@@ -28,4 +28,10 @@ public class CollectorInp extends Collector implements ICollector {
         }
         return true;
     }
+
+    @Override
+    public void addEdge(Edge edge) throws Exception {
+        getEdges().clear();
+        getEdges().add(edge);
+    }
 }

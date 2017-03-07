@@ -1,0 +1,80 @@
+{
+  "mutateEdgeDec": {
+    "WeightAddValue": {
+      "changeLimits": [
+        -0.01,
+        0.01
+      ],
+      "valueLimits": [
+        -1000,
+        1000
+      ]
+    },
+    "WeightInverse": {
+      "valueLimits": [
+        -1000,
+        1000
+      ]
+    },
+    "WeightMixSing": {
+      "valueLimits": [
+        -1000,
+        1000
+      ]
+    },
+    "weightRandValue": {
+      "valueLimits": [
+        -1000,
+        1000
+      ]
+    }
+  },
+  "mutateEdgeInt": {
+    "WeightAddValue": {
+      "changeLimits": [
+        -1,
+        1
+      ],
+      "valueLimits": [
+        -1000,
+        1000
+      ]
+    },
+    "WeightMixSing": {
+      "valueLimits": [
+        -1000,
+        1000
+      ]
+    },
+    "weightRandValue": {
+      "valueLimits": [
+        -1000,
+        1000
+      ]
+    }
+  },
+  "mutateEdgeBin": {
+    "WeightAddValue": {
+      "changeLimits": [
+        -1,
+        1
+      ],
+      "valueLimits": [
+        -1000,
+        1000
+      ]
+    },
+    "WeightMixSing": {
+      "valueLimits": [
+        -1000,
+        1000
+      ]
+    },
+    "weightRandValue": {
+      "valueLimits": [
+        -1000,
+        1000
+      ]
+    }
+  }
+}

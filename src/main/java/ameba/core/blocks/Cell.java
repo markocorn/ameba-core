@@ -158,9 +158,11 @@ public class Cell {
      * @param edge
      */
     public void addEdge(Edge edge) throws Exception {
-        edges.add(edge);
-        edge.getSource().addEdge(edge);
-        edge.getTarget().addEdge(edge);
+        if (!edges.contains(edge)) {
+            edges.add(edge);
+            edge.getSource().addEdge(edge);
+            edge.getTarget().addEdge(edge);
+        } else throw new Exception("Edge to be added already contained");
     }
 
     /**
@@ -473,12 +475,12 @@ public class Cell {
     }
 
     public ArrayList<String> checkCell() {
-        ArrayList<String> out=new ArrayList<>();
+        ArrayList<String> out = new ArrayList<>();
         //Check edges
         for (Edge edge : getEdges()) {
             //Check edges types and sources
             if (!edge.getSource().getType().equals(edge.getWeight().gettClass())) {
-                out.add("Node: " + edge.getSource().getNodeAttached().toString()+ " out collector of type: " + edge.getSource().getType().toString() + " not matched with edge weight type: " + edge.getWeight().toString());
+                out.add("Node: " + edge.getSource().getNodeAttached().toString() + " out collector of type: " + edge.getSource().getType().toString() + " not matched with edge weight type: " + edge.getWeight().toString());
             }
             //Check edges types and targets
             if (!edge.getTarget().getType().equals(edge.getWeight().gettClass())) {
