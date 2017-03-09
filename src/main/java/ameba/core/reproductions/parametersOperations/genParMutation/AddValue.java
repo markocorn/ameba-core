@@ -59,4 +59,9 @@ public class AddValue implements IMutate {
         }
         throw new Exception("Input parameter not of allowed type.");
     }
+
+    @Override
+    public RepParSettings getSettings() {
+        return repParSettings;
+    }
 }

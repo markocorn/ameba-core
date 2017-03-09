@@ -10,6 +10,9 @@ import java.io.IOException;
  * Created by marko on 12/21/16.
  */
 public class RepParSettings {
+
+    private Integer probability;
+
     private Double[] changeLimitDec;
     private Integer[] changeLimitInt;
     private Boolean[] changeLimitBin;
@@ -18,16 +21,19 @@ public class RepParSettings {
     private Integer[] valueLimitInt;
     private Boolean[] valueLimitBin;
 
-    private Double probability;
 
-    public RepParSettings(Double[] changeLimitDec, Integer[] changeLimitInt, Boolean[] changeLimitBin, Double[] valueLimitDec, Integer[] valueLimitInt, Boolean[] valueLimitBin, Double probability) {
+    public RepParSettings() {
+    }
+
+    public RepParSettings(Integer probability, Double[] changeLimitDec, Integer[] changeLimitInt, Boolean[] changeLimitBin, Double[] valueLimitDec, Integer[] valueLimitInt, Boolean[] valueLimitBin) {
+        this.probability = probability;
         this.changeLimitDec = changeLimitDec;
         this.changeLimitInt = changeLimitInt;
         this.changeLimitBin = changeLimitBin;
         this.valueLimitDec = valueLimitDec;
         this.valueLimitInt = valueLimitInt;
         this.valueLimitBin = valueLimitBin;
-        this.probability = probability;
+
     }
 
     public static RepParSettings create(String json) throws IOException {
@@ -39,6 +45,14 @@ public class RepParSettings {
     public String getStringJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(this);
+    }
+
+    public Integer getProbability() {
+        return probability;
+    }
+
+    public void setProbability(Integer probability) {
+        this.probability = probability;
     }
 
     public Double[] getChangeLimitDec() {
@@ -89,11 +103,4 @@ public class RepParSettings {
         this.valueLimitBin = valueLimitBin;
     }
 
-    public Double getProbability() {
-        return probability;
-    }
-
-    public void setProbability(Double probability) {
-        this.probability = probability;
-    }
 }

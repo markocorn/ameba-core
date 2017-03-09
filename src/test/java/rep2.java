@@ -1,5 +1,4 @@
 import ameba.core.factories.*;
-import ameba.core.reproductions.parametersOperations.RepParSettings;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -17,9 +16,9 @@ public class rep2 {
         FactoryEdge factoryEdge = new FactoryEdge(mapper.readValue(jsonSettings.get("edgeFactorySettings").toString(), FactoryEdgeSettings.class));
         FactoryCell factoryCell = new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), factoryNode, factoryEdge);
 
-        RepParSettings repParSettings = new RepParSettings(new Double[]{-0.01, 0.01}, new Integer[]{-1, 1}, new Boolean[]{false, true},
-                new Double[]{-1000.0, 1000.0}, new Integer[]{-1000, 1000}, new Boolean[]{false, true}, 100.0);
-        repParSettings.getStringJson();
+        FactoryReproduction factoryReproduction = new FactoryReproduction();
+        factoryReproduction.loadSettings(jsonSettings.get("reproductionSettings").toString());
+        int t = 0;
 
     }
 }

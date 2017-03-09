@@ -1,6 +1,7 @@
 package ameba.core.reproductions.mutateEdge;
 
 import ameba.core.blocks.Edge;
+import ameba.core.reproductions.parametersOperations.RepParSettings;
 import ameba.core.reproductions.parametersOperations.genParMutation.MixSign;
 
 /**
@@ -17,5 +18,10 @@ public class WeightMixSign implements IMutateEdge {
     public Edge mutate(Edge edge) throws Exception {
         edge.setWeight(mixSign.mutate(edge.getWeight()));
         return edge;
+    }
+
+    @Override
+    public RepParSettings getSettings() {
+        return mixSign.getSettings();
     }
 }

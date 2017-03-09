@@ -1,6 +1,7 @@
 package ameba.core.reproductions.mutateEdge;
 
 import ameba.core.blocks.Edge;
+import ameba.core.reproductions.parametersOperations.RepParSettings;
 import ameba.core.reproductions.parametersOperations.genParMutation.InverseValue;
 
 /**
@@ -17,5 +18,10 @@ public class WeightInverse implements IMutateEdge {
     public Edge mutate(Edge edge) throws Exception {
         edge.setWeight(inverseValue.mutate(edge.getWeight()));
         return edge;
+    }
+
+    @Override
+    public RepParSettings getSettings() {
+        return inverseValue.getSettings();
     }
 }
