@@ -6,21 +6,21 @@ import ameba.core.reproductions.parametersOperations.ParOperationSettings;
 /**
  * Created by marko on 12/27/16.
  */
-public class InverseValue extends ParOperation implements IOperationDec {
+public class MixSignInt extends ParOperation implements IOperationInt {
 
-    public InverseValue(ParOperationSettings parOperationSettings) {
+    public MixSignInt(ParOperationSettings parOperationSettings) {
         super(parOperationSettings);
     }
 
     /**
-     * Mutation changes value of parameter by calculating it's inverse value.
+     * Mutation changes sign of parameter.
      *
      * @param par Parameter to be changed.
      * @return Mutated parameter
      */
     @Override
-    public Double mutate(Double par) throws Exception {
-        par = 1.0 / par;
-        return limitDouble(par);
+    public Integer mutate(Integer par) throws Exception {
+        par = -par;
+        return limitInteger(par);
     }
 }

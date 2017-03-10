@@ -1,19 +1,21 @@
 package ameba.core.reproductions.mutateNode;
 
 import ameba.core.blocks.nodes.Node;
-import ameba.core.reproductions.parametersOperations.genParMutation.MixSign;
+import ameba.core.reproductions.Reproduction;
+import ameba.core.reproductions.parametersOperations.genParMutation.MixSignDec;
 
 import java.util.Random;
 
 /**
  * Created by marko on 12/28/16.
  */
-public class ParMixSign implements IMutateNode {
-    MixSign operationType;
+public class ParMixSign extends Reproduction implements IMutateNode {
+    MixSignDec operationType;
     Random random;
 
-    public ParMixSign(MixSign mixSign) {
-        this.operationType = mixSign;
+    public ParMixSign(MixSignDec operationType) {
+        super(operationType.getSettings().getProbability());
+        this.operationType = operationType;
         random = new Random();
     }
 

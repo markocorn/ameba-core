@@ -1,16 +1,17 @@
 package ameba.core.reproductions.mutateEdge;
 
 import ameba.core.blocks.Edge;
-import ameba.core.reproductions.parametersOperations.RepParSettings;
-import ameba.core.reproductions.parametersOperations.genParMutation.RandValue;
+import ameba.core.reproductions.Reproduction;
+import ameba.core.reproductions.parametersOperations.genParMutation.RandValueDec;
 
 /**
  * Created by marko on 12/28/16.
  */
-public class WeightRandValue implements IMutateEdge {
-    RandValue randValue;
+public class WeightRandValue extends Reproduction implements IMutateEdge {
+    RandValueDec randValue;
 
-    public WeightRandValue(RandValue randValue) {
+    public WeightRandValue(RandValueDec randValue) {
+        super(randValue.getSettings().getProbability());
         this.randValue = randValue;
     }
 
@@ -20,8 +21,4 @@ public class WeightRandValue implements IMutateEdge {
         return edge;
     }
 
-    @Override
-    public RepParSettings getSettings() {
-        return randValue.getSettings();
-    }
 }

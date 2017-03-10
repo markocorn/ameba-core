@@ -1,15 +1,17 @@
 package ameba.core.reproductions.crossEdge;
 
 import ameba.core.blocks.Edge;
+import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParCrossover.CombineMul;
 
 /**
  * Created by marko on 12/28/16.
  */
-public class WeightCombineMul implements ICrossEdge {
+public class WeightCombineMul extends Reproduction implements ICrossEdge {
     CombineMul operationType;
 
     public WeightCombineMul(CombineMul operationType) {
+        super(operationType.getSettings().getProbability());
         this.operationType = operationType;
     }
 

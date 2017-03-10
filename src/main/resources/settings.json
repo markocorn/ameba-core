@@ -760,6 +760,149 @@
         }
       },
       "crossEdge": {
+        "weightCombineAddDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "weightCombineDivDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "weightCombineMulDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "weightCombineMulSubDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "weightCopyValueDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "weightCombineAddInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "weightCombineMulInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "weightCombineMulSubInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "weightCopyValueInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "weightCombineAddBin": {
+          "probability": 100,
+          "changeLimitBin": [
+            false,
+            true
+          ],
+          "valueLimitBin": [
+            false,
+            true
+          ]
+        },
+        "weightCopyValueBin": {
+          "probability": 100,
+          "changeLimitBin": [
+            false,
+            true
+          ],
+          "valueLimitBin": [
+            false,
+            true
+          ]
+        },
+        "weightCombineAnd": {
+          "probability": 100,
+          "changeLimitBin": [
+            false,
+            true
+          ],
+          "valueLimitBin": [
+            false,
+            true
+          ]
+        },
+        "weightCombineOr": {
+          "probability": 100,
+          "changeLimitBin": [
+            false,
+            true
+          ],
+          "valueLimitBin": [
+            false,
+            true
+          ]
+        }
       }
     }
   ]

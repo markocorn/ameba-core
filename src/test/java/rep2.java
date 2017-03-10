@@ -18,6 +18,7 @@ public class rep2 {
 
         FactoryReproduction factoryReproduction = new FactoryReproduction();
         factoryReproduction.loadSettings(jsonSettings.get("reproductionSettings").toString());
+        factoryReproduction.loadSettings(jsonSettings.get("reproductionSettings").toString());
         int t = 0;
 
     }

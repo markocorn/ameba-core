@@ -1,17 +1,16 @@
 package ameba.core.reproductions.parametersOperations.genParCrossover;
 
 import ameba.core.blocks.Signal;
+import ameba.core.reproductions.parametersOperations.ParOperationSettings;
 
 /**
  * Created by marko on 12/27/16.
  */
 public class CombineSub implements ICrossover {
-    private Signal minValue;
-    private Signal maxValue;
+    ParOperationSettings parOperationSettings;
 
-    public CombineSub(Signal minValue, Signal maxValue) {
-        this.minValue = minValue;
-        this.maxValue = maxValue;
+    public CombineSub(ParOperationSettings parOperationSettings) {
+        this.parOperationSettings = parOperationSettings;
     }
 
     @Override
@@ -20,25 +19,30 @@ public class CombineSub implements ICrossover {
             //AddDec random value with constrains to parameter
             if (par1.gettClass().isAssignableFrom(Double.class)) {
                 par1.setValue(Signal.subSignal(par1, par2));
-                if (par1.getValueDouble() > maxValue.getValueDouble()) {
-                    par1.setValueDouble(maxValue.getValueDouble());
+                if (par1.getValueDouble() > parOperationSettings.getValueLimitDec()[1]) {
+                    par1.setValueDouble(parOperationSettings.getValueLimitDec()[1]);
                 }
-                if (par1.getValueDouble() < minValue.getValueDouble()) {
-                    par1.setValueDouble(minValue.getValueDouble());
+                if (par1.getValueDouble() < parOperationSettings.getValueLimitDec()[0]) {
+                    par1.setValueDouble(parOperationSettings.getValueLimitDec()[0]);
                 }
                 return par1;
             }
             if (par1.gettClass().isAssignableFrom(Integer.class)) {
                 par1.setValue(Signal.subSignal(par1, par2));
-                if (par1.getValueInteger() > maxValue.getValueInteger()) {
-                    par1.setValueInteger(maxValue.getValueInteger());
+                if (par1.getValueInteger() > parOperationSettings.getValueLimitInt()[1]) {
+                    par1.setValueInteger(parOperationSettings.getValueLimitInt()[1]);
                 }
-                if (par1.getValueInteger() < minValue.getValueInteger()) {
-                    par1.setValueInteger(minValue.getValueInteger());
+                if (par1.getValueInteger() < parOperationSettings.getValueLimitInt()[0]) {
+                    par1.setValueInteger(parOperationSettings.getValueLimitInt()[0]);
                 }
                 return par1;
             }
             throw new Exception("InputDec parameter not of allowed type.");
         } else throw new Exception("Parameter1 and parameter2 not same type");
+    }
+
+    @Override
+    public ParOperationSettings getSettings() {
+        return parOperationSettings;
     }
 }

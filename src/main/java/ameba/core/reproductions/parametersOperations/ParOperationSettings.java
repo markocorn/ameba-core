@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Created by marko on 12/21/16.
  */
-public class RepParSettings {
+public class ParOperationSettings {
 
     private Integer probability;
 
@@ -22,10 +22,17 @@ public class RepParSettings {
     private Boolean[] valueLimitBin;
 
 
-    public RepParSettings() {
+    public ParOperationSettings() {
+        this.probability = 100;
+        this.changeLimitDec = new Double[]{0.01, 10.0};
+        this.changeLimitInt = new Integer[]{1, 10};
+        this.changeLimitBin = new Boolean[]{false, true};
+        this.valueLimitDec = new Double[]{-1e6, 1e6};
+        this.valueLimitInt = new Integer[]{-1000000, 1000000};
+        this.valueLimitBin = new Boolean[]{false, true};
     }
 
-    public RepParSettings(Integer probability, Double[] changeLimitDec, Integer[] changeLimitInt, Boolean[] changeLimitBin, Double[] valueLimitDec, Integer[] valueLimitInt, Boolean[] valueLimitBin) {
+    public ParOperationSettings(Integer probability, Double[] changeLimitDec, Integer[] changeLimitInt, Boolean[] changeLimitBin, Double[] valueLimitDec, Integer[] valueLimitInt, Boolean[] valueLimitBin) {
         this.probability = probability;
         this.changeLimitDec = changeLimitDec;
         this.changeLimitInt = changeLimitInt;
@@ -36,9 +43,9 @@ public class RepParSettings {
 
     }
 
-    public static RepParSettings create(String json) throws IOException {
+    public static ParOperationSettings create(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(json, RepParSettings.class);
+        return mapper.readValue(json, ParOperationSettings.class);
     }
 
     @JsonIgnore

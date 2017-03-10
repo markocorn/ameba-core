@@ -1,15 +1,17 @@
 package ameba.core.reproductions.crossEdge;
 
 import ameba.core.blocks.Edge;
+import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParCrossover.CombineAdd;
 
 /**
  * Created by marko on 12/28/16.
  */
-public class WeightCombineAdd implements ICrossEdge {
+public class WeightCombineAdd extends Reproduction implements ICrossEdge {
     CombineAdd operationType;
 
     public WeightCombineAdd(CombineAdd operationType) {
+        super(operationType.getSettings().getProbability());
         this.operationType = operationType;
     }
 

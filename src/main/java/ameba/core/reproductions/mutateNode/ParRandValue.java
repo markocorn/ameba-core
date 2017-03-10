@@ -1,19 +1,21 @@
 package ameba.core.reproductions.mutateNode;
 
 import ameba.core.blocks.nodes.Node;
-import ameba.core.reproductions.parametersOperations.genParMutation.RandValue;
+import ameba.core.reproductions.Reproduction;
+import ameba.core.reproductions.parametersOperations.genParMutation.RandValueDec;
 
 import java.util.Random;
 
 /**
  * Created by marko on 12/28/16.
  */
-public class ParRandValue implements IMutateNode {
-    RandValue operationType;
+public class ParRandValue extends Reproduction implements IMutateNode {
+    RandValueDec operationType;
     Random random;
 
-    public ParRandValue(RandValue randValue) {
-        this.operationType = randValue;
+    public ParRandValue(RandValueDec operationType) {
+        super(operationType.getSettings().getProbability());
+        this.operationType = operationType;
         random = new Random();
     }
 
