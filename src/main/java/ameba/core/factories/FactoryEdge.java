@@ -1,9 +1,8 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.CollectorInp;
-import ameba.core.blocks.CollectorOut;
-import ameba.core.blocks.Edge;
-import ameba.core.blocks.Signal;
+import ameba.core.blocks.collectors.CollectorTarget;
+import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.edges.Edge;
 
 import java.util.Random;
 
@@ -33,7 +32,7 @@ public class FactoryEdge {
      * @param target Target node for the edge.
      * @return Edge with randomly generated weight.
      */
-    public Edge genEdge(Class tclass, CollectorOut source, CollectorInp target) throws Exception {
+    public Edge genEdge(Class tclass, CollectorSource source, CollectorTarget target) throws Exception {
         return new Edge(source, target, genInitSignal(tclass));
     }
 

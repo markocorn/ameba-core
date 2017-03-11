@@ -1,9 +1,9 @@
 package ameba.core.reproductions.mutateCell;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.CollectorInp;
-import ameba.core.blocks.CollectorOut;
-import ameba.core.blocks.Edge;
+import ameba.core.blocks.collectors.CollectorTarget;
+import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 
@@ -27,16 +27,16 @@ public class RemoveNode1 implements IMutateCell {
         //Node to be removed
         if (cell.getInnerNodes().size() > 0) {
             Node node = cell.getInnerNodes().get(random.nextInt(cell.getInnerNodes().size()));
-            ArrayList<CollectorOut> outs = new ArrayList<>();
-            for (CollectorInp collectorInp : node.getInpCollectorsConnected()) {
+            ArrayList<CollectorSource> outs = new ArrayList<>();
+            for (CollectorTarget collectorInp : node.getInpCollectorsConnected()) {
                 outs.add(collectorInp.getEdges().get(0).getSource());
                 collectorInp.getEdges().get(0).getSource().removeEdge(collectorInp.getEdges().get(0));
                 cell.removeEdge(collectorInp.getEdges().get(0));
             }
-            for (CollectorOut collectorOut : node.getOutCollectors()) {
+            for (CollectorSource collectorOut : node.getCollectorSources()) {
                 for (Edge edge : collectorOut.getEdges()) {
                     edge.getTarget().removeEdge(edge);
-                    CollectorOut collectorOut1 = cellFactory.getRndCollector(edge.getWeight().gettClass(), outs);
+                    CollectorSource collectorOut1 = cellFactory.getRndCollector(edge.getWeight().gettClass(), outs);
                     if (collectorOut1 != null) {
                         outs.remove(collectorOut1);
                     } else {

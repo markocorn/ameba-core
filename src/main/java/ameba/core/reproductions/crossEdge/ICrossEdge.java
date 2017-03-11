@@ -1,6 +1,6 @@
 package ameba.core.reproductions.crossEdge;
 
-import ameba.core.blocks.Edge;
+import ameba.core.blocks.edges.Edge;
 
 /**
  * Created by marko on 2/20/17.

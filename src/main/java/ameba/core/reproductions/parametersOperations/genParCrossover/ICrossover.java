@@ -1,6 +1,5 @@
 package ameba.core.reproductions.parametersOperations.genParCrossover;
 
-import ameba.core.blocks.Signal;
 import ameba.core.reproductions.parametersOperations.ParOperationSettings;
 
 /**

@@ -1,6 +1,6 @@
 package ameba.core.reproductions.crossEdge;
 
-import ameba.core.blocks.Edge;
+import ameba.core.blocks.edges.Edge;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParCrossover.CombineAdd;
 

@@ -1,5 +1,4 @@
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.Signal;
 import ameba.core.factories.*;
 import ameba.core.reproductions.mutateCell.*;
 import com.fasterxml.jackson.databind.JsonNode;

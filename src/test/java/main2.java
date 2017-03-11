@@ -1,7 +1,7 @@
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.Edge;
-import ameba.core.blocks.Signal;
+import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.*;
+import ameba.core.blocks.nodes.types.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,9 +27,9 @@ public class main2 {
 //            Node node102 = new CompareDec(Signal.createDouble(),0,10,2);
 //            Node node103 = new InputDec(Signal.createDouble());
 ////
-//            Edge edge100 = new Edge(node100.getOutCollectorsDec().get(0), node102.getInpCollectorsConnected().get(0), Signal.createDouble(1.0));
-//            Edge edge101 = new Edge(node102.getOutCollectorsDec().get(0), node101.getInpCollectorsConnected().get(0), Signal.createBoolean());
-//            Edge edge102 = new Edge(node103.getOutCollectorsDec().get(0), node102.getInpCollectorsConnected().get(1), Signal.createDouble(1.0));
+//            Edge edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node102.getInpCollectorsConnected().get(0), Signal.createDouble(1.0));
+//            Edge edge101 = new Edge(node102.getCollectorsSourceDec().get(0), node101.getInpCollectorsConnected().get(0), Signal.createBoolean());
+//            Edge edge102 = new Edge(node103.getCollectorsSourceDec().get(0), node102.getInpCollectorsConnected().get(1), Signal.createDouble(1.0));
 //
 //
 ////**********************************************************************************************************
@@ -47,8 +47,8 @@ public class main2 {
                     Node node100 = new InputDec();
                     Node node101 = new OutputDec();
                     Node node102 = new Switch2ConstDec(Signal.createDouble(1.0), new Signal[]{Signal.createDouble(1.0), Signal.createDouble(10.0)}, Signal.createDouble(10.0), new Signal[]{Signal.createDouble(1.0), Signal.createDouble(10.0)});
-                    Edge edge100 = new Edge(node100.getOutCollectorsDec().get(0), node102.getInpCollectorsDec().get(0), Signal.createBoolean());
-                    Edge edge101 = new Edge(node102.getOutCollectorsDec().get(0), node101.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
+                    Edge edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node102.getCollectorsTargetDec().get(0), Signal.createBoolean());
+                    Edge edge101 = new Edge(node102.getCollectorsSourceDec().get(0), node101.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
 
                     cell.addNode(node100);
                     cell.addNode(node101);
@@ -67,9 +67,9 @@ public class main2 {
                     node101 = new InputDec();
                     node102 = new OutputDec();
                     Node node103 = new SwitchConstDec(Signal.createDouble(1.0), new Signal[]{Signal.createDouble(1.0), Signal.createDouble(10.0)});
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node103.getInpCollectorsDec().get(0), Signal.createBoolean());
-                    edge101 = new Edge(node101.getOutCollectorsDec().get(0), node103.getInpCollectorsDec().get(1), Signal.createDouble(1.0));
-                    Edge edge102 = new Edge(node103.getOutCollectorsDec().get(0), node102.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node103.getCollectorsTargetDec().get(0), Signal.createBoolean());
+                    edge101 = new Edge(node101.getCollectorsSourceDec().get(0), node103.getCollectorsTargetDec().get(1), Signal.createDouble(1.0));
+                    Edge edge102 = new Edge(node103.getCollectorsSourceDec().get(0), node102.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
 
 
                     cell.addNode(node100);
@@ -93,10 +93,10 @@ public class main2 {
                     node103 = new OutputDec();
                     Node node104 = new SwitchDec();
 
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(0), Signal.createBoolean());
-                    edge101 = new Edge(node101.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(1), Signal.createDouble(1.0));
-                    edge102 = new Edge(node102.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(2), Signal.createDouble(1.0));
-                    Edge edge103 = new Edge(node104.getOutCollectorsDec().get(0), node103.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(0), Signal.createBoolean());
+                    edge101 = new Edge(node101.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(1), Signal.createDouble(1.0));
+                    edge102 = new Edge(node102.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(2), Signal.createDouble(1.0));
+                    Edge edge103 = new Edge(node104.getCollectorsSourceDec().get(0), node103.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
 
                     cell.addNode(node100);
                     cell.addNode(node101);
@@ -122,10 +122,10 @@ public class main2 {
                     node103 = new OutputDec();
                     node104 = new IntervalDec();
 
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge101 = new Edge(node101.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(1), Signal.createDouble(1.0));
-                    edge102 = new Edge(node102.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(2), Signal.createDouble(1.0));
-                    edge103 = new Edge(node104.getOutCollectorsDec().get(0), node103.getInpCollectorsDec().get(0), Signal.createBoolean());
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge101 = new Edge(node101.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(1), Signal.createDouble(1.0));
+                    edge102 = new Edge(node102.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(2), Signal.createDouble(1.0));
+                    edge103 = new Edge(node104.getCollectorsSourceDec().get(0), node103.getCollectorsTargetDec().get(0), Signal.createBoolean());
 
                     cell.addNode(node100);
                     cell.addNode(node101);
@@ -149,9 +149,9 @@ public class main2 {
                     node102 = new OutputBin();
                     node103 = new IntervalConstDec(Signal.createDouble(3.0), Signal.createDouble(0.0, 4.0));
 
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node103.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge101 = new Edge(node101.getOutCollectorsDec().get(0), node103.getInpCollectorsDec().get(1), Signal.createDouble(1.0));
-                    edge103 = new Edge(node103.getOutCollectorsDec().get(0), node102.getInpCollectorsDec().get(0), Signal.createBoolean());
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node103.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge101 = new Edge(node101.getCollectorsSourceDec().get(0), node103.getCollectorsTargetDec().get(1), Signal.createDouble(1.0));
+                    edge103 = new Edge(node103.getCollectorsSourceDec().get(0), node102.getCollectorsTargetDec().get(0), Signal.createBoolean());
 
                     cell.addNode(node100);
                     cell.addNode(node101);
@@ -172,8 +172,8 @@ public class main2 {
                     node101 = new OutputBin();
                     node102 = new Interval2ConstDec(Signal.createDouble(2.0), Signal.createDouble(0.0, 4.0), Signal.createDouble(4.0), Signal.createDouble(0.0, 4.0));
 
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node102.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge101 = new Edge(node102.getOutCollectorsDec().get(0), node101.getInpCollectorsDec().get(0), Signal.createBoolean());
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node102.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge101 = new Edge(node102.getCollectorsSourceDec().get(0), node101.getCollectorsTargetDec().get(0), Signal.createBoolean());
 
                     cell.addNode(node100);
                     cell.addNode(node101);
@@ -201,12 +201,12 @@ public class main2 {
                     Node node107 = new DerivativeDec(Signal.createInteger(0), Signal.createInteger(1), Signal.createInteger(0, 4));
                     Node node108 = new DerivativeDec(Signal.createBoolean(false), Signal.createBoolean(false), Signal.createBoolean(false, true));
 
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node106.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge101 = new Edge(node106.getOutCollectorsDec().get(0), node103.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge102 = new Edge(node101.getOutCollectorsDec().get(0), node107.getInpCollectorsDec().get(0), Signal.createInteger(1));
-                    edge103 = new Edge(node107.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(0), Signal.createInteger(1));
-                    Edge edge104 = new Edge(node102.getOutCollectorsDec().get(0), node108.getInpCollectorsDec().get(0), Signal.createBoolean(false));
-                    Edge edge105 = new Edge(node108.getOutCollectorsDec().get(0), node105.getInpCollectorsDec().get(0), Signal.createBoolean(false));
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node106.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge101 = new Edge(node106.getCollectorsSourceDec().get(0), node103.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge102 = new Edge(node101.getCollectorsSourceDec().get(0), node107.getCollectorsTargetDec().get(0), Signal.createInteger(1));
+                    edge103 = new Edge(node107.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(0), Signal.createInteger(1));
+                    Edge edge104 = new Edge(node102.getCollectorsSourceDec().get(0), node108.getCollectorsTargetDec().get(0), Signal.createBoolean(false));
+                    Edge edge105 = new Edge(node108.getCollectorsSourceDec().get(0), node105.getCollectorsTargetDec().get(0), Signal.createBoolean(false));
 
                     cell.addNode(node100);
                     cell.addNode(node101);
@@ -244,12 +244,12 @@ public class main2 {
                     node107 = new IntegralDec(Signal.createInteger(0), Signal.createInteger(1), Signal.createInteger(0, 4));
                     node108 = new IntegralDec(Signal.createBoolean(false), Signal.createBoolean(false), Signal.createBoolean(false, true));
 
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node106.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge101 = new Edge(node106.getOutCollectorsDec().get(0), node103.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge102 = new Edge(node101.getOutCollectorsDec().get(0), node107.getInpCollectorsDec().get(0), Signal.createInteger(1));
-                    edge103 = new Edge(node107.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(0), Signal.createInteger(1));
-                    edge104 = new Edge(node102.getOutCollectorsDec().get(0), node108.getInpCollectorsDec().get(0), Signal.createBoolean(false));
-                    edge105 = new Edge(node108.getOutCollectorsDec().get(0), node105.getInpCollectorsDec().get(0), Signal.createBoolean(false));
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node106.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge101 = new Edge(node106.getCollectorsSourceDec().get(0), node103.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge102 = new Edge(node101.getCollectorsSourceDec().get(0), node107.getCollectorsTargetDec().get(0), Signal.createInteger(1));
+                    edge103 = new Edge(node107.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(0), Signal.createInteger(1));
+                    edge104 = new Edge(node102.getCollectorsSourceDec().get(0), node108.getCollectorsTargetDec().get(0), Signal.createBoolean(false));
+                    edge105 = new Edge(node108.getCollectorsSourceDec().get(0), node105.getCollectorsTargetDec().get(0), Signal.createBoolean(false));
 
                     cell.addNode(node100);
                     cell.addNode(node101);
@@ -284,12 +284,12 @@ public class main2 {
                     node104 = new MultiplyDec(0, 10);
                     node105 = new MultiplyInt(0, 10);
 
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge101 = new Edge(node100.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(1), Signal.createDouble(1.0));
-                    edge102 = new Edge(node104.getOutCollectorsDec().get(0), node102.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge103 = new Edge(node101.getOutCollectorsDec().get(0), node105.getInpCollectorsDec().get(0), Signal.createInteger(1));
-                    edge104 = new Edge(node101.getOutCollectorsDec().get(0), node105.getInpCollectorsDec().get(1), Signal.createInteger(1));
-                    edge105 = new Edge(node105.getOutCollectorsDec().get(0), node103.getInpCollectorsDec().get(0), Signal.createInteger(1));
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge101 = new Edge(node100.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(1), Signal.createDouble(1.0));
+                    edge102 = new Edge(node104.getCollectorsSourceDec().get(0), node102.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge103 = new Edge(node101.getCollectorsSourceDec().get(0), node105.getCollectorsTargetDec().get(0), Signal.createInteger(1));
+                    edge104 = new Edge(node101.getCollectorsSourceDec().get(0), node105.getCollectorsTargetDec().get(1), Signal.createInteger(1));
+                    edge105 = new Edge(node105.getCollectorsSourceDec().get(0), node103.getCollectorsTargetDec().get(0), Signal.createInteger(1));
 
                     cell.addNode(node100);
                     cell.addNode(node101);
@@ -318,9 +318,9 @@ public class main2 {
                     node102 = new OutputDec();
                     node104 = new Divide(0, 10);
 
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge101 = new Edge(node100.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(1), Signal.createDouble(1.0));
-                    edge102 = new Edge(node104.getOutCollectorsDec().get(0), node102.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge101 = new Edge(node100.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(1), Signal.createDouble(1.0));
+                    edge102 = new Edge(node104.getCollectorsSourceDec().get(0), node102.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
 
                     cell.addNode(node100);
                     cell.addNode(node102);
@@ -347,11 +347,11 @@ public class main2 {
                     node104 = new OutputDec();
                     node105 = new MuxDec(0, 10, Signal.createDouble(0.5), Signal.createDouble(-0.5, 4.0));
 
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node105.getInpCollectorsDec().get(0), Signal.createInteger(1));
-                    edge101 = new Edge(node101.getOutCollectorsDec().get(0), node105.getInpCollectorsDec().get(1), Signal.createDouble(1.0));
-                    edge102 = new Edge(node102.getOutCollectorsDec().get(0), node105.getInpCollectorsDec().get(2), Signal.createDouble(1.0));
-                    edge103 = new Edge(node103.getOutCollectorsDec().get(0), node105.getInpCollectorsDec().get(3), Signal.createDouble(1.0));
-                    edge104 = new Edge(node105.getOutCollectorsDec().get(0), node104.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node105.getCollectorsTargetDec().get(0), Signal.createInteger(1));
+                    edge101 = new Edge(node101.getCollectorsSourceDec().get(0), node105.getCollectorsTargetDec().get(1), Signal.createDouble(1.0));
+                    edge102 = new Edge(node102.getCollectorsSourceDec().get(0), node105.getCollectorsTargetDec().get(2), Signal.createDouble(1.0));
+                    edge103 = new Edge(node103.getCollectorsSourceDec().get(0), node105.getCollectorsTargetDec().get(3), Signal.createDouble(1.0));
+                    edge104 = new Edge(node105.getCollectorsSourceDec().get(0), node104.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
 
                     cell.addNode(node100);
                     cell.addNode(node101);
@@ -382,11 +382,11 @@ public class main2 {
                     node104 = new OutputDec();
                     node105 = new DMuxDec(0, 10, Signal.createDouble(0.5), Signal.createDouble(-0.5, 4.0));
 
-                    edge100 = new Edge(node100.getOutCollectorsDec().get(0), node105.getInpCollectorsDec().get(0), Signal.createInteger(1));
-                    edge101 = new Edge(node101.getOutCollectorsDec().get(0), node105.getInpCollectorsDec().get(1), Signal.createDouble(1.0));
-                    edge102 = new Edge(node105.getOutCollectorsDec().get(0), node102.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge103 = new Edge(node105.getOutCollectorsDec().get(1), node103.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
-                    edge104 = new Edge(node105.getOutCollectorsDec().get(2), node104.getInpCollectorsDec().get(0), Signal.createDouble(1.0));
+                    edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node105.getCollectorsTargetDec().get(0), Signal.createInteger(1));
+                    edge101 = new Edge(node101.getCollectorsSourceDec().get(0), node105.getCollectorsTargetDec().get(1), Signal.createDouble(1.0));
+                    edge102 = new Edge(node105.getCollectorsSourceDec().get(0), node102.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge103 = new Edge(node105.getCollectorsSourceDec().get(1), node103.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
+                    edge104 = new Edge(node105.getCollectorsSourceDec().get(2), node104.getCollectorsTargetDec().get(0), Signal.createDouble(1.0));
 
                     cell.addNode(node100);
                     cell.addNode(node101);

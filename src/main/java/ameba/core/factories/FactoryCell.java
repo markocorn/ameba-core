@@ -1,9 +1,10 @@
 package ameba.core.factories;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.CollectorInp;
-import ameba.core.blocks.CollectorOut;
+import ameba.core.blocks.collectors.CollectorTarget;
+import ameba.core.blocks.collectors.CollectorSource;
 import ameba.core.blocks.nodes.*;
+import ameba.core.blocks.nodes.types.*;
 import com.rits.cloning.Cloner;
 
 import java.util.ArrayList;
@@ -63,11 +64,11 @@ public class FactoryCell {
 
         for (int i = 0; i < numNodes; i++) {
             //Get collector that must be connected
-            CollectorInp collectorInp = getCollectorInpMinRnd(cell);
+            CollectorTarget collectorInp = getCollectorInpMinRnd(cell);
             Node node;
             if (collectorInp == null) {
                 //if no input collector that must be connected exists add a node with one
-                CollectorOut collectorOut = getCollectorOutRnd(cell);
+                CollectorSource collectorOut = getCollectorOutRnd(cell);
                 node = nodeFactory.genNodeRndInpColType(collectorOut.getType());
             } else {
                 node = nodeFactory.genNodeRndOutColType(collectorInp.getType());
@@ -83,12 +84,12 @@ public class FactoryCell {
 
     public void connectsMinFreeInputs(Cell cell) throws Exception {
         while (true) {
-            CollectorInp collectorInp = getCollectorInpMinRnd(cell);
+            CollectorTarget collectorInp = getCollectorInpMinRnd(cell);
             if (collectorInp == null) {
                 break;
             }
 
-            CollectorOut collectorOut = getCollectorOutRndNoNode(collectorInp.getType(), cell, collectorInp.getNodeAttached());
+            CollectorSource collectorOut = getCollectorOutRndNoNode(collectorInp.getType(), cell, collectorInp.getNodeAttached());
 
             if (collectorOut != null) {
                 cell.addEdge(edgeFactory.genEdge(collectorInp.getType(), collectorOut, collectorInp));
@@ -115,9 +116,9 @@ public class FactoryCell {
         }
     }
 
-    public CollectorOut getRndCollector(Class type, ArrayList<CollectorOut> collectorOuts) {
-        ArrayList<CollectorOut> outs = new ArrayList<>();
-        for (CollectorOut collectorOut : collectorOuts) {
+    public CollectorSource getRndCollector(Class type, ArrayList<CollectorSource> collectorOuts) {
+        ArrayList<CollectorSource> outs = new ArrayList<>();
+        for (CollectorSource collectorOut : collectorOuts) {
             if (collectorOut.getType().isAssignableFrom(type)) {
                 outs.add(collectorOut);
             }
@@ -147,10 +148,10 @@ public class FactoryCell {
      * @return
      * @throws Exception
      */
-    public CollectorOut getCollectorOutRnd(Class type, Cell cell) throws Exception {
-        ArrayList<CollectorOut> collectors = new ArrayList<>();
+    public CollectorSource getCollectorOutRnd(Class type, Cell cell) throws Exception {
+        ArrayList<CollectorSource> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorOut collector : node.getOutCollectorsDec()) {
+            for (CollectorSource collector : node.getCollectorsSourceDec()) {
                 if (collector.getSignal().gettClass().equals(type)) {
                     collectors.add(collector);
                 }
@@ -161,10 +162,10 @@ public class FactoryCell {
         } else return null;
     }
 
-    public CollectorOut getCollectorOutRndNoNode(Class type, Cell cell, Node node) throws Exception {
-        ArrayList<CollectorOut> collectors = new ArrayList<>();
+    public CollectorSource getCollectorOutRndNoNode(Class type, Cell cell, Node node) throws Exception {
+        ArrayList<CollectorSource> collectors = new ArrayList<>();
         for (Node node1 : cell.getNodes()) {
-            for (CollectorOut collector : node1.getOutCollectors()) {
+            for (CollectorSource collector : node1.getCollectorSources()) {
                 if (collector.getSignal().gettClass().equals(type) && !node1.equals(node)) {
                     collectors.add(collector);
                 }
@@ -175,10 +176,10 @@ public class FactoryCell {
         } else return null;
     }
 
-    public CollectorOut getCollectorOutRnd(Cell cell) throws Exception {
-        ArrayList<CollectorOut> collectors = new ArrayList<>();
+    public CollectorSource getCollectorOutRnd(Cell cell) throws Exception {
+        ArrayList<CollectorSource> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorOut collector : node.getOutCollectorsDec()) {
+            for (CollectorSource collector : node.getCollectorsSourceDec()) {
                 collectors.add(collector);
             }
         }
@@ -195,10 +196,10 @@ public class FactoryCell {
      * @return Selected node.
      * @Param node Node that can't be selected.
      */
-    public CollectorInp getCollectorInpRnd(Class type, Cell cell) throws Exception {
-        ArrayList<CollectorInp> collectors = new ArrayList<>();
+    public CollectorTarget getCollectorInpRnd(Class type, Cell cell) throws Exception {
+        ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorInp collector : node.getInpCollectorsDec()) {
+            for (CollectorTarget collector : node.getCollectorsTargetDec()) {
                 if (collector.getSignal().gettClass().equals(type) && collector.getEdges().size() == 0) {
                     collectors.add(collector);
                 }
@@ -216,8 +217,8 @@ public class FactoryCell {
      * @return
      * @throws Exception
      */
-    public CollectorInp getCollectorInpMinRnd(Cell cell) throws Exception {
-        ArrayList<CollectorInp> collectors = new ArrayList<>();
+    public CollectorTarget getCollectorInpMinRnd(Cell cell) throws Exception {
+        ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
             collectors.addAll(node.getInpCollectorsMinConnect());
         }
@@ -234,10 +235,10 @@ public class FactoryCell {
      * @return
      * @throws Exception
      */
-    public CollectorInp getCollectorInpOneRnd(Class type, Cell cell) throws Exception {
-        ArrayList<CollectorInp> collectors = new ArrayList<>();
+    public CollectorTarget getCollectorInpOneRnd(Class type, Cell cell) throws Exception {
+        ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorInp collector : node.getInpCollectors()) {
+            for (CollectorTarget collector : node.getCollectorsTarget()) {
                 if (collector.getSignal().gettClass().equals(type) && collector.getEdges().size() == 0) {
                     collectors.add(collector);
                     break;

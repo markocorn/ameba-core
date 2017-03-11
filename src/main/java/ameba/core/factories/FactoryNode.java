@@ -1,7 +1,7 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.Signal;
 import ameba.core.blocks.nodes.*;
+import ameba.core.blocks.nodes.types.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

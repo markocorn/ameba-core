@@ -1,8 +1,8 @@
 package ameba.core.reproductions.mutateCell;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.CollectorInp;
-import ameba.core.blocks.Edge;
+import ameba.core.blocks.collectors.CollectorTarget;
+import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 import ameba.core.factories.FactoryNode;
@@ -32,7 +32,7 @@ public class AddNode2 implements IMutateCell {
         Node nodeNew = nodeFactory.genNodeRndInpColType(type);
         if (nodeNew == null)
             throw new Exception("Can't generate node with " + type.getSimpleName() + " type of input collector");
-        CollectorInp collectorInp = nodeNew.getInpCollectorsMin(type).get(random.nextInt(nodeNew.getInpCollectorsMin(type).size()));
+        CollectorTarget collectorInp = nodeNew.getInpCollectorsMin(type).get(random.nextInt(nodeNew.getInpCollectorsMin(type).size()));
         //Add edge to new collector
         collectorInp.addEdge(edge);
         //Remove edge from old collector

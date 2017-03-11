@@ -1,7 +1,7 @@
 package ameba.core.reproductions.mutateCell;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.Edge;
+import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 import ameba.core.factories.FactoryEdge;

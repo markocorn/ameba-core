@@ -1,9 +1,9 @@
 package ameba.core.reproductions.mutateCell;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.CollectorInp;
-import ameba.core.blocks.CollectorOut;
-import ameba.core.blocks.Edge;
+import ameba.core.blocks.collectors.CollectorTarget;
+import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 import ameba.core.factories.FactoryEdge;
@@ -47,7 +47,7 @@ public class ReplaceNode implements IMutateCell {
     }
 
     private void reconnectInputs(Class type, Cell cell, Node nodeOld, Node nodeNew) throws Exception {
-        ArrayList<CollectorInp> oldInpCol = nodeOld.getInpCollectorsConnected(type);
+        ArrayList<CollectorTarget> oldInpCol = nodeOld.getInpCollectorsConnected(type);
         Collections.shuffle(oldInpCol);
         int diff = oldInpCol.size() - nodeNew.getInpColLimit(type)[0];
         int same = Math.min(oldInpCol.size(), nodeNew.getInpColLimit(type)[0]);
@@ -62,7 +62,7 @@ public class ReplaceNode implements IMutateCell {
         }
         //If number of old input edges is less than number of minimum edges of new node the empty spots are connected with new edges
         for (int i = 0; i < -diff; i++) {
-            CollectorOut collectorOut = cellFactory.getCollectorOutRndNoNode(type, cell, nodeOld);
+            CollectorSource collectorOut = cellFactory.getCollectorOutRndNoNode(type, cell, nodeOld);
             Edge edge;
             if (collectorOut != null) {
                 edge = edgeFactory.genEdge(type, collectorOut, nodeNew.getInpCollectors(type).get(same + i));
@@ -80,19 +80,19 @@ public class ReplaceNode implements IMutateCell {
     }
 
     private void reconnectsOutputs(Class type, Cell cell, Node nodeOld, Node nodeNew) throws Exception {
-        ArrayList<CollectorOut> oldOutCol = nodeOld.getOutCollectors(type);
+        ArrayList<CollectorSource> oldOutCol = nodeOld.getOutCollectors(type);
         ArrayList<Edge> edges = new ArrayList<>();
-        for (CollectorOut collectorOut : oldOutCol) {
+        for (CollectorSource collectorOut : oldOutCol) {
             edges.addAll(collectorOut.getEdges());
         }
-        ArrayList<CollectorOut> outs = nodeNew.getOutCollectors(type);
+        ArrayList<CollectorSource> outs = nodeNew.getOutCollectors(type);
         for (Edge edge : edges) {
             if (outs.size() > 0) {
-                CollectorOut collectorOut = outs.get(random.nextInt(outs.size()));
+                CollectorSource collectorOut = outs.get(random.nextInt(outs.size()));
                 collectorOut.addEdge(edge);
                 edge.setSource(collectorOut);
             } else {
-                CollectorOut collectorOut = cellFactory.getCollectorOutRndNoNode(type, cell, nodeOld);
+                CollectorSource collectorOut = cellFactory.getCollectorOutRndNoNode(type, cell, nodeOld);
                 collectorOut.addEdge(edge);
                 edge.setSource(collectorOut);
             }

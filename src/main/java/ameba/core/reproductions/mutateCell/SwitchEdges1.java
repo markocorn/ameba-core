@@ -1,8 +1,8 @@
 package ameba.core.reproductions.mutateCell;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.CollectorOut;
-import ameba.core.blocks.Edge;
+import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.edges.Edge;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +59,7 @@ public class SwitchEdges1 implements IMutateCell {
         }
 
         if (edges.size() > 0) {
-            CollectorOut collectorOut = edges.get(0).getSource();
+            CollectorSource collectorOut = edges.get(0).getSource();
             edges.get(0).getSource().getEdges().set(edges.get(0).getSource().getEdges().indexOf(edges.get(0)), edges.get(1));
             edges.get(1).getSource().getEdges().set(edges.get(1).getSource().getEdges().indexOf(edges.get(1)), edges.get(0));
             edges.get(0).setSource(edges.get(1).getSource());
