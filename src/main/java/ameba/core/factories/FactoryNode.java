@@ -99,47 +99,47 @@ public class FactoryNode {
                 }
                 Node node1 = genNode(settings.getType());
 
-                if (node1.getInpCollectors(Boolean.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
+                if (node1.getCollectorsTarget(Boolean.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColBinBin.add(settings.getType());
                     }
                 }
-                if (node1.getInpCollectors(Boolean.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
+                if (node1.getCollectorsTarget(Boolean.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColBinDec.add(settings.getType());
                     }
                 }
-                if (node1.getInpCollectors(Boolean.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
+                if (node1.getCollectorsTarget(Boolean.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColBinInt.add(settings.getType());
                     }
                 }
-                if (node1.getInpCollectors(Integer.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
+                if (node1.getCollectorsTarget(Integer.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColIntBin.add(settings.getType());
                     }
                 }
-                if (node1.getInpCollectors(Integer.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
+                if (node1.getCollectorsTarget(Integer.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColIntDec.add(settings.getType());
                     }
                 }
-                if (node1.getInpCollectors(Integer.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
+                if (node1.getCollectorsTarget(Integer.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColIntInt.add(settings.getType());
                     }
                 }
-                if (node1.getInpCollectors(Double.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
+                if (node1.getCollectorsTarget(Double.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColDecBin.add(settings.getType());
                     }
                 }
-                if (node1.getInpCollectors(Double.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
+                if (node1.getCollectorsTarget(Double.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColDecDec.add(settings.getType());
                     }
                 }
-                if (node1.getInpCollectors(Double.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
+                if (node1.getCollectorsTarget(Double.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColDecInt.add(settings.getType());
                     }

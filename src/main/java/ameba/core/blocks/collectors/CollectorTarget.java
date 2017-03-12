@@ -6,7 +6,7 @@ import ameba.core.blocks.nodes.Node;
 /**
  * Created by marko on 1/19/17.
  */
-public class CollectorTarget extends Collector implements ICollector {
+public class CollectorTarget extends Collector {
 
     public CollectorTarget(Node node) {
         super(node);
@@ -20,10 +20,5 @@ public class CollectorTarget extends Collector implements ICollector {
             }
         }
         return true;
-    }
-
-    public void addEdge(Edge edge) throws Exception {
-        getEdges().clear();
-        getEdges().add(edge);
     }
 }

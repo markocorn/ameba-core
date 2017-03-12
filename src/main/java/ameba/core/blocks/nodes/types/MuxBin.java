@@ -28,7 +28,7 @@ public class MuxBin extends Node {
     @Override
     public void clcNode() throws Exception {
         ArrayList<CollectorTarget> col = getCollectorsTargetInt();
-        col.addAll(getInpCollectorsConnected(Boolean.class));
+        col.addAll(getCollectorsTargetConnected(Boolean.class));
         Signal[] list = new Signal[col.size()];
         for (int i = 0; i < col.size(); i++) {
             list[i] = col.get(i).getSignal();

@@ -28,7 +28,7 @@ public class RemoveNode1 implements IMutateCell {
         if (cell.getInnerNodes().size() > 0) {
             Node node = cell.getInnerNodes().get(random.nextInt(cell.getInnerNodes().size()));
             ArrayList<CollectorSource> outs = new ArrayList<>();
-            for (CollectorTarget collectorInp : node.getInpCollectorsConnected()) {
+            for (CollectorTarget collectorInp : node.getCollectorsTargetConnected()) {
                 outs.add(collectorInp.getEdges().get(0).getSource());
                 collectorInp.getEdges().get(0).getSource().removeEdge(collectorInp.getEdges().get(0));
                 cell.removeEdge(collectorInp.getEdges().get(0));

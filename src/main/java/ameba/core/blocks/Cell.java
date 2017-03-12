@@ -3,11 +3,13 @@ package ameba.core.blocks;
 
 import ameba.core.blocks.collectors.Collector;
 import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceDec;
 import ameba.core.blocks.collectors.CollectorTarget;
 import ameba.core.blocks.edges.Edge;
-import ameba.core.blocks.nodes.INodeInput;
-import ameba.core.blocks.nodes.INodeOutput;
-import ameba.core.blocks.nodes.Node;
+import ameba.core.blocks.edges.EdgeBin;
+import ameba.core.blocks.edges.EdgeDec;
+import ameba.core.blocks.edges.EdgeInt;
+import ameba.core.blocks.nodes.*;
 import com.rits.cloning.Cloner;
 
 import java.util.ArrayList;
@@ -18,27 +20,37 @@ public class Cell {
     /**
      * Fitness value of last cell simulation run.
      */
-    private Double fitnessValue;
+    private double fitnessValue;
     /**
      * List of nodes without InputDec and OutputDec type.
      */
     private ArrayList<Node> nodes;
     private ArrayList<Node> innerNodes;
+    private ArrayList<Node> inputNodes;
+    private ArrayList<Node> outputNodes;
     /**
      * List of input nodes interfaces.
      */
-    private ArrayList<INodeInput> inpNodes;
+    private ArrayList<INodeInputDec> inpNodesDec;
+    private ArrayList<INodeInputInt> inpNodesInt;
+    private ArrayList<INodeInputBin> inpNodesBin;
     /**
      * List of input nodes.
      */
-    private ArrayList<INodeOutput> outNodes;
+    private ArrayList<INodeOutputDec> outNodesDec;
+    private ArrayList<INodeOutputInt> outNodesInt;
+    private ArrayList<INodeOutputBin> outNodesBin;
 
     private ArrayList<Edge> edges;
+    private ArrayList<EdgeDec> edgesDec;
+    private ArrayList<EdgeInt> edgesInt;
+    private ArrayList<EdgeBin> edgesBin;
 
     private int maxNodes;
 
-    private ArrayList<Signal> importedValues;
-    private ArrayList<Signal> exportedValues;
+    private double[][] outDataDec;
+    private int[][] outDataInt;
+    private boolean[][] outDataBin;
 
 
     /**
@@ -48,12 +60,24 @@ public class Cell {
         fitnessValue = 0.0;
         nodes = new ArrayList<>();
         innerNodes = new ArrayList<>();
-        inpNodes = new ArrayList<>();
-        outNodes = new ArrayList<>();
+        inpNodesDec = new ArrayList<>();
+        inpNodesInt = new ArrayList<>();
+        inpNodesBin = new ArrayList<>();
+        outNodesDec = new ArrayList<>();
+        outNodesInt = new ArrayList<>();
+        outNodesBin = new ArrayList<>();
         edges = new ArrayList<>();
+        edgesDec = new ArrayList<>();
+        edgesInt = new ArrayList<>();
+        edgesBin = new ArrayList<>();
         this.maxNodes = maxNodes;
-        importedValues = new ArrayList<>();
-        exportedValues = new ArrayList<>();
+
+        double[][] outDataDec = new double[][]{{0.0}};
+        int[][] outDataInt = new int[][]{{1}};
+        boolean[][] outDataBin = new boolean[][]{{false}};
+
+        this.inputNodes = new ArrayList<>();
+        this.outputNodes = new ArrayList<>();
     }
 
     public static int countGroup(ArrayList<ArrayList<Node>> group) {
@@ -76,7 +100,7 @@ public class Cell {
      *
      * @param fitnessValue value of the fitness function.
      */
-    public void setFitnessValue(Double fitnessValue) {
+    public void setFitnessValue(double fitnessValue) {
         this.fitnessValue = fitnessValue;
     }
 
@@ -122,14 +146,35 @@ public class Cell {
         this.edges = edges;
     }
 
-    public ArrayList<Edge> getEdges(Class type) {
-        ArrayList<Edge> edges = new ArrayList<>();
-        for (Edge edge : getEdges()) {
-            if (edge.getType().equals(type)) {
-                edges.add(edge);
-            }
-        }
-        return edges;
+    public ArrayList<EdgeDec> getEdgesDec() {
+        return edgesDec;
+    }
+
+    public void setEdgesDec(ArrayList<EdgeDec> edgesDec) {
+        this.edgesDec = edgesDec;
+    }
+
+    public ArrayList<EdgeInt> getEdgesInt() {
+        return edgesInt;
+    }
+
+    public void setEdgesInt(ArrayList<EdgeInt> edgesInt) {
+        this.edgesInt = edgesInt;
+    }
+
+    public ArrayList<EdgeBin> getEdgesBin() {
+        return edgesBin;
+    }
+
+    public void setEdgesBin(ArrayList<EdgeBin> edgesBin) {
+        this.edgesBin = edgesBin;
+    }
+
+    public ArrayList<? extends Edge> getEdges(Class type) throws Exception {
+        if (type.isAssignableFrom(Double.class)) return edgesDec;
+        if (type.isAssignableFrom(Integer.class)) return edgesInt;
+        if (type.isAssignableFrom(Double.class)) return edgesBin;
+        throw new Exception("Edges of unknown type: " + type.getSimpleName());
     }
 
     /**
@@ -140,12 +185,28 @@ public class Cell {
     public void addNode(Node node) throws Exception {
         if (nodes.size() < maxNodes) {
             nodes.add(node);
-            if (node instanceof INodeInput) {
-                inpNodes.add((INodeInput) node);
+            if (node instanceof INodeInputDec) {
+                inpNodesDec.add((INodeInputDec) node);
                 return;
             }
-            if (node instanceof INodeOutput) {
-                outNodes.add((INodeOutput) node);
+            if (node instanceof INodeInputInt) {
+                inpNodesInt.add((INodeInputInt) node);
+                return;
+            }
+            if (node instanceof INodeInputBin) {
+                inpNodesBin.add((INodeInputBin) node);
+                return;
+            }
+            if (node instanceof INodeOutputDec) {
+                outNodesDec.add((INodeOutputDec) node);
+                return;
+            }
+            if (node instanceof INodeOutputInt) {
+                outNodesInt.add((INodeOutputInt) node);
+                return;
+            }
+            if (node instanceof INodeOutputBin) {
+                outNodesBin.add((INodeOutputBin) node);
                 return;
             }
             innerNodes.add(node);
@@ -162,11 +223,25 @@ public class Cell {
      * @param edge
      */
     public void addEdge(Edge edge) throws Exception {
-        if (!edges.contains(edge)) {
-            edges.add(edge);
-            edge.getSource().addEdge(edge);
-            edge.getTarget().addEdge(edge);
-        } else throw new Exception("Edge to be added already contained");
+        if (edge instanceof EdgeDec) {
+            if (!edgesDec.contains(edge)) {
+                ((EdgeDec) edge).getSource().addEdge((EdgeDec) edge);
+                return;
+            } else throw new Exception("Edge to be added already contained");
+        }
+        if (edge instanceof EdgeInt) {
+            if (!edgesInt.contains(edge)) {
+                ((EdgeInt) edge).getSource().addEdge((EdgeInt) edge);
+                return;
+            } else throw new Exception("Edge to be added already contained");
+        }
+        if (edge instanceof EdgeBin) {
+            if (!edgesBin.contains(edge)) {
+                ((EdgeBin) edge).getSource().addEdge((EdgeBin) edge);
+                return;
+            } else throw new Exception("Edge to be added already contained");
+        }
+        throw new Exception("Edge object not valid");
     }
 
     /**
@@ -182,22 +257,44 @@ public class Cell {
         }
     }
 
-    /**
-     * Get nodes of type InputDec.
-     *
-     * @return
-     */
-    public ArrayList<INodeInput> getInputs() {
-        return inpNodes;
+    public ArrayList<Node> getInputNodes() {
+        return inputNodes;
     }
 
-    /**
-     * Get nodes of type OutputDec.
-     *
-     * @return
-     */
-    public ArrayList<INodeOutput> getOutputs() {
-        return outNodes;
+    public void setInputNodes(ArrayList<Node> inputNodes) {
+        this.inputNodes = inputNodes;
+    }
+
+    public ArrayList<Node> getOutputNodes() {
+        return outputNodes;
+    }
+
+    public void setOutputNodes(ArrayList<Node> outputNodes) {
+        this.outputNodes = outputNodes;
+    }
+
+    public ArrayList<INodeInputDec> getInpNodesDec() {
+        return inpNodesDec;
+    }
+
+    public ArrayList<INodeInputInt> getInpNodesInt() {
+        return inpNodesInt;
+    }
+
+    public ArrayList<INodeInputBin> getInpNodesBin() {
+        return inpNodesBin;
+    }
+
+    public ArrayList<INodeOutputDec> getOutNodesDec() {
+        return outNodesDec;
+    }
+
+    public ArrayList<INodeOutputInt> getOutNodesInt() {
+        return outNodesInt;
+    }
+
+    public ArrayList<INodeOutputBin> getOutNodesBin() {
+        return outNodesBin;
     }
 
     /**
@@ -227,30 +324,43 @@ public class Cell {
         innerNodes.remove(node);
     }
 
-    public void runEvent(ArrayList<Signal> values) throws Exception {
-        importSignals(values);
+    public void runEvent(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) throws Exception {
+        importSignals(signalsDec, signalsInt, signalsBin);
         clcCell();
     }
 
-    public ArrayList<ArrayList<Signal>> run(ArrayList<ArrayList<Signal>> inputs) throws Exception {
+    public void run(double[][] signalsDec, int[][] signalsInt, boolean[][] signalsBin) throws Exception {
         clearCell();
-        ArrayList<ArrayList<Signal>> out = new ArrayList<>();
-        for (ArrayList<Signal> data : inputs) {
+        outDataDec=new double[signalsDec.length][signalsDec[0].length];
+        outDataInt=new int[signalsInt.length][signalsInt[0].length];
+        outDataBin=new boolean[signalsBin.length][signalsBin[0].length];
+        for (int i=0;i<signalsDec.length;i++) {
             rstCell();
-            runEvent(data);
-            out.add((ArrayList<Signal>) exportedValues.clone());
+            runEvent(signalsDec[i],signalsInt[i],signalsBin[i]);
+            outDec[i]=getExportedValuesDec();
+            outInt[i]=getExportedValuesInt();
+            outBin[i]=exp
         }
-        return out;
+
     }
 
-    private void importSignals(ArrayList<Signal> values) throws Exception {
-        if (values.size() == inpNodes.size()) {
-            importedValues = values;
-            for (int i = 0; i < values.size(); i++) {
-                inpNodes.get(i).importSignal(values.get(i));
+    private void importSignals(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) throws Exception {
+        if (signalsDec.length == inpNodesDec.size()) {
+            for (int i = 0; i < inpNodesDec.size(); i++) {
+                inpNodesDec.get(i).importSignal(signalsDec[i]);
             }
+        } else throw new Exception("Input array of doubles not equal to the number of input decimal nodes");
+        if (signalsInt.length == inpNodesInt.size()) {
+            for (int i = 0; i < inpNodesInt.size(); i++) {
+                inpNodesInt.get(i).importSignal(signalsInt[i]);
+            }
+        } else throw new Exception("Input array of integers not equal to the number of input integer nodes");
+        if (signalsBin.length == inpNodesBin.size()) {
+            for (int i = 0; i < inpNodesBin.size(); i++) {
+                inpNodesBin.get(i).importSignal(signalsBin[i]);
+            }
+        } else throw new Exception("Input array of booleans not equal to the number of input binary nodes");
 
-        } else throw new Exception("InputDec array not equal to the number of input nodes");
     }
 
     /**
@@ -271,13 +381,21 @@ public class Cell {
             }
         }
         exportedValues.clear();
-        for (INodeOutput node : outNodes) {
+        for (INodeOutputDec node : outNodes) {
             exportedValues.add(node.exportSignal());
         }
     }
 
-    public ArrayList<Signal> getExportedValues() {
-        return exportedValues;
+    public double[] getExportedValuesDec() {
+        return exportedValuesDec;
+    }
+
+    public int[] getExportedValuesInt() {
+        return exportedValuesInt;
+    }
+
+    public boolean[] getExportedValuesBin() {
+        return exportedValuesBin;
     }
 
     /**
@@ -317,15 +435,6 @@ public class Cell {
         return cloner.deepClone(this);
     }
 
-    public boolean isNodesEndState() {
-        for (Node node : nodes) {
-            if (node.getState() != 4) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public ArrayList<ArrayList<Node>> getGroup(Node nodeStart, int maxNum) throws Exception {
         ArrayList<Node> nodes = getInnerNodes();
         ArrayList<ArrayList<Node>> group = new ArrayList<>();
@@ -340,12 +449,12 @@ public class Cell {
                 break;
             }
             for (Node node : currentLevel) {
-                for (CollectorTarget collectorInp : node.getInpCollectorsConnected()) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected()) {
                     Node candidate = collectorInp.getEdges().get(0).getSource().getNodeAttached();
                     if (!containsNodeGroup(group, candidate) && nodes.contains(candidate) && !nextLevel.contains(candidate))
                         nextLevel.add(candidate);
                 }
-                for (CollectorSource collectorOut : node.getOutCollectorsConnected()) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected()) {
                     for (Edge edge : collectorOut.getEdges()) {
                         Node candidate = edge.getTarget().getNodeAttached();
                         if (!containsNodeGroup(group, candidate) && nodes.contains(candidate) && !nextLevel.contains(candidate))
@@ -375,36 +484,36 @@ public class Cell {
 
         for (ArrayList<Node> levels : group) {
             for (Node node : levels) {
-                for (CollectorTarget collectorInp : node.getInpCollectorsConnected(Double.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Double.class)) {
                     if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesDec.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorTarget collectorInp : node.getInpCollectorsConnected(Integer.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Integer.class)) {
                     if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesInt.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorTarget collectorInp : node.getInpCollectorsConnected(Boolean.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Boolean.class)) {
                     if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesBin.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorSource collectorOut : node.getOutCollectorsConnected(Double.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Double.class)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesDec.add(edge);
                         }
                     }
                 }
-                for (CollectorSource collectorOut : node.getOutCollectorsConnected(Integer.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Integer.class)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesInt.add(edge);
                         }
                     }
                 }
-                for (CollectorSource collectorOut : node.getOutCollectorsConnected(Boolean.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Boolean.class)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesBin.add(edge);
@@ -430,36 +539,36 @@ public class Cell {
 
         for (ArrayList<Node> levels : group) {
             for (Node node : levels) {
-                for (CollectorTarget collectorInp : node.getInpCollectorsConnected(Double.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Double.class)) {
                     if (!containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesInpDec.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorTarget collectorInp : node.getInpCollectorsConnected(Integer.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Integer.class)) {
                     if (!containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesInpInt.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorTarget collectorInp : node.getInpCollectorsConnected(Boolean.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Boolean.class)) {
                     if (!containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesInpBin.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorSource collectorOut : node.getOutCollectorsConnected(Double.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Double.class)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (!containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesOutDec.add(edge);
                         }
                     }
                 }
-                for (CollectorSource collectorOut : node.getOutCollectorsConnected(Integer.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Integer.class)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (!containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesOutInt.add(edge);
                         }
                     }
                 }
-                for (CollectorSource collectorOut : node.getOutCollectorsConnected(Boolean.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Boolean.class)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (!containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesOutBin.add(edge);

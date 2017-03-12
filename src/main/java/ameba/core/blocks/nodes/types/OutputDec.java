@@ -1,7 +1,7 @@
 package ameba.core.blocks.nodes.types;
 
 import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.nodes.INodeOutput;
+import ameba.core.blocks.nodes.INodeOutputDec;
 import ameba.core.blocks.nodes.Node;
 
 
@@ -13,7 +13,7 @@ import ameba.core.blocks.nodes.Node;
  * To change this template use File | Settings | File Templates.
  */
 
-public class OutputDec extends Node implements INode, INodeOutput {
+public class OutputDec extends Node implements INode, INodeOutputDec {
 
     Signal value;
 

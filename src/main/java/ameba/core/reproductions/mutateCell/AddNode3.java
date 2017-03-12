@@ -36,7 +36,7 @@ public class AddNode3 implements IMutateCell {
         Node nodeNew = nodeFactory.genNodeRndColType(type, type);
         if (nodeNew == null)
             throw new Exception("Can't generate node with " + type.getSimpleName() + " type of input and output collector");
-        CollectorTarget collectorInp = nodeNew.getInpCollectorsMin(type).get(random.nextInt(nodeNew.getInpCollectorsMin(type).size()));
+        CollectorTarget collectorInp = nodeNew.getCollectorsTargetMin(type).get(random.nextInt(nodeNew.getCollectorsTargetMin(type).size()));
         CollectorSource collectorOut = nodeNew.getOutCollectors(type).get(random.nextInt(nodeNew.getOutCollectors(type).size()));
         //Create new edge to connect output od new node to the source of old connected node
         Edge edge1 = edgeFactory.genEdge(type, collectorOut, edge.getTarget());

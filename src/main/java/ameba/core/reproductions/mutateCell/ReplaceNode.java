@@ -47,14 +47,14 @@ public class ReplaceNode implements IMutateCell {
     }
 
     private void reconnectInputs(Class type, Cell cell, Node nodeOld, Node nodeNew) throws Exception {
-        ArrayList<CollectorTarget> oldInpCol = nodeOld.getInpCollectorsConnected(type);
+        ArrayList<CollectorTarget> oldInpCol = nodeOld.getCollectorsTargetConnected(type);
         Collections.shuffle(oldInpCol);
-        int diff = oldInpCol.size() - nodeNew.getInpColLimit(type)[0];
-        int same = Math.min(oldInpCol.size(), nodeNew.getInpColLimit(type)[0]);
+        int diff = oldInpCol.size() - nodeNew.getCollectorTargetLimit(type)[0];
+        int same = Math.min(oldInpCol.size(), nodeNew.getCollectorTargetLimit(type)[0]);
         for (int i = 0; i < same; i++) {
             Edge edge = oldInpCol.get(i).getEdges().get(0);
             edge.setTarget(oldInpCol.get(i));
-            nodeNew.getInpCollectors(type).get(i).addEdge(edge);
+            nodeNew.getCollectorsTarget(type).get(i).addEdge(edge);
         }
         //If number of old input edges is greater than number of minimum edges of new node the edges are removed from cell
         for (int i = 0; i < diff; i++) {
@@ -65,12 +65,12 @@ public class ReplaceNode implements IMutateCell {
             CollectorSource collectorOut = cellFactory.getCollectorOutRndNoNode(type, cell, nodeOld);
             Edge edge;
             if (collectorOut != null) {
-                edge = edgeFactory.genEdge(type, collectorOut, nodeNew.getInpCollectors(type).get(same + i));
+                edge = edgeFactory.genEdge(type, collectorOut, nodeNew.getCollectorsTarget(type).get(same + i));
             } else {
                 //No proper node generate constant node
                 if (nodeFactory.isConstantAvaliable(type)) {
                     Node node = nodeFactory.genConstant(type);
-                    edge = edgeFactory.genEdge(type, node.getOutCollectors(type).get(0), nodeNew.getInpCollectors(type).get(same + i));
+                    edge = edgeFactory.genEdge(type, node.getOutCollectors(type).get(0), nodeNew.getCollectorsTarget(type).get(same + i));
                     cell.addNode(node);
                 } else
                     throw new Exception("Cell can't be properly connected. Must allow the generation of Constant nodes of type: " + type.getSimpleName());

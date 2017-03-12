@@ -22,6 +22,24 @@ public class EdgeDec extends Edge {
         this.weight = weight;
     }
 
+    @Override
+    public CollectorSourceDec getSource() {
+        return source;
+    }
+
+    public void setSource(CollectorSourceDec source) {
+        this.source = source;
+    }
+
+    @Override
+    public CollectorTargetDec getTarget() {
+        return target;
+    }
+
+    public void setTarget(CollectorTargetDec target) {
+        this.target = target;
+    }
+
     public double getWeight() {
         return weight;
     }

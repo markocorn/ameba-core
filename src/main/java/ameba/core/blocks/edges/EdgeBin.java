@@ -22,6 +22,24 @@ public class EdgeBin extends Edge {
         this.weight = weight;
     }
 
+    @Override
+    public CollectorSourceBin getSource() {
+        return source;
+    }
+
+    public void setSource(CollectorSourceBin source) {
+        this.source = source;
+    }
+
+    @Override
+    public CollectorTargetBin getTarget() {
+        return target;
+    }
+
+    public void setTarget(CollectorTargetBin target) {
+        this.target = target;
+    }
+
     public boolean getWeight() {
         return weight;
     }

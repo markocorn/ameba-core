@@ -1,7 +1,6 @@
 package ameba.core.blocks.nodes.types;
 
 import ameba.core.blocks.collectors.CollectorSource;
-import ameba.core.blocks.nodes.INodeInput;
 import ameba.core.blocks.nodes.NodeMem;
 
 public class InputInt extends NodeMem implements INodeInput {

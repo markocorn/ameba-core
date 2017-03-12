@@ -22,6 +22,24 @@ public class EdgeInt extends Edge {
         this.weight = weight;
     }
 
+    @Override
+    public CollectorSourceInt getSource() {
+        return source;
+    }
+
+    public void setSource(CollectorSourceInt source) {
+        this.source = source;
+    }
+
+    @Override
+    public CollectorTargetInt getTarget() {
+        return target;
+    }
+
+    public void setTarget(CollectorTargetInt target) {
+        this.target = target;
+    }
+
     public int getWeight() {
         return weight;
     }
@@ -30,7 +48,7 @@ public class EdgeInt extends Edge {
         this.weight = weight;
     }
 
-    public int getSignal() throws Exception {
+    public int getSignal(){
         setSignalTransmitted(true);
         return source.getSignal();
     }

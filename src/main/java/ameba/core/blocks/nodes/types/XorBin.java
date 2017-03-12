@@ -19,7 +19,7 @@ public class XorBin extends Node {
     public void clcNode() throws Exception {
         getCollectorsSourceDec().get(0).getSignal().setValueBoolean(true);
         for (int i = 1; i < getCollectorsTarget().size(); i++) {
-            getCollectorsSourceDec().get(0).getSignal().setValueBoolean(getInpCollectorsConnected(Boolean.class).get(i - 1).getSignal().getValueBoolean() ^ getInpCollectorsConnected(Boolean.class).get(i).getSignal().getValueBoolean());
+            getCollectorsSourceDec().get(0).getSignal().setValueBoolean(getCollectorsTargetConnected(Boolean.class).get(i - 1).getSignal().getValueBoolean() ^ getCollectorsTargetConnected(Boolean.class).get(i).getSignal().getValueBoolean());
         }
     }
 }

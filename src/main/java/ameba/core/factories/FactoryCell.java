@@ -220,7 +220,7 @@ public class FactoryCell {
     public CollectorTarget getCollectorInpMinRnd(Cell cell) throws Exception {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            collectors.addAll(node.getInpCollectorsMinConnect());
+            collectors.addAll(node.getCollectorsTargetMinConnect());
         }
         if (collectors.size() > 0) {
             return collectors.get(rndGen.nextInt(collectors.size()));

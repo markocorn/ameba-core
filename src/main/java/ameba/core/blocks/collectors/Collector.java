@@ -41,4 +41,9 @@ public class Collector {
             removeEdge(edge);
         }
     }
+
+    public boolean isSignalReady(){
+        return false;
+    }
+
 }

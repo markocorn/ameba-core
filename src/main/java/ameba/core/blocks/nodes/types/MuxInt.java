@@ -27,7 +27,7 @@ public class MuxInt extends Node {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        ArrayList<CollectorTarget> col = getInpCollectorsConnected(Integer.class);
+        ArrayList<CollectorTarget> col = getCollectorsTargetConnected(Integer.class);
         Signal[] list = new Signal[col.size()];
         for (int i = 0; i < col.size(); i++) {
             list[i] = col.get(i).getSignal();

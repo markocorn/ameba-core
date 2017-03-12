@@ -18,7 +18,7 @@ public class OrBin extends Node {
     @Override
     public void clcNode() throws Exception {
         getCollectorsSourceBin().get(0).getSignal().setValueBoolean(false);
-        for (CollectorTarget collectorInp : getInpCollectorsConnected(Boolean.class)) {
+        for (CollectorTarget collectorInp : getCollectorsTargetConnected(Boolean.class)) {
             //AddDec all sources signals together.
             if (collectorInp.getSignal().getValueBoolean())
                 getCollectorsSourceBin().get(0).getSignal().setValueBoolean(true);

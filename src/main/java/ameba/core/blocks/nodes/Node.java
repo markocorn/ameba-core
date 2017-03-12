@@ -30,36 +30,24 @@ public class Node implements Cloneable {
     private int[] collectorSourceLimitsInt;
     private int[] collectorSourceLimitsBin;
 
-    /**
-     * Flag that indicates signal is reads to be sent to other ameba.core.blocks.nodes.
-     */
-    private boolean signalInputsReady;
     private boolean signalReady;
     private boolean signalClcDone;
 
-    private int state;
-
-    private double paramsDec;
-    private double[] paramsLimitsDec;
-    private int paramsInt;
-    private int[] paramsLimitsInt;
-    private boolean paramsBin;
-    private boolean[] paramsLimitsBin;
+    private double[] paramsDec;
+    private double[][] paramsLimitsDec;
+    private int[] paramsInt;
+    private int[][] paramsLimitsInt;
+    private boolean[] paramsBin;
+    private boolean[][] paramsLimitsBin;
 
 
-    public Node(int[] inpColLimitDec, int[] inpColLimitInt, int[] inpColLimitBin, int[] outColLimitDec, int[] outColLimitInt, int[] outColLimitBin, double paramsDec, double[] paramsLimitsDec, int paramsInt, int[] paramsLimitsInt, boolean paramsBin, boolean[] paramsLimitsBin) {
+    public Node(int[] inpColLimitDec, int[] inpColLimitInt, int[] inpColLimitBin, int[] outColLimitDec, int[] outColLimitInt, int[] outColLimitBin) {
         this.collectorTargetLimitsDec = inpColLimitDec;
         this.collectorTargetLimitsInt = inpColLimitInt;
         this.collectorTargetLimitsBin = inpColLimitBin;
         this.collectorSourceLimitsDec = outColLimitDec;
         this.collectorSourceLimitsInt = outColLimitInt;
         this.collectorSourceLimitsBin = outColLimitBin;
-        this.paramsDec = paramsDec;
-        this.paramsLimitsDec = paramsLimitsDec;
-        this.paramsInt = paramsInt;
-        this.paramsLimitsInt = paramsLimitsInt;
-        this.paramsBin = paramsBin;
-        this.paramsLimitsBin = paramsLimitsBin;
 
         collectorsTarget = new ArrayList<>();
         collectorSources = new ArrayList<>();
@@ -70,20 +58,25 @@ public class Node implements Cloneable {
         collectorsSourceInt = new ArrayList<>();
         collectorsSourceBin = new ArrayList<>();
 
+        paramsDec = new double[]{0.0};
+        paramsLimitsDec = new double[][]{{0.0}};
+        paramsInt = new int[]{0};
+        paramsLimitsInt = new int[][]{{1}};
+        paramsBin = new boolean[]{false};
+        paramsLimitsBin = new boolean[][]{{false}};
+
         signalReady = false;
-        signalInputsReady = false;
         signalClcDone = false;
-        state = 0;
     }
 
-    public int[] getInpColLimit(Class type) throws Exception {
+    public int[] getCollectorTargetLimit(Class type) throws Exception {
         if (type.isAssignableFrom(Double.class)) return collectorTargetLimitsDec;
         if (type.isAssignableFrom(Integer.class)) return collectorTargetLimitsInt;
         if (type.isAssignableFrom(Boolean.class)) return collectorTargetLimitsBin;
         throw new Exception("No input collectors limits of type: " + type.getSimpleName());
     }
 
-    public int[] getOutColLimit(Class type) throws Exception {
+    public int[] getColSourceLimit(Class type) throws Exception {
         if (type.isAssignableFrom(Double.class)) return collectorSourceLimitsDec;
         if (type.isAssignableFrom(Integer.class)) return collectorSourceLimitsInt;
         if (type.isAssignableFrom(Boolean.class)) return collectorSourceLimitsBin;
@@ -133,7 +126,7 @@ public class Node implements Cloneable {
         this.signalReady = signalReady;
     }
 
-    public void addCollectorTagetDec(CollectorTargetDec collector) throws Exception {
+    public void addCollectorTargetDec(CollectorTargetDec collector) throws Exception {
         if (collectorsTargetDec.size() < collectorTargetLimitsDec[1]) {
             collectorsTargetDec.add(collector);
             collectorsTarget.add(collector);
@@ -141,7 +134,7 @@ public class Node implements Cloneable {
             throw new Exception("Collector can't be added. Maximum input collectors limitation of node: " + this.getClass().getSimpleName());
     }
 
-    public void addCollectorTagetInt(CollectorTargetInt collector) throws Exception {
+    public void addCollectorTargetInt(CollectorTargetInt collector) throws Exception {
         if (collectorsTargetInt.size() < collectorTargetLimitsInt[1]) {
             collectorsTargetInt.add(collector);
             collectorsTarget.add(collector);
@@ -149,7 +142,7 @@ public class Node implements Cloneable {
             throw new Exception("Collector can't be added. Maximum input collectors limitation of node: " + this.getClass().getSimpleName());
     }
 
-    public void addCollectorTagetBin(CollectorTargetBin collector) throws Exception {
+    public void addCollectorTargetBin(CollectorTargetBin collector) throws Exception {
         if (collectorsTargetBin.size() < collectorTargetLimitsBin[1]) {
             collectorsTargetBin.add(collector);
             collectorsTarget.add(collector);
@@ -181,8 +174,7 @@ public class Node implements Cloneable {
             throw new Exception("Collector can't be added. Maximum output collectors limitation of node: " + this.getClass().getSimpleName());
     }
 
-
-    public ArrayList<CollectorTarget> getInpCollectorsConnected(Class type) {
+    public ArrayList<CollectorTarget> getCollectorsTargetConnected(Class type) {
         ArrayList<CollectorTarget> collectorInps = new ArrayList<>();
         if (type.isAssignableFrom(Double.class)) {
             for (CollectorTarget collectorInp : collectorsTargetDec) {
@@ -209,7 +201,7 @@ public class Node implements Cloneable {
         return collectorInps;
     }
 
-    public ArrayList<CollectorTarget> getInpCollectorsConnected() {
+    public ArrayList<CollectorTarget> getCollectorsTargetConnected() {
         ArrayList<CollectorTarget> collectorInps = new ArrayList<>();
         for (CollectorTarget collectorInp : collectorsTarget) {
             if (collectorInp.getEdges().size() > 0) {
@@ -219,7 +211,7 @@ public class Node implements Cloneable {
         return collectorInps;
     }
 
-    public ArrayList<CollectorSource> getOutCollectorsConnected() {
+    public ArrayList<CollectorSource> getCollectorsSourceConnected() {
         ArrayList<CollectorSource> collectorOuts = new ArrayList<>();
         for (CollectorSource collectorOut : collectorSources) {
             if (collectorOut.getEdges().size() > 0) {
@@ -229,8 +221,7 @@ public class Node implements Cloneable {
         return collectorOuts;
     }
 
-
-    public ArrayList<CollectorSource> getOutCollectorsConnected(Class type) {
+    public ArrayList<CollectorSource> getCollectorsSourceConnected(Class type) {
         ArrayList<CollectorSource> collectors = new ArrayList<>();
         if (type.isAssignableFrom(Double.class)) {
             for (CollectorSource collector : collectorsSourceDec) {
@@ -256,7 +247,7 @@ public class Node implements Cloneable {
         return collectors;
     }
 
-    public ArrayList<CollectorTarget> getInpCollectorsMin(Class type) {
+    public ArrayList<CollectorTarget> getCollectorsTargetMin(Class type) {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         int num = 0;
         if (type.isAssignableFrom(Double.class)) {
@@ -299,7 +290,7 @@ public class Node implements Cloneable {
         return collectors;
     }
 
-    public ArrayList<CollectorTarget> getInpCollectorsMinConnect() {
+    public ArrayList<CollectorTarget> getCollectorsTargetMinConnect() {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         int min = 0;
         for (CollectorTarget collector : collectorsTargetBin) {
@@ -338,49 +329,35 @@ public class Node implements Cloneable {
         return collectorsTarget;
     }
 
-    public ArrayList<CollectorTarget> getInpCollectors(Class type) throws Exception {
-        if (type.isAssignableFrom(Double.class)) return collectorsTargetDec;
-        if (type.isAssignableFrom(Integer.class)) return collectorsTargetInt;
-        if (type.isAssignableFrom(Boolean.class)) return collectorsTargetBin;
-        throw new Exception("No input collectors of type: " + type.getSimpleName());
-    }
-
     public ArrayList<CollectorSource> getCollectorSources() {
         return collectorSources;
     }
 
-    public ArrayList<CollectorSource> getOutCollectors(Class type) throws Exception {
-        if (type.isAssignableFrom(Double.class)) return collectorsSourceDec;
-        if (type.isAssignableFrom(Integer.class)) return collectorsSourceInt;
-        if (type.isAssignableFrom(Boolean.class)) return collectorsSourceBin;
-        throw new Exception("No output collectors of type: " + type.getSimpleName());
-    }
-
-    public ArrayList<CollectorTarget> getCollectorsTargetDec() {
+    public ArrayList<CollectorTargetDec> getCollectorsTargetDec() {
         return collectorsTargetDec;
     }
 
-    public ArrayList<CollectorTarget> getCollectorsTargetInt() {
+    public ArrayList<CollectorTargetInt> getCollectorsTargetInt() {
         return collectorsTargetInt;
     }
 
-    public ArrayList<CollectorTarget> getCollectorsTargetBin() {
+    public ArrayList<CollectorTargetBin> getCollectorsTargetBin() {
         return collectorsTargetBin;
     }
 
-    public ArrayList<CollectorSource> getCollectorsSourceDec() {
+    public ArrayList<CollectorSourceDec> getCollectorsSourceDec() {
         return collectorsSourceDec;
     }
 
-    public ArrayList<CollectorSource> getCollectorsSourceInt() {
+    public ArrayList<CollectorSourceInt> getCollectorsSourceInt() {
         return collectorsSourceInt;
     }
 
-    public ArrayList<CollectorSource> getCollectorsSourceBin() {
+    public ArrayList<CollectorSourceBin> getCollectorsSourceBin() {
         return collectorsSourceBin;
     }
 
-    public boolean isOutConnected() {
+    public boolean isSourceConnected() {
         for (CollectorSource collector : collectorSources) {
             if (collector.getEdges().size() > 0) {
                 return true;
@@ -389,99 +366,84 @@ public class Node implements Cloneable {
         return false;
     }
 
-    public ArrayList<Signal> getParams() {
-        return params;
+    public double[] getParamsDec() {
+        return paramsDec;
     }
 
-    public void setParams(ArrayList<Signal> params) {
-        this.params = params;
+    public void setParamsDec(double[] paramsDec) {
+        this.paramsDec = paramsDec;
     }
 
-    public ArrayList<Signal[]> getParamsLimits() {
-        return paramsLimits;
+    public double[][] getParamsLimitsDec() {
+        return paramsLimitsDec;
     }
 
-    public void setParamsLimits(int index, Signal[] paramsLimits) {
-        this.paramsLimits.set(index, paramsLimits);
+    public void setParamsLimitsDec(double[][] paramsLimitsDec) {
+        this.paramsLimitsDec = paramsLimitsDec;
     }
 
-    /**
-     * Was signal of the node already send.
-     *
-     * @return
-     */
-    public boolean isSignalSend() {
-        return signalSend;
+    public int[] getParamsInt() {
+        return paramsInt;
     }
 
-    public void setSignalSend(boolean signalSend) {
-        this.signalSend = signalSend;
+    public void setParamsInt(int[] paramsInt) {
+        this.paramsInt = paramsInt;
     }
 
-    @Override
+    public int[][] getParamsLimitsInt() {
+        return paramsLimitsInt;
+    }
+
+    public void setParamsLimitsInt(int[][] paramsLimitsInt) {
+        this.paramsLimitsInt = paramsLimitsInt;
+    }
+
+    public boolean[] getParamsBin() {
+        return paramsBin;
+    }
+
+    public void setParamsBin(boolean[] paramsBin) {
+        this.paramsBin = paramsBin;
+    }
+
+    public boolean[][] getParamsLimitsBin() {
+        return paramsLimitsBin;
+    }
+
+    public void setParamsLimitsBin(boolean[][] paramsLimitsBin) {
+        this.paramsLimitsBin = paramsLimitsBin;
+    }
+
     public void processNode() throws Exception {
-        switch (getState()) {
-            case 0:
-                if (isSignalInputsReady()) {
-                    clcNode();
-                    setSignalClcDone(true);
-                    setState(1);
-                }
-                break;
-            case 1:
-                if (isSignalClcDone()) {
-                    setSignalReady(true);
-                    setState(2);
-                }
-                break;
-            case 2:
-                if (isSignalReady()) {
-                    setState(3);
-                }
-                break;
-            case 3:
-                if (isSignalSend() || !isOutConnected()) {
-                    setState(4);
-                }
-
-                break;
-            case 4:
+        if (isSignalInputsReady()) {
+            clcNode();
+            setSignalClcDone(true);
+            setSignalReady(true);
         }
     }
 
-    @Override
     public void clearNode() {
         rstNode();
     }
 
-    @Override
     public void rstNode() {
-        signalInputsReady = false;
         signalReady = false;
-        signalSend = false;
         signalClcDone = false;
-        state = 0;
     }
 
-    @Override
     public void clcNode() throws Exception {
 
     }
 
     public boolean isSignalInputsReady() {
-        signalInputsReady = true;
         for (CollectorTarget collectorInp : collectorsTarget) {
             for (Edge edge : collectorInp.getEdges()) {
                 if (!edge.isSignalReady()) {
-                    signalInputsReady = false;
+                    return false;
                 }
             }
         }
-        return signalInputsReady;
-    }
-
-    public void setSignalInputsReady(boolean signalInputsReady) {
-        this.signalInputsReady = signalInputsReady;
+        return true;
     }
 
     public boolean isSignalClcDone() {
@@ -492,21 +454,6 @@ public class Node implements Cloneable {
         this.signalClcDone = signalClcDone;
     }
 
-    public int getState() {
-        return state;
-    }
-
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public void setParam(int ind, Signal par) {
-        params.set(ind, par);
-    }
-
-    public Signal getParam(int ind) {
-        return params.get(ind);
-    }
 
     public Node clone() {
         Cloner cloner = new Cloner();

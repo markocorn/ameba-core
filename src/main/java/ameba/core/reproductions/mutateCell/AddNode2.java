@@ -32,7 +32,7 @@ public class AddNode2 implements IMutateCell {
         Node nodeNew = nodeFactory.genNodeRndInpColType(type);
         if (nodeNew == null)
             throw new Exception("Can't generate node with " + type.getSimpleName() + " type of input collector");
-        CollectorTarget collectorInp = nodeNew.getInpCollectorsMin(type).get(random.nextInt(nodeNew.getInpCollectorsMin(type).size()));
+        CollectorTarget collectorInp = nodeNew.getCollectorsTargetMin(type).get(random.nextInt(nodeNew.getCollectorsTargetMin(type).size()));
         //Add edge to new collector
         collectorInp.addEdge(edge);
         //Remove edge from old collector

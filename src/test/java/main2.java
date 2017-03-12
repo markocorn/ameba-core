@@ -27,9 +27,9 @@ public class main2 {
 //            Node node102 = new CompareDec(Signal.createDouble(),0,10,2);
 //            Node node103 = new InputDec(Signal.createDouble());
 ////
-//            Edge edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node102.getInpCollectorsConnected().get(0), Signal.createDouble(1.0));
-//            Edge edge101 = new Edge(node102.getCollectorsSourceDec().get(0), node101.getInpCollectorsConnected().get(0), Signal.createBoolean());
-//            Edge edge102 = new Edge(node103.getCollectorsSourceDec().get(0), node102.getInpCollectorsConnected().get(1), Signal.createDouble(1.0));
+//            Edge edge100 = new Edge(node100.getCollectorsSourceDec().get(0), node102.getCollectorsTargetConnected().get(0), Signal.createDouble(1.0));
+//            Edge edge101 = new Edge(node102.getCollectorsSourceDec().get(0), node101.getCollectorsTargetConnected().get(0), Signal.createBoolean());
+//            Edge edge102 = new Edge(node103.getCollectorsSourceDec().get(0), node102.getCollectorsTargetConnected().get(1), Signal.createDouble(1.0));
 //
 //
 ////**********************************************************************************************************

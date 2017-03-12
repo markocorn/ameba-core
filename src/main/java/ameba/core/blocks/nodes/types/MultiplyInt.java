@@ -18,7 +18,7 @@ public class MultiplyInt extends Node {
     @Override
     public void clcNode() throws Exception {
         getCollectorsSourceInt().get(0).getSignal().setValueInteger(1);
-        for (CollectorTarget collectorInp : getInpCollectorsConnected(Integer.class)) {
+        for (CollectorTarget collectorInp : getCollectorsTargetConnected(Integer.class)) {
             getCollectorsSourceInt().get(0).getSignal().setValueInteger(getCollectorsSourceInt().get(0).getSignal().getValueInteger() * collectorInp.getSignal().getValueInteger());
         }
 
