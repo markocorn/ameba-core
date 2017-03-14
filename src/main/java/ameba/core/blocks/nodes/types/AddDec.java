@@ -1,6 +1,7 @@
 package ameba.core.blocks.nodes.types;
 
 import ameba.core.blocks.collectors.CollectorSourceDec;
+import ameba.core.blocks.collectors.CollectorTargetDec;
 import ameba.core.blocks.nodes.Node;
 
 
@@ -17,7 +18,7 @@ public class AddDec extends Node {
     @Override
     public void clcNode() throws Exception {
         getCollectorsSourceDec().get(0).setSignal(0.0);
-        for (CollectorTargetDec collector : getCollectorsTargetDec()) {
+        for (CollectorTargetDec collector : getCollectorsTargetConnectedDec()) {
             getCollectorsSourceDec().get(0).setSignal(getCollectorsSourceDec().get(0).getSignal() + collector.getSignal());
         }
     }

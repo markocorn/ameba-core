@@ -3,7 +3,6 @@ package ameba.core.blocks;
 
 import ameba.core.blocks.collectors.Collector;
 import ameba.core.blocks.collectors.CollectorSource;
-import ameba.core.blocks.collectors.CollectorSourceDec;
 import ameba.core.blocks.collectors.CollectorTarget;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.edges.EdgeBin;
@@ -17,6 +16,9 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class Cell {
+    double[] exportsDec;
+    int[] exportsInt;
+    boolean[] exportsBin;
     /**
      * Fitness value of last cell simulation run.
      */
@@ -40,18 +42,11 @@ public class Cell {
     private ArrayList<INodeOutputDec> outNodesDec;
     private ArrayList<INodeOutputInt> outNodesInt;
     private ArrayList<INodeOutputBin> outNodesBin;
-
     private ArrayList<Edge> edges;
     private ArrayList<EdgeDec> edgesDec;
     private ArrayList<EdgeInt> edgesInt;
     private ArrayList<EdgeBin> edgesBin;
-
     private int maxNodes;
-
-    private double[][] outDataDec;
-    private int[][] outDataInt;
-    private boolean[][] outDataBin;
-
 
     /**
      *
@@ -326,25 +321,14 @@ public class Cell {
 
     public void runEvent(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) throws Exception {
         importSignals(signalsDec, signalsInt, signalsBin);
+        runEvent();
+    }
+
+    public void runEvent() throws Exception {
         clcCell();
     }
 
-    public void run(double[][] signalsDec, int[][] signalsInt, boolean[][] signalsBin) throws Exception {
-        clearCell();
-        outDataDec=new double[signalsDec.length][signalsDec[0].length];
-        outDataInt=new int[signalsInt.length][signalsInt[0].length];
-        outDataBin=new boolean[signalsBin.length][signalsBin[0].length];
-        for (int i=0;i<signalsDec.length;i++) {
-            rstCell();
-            runEvent(signalsDec[i],signalsInt[i],signalsBin[i]);
-            outDec[i]=getExportedValuesDec();
-            outInt[i]=getExportedValuesInt();
-            outBin[i]=exp
-        }
-
-    }
-
-    private void importSignals(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) throws Exception {
+    public void importSignals(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) throws Exception {
         if (signalsDec.length == inpNodesDec.size()) {
             for (int i = 0; i < inpNodesDec.size(); i++) {
                 inpNodesDec.get(i).importSignal(signalsDec[i]);
@@ -360,42 +344,53 @@ public class Cell {
                 inpNodesBin.get(i).importSignal(signalsBin[i]);
             }
         } else throw new Exception("Input array of booleans not equal to the number of input binary nodes");
+    }
 
+    public void exportSignals() {
+        exportsDec = new double[getOutNodesDec().size()];
+        for (int i = 0; i < getOutNodesDec().size(); i++) {
+            exportsDec[i] = getOutNodesDec().get(i).exportSignal();
+        }
+        exportsInt = new int[getOutNodesInt().size()];
+        for (int i = 0; i < getOutNodesInt().size(); i++) {
+            exportsInt[i] = getOutNodesInt().get(i).exportSignal();
+        }
+        exportsBin = new boolean[getOutNodesBin().size()];
+        for (int i = 0; i < getOutNodesBin().size(); i++) {
+            exportsBin[i] = getOutNodesBin().get(i).exportSignal();
+        }
     }
 
     /**
      * Execute calculation process of data transition trough nodes and connectivity of the cell.
      */
     private void clcCell() throws Exception {
-        int sumStateOld;
-        int sumState = 0;
-        while (!isNodesEndState()) {
-            sumStateOld = sumState;
-            sumState = 0;
+        while (!isCellClcDone()) {
             for (Node node : nodes) {
                 node.processNode();
-                sumState += node.getState();
-            }
-            if (sumStateOld == sumState) {
-                break;
             }
         }
-        exportedValues.clear();
-        for (INodeOutputDec node : outNodes) {
-            exportedValues.add(node.exportSignal());
+    }
+
+    private boolean isCellClcDone() {
+        for (Edge edge : getEdges()) {
+            if (!edge.isSignalTransmitted() && edge.getSource().isSignalReady()) {
+                return false;
+            }
         }
+        return true;
     }
 
     public double[] getExportedValuesDec() {
-        return exportedValuesDec;
+        return exportsDec;
     }
 
     public int[] getExportedValuesInt() {
-        return exportedValuesInt;
+        return exportsInt;
     }
 
     public boolean[] getExportedValuesBin() {
-        return exportedValuesBin;
+        return exportsBin;
     }
 
     /**
@@ -591,20 +586,11 @@ public class Cell {
         ArrayList<String> out = new ArrayList<>();
         //Check edges
         for (Edge edge : getEdges()) {
-            //Check edges types and sources
-            if (!edge.getSource().getType().equals(edge.getWeight().gettClass())) {
-                out.add("Node: " + edge.getSource().getNodeAttached().toString() + " out collector of type: " + edge.getSource().getType().toString() + " not matched with edge weight type: " + edge.getWeight().toString());
-            }
-            //Check edges types and targets
-            if (!edge.getTarget().getType().equals(edge.getWeight().gettClass())) {
-                out.add("Node: " + edge.getTarget().getNodeAttached().toString() + " inp collector of type: " + edge.getTarget().getType().toString() + " not matched with edge weight type: " + edge.getWeight().toString());
-            }
             //Check edge connection and sources
             if (!edge.getSource().getEdges().contains(edge))
                 out.add("Output collector:" + edge.getSource().toString() + " not connected to the source of edge: " + edge.toString());
             if (!edge.getTarget().getEdges().contains(edge))
                 out.add("Input collector:" + edge.getSource().toString() + " not connected to the target of edge: " + edge.toString());
-
         }
         return out;
     }

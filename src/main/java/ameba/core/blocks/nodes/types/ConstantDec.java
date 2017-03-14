@@ -1,16 +1,16 @@
 package ameba.core.blocks.nodes.types;
 
 
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceBin;
 import ameba.core.blocks.nodes.NodeMem;
 
 public class ConstantDec extends NodeMem {
 
-    public ConstantDec(Signal par, Signal[] parLimits) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{0, 0});
-        addOutCollector(new CollectorSource(Signal.createDouble(), this));
-        getParams().add(par);
-        getParamsLimits().add(parLimits);
+    public ConstantDec(double par, double[] parLimits) throws Exception {
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
+        addCollectorSourceBin(new CollectorSourceBin(this));
+        setParamsDec(new double[]{par});
+        setParamsLimitsDec(new double[][]{parLimits});
     }
 
     /**
@@ -18,8 +18,7 @@ public class ConstantDec extends NodeMem {
      */
     @Override
     public void clcNode() {
-        getCollectorsSourceDec().get(0).setSignal(getParams().get(0));
-        setState(1);
+        getCollectorsSourceDec().get(0).setSignal(getParamsDec()[0]);
     }
 }
 

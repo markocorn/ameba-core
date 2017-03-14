@@ -1,16 +1,16 @@
 package ameba.core.blocks.nodes.types;
 
 
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceInt;
 import ameba.core.blocks.nodes.Node;
 
 public class ConstantInt extends Node {
 
-    public ConstantInt(Signal par, Signal[] parLimits) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0});
-        addOutCollector(new CollectorSource(Signal.createInteger(), this));
-        getParams().add(par);
-        getParamsLimits().add(parLimits);
+    public ConstantInt(int par, int[] parLimits) throws Exception {
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
+        addCollectorSourceInt(new CollectorSourceInt(this));
+        setParamsInt(new int[]{par});
+        setParamsLimitsInt(new int[][]{parLimits});
     }
 
     /**
@@ -18,8 +18,8 @@ public class ConstantInt extends Node {
      */
     @Override
     public void clcNode() {
-        getCollectorsSourceInt().get(0).setSignal(getParams().get(0));
-        setState(1);
+        getCollectorsSourceInt().get(0).setSignal(getParamsInt()[0]);
+
     }
 }
 

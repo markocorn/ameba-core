@@ -1,48 +1,46 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorTargetInt;
 import ameba.core.blocks.nodes.Node;
 
 public class CompareConstInt extends Node {
 
-    public CompareConstInt(Signal par1, Signal[] par1Limits, int par2) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1});
-        addInpCollector(new CollectorTarget(Signal.createInteger(), this));
-        addOutCollector(new CollectorSource(Signal.createBoolean(), this));
-        //AddDec compare against parameter
-        getParams().add(par1);
-        getParamsLimits().add(par1Limits);
-        //AddDec operation select parameter
-        getParams().add(Signal.createInteger(par2));
-        getParamsLimits().add(new Signal[]{Signal.createInteger(0), Signal.createInteger(2)});
+    public CompareConstInt(int par1, int[] par1Limits, int par2) throws Exception {
+        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+        addCollectorTargetInt(new CollectorTargetInt(this));
+        addCollectorSourceBin(new CollectorSourceBin(this));
+        //compare against parameter
+        setParamsInt(new int[]{par1});
+        setParamsLimitsInt(new int[][]{par1Limits});
+        //operation select parameter
+        setParamsInt(new int[]{par2});
+        setParamsLimitsInt(new int[][]{{0, 2}});
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        switch (getParams().get(1).getValueInteger()) {
+        getCollectorsSourceBin().get(0).setSignal(false);
+        switch (getParamsInt()[0]) {
             //Greater than par
             case 0: {
-                getCollectorsSourceBin().get(0).setSignal(Signal.createBoolean(false));
-                if (getCollectorsTargetInt().get(0).getSignal().getValueInteger() > getParams().get(0).getValueInteger()) {
-                    getCollectorsSourceBin().get(0).setSignal(Signal.createBoolean(true));
+                if (getCollectorsTargetInt().get(0).getSignal() > getParamsInt()[0]) {
+                    getCollectorsSourceBin().get(0).setSignal(true);
                 }
             }
             break;
             //Less than par
             case 1: {
-                getCollectorsSourceBin().get(0).setSignal(Signal.createBoolean(false));
-                if (getCollectorsTargetInt().get(0).getSignal().getValueInteger() < getParams().get(0).getValueInteger()) {
-                    getCollectorsSourceBin().get(0).setSignal(Signal.createBoolean(true));
+                if (getCollectorsTargetInt().get(0).getSignal() < getParamsInt()[0]) {
+                    getCollectorsSourceBin().get(0).setSignal(true);
                 }
             }
             break;
             //Equal to par
             case 2: {
-                getCollectorsSourceBin().get(0).setSignal(Signal.createBoolean(false));
-                if (getCollectorsTargetInt().get(0).getSignal().getValueInteger().equals(getParams().get(0).getValueInteger())) {
-                    getCollectorsSourceBin().get(0).setSignal(Signal.createBoolean(true));
+                if (getCollectorsTargetInt().get(0).getSignal() == getParamsInt()[0]) {
+                    getCollectorsSourceBin().get(0).setSignal(true);
                 }
             }
             break;

@@ -201,6 +201,36 @@ public class Node implements Cloneable {
         return collectorInps;
     }
 
+    public ArrayList<CollectorTargetDec> getCollectorsTargetConnectedDec() {
+        ArrayList<CollectorTargetDec> collectorInps = new ArrayList<>();
+        for (CollectorTargetDec collectorInp : collectorsTargetDec) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorInps.add(collectorInp);
+            }
+        }
+        return collectorInps;
+    }
+
+    public ArrayList<CollectorTargetInt> getCollectorsTargetConnectedInt() {
+        ArrayList<CollectorTargetInt> collectorInps = new ArrayList<>();
+        for (CollectorTargetInt collectorInp : collectorsTargetInt) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorInps.add(collectorInp);
+            }
+        }
+        return collectorInps;
+    }
+
+    public ArrayList<CollectorTargetBin> getCollectorsTargetConnectedBin() {
+        ArrayList<CollectorTargetBin> collectorInps = new ArrayList<>();
+        for (CollectorTargetBin collectorInp : collectorsTargetBin) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorInps.add(collectorInp);
+            }
+        }
+        return collectorInps;
+    }
+
     public ArrayList<CollectorTarget> getCollectorsTargetConnected() {
         ArrayList<CollectorTarget> collectorInps = new ArrayList<>();
         for (CollectorTarget collectorInp : collectorsTarget) {

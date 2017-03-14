@@ -1,6 +1,7 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.*;
+import ameba.core.blocks.collectors.CollectorSourceInt;
+import ameba.core.blocks.collectors.CollectorTargetInt;
 import ameba.core.blocks.nodes.Node;
 
 
@@ -17,7 +18,7 @@ public class AddInt extends Node {
     @Override
     public void clcNode() throws Exception {
         getCollectorsSourceInt().get(0).setSignal(0);
-        for (CollectorTargetInt collector : getCollectorsTargetInt()) {
+        for (CollectorTargetInt collector : getCollectorsTargetConnectedInt()) {
             getCollectorsSourceInt().get(0).setSignal(getCollectorsSourceInt().get(0).getSignal() + collector.getSignal());
         }
     }
