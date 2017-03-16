@@ -19,7 +19,7 @@ public class InverseValue extends ParOperation implements IOperationDec {
      * @return Mutated parameter
      */
     @Override
-    public Double mutate(Double par) throws Exception {
+    public double mutate(double par) throws Exception {
         par = 1.0 / par;
         return limitDouble(par);
     }

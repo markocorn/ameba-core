@@ -1,5 +1,6 @@
 package ameba.core.blocks.collectors;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 
@@ -42,8 +43,11 @@ public class Collector {
         }
     }
 
-    public boolean isSignalReady(){
+    public boolean isSignalReady() {
         return false;
     }
 
+    public Cell.Signal getType() {
+        return null;
+    }
 }

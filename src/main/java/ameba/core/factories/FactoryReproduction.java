@@ -26,10 +26,10 @@ import java.util.HashMap;
  */
 public class FactoryReproduction {
     ArrayList<Reproduction> reproductions;
-    HashMap<String, IMutateEdge> mutateEdges;
+    HashMap<String, IMutateEdgeDec> mutateEdges;
     HashMap<String, IMutateNode> mutateNodes;
     HashMap<String, IMutateCell> mutateCells;
-    HashMap<String, ICrossEdge> crossEdges;
+    HashMap<String, ICrossEdgeDec> crossEdges;
     HashMap<String, ICrossNode> crossNodes;
     HashMap<String, ICrossCell> crossCells;
 
@@ -91,31 +91,31 @@ public class FactoryReproduction {
         bagMutateEdge.addAll(Collections.nCopies(weightInverseDec.getProbability(), name));
 
         name = "weightMixSignDec";
-        WeightMixSign weightMixSignDec = new WeightMixSign(new MixSignDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
+        WeightMixSignDec weightMixSignDec = new WeightMixSignDec(new MixSignDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
         mutateEdges.put("weightMixSignDec", weightMixSignDec);
         reproductions.add(weightMixSignDec);
         bagMutateEdge.addAll(Collections.nCopies(weightMixSignDec.getProbability(), name));
 
         name = "weightMixSignInt";
-        WeightMixSign weightMixSignInt = new WeightMixSign(new MixSignDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
+        WeightMixSignDec weightMixSignInt = new WeightMixSignDec(new MixSignDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
         mutateEdges.put("weightMixSignInt", weightMixSignInt);
         reproductions.add(weightMixSignInt);
         bagMutateEdge.addAll(Collections.nCopies(weightMixSignInt.getProbability(), name));
 
         name = "weightRandValueDec";
-        WeightRandValue weightRandValueDec = new WeightRandValue(new RandValueDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
+        WeightRandValueDec weightRandValueDec = new WeightRandValueDec(new RandValueDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
         mutateEdges.put("weightRandValueDec", weightRandValueDec);
         reproductions.add(weightRandValueDec);
         bagMutateEdge.addAll(Collections.nCopies(weightRandValueDec.getProbability(), name));
 
         name = "weightRandValueInt";
-        WeightRandValue weightRandValueInt = new WeightRandValue(new RandValueDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
+        WeightRandValueDec weightRandValueInt = new WeightRandValueDec(new RandValueDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
         mutateEdges.put("weightRandValueInt", weightRandValueInt);
         reproductions.add(weightRandValueInt);
         bagMutateEdge.addAll(Collections.nCopies(weightRandValueInt.getProbability(), name));
 
         name = "weightRandValueBin";
-        WeightRandValue weightRandValueBin = new WeightRandValue(new RandValueDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
+        WeightRandValueDec weightRandValueBin = new WeightRandValueDec(new RandValueDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
         mutateEdges.put("weightRandValueBin", weightRandValueBin);
         reproductions.add(weightRandValueBin);
         bagMutateEdge.addAll(Collections.nCopies(weightAddValueDecBin.getProbability(), name));
@@ -123,19 +123,19 @@ public class FactoryReproduction {
 
     private void loadEdgeCross(JsonNode node) throws IOException {
         String name = "weightCombineAddDec";
-        WeightCombineAdd cross = new WeightCombineAdd(new CombineAdd(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        WeightCombineAddDec cross = new WeightCombineAddDec(new CombineAddDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, cross);
         reproductions.add(cross);
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));
 
         name = "weightCombineAddInt";
-        cross = new WeightCombineAdd(new CombineAdd(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        cross = new WeightCombineAddDec(new CombineAddDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, cross);
         reproductions.add(cross);
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));
 
         name = "weightCombineAddBin";
-        cross = new WeightCombineAdd(new CombineAdd(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        cross = new WeightCombineAddDec(new CombineAddDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, cross);
         reproductions.add(cross);
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));
@@ -147,43 +147,43 @@ public class FactoryReproduction {
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));
 
         name = "weightCombineMulDec";
-        WeightCombineMul cross2 = new WeightCombineMul(new CombineMul(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        WeightCombineMulDec cross2 = new WeightCombineMulDec(new CombineMulDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, cross);
         reproductions.add(cross);
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));
 
         name = "weightCombineMulInt";
-        cross2 = new WeightCombineMul(new CombineMul(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        cross2 = new WeightCombineMulDec(new CombineMulDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, cross);
         reproductions.add(cross);
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));
 
         name = "weightCombineMulSubDec";
-        WeightCombineSub cross3 = new WeightCombineSub(new CombineSub(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        WeightCombineSubDec cross3 = new WeightCombineSubDec(new CombineSubDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, cross);
         reproductions.add(cross);
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));
 
         name = "weightCombineMulSubInt";
-        cross3 = new WeightCombineSub(new CombineSub(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        cross3 = new WeightCombineSubDec(new CombineSubDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, cross);
         reproductions.add(cross);
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));
 
         name = "weightCopyValueDec";
-        WeightCopyValue cross4 = new WeightCopyValue(new CopyValue(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        WeightCopyValueDec cross4 = new WeightCopyValueDec(new CopyValueDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, cross);
         reproductions.add(cross);
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));
 
         name = "weightCopyValueInt";
-        cross4 = new WeightCopyValue(new CopyValue(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        cross4 = new WeightCopyValueDec(new CopyValueDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, cross);
         reproductions.add(cross);
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));
 
         name = "weightCopyValueBin";
-        cross4 = new WeightCopyValue(new CopyValue(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        cross4 = new WeightCopyValueDec(new CopyValueDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, cross);
         reproductions.add(cross);
         bagMutateEdge.addAll(Collections.nCopies(cross.getProbability(), name));

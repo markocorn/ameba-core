@@ -1,27 +1,27 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorTargetBin;
 import ameba.core.blocks.nodes.Node;
 
 public class OrBin extends Node {
 
     public OrBin(int minInpCollectors, int maxInpCollectors) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{minInpCollectors, maxInpCollectors}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1});
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
         for (int i = 0; i < maxInpCollectors; i++) {
-            addInpCollector(new CollectorTarget(Signal.createBoolean(), this));
+            addCollectorTargetBin(new CollectorTargetBin(this));
         }
-        addOutCollector(new CollectorSource(Signal.createBoolean(), this));
+        addCollectorSourceBin(new CollectorSourceBin(this));
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        getCollectorsSourceBin().get(0).getSignal().setValueBoolean(false);
-        for (CollectorTarget collectorInp : getCollectorsTargetConnected(Boolean.class)) {
+        getCollectorsSourceBin().get(0).setSignal(false);
+        for (CollectorTargetBin collectorInp : getCollectorsTargetConnectedBin()) {
             //AddDec all sources signals together.
-            if (collectorInp.getSignal().getValueBoolean())
-                getCollectorsSourceBin().get(0).getSignal().setValueBoolean(true);
+            if (collectorInp.getSignal())
+                getCollectorsSourceBin().get(0).setSignal(true);
         }
     }
 }

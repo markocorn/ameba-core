@@ -17,7 +17,7 @@ public class AddValueInt extends ParOperation implements IOperationInt {
     }
 
     @Override
-    public Integer mutate(Integer par) throws Exception {
+    public int mutate(int par) throws Exception {
         int p = random.nextInt(getParOperationSettings().getChangeLimitInt()[1] - getParOperationSettings().getChangeLimitInt()[0]) + getParOperationSettings().getChangeLimitInt()[0];
         p += par;
         return limitInteger(p);

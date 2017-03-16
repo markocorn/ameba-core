@@ -3,17 +3,14 @@ package ameba.core.reproductions.parametersOperations.genParMutation;
 import ameba.core.reproductions.parametersOperations.ParOperation;
 import ameba.core.reproductions.parametersOperations.ParOperationSettings;
 
-import java.util.Random;
-
 /**
  * Created by marko on 12/21/16.
  */
 public class AddValueBin extends ParOperation implements IOperationBin {
-    private Random random;
 
     public AddValueBin(ParOperationSettings parOperationSettings) {
         super(parOperationSettings);
-        random = new Random();
+
     }
 
     /**
@@ -23,7 +20,7 @@ public class AddValueBin extends ParOperation implements IOperationBin {
      * @return Mutated parameter
      */
     @Override
-    public Boolean mutate(Boolean par) throws Exception {
+    public boolean mutate(boolean par) throws Exception {
         par = !par;
         return limitBoolean(par);
 

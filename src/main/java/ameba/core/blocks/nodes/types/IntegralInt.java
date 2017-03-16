@@ -8,27 +8,28 @@ package ameba.core.blocks.nodes.types;
  * To change this template use File | Settings | File Templates.
  */
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceInt;
+import ameba.core.blocks.collectors.CollectorTargetInt;
 import ameba.core.blocks.nodes.NodeMem;
 
 /**
  * @author Marko
  */
 public class IntegralInt extends NodeMem {
-    private Signal initValue;
-    private Signal signalOld;
+    private int initValue;
+    private int signalOld;
 
 
-    public IntegralInt(Signal initial, Signal par, Signal[] parLimits) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0});
+    public IntegralInt(int initial, int par, int[] parLimits) throws Exception {
+        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
         this.initValue = initial;
-        signalOld = initial.clone();
-        addInpCollector(new CollectorTarget(initial.clone(), this));
-        addOutCollector(new CollectorSource(initial.clone(), this));
+        signalOld = initial;
 
-        getParams().add(par);
-        getParamsLimits().add(parLimits);
+        addCollectorTargetInt(new CollectorTargetInt(this));
+        addCollectorSourceInt(new CollectorSourceInt(this));
+
+        setParamsInt(new int[]{par});
+        setParamsLimitsInt(new int[][]{parLimits});
 
         clearNode();
     }
@@ -36,8 +37,8 @@ public class IntegralInt extends NodeMem {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        getCollectorsSourceInt().get(0).getSignal().setValueInteger(getCollectorsTarget().get(0).getSignal().getValueInteger() * getParams().get(0).getValueInteger() + signalOld.getValueInteger());
-        signalOld = getCollectorsSourceInt().get(0).getSignal().clone();
+        getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(0).getSignal() * getParamsInt()[0] + signalOld);
+        signalOld = getCollectorsSourceInt().get(0).getSignal();
     }
 
     @Override
@@ -45,7 +46,7 @@ public class IntegralInt extends NodeMem {
         rstNode();
         try {
             getCollectorsSourceInt().get(0).setSignal(initValue);
-            signalOld.clear();
+            signalOld = initValue;
         } catch (Exception e) {
             e.printStackTrace();
         }

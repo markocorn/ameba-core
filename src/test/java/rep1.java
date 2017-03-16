@@ -35,7 +35,7 @@ public class rep1 {
         AddNode3 addNode3 = new AddNode3(factoryNode, factoryCell, factoryEdge);
         RemoveNode removeNode = new RemoveNode(factoryCell);
         RemoveNode1 removeNode1 = new RemoveNode1(factoryCell);
-        SwitchEdges1 switchEdges1 = new SwitchEdges1();
+        SwitchEdgesTargets switchEdges1 = new SwitchEdgesTargets();
         SwitchEdges2 switchEdges2 = new SwitchEdges2();
         RemoveNodesGroup removeNodesGroup = new RemoveNodesGroup(factoryCell, 5);
         AddNodesGroup addNodesGroup = new AddNodesGroup(factoryNode, factoryCell, factoryEdge, 5);

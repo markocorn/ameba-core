@@ -1,10 +1,9 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorTargetBin;
+import ameba.core.blocks.collectors.CollectorTargetInt;
 import ameba.core.blocks.nodes.Node;
-
-import java.util.ArrayList;
 
 /**
  * Created by marko on 2/6/17.
@@ -12,31 +11,31 @@ import java.util.ArrayList;
 public class MuxBin extends Node {
 
 
-    public MuxBin(int minInpCollectors, int maxInpCollectors, Signal par, Signal[] parLimits) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{minInpCollectors, maxInpCollectors}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1});
-        addInpCollector(new CollectorTarget(Signal.createInteger(), this));
-        for (int i = 0; i < maxInpCollectors - 1; i++) {
-            addInpCollector(new CollectorTarget(Signal.createBoolean(), this));
-        }
-        addOutCollector(new CollectorSource(Signal.createBoolean(), this));
+    public MuxBin(int minInpCollectors, int maxInpCollectors, boolean par, boolean[] parLimits) throws Exception {
+        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
 
-        getParams().add(par);
-        getParamsLimits().add(parLimits);
+        addCollectorTargetInt(new CollectorTargetInt(this));
+        for (int i = 0; i < maxInpCollectors - 1; i++) {
+            addCollectorTargetBin(new CollectorTargetBin(this));
+        }
+        addCollectorSourceBin(new CollectorSourceBin(this));
+
+        setParamsBin(new boolean[]{par});
+        setParamsLimitsBin(new boolean[][]{parLimits});
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        ArrayList<CollectorTarget> col = getCollectorsTargetInt();
-        col.addAll(getCollectorsTargetConnected(Boolean.class));
-        Signal[] list = new Signal[col.size()];
-        for (int i = 0; i < col.size(); i++) {
-            list[i] = col.get(i).getSignal();
+        int ind = getCollectorsTargetInt().get(0).getSignal();
+        boolean[] inp = new boolean[getCollectorsTargetConnectedBin().size()];
+        for (int i = 0; i < getCollectorsTargetConnectedBin().size(); i++) {
+            inp[i] = getCollectorsTargetConnectedBin().get(i).getSignal();
         }
-        if (list[0].getValueInteger() >= 0 && list[0].getValueInteger() < col.size() - 1) {
-            getCollectorsSourceBin().get(0).setSignal(col.get(list[0].getValueInteger() + 1).getSignal());
+        if (ind < inp.length && ind >= 0) {
+            getCollectorsSourceBin().get(0).setSignal(inp[ind]);
         } else {
-            getCollectorsSourceBin().get(0).setSignal(getParams().get(0));
+            getCollectorsSourceBin().get(0).setSignal(getParamsBin()[0]);
         }
     }
 }

@@ -48,7 +48,7 @@ public class EdgeInt extends Edge {
         this.weight = weight;
     }
 
-    public int getSignal(){
+    public int getSignal() {
         setSignalTransmitted(true);
         return source.getSignal();
     }

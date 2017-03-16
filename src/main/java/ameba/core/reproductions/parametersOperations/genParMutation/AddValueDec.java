@@ -23,7 +23,7 @@ public class AddValueDec extends ParOperation implements IOperationDec {
      * @return Mutated parameter
      */
     @Override
-    public Double mutate(Double par) throws Exception {
+    public double mutate(double par) throws Exception {
         double p = random.nextDouble() * (getParOperationSettings().getChangeLimitDec()[1] - getParOperationSettings().getChangeLimitDec()[0]) + getParOperationSettings().getChangeLimitDec()[0];
         p += par;
         return limitDouble(p);

@@ -8,8 +8,8 @@ package ameba.core.blocks.nodes.types;
  * To change this template use File | Settings | File Templates.
  */
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorTargetBin;
 import ameba.core.blocks.nodes.NodeMem;
 
 /**
@@ -18,28 +18,27 @@ import ameba.core.blocks.nodes.NodeMem;
 public class DerivativeBin extends NodeMem {
 
     //Initial value
-    private Signal initValue;
-    private Signal signalOld;
+    private boolean initValue;
+    private boolean signalOld;
 
-    public DerivativeBin(Signal initial, Signal par, Signal[] parLimits) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1});
+    public DerivativeBin(boolean initial, boolean par, boolean[] parLimits) throws Exception {
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
         this.initValue = initial;
-        signalOld = initial.clone();
-        addInpCollector(new CollectorTarget(Signal.createBoolean(), this));
-        addOutCollector(new CollectorSource(Signal.createBoolean(), this));
+        signalOld = initial;
+        addCollectorTargetBin(new CollectorTargetBin(this));
+        addCollectorSourceBin(new CollectorSourceBin(this));
 
-        getParams().add(par);
-        getParamsLimits().add(parLimits);
-
+        setParamsBin(new boolean[]{par});
+        setParamsLimitsBin(new boolean[][]{parLimits});
         clearNode();
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        getCollectorsSourceBin().get(0).getSignal().setValueBoolean(getParams().get(0).getValueBoolean());
-        if (!signalOld.getValueBoolean().equals(getCollectorsTargetBin().get(0).getSignal().getValueBoolean())) {
-            getCollectorsSourceBin().get(0).getSignal().setValueBoolean(!getParams().get(0).getValueBoolean());
+        getCollectorsSourceBin().get(0).setSignal(getParamsBin()[0]);
+        if (!signalOld == getCollectorsTargetBin().get(0).getSignal()) {
+            getCollectorsSourceBin().get(0).setSignal(!getParamsBin()[0]);
         }
         signalOld = getCollectorsTargetBin().get(0).getSignal();
     }
@@ -47,11 +46,7 @@ public class DerivativeBin extends NodeMem {
     @Override
     public void clearNode() {
         rstNode();
-        try {
-            getCollectorsSourceBin().get(0).setSignal(initValue);
-            signalOld.clear();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        getCollectorsSourceBin().get(0).setSignal(initValue);
+        signalOld = initValue;
     }
 }

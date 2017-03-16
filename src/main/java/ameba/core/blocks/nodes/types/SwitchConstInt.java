@@ -1,7 +1,8 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceInt;
+import ameba.core.blocks.collectors.CollectorTargetBin;
+import ameba.core.blocks.collectors.CollectorTargetInt;
 import ameba.core.blocks.nodes.Node;
 
 /**
@@ -9,24 +10,26 @@ import ameba.core.blocks.nodes.Node;
  */
 public class SwitchConstInt extends Node {
 
-    public SwitchConstInt(Signal par, Signal[] par2Limits) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0});
-        addInpCollector(new CollectorTarget(Signal.createBoolean(), this));
-        addInpCollector(new CollectorTarget(Signal.createInteger(), this));
-        addOutCollector(new CollectorSource(Signal.createInteger(), this));
-        getParams().add(par);
-        getParamsLimits().add(par2Limits);
+    public SwitchConstInt(int par, int[] parLimits) throws Exception {
+        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{1, 1}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
+
+        addCollectorTargetBin(new CollectorTargetBin(this));
+        addCollectorTargetInt(new CollectorTargetInt(this));
+        addCollectorSourceInt(new CollectorSourceInt(this));
+
+        setParamsInt(new int[]{par});
+        setParamsLimitsInt(new int[][]{parLimits});
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        if (!getCollectorsTarget().get(0).getSignal().getValueBoolean()) {
-            getCollectorsSourceInt().get(0).setSignal(getCollectorsTarget().get(1).getSignal());
+        if (!getCollectorsTargetBin().get(0).getSignal()) {
+            getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(1).getSignal());
         } else {
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-            getCollectorsTarget().get(1).getSignal();
-            getCollectorsSourceInt().get(0).setSignal(getParams().get(0));
+            getCollectorsTargetInt().get(1).getSignal();
+            getCollectorsSourceInt().get(0).setSignal(getParamsInt()[0]);
         }
     }
 }

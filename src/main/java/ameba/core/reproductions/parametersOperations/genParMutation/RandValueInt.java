@@ -17,7 +17,7 @@ public class RandValueInt extends ParOperation implements IOperationInt {
     }
 
     @Override
-    public Integer mutate(Integer par) throws Exception {
+    public int mutate(int par) throws Exception {
         return random.nextInt(getParOperationSettings().getValueLimitInt()[1] - getParOperationSettings().getValueLimitInt()[0]) + getParOperationSettings().getValueLimitInt()[0];
     }
 }

@@ -19,7 +19,7 @@ public class MixSignInt extends ParOperation implements IOperationInt {
      * @return Mutated parameter
      */
     @Override
-    public Integer mutate(Integer par) throws Exception {
+    public int mutate(int par) throws Exception {
         par = -par;
         return limitInteger(par);
     }

@@ -14,16 +14,16 @@ public class ParInverse extends Reproduction implements IMutateNode {
     Random random;
 
     public ParInverse(InverseValue operationType) {
-        super(operationType.getSettings().getProbability());
+        super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
         random = new Random();
     }
 
     @Override
     public Node mutate(Node node) throws Exception {
-        if (node.getParams().size() > 0) {
-            int ind = random.nextInt(node.getParams().size());
-            node.setParam(ind, operationType.mutate(node.getParam(ind)));
+        if (node.getParamsDec().length > 0) {
+            int ind = random.nextInt(node.getParamsDec().length);
+            node.getParamsDec()[ind] = operationType.mutate(node.getParamsDec()[ind]);
             return node;
         }
         return null;

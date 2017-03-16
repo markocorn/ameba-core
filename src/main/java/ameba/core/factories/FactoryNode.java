@@ -1,6 +1,7 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.nodes.*;
+import ameba.core.blocks.Cell;
+import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,7 +46,7 @@ public class FactoryNode {
      * Default constructor.
      */
     public FactoryNode() {
-        settings = new HashMap<String, FactoryNodeSettings>();
+        settings = new HashMap<>();
     }
 
     /**
@@ -99,47 +100,47 @@ public class FactoryNode {
                 }
                 Node node1 = genNode(settings.getType());
 
-                if (node1.getCollectorsTarget(Boolean.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
+                if (node1.getCollectorsTargetBin().size() > 0 && node1.getCollectorsSourceBin().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColBinBin.add(settings.getType());
                     }
                 }
-                if (node1.getCollectorsTarget(Boolean.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
+                if (node1.getCollectorsTargetBin().size() > 0 && node1.getCollectorsSourceDec().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColBinDec.add(settings.getType());
                     }
                 }
-                if (node1.getCollectorsTarget(Boolean.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
+                if (node1.getCollectorsTargetBin().size() > 0 && node1.getCollectorsSourceInt().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColBinInt.add(settings.getType());
                     }
                 }
-                if (node1.getCollectorsTarget(Integer.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
+                if (node1.getCollectorsTargetInt().size() > 0 && node1.getCollectorsSourceBin().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColIntBin.add(settings.getType());
                     }
                 }
-                if (node1.getCollectorsTarget(Integer.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
+                if (node1.getCollectorsTargetInt().size() > 0 && node1.getCollectorsSourceDec().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColIntDec.add(settings.getType());
                     }
                 }
-                if (node1.getCollectorsTarget(Integer.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
+                if (node1.getCollectorsTargetInt().size() > 0 && node1.getCollectorsSourceInt().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColIntInt.add(settings.getType());
                     }
                 }
-                if (node1.getCollectorsTarget(Double.class).size() > 0 && node1.getOutCollectors(Boolean.class).size() > 0) {
+                if (node1.getCollectorsTargetDec().size() > 0 && node1.getCollectorsSourceBin().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColDecBin.add(settings.getType());
                     }
                 }
-                if (node1.getCollectorsTarget(Double.class).size() > 0 && node1.getOutCollectors(Double.class).size() > 0) {
+                if (node1.getCollectorsTargetDec().size() > 0 && node1.getCollectorsSourceDec().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColDecDec.add(settings.getType());
                     }
                 }
-                if (node1.getCollectorsTarget(Double.class).size() > 0 && node1.getOutCollectors(Integer.class).size() > 0) {
+                if (node1.getCollectorsTargetDec().size() > 0 && node1.getCollectorsSourceInt().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
                         bagColDecInt.add(settings.getType());
                     }
@@ -245,66 +246,66 @@ public class FactoryNode {
                     break;
                 case "CompareConstDec":
                     node = new CompareConstDec(
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]),
+                            settings.get(nodeType).getParametersDec()[0],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]},
                             settings.get(nodeType).getParametersInt()[0]);
                     break;
                 case "CompareConstInt":
                     node = new CompareConstInt(
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[1]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]),
+                            settings.get(nodeType).getParametersInt()[1],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]},
                             settings.get(nodeType).getParametersInt()[0]);
                     break;
                 case "ConstantDec":
                     node = new ConstantDec(
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
+                            settings.get(nodeType).getParametersDec()[0],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "ConstantInt":
                     node = new ConstantInt(
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
+                            settings.get(nodeType).getParametersInt()[0],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "ConstantBin":
                     node = new ConstantBin(
-                            Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
-                            Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
+                            settings.get(nodeType).getParametersBin()[0],
+                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "DelayDec":
                     node = new DelayDec(
-                            Signal.createDouble(settings.get(nodeType).getInitialValueDec()),
+                            settings.get(nodeType).getInitialValueDec(),
                             settings.get(nodeType).getParametersInt()[0],
                             new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DelayInt":
                     node = new DelayInt(
-                            Signal.createInteger(settings.get(nodeType).getInitialValueInt()),
+                            settings.get(nodeType).getInitialValueInt(),
                             settings.get(nodeType).getParametersInt()[0],
                             new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DelayBin":
                     node = new DelayBin(
-                            Signal.createBoolean(settings.get(nodeType).getInitialValueBin()),
+                            settings.get(nodeType).getInitialValueBin(),
                             settings.get(nodeType).getParametersInt()[0],
                             new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DerivativeDec":
                     node = new DerivativeDec(
-                            Signal.createDouble(settings.get(nodeType).getInitialValueDec()),
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
+                            settings.get(nodeType).getInitialValueDec(),
+                            settings.get(nodeType).getParametersDec()[0],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "DerivativeInt":
                     node = new DerivativeInt(
-                            Signal.createInteger(settings.get(nodeType).getInitialValueInt()),
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
+                            settings.get(nodeType).getInitialValueInt(),
+                            settings.get(nodeType).getParametersInt()[0],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DerivativeBin":
                     node = new DerivativeBin(
-                            Signal.createBoolean(settings.get(nodeType).getInitialValueBin()),
-                            Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
-                            Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
+                            settings.get(nodeType).getInitialValueBin(),
+                            settings.get(nodeType).getParametersBin()[0],
+                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "Divide":
                     node = new Divide(
@@ -325,61 +326,61 @@ public class FactoryNode {
                     node = new MuxDec(
                             settings.get(nodeType).getInpColLimitDec()[0],
                             settings.get(nodeType).getInpColLimitDec()[1],
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
+                            settings.get(nodeType).getParametersDec()[0],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "MuxInt":
                     node = new MuxInt(
                             settings.get(nodeType).getInpColLimitInt()[0],
                             settings.get(nodeType).getInpColLimitInt()[1],
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
+                            settings.get(nodeType).getParametersInt()[0],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "MuxBin":
                     node = new MuxBin(
                             settings.get(nodeType).getInpColLimitBin()[0],
                             settings.get(nodeType).getInpColLimitBin()[1],
-                            Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
-                            Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
+                            settings.get(nodeType).getParametersBin()[0],
+                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "DMuxDec":
                     node = new DMuxDec(
                             settings.get(nodeType).getOutColLimitDec()[0],
                             settings.get(nodeType).getOutColLimitDec()[1],
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
+                            settings.get(nodeType).getParametersDec()[0],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "DMuxInt":
                     node = new DMuxInt(
                             settings.get(nodeType).getOutColLimitInt()[0],
                             settings.get(nodeType).getOutColLimitInt()[1],
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
+                            settings.get(nodeType).getParametersInt()[0],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DMuxBin":
                     node = new DMuxBin(
                             settings.get(nodeType).getOutColLimitBin()[0],
                             settings.get(nodeType).getOutColLimitBin()[1],
-                            Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
-                            Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
+                            settings.get(nodeType).getParametersBin()[0],
+                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "IntegralDec":
                     node = new IntegralDec(
-                            Signal.createDouble(settings.get(nodeType).getInitialValueDec()),
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
+                            settings.get(nodeType).getInitialValueDec(),
+                            settings.get(nodeType).getParametersDec()[0],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "IntegralInt":
                     node = new IntegralInt(
-                            Signal.createInteger(settings.get(nodeType).getInitialValueInt()),
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
+                            settings.get(nodeType).getInitialValueInt(),
+                            settings.get(nodeType).getParametersInt()[0],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "IntegralBin":
                     node = new IntegralBin(
-                            Signal.createBoolean(settings.get(nodeType).getInitialValueBin()),
-                            Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
-                            Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
+                            settings.get(nodeType).getInitialValueBin(),
+                            settings.get(nodeType).getParametersBin()[0],
+                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "IntervalDec":
                     node = new IntervalDec();
@@ -389,27 +390,27 @@ public class FactoryNode {
                     break;
                 case "IntervalConstDec":
                     node = new IntervalConstDec(
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
+                            settings.get(nodeType).getParametersDec()[0],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "IntervalConstInt":
                     node = new IntervalConstInt(
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
+                            settings.get(nodeType).getParametersInt()[0],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "Interval2ConstDec":
                     node = new Interval2ConstDec(
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]),
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[1]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[1][0], settings.get(nodeType).getParametersLimitsDec()[1][1]));
+                            settings.get(nodeType).getParametersDec()[0],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]},
+                            settings.get(nodeType).getParametersDec()[1],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[1][0], settings.get(nodeType).getParametersLimitsDec()[1][1]});
                     break;
                 case "Interval2ConstInt":
                     node = new Interval2ConstInt(
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]),
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[1]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]));
+                            settings.get(nodeType).getParametersInt()[0],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]},
+                            settings.get(nodeType).getParametersInt()[1],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]});
                     break;
                 case "SwitchDec":
                     node = new SwitchDec();
@@ -422,39 +423,39 @@ public class FactoryNode {
                     break;
                 case "SwitchConstDec":
                     node = new SwitchConstDec(
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]));
+                            settings.get(nodeType).getParametersDec()[0],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "SwitchConstInt":
                     node = new SwitchConstInt(
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]));
+                            settings.get(nodeType).getParametersInt()[0],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "SwitchConstBin":
                     node = new SwitchConstBin(
-                            Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
-                            Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]));
+                            settings.get(nodeType).getParametersBin()[0],
+                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "Switch2ConstDec":
                     node = new Switch2ConstDec(
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[0]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]),
-                            Signal.createDouble(settings.get(nodeType).getParametersDec()[1]),
-                            Signal.createDouble(settings.get(nodeType).getParametersLimitsDec()[1][0], settings.get(nodeType).getParametersLimitsDec()[1][1]));
+                            settings.get(nodeType).getParametersDec()[0],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]},
+                            settings.get(nodeType).getParametersDec()[1],
+                            new double[]{settings.get(nodeType).getParametersLimitsDec()[1][0], settings.get(nodeType).getParametersLimitsDec()[1][1]});
                     break;
                 case "Switch2ConstInt":
                     node = new Switch2ConstInt(
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[0]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]),
-                            Signal.createInteger(settings.get(nodeType).getParametersInt()[1]),
-                            Signal.createInteger(settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]));
+                            settings.get(nodeType).getParametersInt()[0],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]},
+                            settings.get(nodeType).getParametersInt()[1],
+                            new int[]{settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]});
                     break;
                 case "Switch2ConstBin":
                     node = new Switch2ConstBin(
-                            Signal.createBoolean(settings.get(nodeType).getParametersBin()[0]),
-                            Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]),
-                            Signal.createBoolean(settings.get(nodeType).getParametersBin()[1]),
-                            Signal.createBoolean(settings.get(nodeType).getParametersLimitsBin()[1][0], settings.get(nodeType).getParametersLimitsBin()[1][1]));
+                            settings.get(nodeType).getParametersBin()[0],
+                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]},
+                            settings.get(nodeType).getParametersBin()[1],
+                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[1][0], settings.get(nodeType).getParametersLimitsBin()[1][1]});
                     break;
 
             }
@@ -464,15 +465,23 @@ public class FactoryNode {
 
     public Node genNodeRndPar(String nodeType) throws Exception {
         Node node = genNode(nodeType);
-        //Randomize parameters
-        for (int i = 0; i < node.getParams().size(); i++) {
-            node.getParams().set(i, genRndSignal(node.getParamsLimits().get(i)[0], node.getParamsLimits().get(i)[1]));
+        //Randomize parameters Dec
+        for (int i = 0; i < node.getParamsDec().length; i++) {
+            node.getParamsDec()[i] = genRndSignalDec(node.getParamsLimitsDec()[i][0], node.getParamsLimitsDec()[i][1]);
+        }
+        //Randomize parameters Int
+        for (int i = 0; i < node.getParamsInt().length; i++) {
+            node.getParamsInt()[i] = genRndSignalInt(node.getParamsLimitsInt()[i][0], node.getParamsLimitsInt()[i][1]);
+        }
+        //Randomize parameters Bin
+        for (int i = 0; i < node.getParamsBin().length; i++) {
+            node.getParamsBin()[i] = genRndSignalBin(node.getParamsLimitsBin()[i][0], node.getParamsLimitsBin()[i][1]);
         }
         node.clearNode();
         return node;
     }
 
-    public boolean isConstantAvaliable(Class type) throws Exception {
+    public boolean isConstantAvailable(Class type) throws Exception {
         if (type.isAssignableFrom(Double.class)) return settings.get("ConstantDec").getAvailable();
         if (type.isAssignableFrom(Integer.class)) return settings.get("ConstantInt").getAvailable();
         if (type.isAssignableFrom(Boolean.class)) return settings.get("ConstantBin").getAvailable();
@@ -481,31 +490,13 @@ public class FactoryNode {
 
     public Node genConstant(Class type) throws Exception {
         if (type.isAssignableFrom(Double.class)) {
-            Node node = genNode("ConstantDec");
-            //Randomize parameters
-            for (int i = 0; i < node.getParams().size(); i++) {
-                node.getParams().set(i, genRndSignal(node.getParamsLimits().get(i)[0], node.getParamsLimits().get(i)[1]));
-            }
-            node.clearNode();
-            return node;
+            return genNodeRndPar("ConstantDec");
         }
         if (type.isAssignableFrom(Integer.class)) {
-            Node node = genNode("ConstantInt");
-            //Randomize parameters
-            for (int i = 0; i < node.getParams().size(); i++) {
-                node.getParams().set(i, genRndSignal(node.getParamsLimits().get(i)[0], node.getParamsLimits().get(i)[1]));
-            }
-            node.clearNode();
-            return node;
+            return genNodeRndPar("ConstantInt");
         }
         if (type.isAssignableFrom(Boolean.class)) {
-            Node node = genNode("ConstantBin");
-            //Randomize parameters
-            for (int i = 0; i < node.getParams().size(); i++) {
-                node.getParams().set(i, genRndSignal(node.getParamsLimits().get(i)[0], node.getParamsLimits().get(i)[1]));
-            }
-            node.clearNode();
-            return node;
+            return genNodeRndPar("ConstantBin");
         }
         throw new Exception("Unknown type of Constant node: " + type.getSimpleName());
     }
@@ -519,7 +510,7 @@ public class FactoryNode {
         return genNodeRndPar(bag.get(rndGen.nextInt(bag.size())));
     }
 
-    public Node genNodeRndInpColType(Class type) throws Exception {
+    public Node genNodeRndCollectorTargetType(Class type) throws Exception {
         if (type.isAssignableFrom(Double.class)) {
             return genNodeRndPar(bagInpColDec.get(rndGen.nextInt(bagInpColDec.size())));
         }
@@ -532,20 +523,20 @@ public class FactoryNode {
         throw new Exception();
     }
 
-    public Node genNodeRndOutColType(Class type) throws Exception {
-        if (type.isAssignableFrom(Double.class)) {
+    public Node genNodeRndCollectorSourceType(Cell.Signal type) throws Exception {
+        if (type.equals(Cell.Signal.DECIMAL)) {
             return genNodeRndPar(bagOutColDec.get(rndGen.nextInt(bagOutColDec.size())));
         }
-        if (type.isAssignableFrom(Integer.class)) {
+        if (type.equals(Cell.Signal.INTEGER)) {
             return genNodeRndPar(bagOutColInt.get(rndGen.nextInt(bagOutColInt.size())));
         }
-        if (type.isAssignableFrom(Boolean.class)) {
+        if (type.equals(Cell.Signal.BOOLEAN)) {
             return genNodeRndPar(bagOutColBin.get(rndGen.nextInt(bagOutColBin.size())));
         }
         throw new Exception();
     }
 
-    public Node genNodeRndColType(Class typeInp, Class typeOut) throws Exception {
+    public Node genNodeRndCollectorType(Class typeInp, Class typeOut) throws Exception {
         if (typeInp.isAssignableFrom(Boolean.class) && typeOut.isAssignableFrom(Boolean.class)) {
             return genNodeRndPar(bagColBinBin.get(rndGen.nextInt(bagColBinBin.size())));
         }
@@ -579,24 +570,23 @@ public class FactoryNode {
     }
 
 
-    public Signal genRndSignal(Signal min, Signal max) throws Exception {
-        if (min.gettClass().isAssignableFrom(Double.class) && max.gettClass().isAssignableFrom(Double.class)) {
-            if (min.getValueDouble() > max.getValueDouble())
-                throw new Exception("Min value is greater than max value.");
-            if (min.getValueDouble().equals(max.getValueDouble())) return Signal.createDouble(min.getValueDouble());
-            return Signal.createDouble(rndGen.nextDouble() * (max.getValueDouble() - min.getValueDouble()) + min.getValueDouble());
-        }
-        if (min.gettClass().isAssignableFrom(Integer.class) && max.gettClass().isAssignableFrom(Integer.class)) {
-            if (min.getValueInteger() > max.getValueInteger())
-                throw new Exception("Min value is greater than max value.");
-            if (min.getValueInteger().equals(max.getValueInteger())) return Signal.createInteger(min.getValueInteger());
-            return Signal.createInteger(rndGen.nextInt(max.getValueInteger() - min.getValueInteger()) + min.getValueInteger());
-        }
-        if (min.gettClass().isAssignableFrom(Boolean.class) && max.gettClass().isAssignableFrom(Boolean.class)) {
-            if (min.equals(true)) return Signal.createBoolean(true);
-            if (max.equals(false)) return Signal.createBoolean(false);
-            return Signal.createBoolean(rndGen.nextBoolean());
-        }
-        throw new Exception("Random number cant be generated for type:" + min.gettClass().getSimpleName() + " and type: " + max.gettClass().getSimpleName());
+    public double genRndSignalDec(double min, double max) throws Exception {
+        if (min > max)
+            throw new Exception("Min value is greater than max value.");
+        if (min == max) return min;
+        return rndGen.nextDouble() * (max - min) + min;
+    }
+
+    public int genRndSignalInt(int min, int max) throws Exception {
+        if (min > max)
+            throw new Exception("Min value is greater than max value.");
+        if (min == max) return min;
+        return rndGen.nextInt(max - min) + min;
+    }
+
+    public boolean genRndSignalBin(boolean min, boolean max) throws Exception {
+        if (min) return true;
+        if (!max) return false;
+        return rndGen.nextBoolean();
     }
 }

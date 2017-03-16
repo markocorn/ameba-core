@@ -17,7 +17,7 @@ public class RandValueBin extends ParOperation implements IOperationBin {
     }
 
     @Override
-    public Boolean mutate(Boolean par) throws Exception {
+    public boolean mutate(boolean par) throws Exception {
         return limitBoolean(!par);
     }
 }

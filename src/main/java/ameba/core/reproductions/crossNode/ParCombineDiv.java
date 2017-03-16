@@ -19,12 +19,11 @@ public class ParCombineDiv implements ICrossNode {
 
     @Override
     public Node cross(Node node1, Node node2) throws Exception {
-        if (node1.getParams().size() > 0 && node2.getParams().size() > 0) {
-            int ind1 = random.nextInt(node1.getParams().size());
-            int ind2 = random.nextInt(node1.getParams().size());
-            Node node = node1.clone();
-            node1.setParam(ind1, operationType.crossover(node1.getParam(ind1), node2.getParam(ind2)));
-            return node;
+        if (node1.getParamsDec().length > 0 && node2.getParamsDec().length > 0) {
+            int ind1 = random.nextInt(node1.getParamsDec().length);
+            int ind2 = random.nextInt(node1.getParamsDec().length);
+            node1.getParamsDec()[ind1] = operationType.crossover(node1.getParamsDec()[ind1], node2.getParamsDec()[ind2]);
+            return node1;
         }
         return null;
     }

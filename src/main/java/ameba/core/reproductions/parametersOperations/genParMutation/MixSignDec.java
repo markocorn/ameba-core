@@ -19,7 +19,7 @@ public class MixSignDec extends ParOperation implements IOperationDec {
      * @return Mutated parameter
      */
     @Override
-    public Double mutate(Double par) throws Exception {
+    public double mutate(double par) throws Exception {
         par = -par;
         return limitDouble(par);
     }

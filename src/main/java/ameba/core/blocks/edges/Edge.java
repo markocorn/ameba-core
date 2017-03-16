@@ -16,10 +16,10 @@ public class Edge implements Cloneable {
     private boolean signalTransmitted;
 
 
-    public Edge(CollectorSource source, CollectorTarget target){
+    public Edge(CollectorSource source, CollectorTarget target) {
         this.source = source;
         this.target = target;
-        this.signalTransmitted=false;
+        this.signalTransmitted = false;
     }
 
 
@@ -67,7 +67,7 @@ public class Edge implements Cloneable {
         this.signalTransmitted = signalTransmitted;
     }
 
-    public void rstEdge(){
-        signalTransmitted=false;
+    public void rstEdge() {
+        signalTransmitted = false;
     }
 }

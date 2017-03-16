@@ -1,8 +1,8 @@
 package ameba.core.reproductions.mutateCell;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.collectors.CollectorTarget;
 import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorTarget;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
@@ -62,13 +62,13 @@ public class ReplaceNode implements IMutateCell {
         }
         //If number of old input edges is less than number of minimum edges of new node the empty spots are connected with new edges
         for (int i = 0; i < -diff; i++) {
-            CollectorSource collectorOut = cellFactory.getCollectorOutRndNoNode(type, cell, nodeOld);
+            CollectorSource collectorOut = cellFactory.getCollectorSourceRndNoNode(type, cell, nodeOld);
             Edge edge;
             if (collectorOut != null) {
                 edge = edgeFactory.genEdge(type, collectorOut, nodeNew.getCollectorsTarget(type).get(same + i));
             } else {
                 //No proper node generate constant node
-                if (nodeFactory.isConstantAvaliable(type)) {
+                if (nodeFactory.isConstantAvailable(type)) {
                     Node node = nodeFactory.genConstant(type);
                     edge = edgeFactory.genEdge(type, node.getOutCollectors(type).get(0), nodeNew.getCollectorsTarget(type).get(same + i));
                     cell.addNode(node);
@@ -92,7 +92,7 @@ public class ReplaceNode implements IMutateCell {
                 collectorOut.addEdge(edge);
                 edge.setSource(collectorOut);
             } else {
-                CollectorSource collectorOut = cellFactory.getCollectorOutRndNoNode(type, cell, nodeOld);
+                CollectorSource collectorOut = cellFactory.getCollectorSourceRndNoNode(type, cell, nodeOld);
                 collectorOut.addEdge(edge);
                 edge.setSource(collectorOut);
             }

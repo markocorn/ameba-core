@@ -1,7 +1,7 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorTargetInt;
 import ameba.core.blocks.nodes.Node;
 
 /**
@@ -10,19 +10,20 @@ import ameba.core.blocks.nodes.Node;
 public class IntervalInt extends Node {
 
     public IntervalInt() throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{3, 3}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1});
-        addInpCollector(new CollectorTarget(Signal.createInteger(), this));
-        addInpCollector(new CollectorTarget(Signal.createInteger(), this));
-        addInpCollector(new CollectorTarget(Signal.createInteger(), this));
-        addOutCollector(new CollectorSource(Signal.createBoolean(), this));
+        super(new int[]{0, 0}, new int[]{3, 3}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+
+        addCollectorTargetInt(new CollectorTargetInt(this));
+        addCollectorTargetInt(new CollectorTargetInt(this));
+        addCollectorTargetInt(new CollectorTargetInt(this));
+        addCollectorSourceBin(new CollectorSourceBin(this));
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        int[] inputs = new int[]{getCollectorsTargetInt().get(0).getSignal().getValueInteger(), getCollectorsTargetInt().get(1).getSignal().getValueInteger(), getCollectorsTargetInt().get(2).getSignal().getValueInteger()};
+        int[] inputs = new int[]{getCollectorsTargetInt().get(0).getSignal(), getCollectorsTargetInt().get(1).getSignal(), getCollectorsTargetInt().get(2).getSignal()};
         if (inputs[1] <= inputs[0] && inputs[0] <= inputs[2]) {
-            getCollectorsSourceBin().get(0).setSignal(Signal.createBoolean(true));
-        } else getCollectorsSourceBin().get(0).setSignal(Signal.createBoolean(false));
+            getCollectorsSourceBin().get(0).setSignal(true);
+        } else getCollectorsSourceBin().get(0).setSignal(false);
     }
 }

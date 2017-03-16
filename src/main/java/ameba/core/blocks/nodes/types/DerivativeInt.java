@@ -8,8 +8,8 @@ package ameba.core.blocks.nodes.types;
  * To change this template use File | Settings | File Templates.
  */
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceInt;
+import ameba.core.blocks.collectors.CollectorTargetInt;
 import ameba.core.blocks.nodes.Node;
 
 /**
@@ -18,18 +18,19 @@ import ameba.core.blocks.nodes.Node;
 public class DerivativeInt extends Node {
 
     //Initial value
-    private Signal initValue;
-    private Signal signalOld;
+    private int initValue;
+    private int signalOld;
 
-    public DerivativeInt(Signal initial, Signal par, Signal[] parLimits) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0});
+    public DerivativeInt(int initial, int par, int[] parLimits) throws Exception {
+        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
         this.initValue = initial;
-        signalOld = initial.clone();
-        addInpCollector(new CollectorTarget(initial.clone(), this));
-        addOutCollector(new CollectorSource(initial.clone(), this));
+        signalOld = initial;
 
-        getParams().add(par);
-        getParamsLimits().add(parLimits);
+        addCollectorTargetInt(new CollectorTargetInt(this));
+        addCollectorSourceInt(new CollectorSourceInt(this));
+
+        setParamsInt(new int[]{par});
+        setParamsLimitsInt(new int[][]{parLimits});
 
         clearNode();
     }
@@ -37,18 +38,14 @@ public class DerivativeInt extends Node {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        getCollectorsSourceInt().get(0).getSignal().setValueInteger((getCollectorsTargetInt().get(0).getSignal().getValueInteger() - signalOld.getValueInteger()) / getParams().get(0).getValueInteger());
+        getCollectorsSourceInt().get(0).setSignal((getCollectorsTargetInt().get(0).getSignal() - signalOld) / getParamsInt()[0]);
         signalOld = getCollectorsTargetInt().get(0).getSignal();
     }
 
     @Override
     public void clearNode() {
         rstNode();
-        try {
-            getCollectorsSourceInt().get(0).setSignal(initValue);
-            signalOld.clear();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        getCollectorsSourceInt().get(0).setSignal(initValue);
+        signalOld = initValue;
     }
 }

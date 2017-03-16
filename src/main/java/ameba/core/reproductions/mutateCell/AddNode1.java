@@ -29,7 +29,7 @@ public class AddNode1 implements IMutateCell {
         Edge edge = cell.getEdges().get(random.nextInt(cell.getEdges().size()));
         Class type = edge.getSource().getType();
         //Generate node with same type of output collector as edge type
-        Node nodeNew = nodeFactory.genNodeRndOutColType(type);
+        Node nodeNew = nodeFactory.genNodeRndCollectorSourceType(type);
         if (nodeNew == null)
             throw new Exception("Can't generate node with " + type.getSimpleName() + " type of output collector");
         CollectorSource collectorOut = nodeNew.getOutCollectors(type).get(random.nextInt(nodeNew.getOutCollectors(type).size()));

@@ -1,7 +1,8 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorTargetBin;
+import ameba.core.blocks.collectors.CollectorTargetInt;
 import ameba.core.blocks.nodes.Node;
 
 /**
@@ -9,30 +10,30 @@ import ameba.core.blocks.nodes.Node;
  */
 public class DMuxBin extends Node {
 
-    public DMuxBin(int minOutCollectors, int maxOutCollectors, Signal par, Signal[] parLimits) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{minOutCollectors, maxOutCollectors});
-        addInpCollector(new CollectorTarget(Signal.createInteger(), this));
-        addInpCollector(new CollectorTarget(Signal.createBoolean(), this));
+    public DMuxBin(int minOutCollectors, int maxOutCollectors, boolean par, boolean[] parLimits) throws Exception {
+        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{minOutCollectors, maxOutCollectors});
+
+        addCollectorTargetInt(new CollectorTargetInt(this));
+        addCollectorTargetBin(new CollectorTargetBin(this));
         for (int i = 0; i < maxOutCollectors; i++) {
-            addOutCollector(new CollectorSource(Signal.createBoolean(), this));
+            addCollectorSourceBin(new CollectorSourceBin(this));
         }
-        getParams().add(par);
-        getParamsLimits().add(parLimits);
+
+        setParamsBin(new boolean[]{par});
+        setParamsLimitsBin(new boolean[][]{parLimits});
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        Signal[] list = new Signal[getCollectorsTarget().size()];
-        list[0] = getCollectorsTargetInt().get(0).getSignal();
-        for (int i = 1; i < getCollectorsTarget().size(); i++) {
-            list[i] = getCollectorsTarget().get(i).getSignal();
-        }
-        for (int i = 0; i < getCollectorsSourceDec().size(); i++) {
-            if (i == list[0].getValueInteger()) {
-                getCollectorsSourceDec().get(i).setSignal(list[1]);
+        int ind = getCollectorsTargetInt().get(0).getSignal();
+        boolean value = getCollectorsTargetBin().get(0).getSignal();
+
+        for (int i = 0; i < getCollectorsSourceBin().size(); i++) {
+            if (i == ind) {
+                getCollectorsSourceBin().get(i).setSignal(value);
             } else {
-                getCollectorsSourceDec().get(i).setSignal(getParams().get(0));
+                getCollectorsSourceBin().get(i).setSignal(getParamsBin()[0]);
             }
         }
     }

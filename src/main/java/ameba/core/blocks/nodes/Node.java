@@ -355,36 +355,113 @@ public class Node implements Cloneable {
         return collectors;
     }
 
+    public ArrayList<CollectorTargetDec> getCollectorsTargetMinConnectDec() {
+        ArrayList<CollectorTargetDec> collectors = new ArrayList<>();
+        int min = 0;
+        for (CollectorTargetDec collector : collectorsTargetDec) {
+            min++;
+            if (collector.getEdges().size() == 0) {
+                collectors.add(collector);
+            }
+            if (min >= getCollectorTargetLimitsDec()[0]) {
+                break;
+            }
+        }
+        return collectors;
+    }
+
+    public ArrayList<CollectorTargetInt> getCollectorsTargetMinConnectInt() {
+        ArrayList<CollectorTargetInt> collectors = new ArrayList<>();
+        int min = 0;
+        for (CollectorTargetInt collector : collectorsTargetInt) {
+            min++;
+            if (collector.getEdges().size() == 0) {
+                collectors.add(collector);
+            }
+            if (min >= getCollectorTargetLimitsBin()[0]) {
+                break;
+            }
+        }
+        return collectors;
+    }
+
     public ArrayList<CollectorTarget> getCollectorsTarget() {
         return collectorsTarget;
+    }
+
+    public void setCollectorsTarget(ArrayList<CollectorTarget> collectorsTarget) {
+        this.collectorsTarget = collectorsTarget;
     }
 
     public ArrayList<CollectorSource> getCollectorSources() {
         return collectorSources;
     }
 
+    public void setCollectorSources(ArrayList<CollectorSource> collectorSources) {
+        this.collectorSources = collectorSources;
+    }
+
     public ArrayList<CollectorTargetDec> getCollectorsTargetDec() {
         return collectorsTargetDec;
+    }
+
+    public void setCollectorsTargetDec(ArrayList<CollectorTargetDec> collectorsTargetDec) {
+        this.collectorsTargetDec = collectorsTargetDec;
     }
 
     public ArrayList<CollectorTargetInt> getCollectorsTargetInt() {
         return collectorsTargetInt;
     }
 
+    public void setCollectorsTargetInt(ArrayList<CollectorTargetInt> collectorsTargetInt) {
+        this.collectorsTargetInt = collectorsTargetInt;
+    }
+
     public ArrayList<CollectorTargetBin> getCollectorsTargetBin() {
         return collectorsTargetBin;
+    }
+
+    public void setCollectorsTargetBin(ArrayList<CollectorTargetBin> collectorsTargetBin) {
+        this.collectorsTargetBin = collectorsTargetBin;
     }
 
     public ArrayList<CollectorSourceDec> getCollectorsSourceDec() {
         return collectorsSourceDec;
     }
 
+    public void setCollectorsSourceDec(ArrayList<CollectorSourceDec> collectorsSourceDec) {
+        this.collectorsSourceDec = collectorsSourceDec;
+    }
+
     public ArrayList<CollectorSourceInt> getCollectorsSourceInt() {
         return collectorsSourceInt;
     }
 
+    public void setCollectorsSourceInt(ArrayList<CollectorSourceInt> collectorsSourceInt) {
+        this.collectorsSourceInt = collectorsSourceInt;
+    }
+
     public ArrayList<CollectorSourceBin> getCollectorsSourceBin() {
         return collectorsSourceBin;
+    }
+
+    public void setCollectorsSourceBin(ArrayList<CollectorSourceBin> collectorsSourceBin) {
+        this.collectorsSourceBin = collectorsSourceBin;
+    }
+
+    public ArrayList<CollectorTargetBin> getCollectorsTargetMinConnectBin() {
+        ArrayList<CollectorTargetBin> collectors = new ArrayList<>();
+        int min = 0;
+        for (CollectorTargetBin collector : collectorsTargetBin) {
+            min++;
+            if (collector.getEdges().size() == 0) {
+                collectors.add(collector);
+            }
+            if (min >= getCollectorTargetLimitsBin()[0]) {
+                break;
+            }
+        }
+        return collectors;
     }
 
     public boolean isSourceConnected() {

@@ -1,7 +1,7 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorTargetBin;
 import ameba.core.blocks.nodes.Node;
 
 /**
@@ -10,24 +10,25 @@ import ameba.core.blocks.nodes.Node;
 public class SwitchBin extends Node {
 
     public SwitchBin() throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{3, 3}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1});
-        addInpCollector(new CollectorTarget(Signal.createBoolean(), this));
-        addInpCollector(new CollectorTarget(Signal.createBoolean(), this));
-        addInpCollector(new CollectorTarget(Signal.createBoolean(), this));
-        addOutCollector(new CollectorSource(Signal.createBoolean(), this));
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{3, 3}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+
+        addCollectorTargetBin(new CollectorTargetBin(this));
+        addCollectorTargetBin(new CollectorTargetBin(this));
+        addCollectorTargetBin(new CollectorTargetBin(this));
+        addCollectorSourceBin(new CollectorSourceBin(this));
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        if (!getCollectorsTarget().get(0).getSignal().getValueBoolean()) {
-            getCollectorsSourceBin().get(0).setSignal(getCollectorsTarget().get(1).getSignal());
+        if (!getCollectorsTargetBin().get(0).getSignal()) {
+            getCollectorsSourceBin().get(0).setSignal(getCollectorsTargetBin().get(1).getSignal());
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-            getCollectorsTarget().get(2).getSignal();
+            getCollectorsTargetBin().get(2).getSignal();
         } else {
-            getCollectorsSourceBin().get(0).setSignal(getCollectorsTarget().get(2).getSignal());
+            getCollectorsSourceBin().get(0).setSignal(getCollectorsTargetBin().get(2).getSignal());
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-            getCollectorsTarget().get(1).getSignal();
+            getCollectorsTargetBin().get(1).getSignal();
         }
     }
 }

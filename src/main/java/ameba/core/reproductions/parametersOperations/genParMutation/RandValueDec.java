@@ -17,7 +17,7 @@ public class RandValueDec extends ParOperation implements IOperationDec {
     }
 
     @Override
-    public Double mutate(Double par) throws Exception {
+    public double mutate(double par) throws Exception {
         return random.nextDouble() * (getParOperationSettings().getValueLimitDec()[1] - getParOperationSettings().getValueLimitDec()[0]) + getParOperationSettings().getValueLimitDec()[0];
     }
 

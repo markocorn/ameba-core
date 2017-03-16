@@ -1,13 +1,13 @@
 package ameba.core.reproductions.mutateEdge;
 
-import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.edges.EdgeBin;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParMutation.AddValueBin;
 
 /**
  * Created by marko on 12/28/16.
  */
-public class WeightAddValueBin extends Reproduction implements IMutateEdge {
+public class WeightAddValueBin extends Reproduction implements IMutateEdgeBin {
     AddValueBin operation;
 
     public WeightAddValueBin(AddValueBin addValue) {
@@ -16,8 +16,8 @@ public class WeightAddValueBin extends Reproduction implements IMutateEdge {
     }
 
     @Override
-    public Edge mutate(Edge edge) throws Exception {
-        edge.setWeight(Signal.createBoolean(operation.mutate(edge.getWeight().getValueBoolean())));
+    public EdgeBin mutate(EdgeBin edge) throws Exception {
+        edge.setWeight(operation.mutate(edge.getWeight()));
         return edge;
     }
 

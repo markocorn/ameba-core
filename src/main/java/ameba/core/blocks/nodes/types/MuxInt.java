@@ -1,10 +1,8 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceInt;
+import ameba.core.blocks.collectors.CollectorTargetInt;
 import ameba.core.blocks.nodes.Node;
-
-import java.util.ArrayList;
 
 /**
  * Created by marko on 2/6/17.
@@ -12,30 +10,30 @@ import java.util.ArrayList;
 public class MuxInt extends Node {
 
 
-    public MuxInt(int minInpCollectors, int maxInpCollectors, Signal par, Signal[] parLimits) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{minInpCollectors, maxInpCollectors}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0});
-        addInpCollector(new CollectorTarget(Signal.createInteger(), this));
+    public MuxInt(int minInpCollectors, int maxInpCollectors, int par, int[] parLimits) throws Exception {
+        super(new int[]{0, 0}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
+        addCollectorTargetInt(new CollectorTargetInt(this));
         for (int i = 0; i < maxInpCollectors - 1; i++) {
-            addInpCollector(new CollectorTarget(Signal.createInteger(), this));
+            addCollectorTargetInt(new CollectorTargetInt(this));
         }
-        addOutCollector(new CollectorSource(Signal.createInteger(), this));
+        addCollectorSourceInt(new CollectorSourceInt(this));
 
-        getParams().add(par);
-        getParamsLimits().add(parLimits);
+        setParamsInt(new int[]{par});
+        setParamsLimitsInt(new int[][]{parLimits});
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        ArrayList<CollectorTarget> col = getCollectorsTargetConnected(Integer.class);
-        Signal[] list = new Signal[col.size()];
-        for (int i = 0; i < col.size(); i++) {
-            list[i] = col.get(i).getSignal();
+        int ind = getCollectorsTargetInt().get(0).getSignal();
+        int[] inp = new int[getCollectorsTargetConnectedInt().size()];
+        for (int i = 0; i < getCollectorsTargetConnectedInt().size(); i++) {
+            inp[i] = getCollectorsTargetConnectedInt().get(i).getSignal();
         }
-        if (list[0].getValueInteger() >= 0 && list[0].getValueInteger() < col.size() - 1) {
-            getCollectorsSourceInt().get(0).setSignal(col.get(list[0].getValueInteger() + 1).getSignal());
+        if (ind < inp.length && ind >= 0) {
+            getCollectorsSourceInt().get(0).setSignal(inp[ind]);
         } else {
-            getCollectorsSourceInt().get(0).setSignal(getParams().get(0));
+            getCollectorsSourceInt().get(0).setSignal(getParamsInt()[0]);
         }
     }
 }

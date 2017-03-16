@@ -1,25 +1,26 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceInt;
+import ameba.core.blocks.collectors.CollectorTargetInt;
 import ameba.core.blocks.nodes.Node;
 
 public class MultiplyInt extends Node {
 
     public MultiplyInt(int minInpCollectors, int maxInpCollectors) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{minInpCollectors, maxInpCollectors}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0});
+        super(new int[]{0, 0}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
+
         for (int i = 0; i < maxInpCollectors; i++) {
-            addInpCollector(new CollectorTarget(Signal.createInteger(), this));
+            addCollectorTargetInt(new CollectorTargetInt(this));
         }
-        addOutCollector(new CollectorSource(Signal.createInteger(), this));
+        addCollectorSourceInt(new CollectorSourceInt(this));
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        getCollectorsSourceInt().get(0).getSignal().setValueInteger(1);
-        for (CollectorTarget collectorInp : getCollectorsTargetConnected(Integer.class)) {
-            getCollectorsSourceInt().get(0).getSignal().setValueInteger(getCollectorsSourceInt().get(0).getSignal().getValueInteger() * collectorInp.getSignal().getValueInteger());
+        getCollectorsSourceInt().get(0).setSignal(1);
+        for (CollectorTargetInt collectorInp : getCollectorsTargetConnectedInt()) {
+            getCollectorsSourceInt().get(0).setSignal(getCollectorsSourceInt().get(0).getSignal() * collectorInp.getSignal());
         }
 
     }

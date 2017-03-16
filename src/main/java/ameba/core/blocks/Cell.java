@@ -90,6 +90,19 @@ public class Cell {
         return false;
     }
 
+    public static Class getSignalClass(Signal signal) {
+        if (signal == Signal.DECIMAL) return Double.class;
+        if (signal == Signal.INTEGER) return Integer.class;
+        if (signal == Signal.BOOLEAN) return Boolean.class;
+        return null;
+    }
+
+    /**
+     * Get cell's nodes of class InputDec
+     *
+     * @return
+     */
+
     /**
      * Set cell's fitness function value.
      *
@@ -98,12 +111,6 @@ public class Cell {
     public void setFitnessValue(double fitnessValue) {
         this.fitnessValue = fitnessValue;
     }
-
-    /**
-     * Get cell's nodes of class InputDec
-     *
-     * @return
-     */
 
     /**
      * Get cell's nodes
@@ -595,6 +602,7 @@ public class Cell {
         return out;
     }
 
+    public enum Signal {DECIMAL, INTEGER, BOOLEAN}
 
 }
 

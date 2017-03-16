@@ -1,9 +1,8 @@
 package ameba.core.factories;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
-import ameba.core.blocks.nodes.*;
+import ameba.core.blocks.collectors.*;
+import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
 import com.rits.cloning.Cloner;
 
@@ -63,68 +62,92 @@ public class FactoryCell {
         int numNodes = genNmbNodesInitial();
 
         for (int i = 0; i < numNodes; i++) {
-            //Get collector that must be connected
-            CollectorTarget collectorInp = getCollectorInpMinRnd(cell);
             Node node;
-            if (collectorInp == null) {
-                //if no input collector that must be connected exists add a node with one
-                CollectorSource collectorOut = getCollectorOutRnd(cell);
-                node = nodeFactory.genNodeRndInpColType(collectorOut.getType());
+            //Get target collector that must be connected
+            CollectorTarget collectorTarget = getCollectorTargetMinRnd(cell);
+            if (collectorTarget == null) {
+                // if there is no collector fine one on the source side of nodes
+                CollectorSource collectorSource = getCollectorSourceRnd(cell);
+                if (collectorSource == null) throw new Exception("Can't generate nod with no initial nodes");
+                node = nodeFactory.genNodeRndCollectorSourceType(collectorSource.getType());
             } else {
-                node = nodeFactory.genNodeRndOutColType(collectorInp.getType());
+                node = nodeFactory.genNodeRndCollectorSourceType(collectorTarget.getType());
             }
             if (node == null) throw new Exception("Not possible to generate nodes");
             cell.addNode(node);
         }
         connectsMinFreeInputs(cell);
 
-
         return cell;
     }
 
     public void connectsMinFreeInputs(Cell cell) throws Exception {
         while (true) {
-            CollectorTarget collectorInp = getCollectorInpMinRnd(cell);
-            if (collectorInp == null) {
+            CollectorTarget collectorTarget = getCollectorTargetMinRnd(cell);
+            if (collectorTarget == null) {
                 break;
             }
 
-            CollectorSource collectorOut = getCollectorOutRndNoNode(collectorInp.getType(), cell, collectorInp.getNodeAttached());
+            CollectorSource collectorOut = getCollectorSourceRndNoNode(collectorTarget.getType(), cell, collectorTarget.getNodeAttached());
 
             if (collectorOut != null) {
-                cell.addEdge(edgeFactory.genEdge(collectorInp.getType(), collectorOut, collectorInp));
+                cell.addEdge(edgeFactory.genEdge(collectorTarget.getType(), collectorOut, collectorTarget));
             } else {
-                if (collectorInp.getType().isAssignableFrom(Double.class)) {
-                    if (nodeFactory.settings.get("ConstantDec").getAvailable()) {
-                        cell.addNode(nodeFactory.genNodeRndPar("ConstantDec"));
-                    } else
-                        throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantDec nodes.");
-                }
-                if (collectorInp.getType().isAssignableFrom(Integer.class)) {
-                    if (nodeFactory.settings.get("ConstantInt").getAvailable()) {
-                        cell.addNode(nodeFactory.genNodeRndPar("ConstantInt"));
-                    } else
-                        throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantInt nodes.");
-                }
-                if (collectorInp.getType().isAssignableFrom(Boolean.class)) {
-                    if (nodeFactory.settings.get("ConstantBin").getAvailable()) {
-                        cell.addNode(nodeFactory.genNodeRndPar("ConstantBin"));
-                    } else
-                        throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantBin nodes.");
+                switch (collectorTarget.getType()) {
+                    case DECIMAL:
+                        if (nodeFactory.settings.get("ConstantDec").getAvailable()) {
+                            cell.addNode(nodeFactory.genNodeRndPar("ConstantDec"));
+                        } else
+                            throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantDec nodes.");
+                        break;
+                    case INTEGER:
+                        if (nodeFactory.settings.get("ConstantInt").getAvailable()) {
+                            cell.addNode(nodeFactory.genNodeRndPar("ConstantInt"));
+                        } else
+                            throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantInt nodes.");
+                        break;
+                    case BOOLEAN:
+                        if (nodeFactory.settings.get("ConstantBin").getAvailable()) {
+                            cell.addNode(nodeFactory.genNodeRndPar("ConstantBin"));
+                        } else
+                            throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantBin nodes.");
+                        break;
                 }
             }
         }
     }
 
-    public CollectorSource getRndCollector(Class type, ArrayList<CollectorSource> collectorOuts) {
+    public CollectorSource getCollectorSourceRnd(Cell.Signal type, ArrayList<CollectorSource> collectorOuts) {
         ArrayList<CollectorSource> outs = new ArrayList<>();
         for (CollectorSource collectorOut : collectorOuts) {
-            if (collectorOut.getType().isAssignableFrom(type)) {
+            if (collectorOut.equals(type)) {
                 outs.add(collectorOut);
             }
         }
         if (outs.size() > 0) return outs.get(rndGen.nextInt(outs.size()));
         return null;
+    }
+
+    /**
+     * Get random output collector from cell.
+     *
+     * @param type
+     * @param cell
+     * @return
+     * @throws Exception
+     */
+    public CollectorSource getCollectorTargetRnd(Cell.Signal type, Cell cell) throws Exception {
+        ArrayList<CollectorSource> collectors = new ArrayList<>();
+        for (Node node : cell.getNodes()) {
+            for (CollectorSource collector : node.getCollectorsSourceDec()) {
+                if (collector.getType().equals(type)) {
+                    collectors.add(collector);
+                }
+            }
+        }
+        if (collectors.size() > 0) {
+            return collectors.get(rndGen.nextInt(collectors.size()));
+        } else return null;
     }
 
     /**
@@ -140,33 +163,11 @@ public class FactoryCell {
         }
     }
 
-    /**
-     * Get random output collector from cell.
-     *
-     * @param type
-     * @param cell
-     * @return
-     * @throws Exception
-     */
-    public CollectorSource getCollectorOutRnd(Class type, Cell cell) throws Exception {
-        ArrayList<CollectorSource> collectors = new ArrayList<>();
-        for (Node node : cell.getNodes()) {
-            for (CollectorSource collector : node.getCollectorsSourceDec()) {
-                if (collector.getSignal().gettClass().equals(type)) {
-                    collectors.add(collector);
-                }
-            }
-        }
-        if (collectors.size() > 0) {
-            return collectors.get(rndGen.nextInt(collectors.size()));
-        } else return null;
-    }
-
-    public CollectorSource getCollectorOutRndNoNode(Class type, Cell cell, Node node) throws Exception {
+    public CollectorSource getCollectorSourceRndNoNode(Cell.Signal type, Cell cell, Node node) throws Exception {
         ArrayList<CollectorSource> collectors = new ArrayList<>();
         for (Node node1 : cell.getNodes()) {
             for (CollectorSource collector : node1.getCollectorSources()) {
-                if (collector.getSignal().gettClass().equals(type) && !node1.equals(node)) {
+                if (collector.getType().equals(type) && !node1.equals(node)) {
                     collectors.add(collector);
                 }
             }
@@ -176,10 +177,50 @@ public class FactoryCell {
         } else return null;
     }
 
-    public CollectorSource getCollectorOutRnd(Cell cell) throws Exception {
+    public CollectorSource getCollectorSourceRnd(Cell cell) throws Exception {
         ArrayList<CollectorSource> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorSource collector : node.getCollectorsSourceDec()) {
+            collectors.addAll(node.getCollectorsSourceDec());
+        }
+        for (Node node : cell.getNodes()) {
+            collectors.addAll(node.getCollectorsSourceInt());
+        }
+        for (Node node : cell.getNodes()) {
+            collectors.addAll(node.getCollectorsSourceBin());
+        }
+        if (collectors.size() > 0) {
+            return collectors.get(rndGen.nextInt(collectors.size()));
+        } else return null;
+    }
+
+    public CollectorSourceDec getCollectorSourceRndDec(Cell cell) throws Exception {
+        ArrayList<CollectorSourceDec> collectors = new ArrayList<>();
+        for (Node node : cell.getNodes()) {
+            for (CollectorSourceDec collector : node.getCollectorsSourceDec()) {
+                collectors.add(collector);
+            }
+        }
+        if (collectors.size() > 0) {
+            return collectors.get(rndGen.nextInt(collectors.size()));
+        } else return null;
+    }
+
+    public CollectorSourceInt getCollectorSourceRndInt(Cell cell) throws Exception {
+        ArrayList<CollectorSourceInt> collectors = new ArrayList<>();
+        for (Node node : cell.getNodes()) {
+            for (CollectorSourceInt collector : node.getCollectorsSourceInt()) {
+                collectors.add(collector);
+            }
+        }
+        if (collectors.size() > 0) {
+            return collectors.get(rndGen.nextInt(collectors.size()));
+        } else return null;
+    }
+
+    public CollectorSourceBin getCollectorSourceRndBin(Cell cell) throws Exception {
+        ArrayList<CollectorSourceBin> collectors = new ArrayList<>();
+        for (Node node : cell.getNodes()) {
+            for (CollectorSourceBin collector : node.getCollectorsSourceBin()) {
                 collectors.add(collector);
             }
         }
@@ -196,11 +237,11 @@ public class FactoryCell {
      * @return Selected node.
      * @Param node Node that can't be selected.
      */
-    public CollectorTarget getCollectorInpRnd(Class type, Cell cell) throws Exception {
+    public CollectorTarget getCollectorInpRnd(Cell.Signal type, Cell cell) throws Exception {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
             for (CollectorTarget collector : node.getCollectorsTargetDec()) {
-                if (collector.getSignal().gettClass().equals(type) && collector.getEdges().size() == 0) {
+                if (collector.getType().equals(type) && collector.getEdges().size() == 0) {
                     collectors.add(collector);
                 }
             }
@@ -217,7 +258,8 @@ public class FactoryCell {
      * @return
      * @throws Exception
      */
-    public CollectorTarget getCollectorInpMinRnd(Cell cell) throws Exception {
+
+    public CollectorTarget getCollectorTargetMinRnd(Cell cell) {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
             collectors.addAll(node.getCollectorsTargetMinConnect());
@@ -227,6 +269,37 @@ public class FactoryCell {
         } else return null;
     }
 
+    public CollectorTargetDec getCollectorTargetMinRndDec(Cell cell) throws Exception {
+        ArrayList<CollectorTargetDec> collectors = new ArrayList<>();
+        for (Node node : cell.getNodes()) {
+            collectors.addAll(node.getCollectorsTargetMinConnectDec());
+        }
+        if (collectors.size() > 0) {
+            return collectors.get(rndGen.nextInt(collectors.size()));
+        } else return null;
+    }
+
+    public CollectorTargetInt getCollectorTargetMinRndInt(Cell cell) throws Exception {
+        ArrayList<CollectorTargetInt> collectors = new ArrayList<>();
+        for (Node node : cell.getNodes()) {
+            collectors.addAll(node.getCollectorsTargetMinConnectInt());
+        }
+        if (collectors.size() > 0) {
+            return collectors.get(rndGen.nextInt(collectors.size()));
+        } else return null;
+    }
+
+    public CollectorTargetBin getCollectorTargetMinRndBin(Cell cell) throws Exception {
+        ArrayList<CollectorTargetBin> collectors = new ArrayList<>();
+        for (Node node : cell.getNodes()) {
+            collectors.addAll(node.getCollectorsTargetMinConnectBin());
+        }
+        if (collectors.size() > 0) {
+            return collectors.get(rndGen.nextInt(collectors.size()));
+        } else return null;
+    }
+
+
     /**
      * Get random input connector from node's where only one free input connector from node is taken into pool to be randomly selected.
      *
@@ -235,11 +308,11 @@ public class FactoryCell {
      * @return
      * @throws Exception
      */
-    public CollectorTarget getCollectorInpOneRnd(Class type, Cell cell) throws Exception {
+    public CollectorTarget getCollectorInpOneRnd(Cell.Signal type, Cell cell) throws Exception {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
             for (CollectorTarget collector : node.getCollectorsTarget()) {
-                if (collector.getSignal().gettClass().equals(type) && collector.getEdges().size() == 0) {
+                if (collector.getType().equals(type) && collector.getEdges().size() == 0) {
                     collectors.add(collector);
                     break;
                 }

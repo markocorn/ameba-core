@@ -1,8 +1,11 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.Cell;
+import ameba.core.blocks.collectors.*;
 import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.edges.EdgeBin;
+import ameba.core.blocks.edges.EdgeDec;
+import ameba.core.blocks.edges.EdgeInt;
 
 import java.util.Random;
 
@@ -32,30 +35,49 @@ public class FactoryEdge {
      * @param target Target node for the edge.
      * @return Edge with randomly generated weight.
      */
-    public Edge genEdge(Class tclass, CollectorSource source, CollectorTarget target) throws Exception {
-        return new Edge(source, target, genInitSignal(tclass));
+    public EdgeDec genEdgeDec(CollectorSourceDec source, CollectorTargetDec target) {
+        return new EdgeDec(source, target, genDouble());
+    }
+
+    public EdgeInt genEdgeInt(CollectorSourceInt source, CollectorTargetInt target) {
+        return new EdgeInt(source, target, genInt());
+    }
+
+    public EdgeBin genEdgeBin(CollectorSourceBin source, CollectorTargetBin target) {
+        return new EdgeBin(source, target, genBool());
+    }
+
+    public Edge genEdge(Cell.Signal type, CollectorSource source, CollectorTarget target) {
+        switch (type) {
+            case DECIMAL:
+                return genEdgeDec((CollectorSourceDec) source, (CollectorTargetDec) target);
+            case INTEGER:
+                return genEdgeInt((CollectorSourceInt) source, (CollectorTargetInt) target);
+            case BOOLEAN:
+                return genEdgeBin((CollectorSourceBin) source, (CollectorTargetBin) target);
+        }
+        return null;
     }
 
     /**
      * @return decimal number within the specified initial interval.
      */
 
-    private Signal genInitSignal(Class tclass) throws Exception {
-        if (tclass.isAssignableFrom(Double.class)) {
-            return Signal.createDouble(rndGen.nextDouble() * (factoryEdgeSettings.getWeightInitialDec()[1] - factoryEdgeSettings.getWeightInitialDec()[0]) + factoryEdgeSettings.getWeightInitialDec()[0]);
+    private double genDouble() {
+        return rndGen.nextDouble() * (factoryEdgeSettings.getWeightInitialDec()[1] - factoryEdgeSettings.getWeightInitialDec()[0]) + factoryEdgeSettings.getWeightInitialDec()[0];
+    }
+
+    private int genInt() {
+        return rndGen.nextInt(factoryEdgeSettings.getWeightInitialInt()[1] - factoryEdgeSettings.getWeightInitialInt()[0]) + factoryEdgeSettings.getWeightInitialInt()[0];
+    }
+
+    private boolean genBool() {
+        if (factoryEdgeSettings.getWeightInitialBin()[0].equals(true)) {
+            return true;
         }
-        if (tclass.isAssignableFrom(Integer.class)) {
-            return Signal.createInteger(rndGen.nextInt(factoryEdgeSettings.getWeightInitialInt()[1] - factoryEdgeSettings.getWeightInitialInt()[0]) + factoryEdgeSettings.getWeightInitialInt()[0]);
+        if (factoryEdgeSettings.getWeightInitialBin()[1].equals(false)) {
+            return false;
         }
-        if (tclass.isAssignableFrom(Boolean.class)) {
-            if (factoryEdgeSettings.getWeightInitialBin()[0].equals(true)) {
-                return Signal.createBoolean(true);
-            }
-            if (factoryEdgeSettings.getWeightInitialBin()[1].equals(false)) {
-                return Signal.createBoolean(false);
-            }
-            return Signal.createBoolean(rndGen.nextBoolean());
-        }
-        throw new Exception("Cant generate signal of type: " + tclass.getSimpleName());
+        return rndGen.nextBoolean();
     }
 }

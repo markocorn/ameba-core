@@ -1,8 +1,8 @@
 package ameba.core.reproductions.mutateCell;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.collectors.CollectorTarget;
 import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorTarget;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
@@ -33,7 +33,7 @@ public class RemoveNode implements IMutateCell {
             for (CollectorSource collectorOut : node.getCollectorSources()) {
                 for (Edge edge : collectorOut.getEdges()) {
                     edge.getTarget().removeEdge(edge);
-                    CollectorSource collectorOut1 = cellFactory.getCollectorOutRndNoNode(edge.getSource().getType(), cell, node);
+                    CollectorSource collectorOut1 = cellFactory.getCollectorSourceRndNoNode(edge.getSource().getType(), cell, node);
                     if (collectorOut1 != null) {
                         edge.setSource(collectorOut1);
                     } else {

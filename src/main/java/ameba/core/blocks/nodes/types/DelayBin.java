@@ -8,46 +8,54 @@ package ameba.core.blocks.nodes.types;
  * To change this template use File | Settings | File Templates.
  */
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorTargetBin;
 import ameba.core.blocks.nodes.NodeMem;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 
 /**
  * @author Marko
  */
 public class DelayBin extends NodeMem {
-
-    private ArrayList<Signal> buffer;
+    private int ind;
+    private boolean[] buffer;
     //Initial value
-    private Signal initValue;
+    private boolean initValue;
 
-    public DelayBin(Signal initial, int par, int[] parLimits) throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1});
+    public DelayBin(boolean initial, int par, int[] parLimits) throws Exception {
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
         this.initValue = initial;
-        getParams().add(Signal.createInteger(par));
-        getParamsLimits().add(new Signal[]{Signal.createInteger(parLimits[0]), Signal.createInteger(parLimits[1])});
+        setParamsInt(new int[]{par});
+        setParamsLimitsInt(new int[][]{parLimits});
 
-        addInpCollector(new CollectorTarget(initial.clone(), this));
-        addOutCollector(new CollectorSource(initial.clone(), this));
-        buffer = new ArrayList(Collections.nCopies(par, initial));
+        addCollectorTargetBin(new CollectorTargetBin(this));
+        addCollectorSourceBin(new CollectorSourceBin(this));
+        buffer = new boolean[par];
+        Arrays.fill(buffer, initValue);
+        ind = 0;
         clearNode();
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        buffer.add(getCollectorsTargetBin().get(0).getSignal());
-        buffer.remove(buffer.get(0));
-        getCollectorsSourceBin().get(0).setSignal(buffer.get(0));
+        buffer[ind] = getCollectorsTargetBin().get(0).getSignal();
+        ind++;
+        if (ind >= buffer.length) ind = 0;
+        if (ind >= buffer.length - 1) {
+            getCollectorsSourceBin().get(0).setSignal(buffer[0]);
+        } else {
+            getCollectorsSourceBin().get(0).setSignal(buffer[ind + 1]);
+        }
+
     }
 
     @Override
     public void clearNode() {
         rstNode();
-        buffer = new ArrayList<>(Collections.nCopies(buffer.size(), initValue));
+        ind = 0;
+        Arrays.fill(buffer, initValue);
         getCollectorsSourceBin().get(0).setSignal(initValue);
     }
 }

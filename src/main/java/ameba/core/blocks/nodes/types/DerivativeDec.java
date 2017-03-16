@@ -8,8 +8,8 @@ package ameba.core.blocks.nodes.types;
  * To change this template use File | Settings | File Templates.
  */
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceDec;
+import ameba.core.blocks.collectors.CollectorTargetDec;
 import ameba.core.blocks.nodes.NodeMem;
 
 /**
@@ -18,18 +18,18 @@ import ameba.core.blocks.nodes.NodeMem;
 public class DerivativeDec extends NodeMem {
 
     //Initial value
-    private Signal initValue;
-    private Signal signalOld;
+    private double initValue;
+    private double signalOld;
 
-    public DerivativeDec(Signal initial, Signal par, Signal[] parLimits) throws Exception {
-        super(new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{0, 0});
+    public DerivativeDec(double initial, double par, double[] parLimits) throws Exception {
+        super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
         this.initValue = initial;
-        signalOld = initial.clone();
-        addInpCollector(new CollectorTarget(initial.clone(), this));
-        addOutCollector(new CollectorSource(initial.clone(), this));
+        signalOld = initial;
+        addCollectorTargetDec(new CollectorTargetDec(this));
+        addCollectorSourceDec(new CollectorSourceDec(this));
 
-        getParams().add(par);
-        getParamsLimits().add(parLimits);
+        setParamsDec(new double[]{par});
+        setParamsLimitsDec(new double[][]{parLimits});
 
         clearNode();
     }
@@ -37,18 +37,15 @@ public class DerivativeDec extends NodeMem {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        getCollectorsSourceDec().get(0).getSignal().setValueDouble((getCollectorsTargetDec().get(0).getSignal().getValueDouble() - signalOld.getValueDouble()) / getParams().get(0).getValueDouble());
+        getCollectorsSourceDec().get(0).setSignal((getCollectorsTargetDec().get(0).getSignal() - signalOld) / getParamsDec()[0]);
         signalOld = getCollectorsTargetDec().get(0).getSignal();
     }
 
     @Override
     public void clearNode() {
         rstNode();
-        try {
-            getCollectorsSourceDec().get(0).setSignal(initValue);
-            signalOld.clear();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        getCollectorsSourceDec().get(0).setSignal(initValue);
+        signalOld = initValue;
+
     }
 }

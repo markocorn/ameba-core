@@ -1,5 +1,6 @@
 package ameba.core.blocks.collectors;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.edges.EdgeBin;
 import ameba.core.blocks.nodes.Node;
@@ -33,11 +34,16 @@ public class CollectorSourceBin extends CollectorSource {
         edges.remove(edge);
     }
 
+    public boolean getSignal() {
+        return signal;
+    }
+
     public void setSignal(boolean signal) {
         this.signal = signal;
     }
 
-    public boolean getSignal() {
-        return signal;
+    @Override
+    public Cell.Signal getType() {
+        return Cell.Signal.BOOLEAN;
     }
 }

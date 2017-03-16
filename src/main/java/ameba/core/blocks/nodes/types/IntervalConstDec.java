@@ -1,7 +1,7 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorTargetDec;
 import ameba.core.blocks.nodes.Node;
 
 /**
@@ -9,22 +9,23 @@ import ameba.core.blocks.nodes.Node;
  */
 public class IntervalConstDec extends Node {
 
-    public IntervalConstDec(Signal par, Signal[] parLimits) throws Exception {
-        super(new Integer[]{2, 2}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1});
-        addInpCollector(new CollectorTarget(Signal.createDouble(), this));
-        addInpCollector(new CollectorTarget(Signal.createDouble(), this));
-        addOutCollector(new CollectorSource(Signal.createBoolean(), this));
+    public IntervalConstDec(double par, double[] parLimits) throws Exception {
+        super(new int[]{2, 2}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
 
-        getParams().add(par);
-        getParamsLimits().add(parLimits);
+        addCollectorTargetDec(new CollectorTargetDec(this));
+        addCollectorTargetDec(new CollectorTargetDec(this));
+        addCollectorSourceBin(new CollectorSourceBin(this));
+
+        setParamsDec(new double[]{par});
+        setParamsLimitsDec(new double[][]{parLimits});
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        double[] inputs = new double[]{getCollectorsTargetDec().get(0).getSignal().getValueDouble(), getCollectorsTargetDec().get(1).getSignal().getValueDouble(), getParams().get(0).getValueDouble()};
+        double[] inputs = new double[]{getCollectorsTargetDec().get(0).getSignal(), getCollectorsTargetDec().get(1).getSignal(), getParamsDec()[0]};
         if (inputs[1] <= inputs[0] && inputs[0] <= inputs[2]) {
-            getCollectorsSourceBin().get(0).setSignal(Signal.createBoolean(true));
-        } else getCollectorsSourceBin().get(0).setSignal(Signal.createBoolean(false));
+            getCollectorsSourceBin().get(0).setSignal(true);
+        } else getCollectorsSourceBin().get(0).setSignal(false);
     }
 }

@@ -1,5 +1,6 @@
 package ameba.core.blocks.collectors;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.edges.EdgeBin;
 import ameba.core.blocks.nodes.Node;
@@ -9,12 +10,12 @@ import java.util.ArrayList;
 /**
  * Created by marko on 1/19/17.
  */
-public class CollectorTargetBin extends CollectorTarget{
+public class CollectorTargetBin extends CollectorTarget {
     ArrayList<EdgeBin> edges;
 
     public CollectorTargetBin(Node node) {
         super(node);
-        edges=new ArrayList<>();
+        edges = new ArrayList<>();
     }
 
     public void addEdge(EdgeBin edge) throws Exception {
@@ -32,5 +33,10 @@ public class CollectorTargetBin extends CollectorTarget{
 
     public boolean getSignal() {
         return edges.get(0).getSignal();
+    }
+
+    @Override
+    public Cell.Signal getType() {
+        return Cell.Signal.BOOLEAN;
     }
 }

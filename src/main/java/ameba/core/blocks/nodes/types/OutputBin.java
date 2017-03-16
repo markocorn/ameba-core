@@ -1,7 +1,7 @@
 package ameba.core.blocks.nodes.types;
 
-import ameba.core.blocks.collectors.CollectorTarget;
-import ameba.core.blocks.nodes.INodeOutputDec;
+import ameba.core.blocks.collectors.CollectorTargetBin;
+import ameba.core.blocks.nodes.INodeOutputBin;
 import ameba.core.blocks.nodes.Node;
 
 
@@ -13,14 +13,14 @@ import ameba.core.blocks.nodes.Node;
  * To change this template use File | Settings | File Templates.
  */
 
-public class OutputBin extends Node implements INode, INodeOutputDec {
+public class OutputBin extends Node implements INodeOutputBin {
 
-    Signal value;
+    boolean value;
 
     public OutputBin() throws Exception {
-        super(new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{1, 1}, new Integer[]{0, 0}, new Integer[]{0, 0}, new Integer[]{0, 0});
-        addInpCollector(new CollectorTarget(Signal.createBoolean(), this));
-        value = Signal.createBoolean();
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0});
+        addCollectorTargetBin(new CollectorTargetBin(this));
+        value = false;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class OutputBin extends Node implements INode, INodeOutputDec {
 
 
     @Override
-    public Signal exportSignal() throws Exception {
+    public boolean exportSignal() {
         return value;
     }
 }
