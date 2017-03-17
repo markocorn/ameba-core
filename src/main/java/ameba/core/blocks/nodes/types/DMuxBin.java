@@ -10,7 +10,7 @@ import ameba.core.blocks.nodes.Node;
  */
 public class DMuxBin extends Node {
 
-    public DMuxBin(int minOutCollectors, int maxOutCollectors, boolean par, boolean[] parLimits) throws Exception {
+    public DMuxBin(int minOutCollectors, int maxOutCollectors, Boolean par, Boolean[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{1, 1}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{minOutCollectors, maxOutCollectors});
 
         addCollectorTargetInt(new CollectorTargetInt(this));
@@ -19,8 +19,8 @@ public class DMuxBin extends Node {
             addCollectorSourceBin(new CollectorSourceBin(this));
         }
 
-        setParamsBin(new boolean[]{par});
-        setParamsLimitsBin(new boolean[][]{parLimits});
+        setParamsBin(new Boolean[]{par});
+        setParamsLimitsBin(new Boolean[][]{parLimits});
     }
 
     //Calculate output value

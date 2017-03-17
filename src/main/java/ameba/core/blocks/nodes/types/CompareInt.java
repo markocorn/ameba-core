@@ -7,12 +7,12 @@ import ameba.core.blocks.nodes.Node;
 public class CompareInt extends Node {
 
     public CompareInt(int par) throws Exception {
-        super(new int[]{2, 2}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+        super(new int[]{0, 0}, new int[]{2, 2}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
-        setParamsInt(new int[]{par});
-        setParamsLimitsInt(new int[][]{{0, 2}});
+        setParamsInt(new Integer[]{par});
+        setParamsLimitsInt(new Integer[][]{{0, 2}});
     }
 
     //Calculate output value

@@ -9,16 +9,16 @@ import ameba.core.blocks.nodes.Node;
  */
 public class Interval2ConstDec extends Node {
 
-    public Interval2ConstDec(double par1, double[] par1Limits, double par2, double[] par2Limits) throws Exception {
+    public Interval2ConstDec(Double par1, Double[] par1Limits, Double par2, Double[] par2Limits) throws Exception {
         super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
 
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsDec(new double[]{par1});
-        setParamsLimitsDec(new double[][]{par1Limits});
-        setParamsDec(new double[]{par2});
-        setParamsLimitsDec(new double[][]{par2Limits});
+        setParamsDec(new Double[]{par1});
+        setParamsLimitsDec(new Double[][]{par1Limits});
+        setParamsDec(new Double[]{par2});
+        setParamsLimitsDec(new Double[][]{par2Limits});
     }
 
     //Calculate output value

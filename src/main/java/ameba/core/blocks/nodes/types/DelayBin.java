@@ -23,11 +23,11 @@ public class DelayBin extends NodeMem {
     //Initial value
     private boolean initValue;
 
-    public DelayBin(boolean initial, int par, int[] parLimits) throws Exception {
+    public DelayBin(boolean initial, Integer par, Integer[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
         this.initValue = initial;
-        setParamsInt(new int[]{par});
-        setParamsLimitsInt(new int[][]{parLimits});
+        setParamsInt(new Integer[]{par});
+        setParamsLimitsInt(new Integer[][]{parLimits});
 
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceBin(new CollectorSourceBin(this));

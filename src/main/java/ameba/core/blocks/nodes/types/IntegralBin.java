@@ -20,7 +20,7 @@ public class IntegralBin extends NodeMem {
     private boolean signalOld;
 
 
-    public IntegralBin(boolean initial, boolean par, boolean[] parLimits) throws Exception {
+    public IntegralBin(boolean initial, Boolean par, Boolean[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
         this.initValue = initial;
         signalOld = initial;
@@ -28,8 +28,8 @@ public class IntegralBin extends NodeMem {
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsBin(new boolean[]{par});
-        setParamsLimitsBin(new boolean[][]{parLimits});
+        setParamsBin(new Boolean[]{par});
+        setParamsLimitsBin(new Boolean[][]{parLimits});
 
         clearNode();
     }

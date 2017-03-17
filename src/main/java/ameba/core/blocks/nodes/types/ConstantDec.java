@@ -1,16 +1,16 @@
 package ameba.core.blocks.nodes.types;
 
 
-import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorSourceDec;
 import ameba.core.blocks.nodes.NodeMem;
 
 public class ConstantDec extends NodeMem {
 
-    public ConstantDec(double par, double[] parLimits) throws Exception {
+    public ConstantDec(Double par, Double[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
-        addCollectorSourceBin(new CollectorSourceBin(this));
-        setParamsDec(new double[]{par});
-        setParamsLimitsDec(new double[][]{parLimits});
+        addCollectorSourceDec(new CollectorSourceDec(this));
+        setParamsDec(new Double[]{par});
+        setParamsLimitsDec(new Double[][]{parLimits});
     }
 
     /**

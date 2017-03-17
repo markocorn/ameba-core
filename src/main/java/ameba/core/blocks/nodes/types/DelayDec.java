@@ -23,11 +23,11 @@ public class DelayDec extends NodeMem {
     //Initial value
     private double initValue;
 
-    public DelayDec(double initial, int par, int[] parLimits) throws Exception {
-        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+    public DelayDec(double initial, Integer par, Integer[] parLimits) throws Exception {
+        super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
         this.initValue = initial;
-        setParamsInt(new int[]{par});
-        setParamsLimitsInt(new int[][]{parLimits});
+        setParamsInt(new Integer[]{par});
+        setParamsLimitsInt(new Integer[][]{parLimits});
 
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceDec(new CollectorSourceDec(this));

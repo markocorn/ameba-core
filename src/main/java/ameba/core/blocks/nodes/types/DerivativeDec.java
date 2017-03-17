@@ -21,15 +21,15 @@ public class DerivativeDec extends NodeMem {
     private double initValue;
     private double signalOld;
 
-    public DerivativeDec(double initial, double par, double[] parLimits) throws Exception {
+    public DerivativeDec(double initial, Double par, Double[] parLimits) throws Exception {
         super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
         this.initValue = initial;
         signalOld = initial;
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceDec(new CollectorSourceDec(this));
 
-        setParamsDec(new double[]{par});
-        setParamsLimitsDec(new double[][]{parLimits});
+        setParamsDec(new Double[]{par});
+        setParamsLimitsDec(new Double[][]{parLimits});
 
         clearNode();
     }

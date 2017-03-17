@@ -21,15 +21,15 @@ public class DerivativeBin extends NodeMem {
     private boolean initValue;
     private boolean signalOld;
 
-    public DerivativeBin(boolean initial, boolean par, boolean[] parLimits) throws Exception {
+    public DerivativeBin(boolean initial, Boolean par, Boolean[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
         this.initValue = initial;
         signalOld = initial;
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsBin(new boolean[]{par});
-        setParamsLimitsBin(new boolean[][]{parLimits});
+        setParamsBin(new Boolean[]{par});
+        setParamsLimitsBin(new Boolean[][]{parLimits});
         clearNode();
     }
 

@@ -20,7 +20,7 @@ public class IntegralDec extends NodeMem {
     private double signalOld;
 
 
-    public IntegralDec(double initial, double par, double[] parLimits) throws Exception {
+    public IntegralDec(double initial, Double par, Double[] parLimits) throws Exception {
         super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
         this.initValue = initial;
         signalOld = initial;
@@ -28,8 +28,8 @@ public class IntegralDec extends NodeMem {
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceDec(new CollectorSourceDec(this));
 
-        setParamsDec(new double[]{par});
-        setParamsLimitsDec(new double[][]{parLimits});
+        setParamsDec(new Double[]{par});
+        setParamsLimitsDec(new Double[][]{parLimits});
 
         clearNode();
     }

@@ -34,12 +34,12 @@ public class Node implements Cloneable {
     private boolean signalReady;
     private boolean signalClcDone;
 
-    private double[] paramsDec;
-    private double[][] paramsLimitsDec;
-    private int[] paramsInt;
-    private int[][] paramsLimitsInt;
-    private boolean[] paramsBin;
-    private boolean[][] paramsLimitsBin;
+    private Double[] paramsDec;
+    private Double[][] paramsLimitsDec;
+    private Integer[] paramsInt;
+    private Integer[][] paramsLimitsInt;
+    private Boolean[] paramsBin;
+    private Boolean[][] paramsLimitsBin;
 
 
     public Node(int[] inpColLimitDec, int[] inpColLimitInt, int[] inpColLimitBin, int[] outColLimitDec, int[] outColLimitInt, int[] outColLimitBin) {
@@ -59,12 +59,12 @@ public class Node implements Cloneable {
         collectorsSourceInt = new ArrayList<>();
         collectorsSourceBin = new ArrayList<>();
 
-        paramsDec = new double[]{0.0};
-        paramsLimitsDec = new double[][]{{0.0}};
-        paramsInt = new int[]{0};
-        paramsLimitsInt = new int[][]{{1}};
-        paramsBin = new boolean[]{false};
-        paramsLimitsBin = new boolean[][]{{false}};
+        paramsDec = null;
+        paramsLimitsDec = null;
+        paramsInt = null;
+        paramsLimitsInt = null;
+        paramsBin = null;
+        paramsLimitsBin = null;
 
         signalReady = false;
         signalClcDone = false;
@@ -502,51 +502,51 @@ public class Node implements Cloneable {
         return false;
     }
 
-    public double[] getParamsDec() {
+    public Double[] getParamsDec() {
         return paramsDec;
     }
 
-    public void setParamsDec(double[] paramsDec) {
+    public void setParamsDec(Double[] paramsDec) {
         this.paramsDec = paramsDec;
     }
 
-    public double[][] getParamsLimitsDec() {
+    public Double[][] getParamsLimitsDec() {
         return paramsLimitsDec;
     }
 
-    public void setParamsLimitsDec(double[][] paramsLimitsDec) {
+    public void setParamsLimitsDec(Double[][] paramsLimitsDec) {
         this.paramsLimitsDec = paramsLimitsDec;
     }
 
-    public int[] getParamsInt() {
+    public Integer[] getParamsInt() {
         return paramsInt;
     }
 
-    public void setParamsInt(int[] paramsInt) {
+    public void setParamsInt(Integer[] paramsInt) {
         this.paramsInt = paramsInt;
     }
 
-    public int[][] getParamsLimitsInt() {
+    public Integer[][] getParamsLimitsInt() {
         return paramsLimitsInt;
     }
 
-    public void setParamsLimitsInt(int[][] paramsLimitsInt) {
+    public void setParamsLimitsInt(Integer[][] paramsLimitsInt) {
         this.paramsLimitsInt = paramsLimitsInt;
     }
 
-    public boolean[] getParamsBin() {
+    public Boolean[] getParamsBin() {
         return paramsBin;
     }
 
-    public void setParamsBin(boolean[] paramsBin) {
+    public void setParamsBin(Boolean[] paramsBin) {
         this.paramsBin = paramsBin;
     }
 
-    public boolean[][] getParamsLimitsBin() {
+    public Boolean[][] getParamsLimitsBin() {
         return paramsLimitsBin;
     }
 
-    public void setParamsLimitsBin(boolean[][] paramsLimitsBin) {
+    public void setParamsLimitsBin(Boolean[][] paramsLimitsBin) {
         this.paramsLimitsBin = paramsLimitsBin;
     }
 

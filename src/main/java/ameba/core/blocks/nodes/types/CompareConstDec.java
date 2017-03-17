@@ -6,16 +6,16 @@ import ameba.core.blocks.nodes.Node;
 
 public class CompareConstDec extends Node {
 
-    public CompareConstDec(double par1, double[] par1Limits, int par2) throws Exception {
+    public CompareConstDec(Double par1, Double[] par1Limits, Integer par2) throws Exception {
         super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
         //AddDec compare against parameter
-        setParamsDec(new double[]{par1});
-        setParamsLimitsDec(new double[][]{par1Limits});
+        setParamsDec(new Double[]{par1});
+        setParamsLimitsDec(new Double[][]{par1Limits});
         //AddDec operation select parameter
-        setParamsInt(new int[]{par2});
-        setParamsLimitsInt(new int[][]{{0, 2}});
+        setParamsInt(new Integer[]{par2});
+        setParamsLimitsInt(new Integer[][]{{0, 2}});
     }
 
     //Calculate output value

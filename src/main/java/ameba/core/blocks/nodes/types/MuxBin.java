@@ -11,7 +11,7 @@ import ameba.core.blocks.nodes.Node;
 public class MuxBin extends Node {
 
 
-    public MuxBin(int minInpCollectors, int maxInpCollectors, boolean par, boolean[] parLimits) throws Exception {
+    public MuxBin(int minInpCollectors, int maxInpCollectors, Boolean par, Boolean[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{1, 1}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
 
         addCollectorTargetInt(new CollectorTargetInt(this));
@@ -20,8 +20,8 @@ public class MuxBin extends Node {
         }
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsBin(new boolean[]{par});
-        setParamsLimitsBin(new boolean[][]{parLimits});
+        setParamsBin(new Boolean[]{par});
+        setParamsLimitsBin(new Boolean[][]{parLimits});
     }
 
     //Calculate output value

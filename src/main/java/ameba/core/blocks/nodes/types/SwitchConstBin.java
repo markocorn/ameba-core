@@ -9,15 +9,15 @@ import ameba.core.blocks.nodes.Node;
  */
 public class SwitchConstBin extends Node {
 
-    public SwitchConstBin(boolean par, boolean[] parLimits) throws Exception {
+    public SwitchConstBin(Boolean par, Boolean[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{0, 0}, new int[]{2, 2}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
 
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsBin(new boolean[]{par});
-        setParamsLimitsBin(new boolean[][]{parLimits});
+        setParamsBin(new Boolean[]{par});
+        setParamsLimitsBin(new Boolean[][]{parLimits});
     }
 
     //Calculate output value

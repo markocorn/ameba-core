@@ -247,65 +247,65 @@ public class FactoryNode {
                 case "CompareConstDec":
                     node = new CompareConstDec(
                             settings.get(nodeType).getParametersDec()[0],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]},
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]},
                             settings.get(nodeType).getParametersInt()[0]);
                     break;
                 case "CompareConstInt":
                     node = new CompareConstInt(
                             settings.get(nodeType).getParametersInt()[1],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]},
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]},
                             settings.get(nodeType).getParametersInt()[0]);
                     break;
                 case "ConstantDec":
                     node = new ConstantDec(
                             settings.get(nodeType).getParametersDec()[0],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "ConstantInt":
                     node = new ConstantInt(
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "ConstantBin":
                     node = new ConstantBin(
                             settings.get(nodeType).getParametersBin()[0],
-                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
+                            new Boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "DelayDec":
                     node = new DelayDec(
                             settings.get(nodeType).getInitialValueDec(),
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DelayInt":
                     node = new DelayInt(
                             settings.get(nodeType).getInitialValueInt(),
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DelayBin":
                     node = new DelayBin(
                             settings.get(nodeType).getInitialValueBin(),
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DerivativeDec":
                     node = new DerivativeDec(
                             settings.get(nodeType).getInitialValueDec(),
                             settings.get(nodeType).getParametersDec()[0],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "DerivativeInt":
                     node = new DerivativeInt(
                             settings.get(nodeType).getInitialValueInt(),
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DerivativeBin":
                     node = new DerivativeBin(
                             settings.get(nodeType).getInitialValueBin(),
                             settings.get(nodeType).getParametersBin()[0],
-                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
+                            new Boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "Divide":
                     node = new Divide(
@@ -327,60 +327,60 @@ public class FactoryNode {
                             settings.get(nodeType).getInpColLimitDec()[0],
                             settings.get(nodeType).getInpColLimitDec()[1],
                             settings.get(nodeType).getParametersDec()[0],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "MuxInt":
                     node = new MuxInt(
                             settings.get(nodeType).getInpColLimitInt()[0],
                             settings.get(nodeType).getInpColLimitInt()[1],
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "MuxBin":
                     node = new MuxBin(
                             settings.get(nodeType).getInpColLimitBin()[0],
                             settings.get(nodeType).getInpColLimitBin()[1],
                             settings.get(nodeType).getParametersBin()[0],
-                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
+                            new Boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "DMuxDec":
                     node = new DMuxDec(
                             settings.get(nodeType).getOutColLimitDec()[0],
                             settings.get(nodeType).getOutColLimitDec()[1],
                             settings.get(nodeType).getParametersDec()[0],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "DMuxInt":
                     node = new DMuxInt(
                             settings.get(nodeType).getOutColLimitInt()[0],
                             settings.get(nodeType).getOutColLimitInt()[1],
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "DMuxBin":
                     node = new DMuxBin(
                             settings.get(nodeType).getOutColLimitBin()[0],
                             settings.get(nodeType).getOutColLimitBin()[1],
                             settings.get(nodeType).getParametersBin()[0],
-                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
+                            new Boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "IntegralDec":
                     node = new IntegralDec(
                             settings.get(nodeType).getInitialValueDec(),
                             settings.get(nodeType).getParametersDec()[0],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "IntegralInt":
                     node = new IntegralInt(
                             settings.get(nodeType).getInitialValueInt(),
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "IntegralBin":
                     node = new IntegralBin(
                             settings.get(nodeType).getInitialValueBin(),
                             settings.get(nodeType).getParametersBin()[0],
-                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
+                            new Boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "IntervalDec":
                     node = new IntervalDec();
@@ -391,26 +391,26 @@ public class FactoryNode {
                 case "IntervalConstDec":
                     node = new IntervalConstDec(
                             settings.get(nodeType).getParametersDec()[0],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "IntervalConstInt":
                     node = new IntervalConstInt(
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "Interval2ConstDec":
                     node = new Interval2ConstDec(
                             settings.get(nodeType).getParametersDec()[0],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]},
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]},
                             settings.get(nodeType).getParametersDec()[1],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[1][0], settings.get(nodeType).getParametersLimitsDec()[1][1]});
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[1][0], settings.get(nodeType).getParametersLimitsDec()[1][1]});
                     break;
                 case "Interval2ConstInt":
                     node = new Interval2ConstInt(
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]},
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]},
                             settings.get(nodeType).getParametersInt()[1],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]});
                     break;
                 case "SwitchDec":
                     node = new SwitchDec();
@@ -424,38 +424,38 @@ public class FactoryNode {
                 case "SwitchConstDec":
                     node = new SwitchConstDec(
                             settings.get(nodeType).getParametersDec()[0],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "SwitchConstInt":
                     node = new SwitchConstInt(
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
                 case "SwitchConstBin":
                     node = new SwitchConstBin(
                             settings.get(nodeType).getParametersBin()[0],
-                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
+                            new Boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
                 case "Switch2ConstDec":
                     node = new Switch2ConstDec(
                             settings.get(nodeType).getParametersDec()[0],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]},
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[0][0], settings.get(nodeType).getParametersLimitsDec()[0][1]},
                             settings.get(nodeType).getParametersDec()[1],
-                            new double[]{settings.get(nodeType).getParametersLimitsDec()[1][0], settings.get(nodeType).getParametersLimitsDec()[1][1]});
+                            new Double[]{settings.get(nodeType).getParametersLimitsDec()[1][0], settings.get(nodeType).getParametersLimitsDec()[1][1]});
                     break;
                 case "Switch2ConstInt":
                     node = new Switch2ConstInt(
                             settings.get(nodeType).getParametersInt()[0],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]},
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[0][0], settings.get(nodeType).getParametersLimitsInt()[0][1]},
                             settings.get(nodeType).getParametersInt()[1],
-                            new int[]{settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]});
+                            new Integer[]{settings.get(nodeType).getParametersLimitsInt()[1][0], settings.get(nodeType).getParametersLimitsInt()[1][1]});
                     break;
                 case "Switch2ConstBin":
                     node = new Switch2ConstBin(
                             settings.get(nodeType).getParametersBin()[0],
-                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]},
+                            new Boolean[]{settings.get(nodeType).getParametersLimitsBin()[0][0], settings.get(nodeType).getParametersLimitsBin()[0][1]},
                             settings.get(nodeType).getParametersBin()[1],
-                            new boolean[]{settings.get(nodeType).getParametersLimitsBin()[1][0], settings.get(nodeType).getParametersLimitsBin()[1][1]});
+                            new Boolean[]{settings.get(nodeType).getParametersLimitsBin()[1][0], settings.get(nodeType).getParametersLimitsBin()[1][1]});
                     break;
 
             }

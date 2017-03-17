@@ -20,7 +20,7 @@ public class IntegralInt extends NodeMem {
     private int signalOld;
 
 
-    public IntegralInt(int initial, int par, int[] parLimits) throws Exception {
+    public IntegralInt(int initial, Integer par, Integer[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
         this.initValue = initial;
         signalOld = initial;
@@ -28,8 +28,8 @@ public class IntegralInt extends NodeMem {
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceInt(new CollectorSourceInt(this));
 
-        setParamsInt(new int[]{par});
-        setParamsLimitsInt(new int[][]{parLimits});
+        setParamsInt(new Integer[]{par});
+        setParamsLimitsInt(new Integer[][]{parLimits});
 
         clearNode();
     }

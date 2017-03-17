@@ -10,7 +10,7 @@ import ameba.core.blocks.nodes.Node;
  */
 public class DMuxDec extends Node {
 
-    public DMuxDec(int minOutCollectors, int maxOutCollectors, double par, double[] parLimits) throws Exception {
+    public DMuxDec(int minOutCollectors, int maxOutCollectors, Double par, Double[] parLimits) throws Exception {
         super(new int[]{1, 1}, new int[]{1, 1}, new int[]{0, 0}, new int[]{minOutCollectors, maxOutCollectors}, new int[]{0, 0}, new int[]{0, 0});
 
         addCollectorTargetInt(new CollectorTargetInt(this));
@@ -19,8 +19,8 @@ public class DMuxDec extends Node {
             addCollectorSourceDec(new CollectorSourceDec(this));
         }
 
-        setParamsDec(new double[]{par});
-        setParamsLimitsDec(new double[][]{parLimits});
+        setParamsDec(new Double[]{par});
+        setParamsLimitsDec(new Double[][]{parLimits});
     }
 
     //Calculate output value

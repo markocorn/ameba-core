@@ -10,15 +10,15 @@ import ameba.core.blocks.nodes.Node;
  */
 public class SwitchConstInt extends Node {
 
-    public SwitchConstInt(int par, int[] parLimits) throws Exception {
+    public SwitchConstInt(int par, Integer[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{1, 1}, new int[]{1, 1}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
 
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceInt(new CollectorSourceInt(this));
 
-        setParamsInt(new int[]{par});
-        setParamsLimitsInt(new int[][]{parLimits});
+        setParamsInt(new Integer[]{par});
+        setParamsLimitsInt(new Integer[][]{parLimits});
     }
 
     //Calculate output value

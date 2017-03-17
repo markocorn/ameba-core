@@ -6,13 +6,13 @@ import ameba.core.blocks.nodes.Node;
 
 public class CompareDec extends Node {
 
-    public CompareDec(int par) throws Exception {
+    public CompareDec(Integer par) throws Exception {
         super(new int[]{2, 2}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
-        setParamsInt(new int[]{par});
-        setParamsLimitsInt(new int[][]{{0, 2}});
+        setParamsInt(new Integer[]{par});
+        setParamsLimitsInt(new Integer[][]{{0, 2}});
     }
 
     //Calculate output value

@@ -6,11 +6,11 @@ import ameba.core.blocks.nodes.Node;
 
 public class ConstantInt extends Node {
 
-    public ConstantInt(int par, int[] parLimits) throws Exception {
+    public ConstantInt(Integer par, Integer[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
         addCollectorSourceInt(new CollectorSourceInt(this));
-        setParamsInt(new int[]{par});
-        setParamsLimitsInt(new int[][]{parLimits});
+        setParamsInt(new Integer[]{par});
+        setParamsLimitsInt(new Integer[][]{parLimits});
     }
 
     /**

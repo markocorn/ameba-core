@@ -9,16 +9,16 @@ import ameba.core.blocks.nodes.Node;
  */
 public class Switch2ConstInt extends Node {
 
-    public Switch2ConstInt(int par1, int[] par1Limits, int par2, int[] par2Limits) throws Exception {
+    public Switch2ConstInt(Integer par1, Integer[] par1Limits, Integer par2, Integer[] par2Limits) throws Exception {
         super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
 
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceInt(new CollectorSourceInt(this));
 
-        setParamsInt(new int[]{par1});
-        setParamsLimitsInt(new int[][]{par1Limits});
-        setParamsInt(new int[]{par2});
-        setParamsLimitsInt(new int[][]{par2Limits});
+        setParamsInt(new Integer[]{par1});
+        setParamsLimitsInt(new Integer[][]{par1Limits});
+        setParamsInt(new Integer[]{par2});
+        setParamsLimitsInt(new Integer[][]{par2Limits});
     }
 
     //Calculate output value

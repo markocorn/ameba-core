@@ -9,7 +9,7 @@ import ameba.core.blocks.nodes.Node;
  */
 public class DMuxInt extends Node {
 
-    public DMuxInt(int minOutCollectors, int maxOutCollectors, int par, int[] parLimits) throws Exception {
+    public DMuxInt(int minOutCollectors, int maxOutCollectors, Integer par, Integer[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{2, 2}, new int[]{0, 0}, new int[]{0, 0}, new int[]{minOutCollectors, maxOutCollectors}, new int[]{0, 0});
 
         addCollectorTargetInt(new CollectorTargetInt(this));
@@ -18,8 +18,8 @@ public class DMuxInt extends Node {
             addCollectorSourceInt(new CollectorSourceInt(this));
         }
 
-        setParamsInt(new int[]{par});
-        setParamsLimitsInt(new int[][]{parLimits});
+        setParamsInt(new Integer[]{par});
+        setParamsLimitsInt(new Integer[][]{parLimits});
     }
 
     //Calculate output value
