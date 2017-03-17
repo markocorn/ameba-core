@@ -43,6 +43,9 @@ public class Collector {
         }
     }
 
+    public void addEdge(Edge edge) throws Exception {
+    }
+
     public boolean isSignalReady() {
         return false;
     }

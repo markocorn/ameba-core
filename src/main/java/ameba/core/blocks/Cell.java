@@ -172,18 +172,24 @@ public class Cell {
         this.edgesBin = edgesBin;
     }
 
-    public ArrayList<? extends Edge> getEdges(Class type) throws Exception {
-        if (type.isAssignableFrom(Double.class)) return edgesDec;
-        if (type.isAssignableFrom(Integer.class)) return edgesInt;
-        if (type.isAssignableFrom(Double.class)) return edgesBin;
-        throw new Exception("Edges of unknown type: " + type.getSimpleName());
+    public ArrayList<? extends Edge> getEdges(Signal type) throws Exception {
+        switch (type) {
+            case DECIMAL:
+                return edgesDec;
+            case INTEGER:
+                return edgesInt;
+            case BOOLEAN:
+                return edgesBin;
+            default:
+                return new ArrayList<>();
+        }
     }
-
     /**
      * AddDec node to the cell.
      *
      * @param node
      */
+
     public void addNode(Node node) throws Exception {
         if (nodes.size() < maxNodes) {
             nodes.add(node);
@@ -486,36 +492,36 @@ public class Cell {
 
         for (ArrayList<Node> levels : group) {
             for (Node node : levels) {
-                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Double.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Signal.DECIMAL)) {
                     if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesDec.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Integer.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Signal.INTEGER)) {
                     if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesInt.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Boolean.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Signal.BOOLEAN)) {
                     if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesBin.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Double.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Signal.DECIMAL)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesDec.add(edge);
                         }
                     }
                 }
-                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Integer.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Signal.INTEGER)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesInt.add(edge);
                         }
                     }
                 }
-                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Boolean.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Signal.BOOLEAN)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesBin.add(edge);
@@ -541,36 +547,36 @@ public class Cell {
 
         for (ArrayList<Node> levels : group) {
             for (Node node : levels) {
-                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Double.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Signal.DECIMAL)) {
                     if (!containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesInpDec.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Integer.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Signal.INTEGER)) {
                     if (!containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesInpInt.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Boolean.class)) {
+                for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Signal.BOOLEAN)) {
                     if (!containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
                         edgesInpBin.add(collectorInp.getEdges().get(0));
                     }
                 }
-                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Double.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Signal.DECIMAL)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (!containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesOutDec.add(edge);
                         }
                     }
                 }
-                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Integer.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Signal.INTEGER)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (!containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesOutInt.add(edge);
                         }
                     }
                 }
-                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Boolean.class)) {
+                for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Signal.BOOLEAN)) {
                     for (Edge edge : collectorOut.getEdges()) {
                         if (!containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
                             edgesOutBin.add(edge);

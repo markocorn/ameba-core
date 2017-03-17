@@ -18,7 +18,13 @@ public class CollectorTargetDec extends CollectorTarget {
         edges = new ArrayList<>();
     }
 
-    public void addEdge(EdgeDec edge) throws Exception {
+    @Override
+    public void addEdge(Edge edge) throws Exception {
+        if (!(edge instanceof EdgeDec)) throw new Exception("Edge not of proper type");
+        addEdgeDec((EdgeDec) edge);
+    }
+
+    public void addEdgeDec(EdgeDec edge) throws Exception {
         edges.clear();
         edges.add(edge);
         getEdges().clear();

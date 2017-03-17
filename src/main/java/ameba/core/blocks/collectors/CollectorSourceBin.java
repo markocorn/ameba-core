@@ -20,8 +20,13 @@ public class CollectorSourceBin extends CollectorSource {
         edges = new ArrayList<>();
     }
 
+    @Override
+    public void addEdge(Edge edge) throws Exception {
+        if (!(edge instanceof EdgeBin)) throw new Exception("Edge not of proper type");
+        addEdgeBin((EdgeBin) edge);
+    }
 
-    public void addEdge(EdgeBin edge) throws Exception {
+    public void addEdgeBin(EdgeBin edge) throws Exception {
         if (!edges.contains(edge)) {
             edges.add(edge);
             getEdges().add(edge);

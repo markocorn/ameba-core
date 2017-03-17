@@ -2,6 +2,7 @@ package ameba.core.blocks.collectors;
 
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.edges.EdgeBin;
 import ameba.core.blocks.edges.EdgeInt;
 import ameba.core.blocks.nodes.Node;
 
@@ -20,7 +21,13 @@ public class CollectorSourceInt extends CollectorSource {
         edges = new ArrayList<>();
     }
 
-    public void addEdge(EdgeInt edge) throws Exception {
+    @Override
+    public void addEdge(Edge edge) throws Exception {
+        if (!(edge instanceof EdgeBin)) throw new Exception("Edge not of proper type");
+        addEdgeInt((EdgeInt) edge);
+    }
+
+    public void addEdgeInt(EdgeInt edge) throws Exception {
         if (!edges.contains(edge)) {
             edges.add(edge);
             getEdges().add(edge);

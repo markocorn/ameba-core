@@ -1,5 +1,6 @@
 package ameba.core.blocks.edges;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.CollectorSourceBin;
 import ameba.core.blocks.collectors.CollectorTargetBin;
 
@@ -51,5 +52,10 @@ public class EdgeBin extends Edge {
     public boolean getSignal() {
         setSignalTransmitted(true);
         return source.getSignal();
+    }
+
+    @Override
+    public Cell.Signal getType() {
+        return Cell.Signal.BOOLEAN;
     }
 }

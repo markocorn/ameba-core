@@ -12,7 +12,7 @@ import java.io.File;
 public class main {
     public static void main(String[] args) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core (copy)/src/main/resources/settings.json"));
+        JsonNode jsonSettings = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core/src/main/resources/settings.json"));
         FactoryNode factoryNode = new FactoryNode();
         factoryNode.loadSettings(jsonSettings.get("nodeFactorySettings").toString());
         FactoryEdge factoryEdge = new FactoryEdge(mapper.readValue(jsonSettings.get("edgeFactorySettings").toString(), FactoryEdgeSettings.class));

@@ -32,7 +32,7 @@ public class SwitchEdgesTargets implements IMutateCell {
             opts.add("Bin");
         }
         if (opts.size() == 0) {
-            throw new Exception("Not enough edges of same type");
+            throw new Exception("Not enough edges of same type.");
         } else {
             String opt = opts.get(random.nextInt(opts.size()));
             switch (opt) {

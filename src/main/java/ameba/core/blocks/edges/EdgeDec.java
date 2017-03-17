@@ -1,5 +1,6 @@
 package ameba.core.blocks.edges;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.CollectorSourceDec;
 import ameba.core.blocks.collectors.CollectorTargetDec;
 
@@ -51,5 +52,10 @@ public class EdgeDec extends Edge {
     public double getSignal() {
         setSignalTransmitted(true);
         return source.getSignal();
+    }
+
+    @Override
+    public Cell.Signal getType() {
+        return Cell.Signal.DECIMAL;
     }
 }

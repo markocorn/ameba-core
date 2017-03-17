@@ -166,7 +166,7 @@ public class FactoryCell {
     public CollectorSource getCollectorSourceRndNoNode(Cell.Signal type, Cell cell, Node node) throws Exception {
         ArrayList<CollectorSource> collectors = new ArrayList<>();
         for (Node node1 : cell.getNodes()) {
-            for (CollectorSource collector : node1.getCollectorSources()) {
+            for (CollectorSource collector : node1.getCollectorsSource()) {
                 if (collector.getType().equals(type) && !node1.equals(node)) {
                     collectors.add(collector);
                 }

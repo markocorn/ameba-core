@@ -33,10 +33,10 @@ public class RemoveNode1 implements IMutateCell {
                 collectorInp.getEdges().get(0).getSource().removeEdge(collectorInp.getEdges().get(0));
                 cell.removeEdge(collectorInp.getEdges().get(0));
             }
-            for (CollectorSource collectorOut : node.getCollectorSources()) {
+            for (CollectorSource collectorOut : node.getCollectorsSource()) {
                 for (Edge edge : collectorOut.getEdges()) {
                     edge.getTarget().removeEdge(edge);
-                    CollectorSource collectorOut1 = cellFactory.getCollectorSourceRnd(edge.getWeight().gettClass(), outs);
+                    CollectorSource collectorOut1 = cellFactory.getCollectorSourceRnd(edge.getType(), outs);
                     if (collectorOut1 != null) {
                         outs.remove(collectorOut1);
                     } else {

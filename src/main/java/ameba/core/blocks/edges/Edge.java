@@ -1,5 +1,6 @@
 package ameba.core.blocks.edges;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.CollectorSource;
 import ameba.core.blocks.collectors.CollectorTarget;
 
@@ -69,5 +70,9 @@ public class Edge implements Cloneable {
 
     public void rstEdge() {
         signalTransmitted = false;
+    }
+
+    public Cell.Signal getType() {
+        return null;
     }
 }

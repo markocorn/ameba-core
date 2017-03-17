@@ -1,5 +1,6 @@
 package ameba.core.blocks.nodes;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.*;
 import ameba.core.blocks.edges.Edge;
 import com.rits.cloning.Cloner;
@@ -69,18 +70,28 @@ public class Node implements Cloneable {
         signalClcDone = false;
     }
 
-    public int[] getCollectorTargetLimit(Class type) throws Exception {
-        if (type.isAssignableFrom(Double.class)) return collectorTargetLimitsDec;
-        if (type.isAssignableFrom(Integer.class)) return collectorTargetLimitsInt;
-        if (type.isAssignableFrom(Boolean.class)) return collectorTargetLimitsBin;
-        throw new Exception("No input collectors limits of type: " + type.getSimpleName());
+    public int[] getCollectorTargetLimit(Cell.Signal type) {
+        switch (type) {
+            case DECIMAL:
+                return collectorTargetLimitsDec;
+            case INTEGER:
+                return collectorTargetLimitsInt;
+            case BOOLEAN:
+                return collectorTargetLimitsBin;
+        }
+        return null;
     }
 
-    public int[] getColSourceLimit(Class type) throws Exception {
-        if (type.isAssignableFrom(Double.class)) return collectorSourceLimitsDec;
-        if (type.isAssignableFrom(Integer.class)) return collectorSourceLimitsInt;
-        if (type.isAssignableFrom(Boolean.class)) return collectorSourceLimitsBin;
-        throw new Exception("No output collectors limits of type: " + type.getSimpleName());
+    public int[] getColSourceLimit(Cell.Signal type) throws Exception {
+        switch (type) {
+            case DECIMAL:
+                return collectorSourceLimitsDec;
+            case INTEGER:
+                return collectorSourceLimitsInt;
+            case BOOLEAN:
+                return collectorSourceLimitsBin;
+        }
+        return null;
     }
 
     public int[] getCollectorTargetLimitsDec() {
@@ -174,29 +185,30 @@ public class Node implements Cloneable {
             throw new Exception("Collector can't be added. Maximum output collectors limitation of node: " + this.getClass().getSimpleName());
     }
 
-    public ArrayList<CollectorTarget> getCollectorsTargetConnected(Class type) {
+    public ArrayList<CollectorTarget> getCollectorsTargetConnected(Cell.Signal type) {
         ArrayList<CollectorTarget> collectorInps = new ArrayList<>();
-        if (type.isAssignableFrom(Double.class)) {
-            for (CollectorTarget collectorInp : collectorsTargetDec) {
-                if (collectorInp.getEdges().size() > 0) {
-                    collectorInps.add(collectorInp);
+        switch (type) {
+            case DECIMAL:
+                for (CollectorTarget collectorInp : collectorsTargetDec) {
+                    if (collectorInp.getEdges().size() > 0) {
+                        collectorInps.add(collectorInp);
+                    }
                 }
-            }
-        }
-        if (type.isAssignableFrom(Integer.class)) {
-            for (CollectorTarget collectorInp : collectorsTargetInt) {
-                if (collectorInp.getEdges().size() > 0) {
-                    collectorInps.add(collectorInp);
+                break;
+            case INTEGER:
+                for (CollectorTarget collectorInp : collectorsTargetInt) {
+                    if (collectorInp.getEdges().size() > 0) {
+                        collectorInps.add(collectorInp);
+                    }
                 }
-            }
-        }
-        if (type.isAssignableFrom(Boolean.class)) {
-            for (CollectorTarget collectorInp : collectorsTargetBin) {
-                if (collectorInp.getEdges().size() > 0) {
-                    collectorInps.add(collectorInp);
+                break;
+            case BOOLEAN:
+                for (CollectorTarget collectorInp : collectorsTargetBin) {
+                    if (collectorInp.getEdges().size() > 0) {
+                        collectorInps.add(collectorInp);
+                    }
                 }
-            }
-
+                break;
         }
         return collectorInps;
     }
@@ -251,36 +263,39 @@ public class Node implements Cloneable {
         return collectorOuts;
     }
 
-    public ArrayList<CollectorSource> getCollectorsSourceConnected(Class type) {
+    public ArrayList<CollectorSource> getCollectorsSourceConnected(Cell.Signal type) {
         ArrayList<CollectorSource> collectors = new ArrayList<>();
-        if (type.isAssignableFrom(Double.class)) {
-            for (CollectorSource collector : collectorsSourceDec) {
-                if (collector.getEdges().size() > 0) {
-                    collectors.add(collector);
+        switch (type) {
+            case DECIMAL:
+                for (CollectorSource collector : collectorsSourceDec) {
+                    if (collector.getEdges().size() > 0) {
+                        collectors.add(collector);
+                    }
                 }
-            }
-        }
-        if (type.isAssignableFrom(Integer.class)) {
-            for (CollectorSource collector : collectorsSourceInt) {
-                if (collector.getEdges().size() > 0) {
-                    collectors.add(collector);
+                break;
+            case INTEGER:
+                for (CollectorSource collector : collectorsSourceInt) {
+                    if (collector.getEdges().size() > 0) {
+                        collectors.add(collector);
+                    }
                 }
-            }
-        }
-        if (type.isAssignableFrom(Boolean.class)) {
-            for (CollectorSource collector : collectorsSourceBin) {
-                if (collector.getEdges().size() > 0) {
-                    collectors.add(collector);
+                break;
+            case BOOLEAN:
+                for (CollectorSource collector : collectorsSourceBin) {
+                    if (collector.getEdges().size() > 0) {
+                        collectors.add(collector);
+                    }
                 }
-            }
+                break;
         }
         return collectors;
     }
 
-    public ArrayList<CollectorTarget> getCollectorsTargetMin(Class type) {
+
+    public ArrayList<CollectorTarget> getCollectorsTargetMin(Cell.Signal type) {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
-        int num = 0;
-        if (type.isAssignableFrom(Double.class)) {
+        int num;
+        if (type == Cell.Signal.DECIMAL) {
             num = getCollectorTargetLimitsDec()[0];
             for (CollectorTarget collector : collectorsTargetDec) {
                 if (collector.getEdges().size() == 0) {
@@ -292,7 +307,7 @@ public class Node implements Cloneable {
                 }
             }
         }
-        if (type.isAssignableFrom(Integer.class)) {
+        if (type == Cell.Signal.INTEGER) {
             num = getCollectorTargetLimitsInt()[0];
             for (CollectorTarget collector : collectorsTargetInt) {
                 if (collector.getEdges().size() == 0) {
@@ -304,7 +319,7 @@ public class Node implements Cloneable {
                 }
             }
         }
-        if (type.isAssignableFrom(Boolean.class)) {
+        if (type == Cell.Signal.BOOLEAN) {
             num = getCollectorTargetLimitsBin()[0];
             for (CollectorTarget collector : collectorsTargetBin) {
                 if (collector.getEdges().size() == 0) {
@@ -393,12 +408,26 @@ public class Node implements Cloneable {
         this.collectorsTarget = collectorsTarget;
     }
 
-    public ArrayList<CollectorSource> getCollectorSources() {
+    public ArrayList<? extends CollectorTarget> getCollectorsTarget(Cell.Signal type) {
+        if (type == Cell.Signal.BOOLEAN) return collectorsTargetBin;
+        if (type == Cell.Signal.INTEGER) return collectorsTargetInt;
+        if (type == Cell.Signal.DECIMAL) return collectorsTargetDec;
+        return new ArrayList<>();
+    }
+
+    public ArrayList<CollectorSource> getCollectorsSource() {
         return collectorSources;
     }
 
     public void setCollectorSources(ArrayList<CollectorSource> collectorSources) {
         this.collectorSources = collectorSources;
+    }
+
+    public ArrayList<? extends CollectorSource> getCollectorsSource(Cell.Signal type) {
+        if (type == Cell.Signal.BOOLEAN) return collectorsSourceBin;
+        if (type == Cell.Signal.INTEGER) return collectorsSourceInt;
+        if (type == Cell.Signal.DECIMAL) return collectorsSourceDec;
+        return new ArrayList<>();
     }
 
     public ArrayList<CollectorTargetDec> getCollectorsTargetDec() {

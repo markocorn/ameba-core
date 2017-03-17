@@ -27,12 +27,11 @@ public class AddNode1 implements IMutateCell {
     public Cell mutate(Cell cell) throws Exception {
         //Select random edge
         Edge edge = cell.getEdges().get(random.nextInt(cell.getEdges().size()));
-        Class type = edge.getSource().getType();
         //Generate node with same type of output collector as edge type
-        Node nodeNew = nodeFactory.genNodeRndCollectorSourceType(type);
+        Node nodeNew = nodeFactory.genNodeRndCollectorSourceType(edge.getType());
         if (nodeNew == null)
-            throw new Exception("Can't generate node with " + type.getSimpleName() + " type of output collector");
-        CollectorSource collectorOut = nodeNew.getOutCollectors(type).get(random.nextInt(nodeNew.getOutCollectors(type).size()));
+            throw new Exception("Can't generate node with " + edge.getType().toString() + " type of output collector");
+        CollectorSource collectorOut = nodeNew.getCollectorsSource(edge.getType()).get(random.nextInt(nodeNew.getCollectorsSource(edge.getType()).size()));
         //Add edge to new collector
         collectorOut.addEdge(edge);
         //Remove edge from old collector

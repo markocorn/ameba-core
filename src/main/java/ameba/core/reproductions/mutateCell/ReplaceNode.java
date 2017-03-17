@@ -34,19 +34,19 @@ public class ReplaceNode implements IMutateCell {
         Node nodeOld = cellFactory.getNodeRndInner(cell);
         Node nodeNew = nodeFactory.genNodeRnd();
 
-        reconnectInputs(Double.class, cell, nodeOld, nodeNew);
-        reconnectInputs(Integer.class, cell, nodeOld, nodeNew);
-        reconnectInputs(Boolean.class, cell, nodeOld, nodeNew);
+        reconnectInputs(Cell.Signal.DECIMAL, cell, nodeOld, nodeNew);
+        reconnectInputs(Cell.Signal.INTEGER, cell, nodeOld, nodeNew);
+        reconnectInputs(Cell.Signal.BOOLEAN, cell, nodeOld, nodeNew);
 
-        reconnectsOutputs(Double.class, cell, nodeOld, nodeNew);
-        reconnectsOutputs(Integer.class, cell, nodeOld, nodeNew);
-        reconnectsOutputs(Boolean.class, cell, nodeOld, nodeNew);
+        reconnectsOutputs(Cell.Signal.DECIMAL, cell, nodeOld, nodeNew);
+        reconnectsOutputs(Cell.Signal.INTEGER, cell, nodeOld, nodeNew);
+        reconnectsOutputs(Cell.Signal.BOOLEAN, cell, nodeOld, nodeNew);
 
         cell.getNodes().set(cell.getNodes().indexOf(nodeOld), nodeNew);
         return cell;
     }
 
-    private void reconnectInputs(Class type, Cell cell, Node nodeOld, Node nodeNew) throws Exception {
+    private void reconnectInputs(Cell.Signal type, Cell cell, Node nodeOld, Node nodeNew) throws Exception {
         ArrayList<CollectorTarget> oldInpCol = nodeOld.getCollectorsTargetConnected(type);
         Collections.shuffle(oldInpCol);
         int diff = oldInpCol.size() - nodeNew.getCollectorTargetLimit(type)[0];
@@ -68,24 +68,24 @@ public class ReplaceNode implements IMutateCell {
                 edge = edgeFactory.genEdge(type, collectorOut, nodeNew.getCollectorsTarget(type).get(same + i));
             } else {
                 //No proper node generate constant node
-                if (nodeFactory.isConstantAvailable(type)) {
-                    Node node = nodeFactory.genConstant(type);
-                    edge = edgeFactory.genEdge(type, node.getOutCollectors(type).get(0), nodeNew.getCollectorsTarget(type).get(same + i));
+                if (nodeFactory.isConstantNodeAvailable(type)) {
+                    Node node = nodeFactory.genConstantNode(type);
+                    edge = edgeFactory.genEdge(type, node.getCollectorsSource(type).get(0), nodeNew.getCollectorsTarget(type).get(same + i));
                     cell.addNode(node);
                 } else
-                    throw new Exception("Cell can't be properly connected. Must allow the generation of Constant nodes of type: " + type.getSimpleName());
+                    throw new Exception("Cell can't be properly connected. Must allow the generation of Constant nodes of type: " + type.toString());
             }
             cell.addEdge(edge);
         }
     }
 
-    private void reconnectsOutputs(Class type, Cell cell, Node nodeOld, Node nodeNew) throws Exception {
-        ArrayList<CollectorSource> oldOutCol = nodeOld.getOutCollectors(type);
+    private void reconnectsOutputs(Cell.Signal type, Cell cell, Node nodeOld, Node nodeNew) throws Exception {
+        ArrayList<CollectorSource> oldOutCol = (ArrayList<CollectorSource>) nodeOld.getCollectorsSource(type);
         ArrayList<Edge> edges = new ArrayList<>();
         for (CollectorSource collectorOut : oldOutCol) {
             edges.addAll(collectorOut.getEdges());
         }
-        ArrayList<CollectorSource> outs = nodeNew.getOutCollectors(type);
+        ArrayList<CollectorSource> outs = (ArrayList<CollectorSource>) nodeNew.getCollectorsSource(type);
         for (Edge edge : edges) {
             if (outs.size() > 0) {
                 CollectorSource collectorOut = outs.get(random.nextInt(outs.size()));

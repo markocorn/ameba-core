@@ -481,24 +481,30 @@ public class FactoryNode {
         return node;
     }
 
-    public boolean isConstantAvailable(Class type) throws Exception {
-        if (type.isAssignableFrom(Double.class)) return settings.get("ConstantDec").getAvailable();
-        if (type.isAssignableFrom(Integer.class)) return settings.get("ConstantInt").getAvailable();
-        if (type.isAssignableFrom(Boolean.class)) return settings.get("ConstantBin").getAvailable();
-        throw new Exception("Unknown type of Constant node: " + type.getSimpleName());
+    public boolean isConstantNodeAvailable(Cell.Signal type) {
+        switch (type) {
+            case DECIMAL:
+                return settings.get("ConstantDec").getAvailable();
+            case INTEGER:
+                return settings.get("ConstantInt").getAvailable();
+            case BOOLEAN:
+                return settings.get("ConstantBin").getAvailable();
+            default:
+                return false;
+        }
     }
 
-    public Node genConstant(Class type) throws Exception {
-        if (type.isAssignableFrom(Double.class)) {
-            return genNodeRndPar("ConstantDec");
+    public Node genConstantNode(Cell.Signal type) throws Exception {
+        switch (type) {
+            case DECIMAL:
+                return genNodeRndPar("ConstantDec");
+            case INTEGER:
+                return genNodeRndPar("ConstantInt");
+            case BOOLEAN:
+                return genNodeRndPar("ConstantBin");
+            default:
+                return null;
         }
-        if (type.isAssignableFrom(Integer.class)) {
-            return genNodeRndPar("ConstantInt");
-        }
-        if (type.isAssignableFrom(Boolean.class)) {
-            return genNodeRndPar("ConstantBin");
-        }
-        throw new Exception("Unknown type of Constant node: " + type.getSimpleName());
     }
 
     /**
@@ -510,14 +516,14 @@ public class FactoryNode {
         return genNodeRndPar(bag.get(rndGen.nextInt(bag.size())));
     }
 
-    public Node genNodeRndCollectorTargetType(Class type) throws Exception {
-        if (type.isAssignableFrom(Double.class)) {
+    public Node genNodeRndCollectorTargetType(Cell.Signal type) throws Exception {
+        if (type.equals(Cell.Signal.DECIMAL)) {
             return genNodeRndPar(bagInpColDec.get(rndGen.nextInt(bagInpColDec.size())));
         }
-        if (type.isAssignableFrom(Integer.class)) {
+        if (type.equals(Cell.Signal.INTEGER)) {
             return genNodeRndPar(bagInpColInt.get(rndGen.nextInt(bagInpColInt.size())));
         }
-        if (type.isAssignableFrom(Boolean.class)) {
+        if (type.equals(Cell.Signal.BOOLEAN)) {
             return genNodeRndPar(bagInpColBin.get(rndGen.nextInt(bagInpColBin.size())));
         }
         throw new Exception();
@@ -536,34 +542,34 @@ public class FactoryNode {
         throw new Exception();
     }
 
-    public Node genNodeRndCollectorType(Class typeInp, Class typeOut) throws Exception {
-        if (typeInp.isAssignableFrom(Boolean.class) && typeOut.isAssignableFrom(Boolean.class)) {
+    public Node genNodeRndCollectorsType(Cell.Signal typeInp, Cell.Signal typeOut) throws Exception {
+        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.BOOLEAN)) {
             return genNodeRndPar(bagColBinBin.get(rndGen.nextInt(bagColBinBin.size())));
         }
-        if (typeInp.isAssignableFrom(Boolean.class) && typeOut.isAssignableFrom(Integer.class)) {
+        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.INTEGER)) {
             return genNodeRndPar(bagColBinInt.get(rndGen.nextInt(bagColBinInt.size())));
         }
-        if (typeInp.isAssignableFrom(Boolean.class) && typeOut.isAssignableFrom(Double.class)) {
+        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.DECIMAL)) {
             return genNodeRndPar(bagColBinDec.get(rndGen.nextInt(bagColBinDec.size())));
         }
 
-        if (typeInp.isAssignableFrom(Integer.class) && typeOut.isAssignableFrom(Boolean.class)) {
+        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.BOOLEAN)) {
             return genNodeRndPar(bagColIntBin.get(rndGen.nextInt(bagColIntBin.size())));
         }
-        if (typeInp.isAssignableFrom(Integer.class) && typeOut.isAssignableFrom(Integer.class)) {
+        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.INTEGER)) {
             return genNodeRndPar(bagColIntInt.get(rndGen.nextInt(bagColIntInt.size())));
         }
-        if (typeInp.isAssignableFrom(Integer.class) && typeOut.isAssignableFrom(Double.class)) {
+        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.DECIMAL)) {
             return genNodeRndPar(bagColIntDec.get(rndGen.nextInt(bagColIntDec.size())));
         }
 
-        if (typeInp.isAssignableFrom(Double.class) && typeOut.isAssignableFrom(Boolean.class)) {
+        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.BOOLEAN)) {
             return genNodeRndPar(bagColDecBin.get(rndGen.nextInt(bagColDecBin.size())));
         }
-        if (typeInp.isAssignableFrom(Double.class) && typeOut.isAssignableFrom(Integer.class)) {
+        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.INTEGER)) {
             return genNodeRndPar(bagColDecInt.get(rndGen.nextInt(bagColDecInt.size())));
         }
-        if (typeInp.isAssignableFrom(Double.class) && typeOut.isAssignableFrom(Double.class)) {
+        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.DECIMAL)) {
             return genNodeRndPar(bagColDecDec.get(rndGen.nextInt(bagColDecDec.size())));
         }
         throw new Exception("Type does not exists.");

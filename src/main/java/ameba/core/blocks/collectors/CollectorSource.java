@@ -16,4 +16,5 @@ public class CollectorSource extends Collector {
         return getNodeAttached().isSignalReady();
     }
 
+
 }

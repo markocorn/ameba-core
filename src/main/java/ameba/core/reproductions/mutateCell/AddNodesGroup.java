@@ -52,20 +52,19 @@ public class AddNodesGroup implements IMutateCell {
             }
         }
         //Reconnect border edges
-        reconnectEdges(Double.class, cell, borderEdges);
-        reconnectEdges(Integer.class, cell, borderEdges);
-        reconnectEdges(Boolean.class, cell, borderEdges);
+        reconnectEdges(Cell.Signal.DECIMAL, cell, borderEdges);
+        reconnectEdges(Cell.Signal.INTEGER, cell, borderEdges);
+        reconnectEdges(Cell.Signal.BOOLEAN, cell, borderEdges);
 
         return cell;
     }
 
-    private void reconnectEdges(Class type, Cell cell, HashMap<String, ArrayList<Edge>> borderEdges) throws Exception {
+    private void reconnectEdges(Cell.Signal type, Cell cell, HashMap<String, ArrayList<Edge>> borderEdges) throws Exception {
         String ind = "";
-        if (type.isAssignableFrom(Double.class)) ind = "Dec";
-        if (type.isAssignableFrom(Integer.class)) ind = "Int";
-        if (type.isAssignableFrom(Boolean.class)) ind = "Bin";
-        if (ind.equals("")) throw new Exception("Cant reconnect edges of unknown type: " + type.getSimpleName());
-        ArrayList<Edge> oldEdges = cell.getEdges(type);
+        if (type.equals(Cell.Signal.DECIMAL)) ind = "Dec";
+        if (type.equals(Cell.Signal.INTEGER)) ind = "Int";
+        if (type.equals(Cell.Signal.BOOLEAN)) ind = "Bin";
+        ArrayList<Edge> oldEdges = (ArrayList<Edge>) cell.getEdges(type);
         int diff = borderEdges.get("edgesInp" + ind).size() - oldEdges.size();
         int same = Math.min(borderEdges.get("edgesInp" + ind).size(), oldEdges.size());
         Collections.shuffle(oldEdges);

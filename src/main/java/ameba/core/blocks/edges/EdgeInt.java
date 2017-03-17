@@ -1,5 +1,6 @@
 package ameba.core.blocks.edges;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.CollectorSourceInt;
 import ameba.core.blocks.collectors.CollectorTargetInt;
 
@@ -51,5 +52,10 @@ public class EdgeInt extends Edge {
     public int getSignal() {
         setSignalTransmitted(true);
         return source.getSignal();
+    }
+
+    @Override
+    public Cell.Signal getType() {
+        return Cell.Signal.INTEGER;
     }
 }

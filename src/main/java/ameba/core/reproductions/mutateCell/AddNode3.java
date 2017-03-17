@@ -31,15 +31,14 @@ public class AddNode3 implements IMutateCell {
     public Cell mutate(Cell cell) throws Exception {
         //Select random edge
         Edge edge = cell.getEdges().get(random.nextInt(cell.getEdges().size()));
-        Class type = edge.getSource().getType();
         //Generate node with same type of input and output collector as edge type
-        Node nodeNew = nodeFactory.genNodeRndCollectorType(type, type);
+        Node nodeNew = nodeFactory.genNodeRndCollectorsType(edge.getType(), edge.getType());
         if (nodeNew == null)
-            throw new Exception("Can't generate node with " + type.getSimpleName() + " type of input and output collector");
-        CollectorTarget collectorInp = nodeNew.getCollectorsTargetMin(type).get(random.nextInt(nodeNew.getCollectorsTargetMin(type).size()));
-        CollectorSource collectorOut = nodeNew.getOutCollectors(type).get(random.nextInt(nodeNew.getOutCollectors(type).size()));
+            throw new Exception("Can't generate node with " + edge.getType().toString() + " type of input and output collector");
+        CollectorTarget collectorInp = nodeNew.getCollectorsTargetMin(edge.getType()).get(random.nextInt(nodeNew.getCollectorsTargetMin(edge.getType()).size()));
+        CollectorSource collectorOut = nodeNew.getCollectorsSource(edge.getType()).get(random.nextInt(nodeNew.getCollectorsSource(edge.getType()).size()));
         //Create new edge to connect output od new node to the source of old connected node
-        Edge edge1 = edgeFactory.genEdge(type, collectorOut, edge.getTarget());
+        Edge edge1 = edgeFactory.genEdge(edge.getType(), collectorOut, edge.getTarget());
         //Add edge to new collector
         collectorOut.addEdge(edge1);
         //Add edge to new collector
