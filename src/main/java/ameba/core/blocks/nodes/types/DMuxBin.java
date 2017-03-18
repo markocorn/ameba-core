@@ -19,8 +19,8 @@ public class DMuxBin extends Node {
             addCollectorSourceBin(new CollectorSourceBin(this));
         }
 
-        setParamsBin(new Boolean[]{par});
-        setParamsLimitsBin(new Boolean[][]{parLimits});
+        getParamsBin().add(par);
+        getParamsLimitsBin().add(parLimits);
     }
 
     //Calculate output value
@@ -33,7 +33,7 @@ public class DMuxBin extends Node {
             if (i == ind) {
                 getCollectorsSourceBin().get(i).setSignal(value);
             } else {
-                getCollectorsSourceBin().get(i).setSignal(getParamsBin()[0]);
+                getCollectorsSourceBin().get(i).setSignal(getParamsBin().get(0));
             }
         }
     }

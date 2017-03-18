@@ -18,8 +18,8 @@ public class DMuxInt extends Node {
             addCollectorSourceInt(new CollectorSourceInt(this));
         }
 
-        setParamsInt(new Integer[]{par});
-        setParamsLimitsInt(new Integer[][]{parLimits});
+        getParamsInt().add(par);
+        getParamsLimitsInt().add(parLimits);
     }
 
     //Calculate output value
@@ -32,7 +32,7 @@ public class DMuxInt extends Node {
             if (i == ind) {
                 getCollectorsSourceInt().get(i).setSignal(value);
             } else {
-                getCollectorsSourceInt().get(i).setSignal(getParamsInt()[0]);
+                getCollectorsSourceInt().get(i).setSignal(getParamsInt().get(0));
             }
         }
     }

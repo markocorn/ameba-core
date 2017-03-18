@@ -26,8 +26,8 @@ public class DelayBin extends NodeMem {
     public DelayBin(boolean initial, Integer par, Integer[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
         this.initValue = initial;
-        setParamsInt(new Integer[]{par});
-        setParamsLimitsInt(new Integer[][]{parLimits});
+        getParamsInt().add(par);
+        getParamsLimitsInt().add(parLimits);
 
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceBin(new CollectorSourceBin(this));

@@ -15,16 +15,16 @@ public class Interval2ConstDec extends Node {
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsDec(new Double[]{par1});
-        setParamsLimitsDec(new Double[][]{par1Limits});
-        setParamsDec(new Double[]{par2});
-        setParamsLimitsDec(new Double[][]{par2Limits});
+        getParamsDec().add(par1);
+        getParamsLimitsDec().add(par1Limits);
+        getParamsDec().add(par2);
+        getParamsLimitsDec().add(par2Limits);
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        if (getParamsDec()[0] <= getCollectorsTargetDec().get(0).getSignal() && getCollectorsTargetDec().get(0).getSignal() <= getParamsDec()[1]) {
+        if (getParamsDec().get(0) <= getCollectorsTargetDec().get(0).getSignal() && getCollectorsTargetDec().get(0).getSignal() <= getParamsDec().get(1)) {
             getCollectorsSourceBin().get(0).setSignal(true);
         } else getCollectorsSourceBin().get(0).setSignal(false);
     }

@@ -21,9 +21,9 @@ public class ParAddValueDec extends Reproduction implements IMutateNode {
 
     @Override
     public Node mutate(Node node) throws Exception {
-        if (node.getParamsDec().length > 0) {
-            int ind = random.nextInt(node.getParamsDec().length);
-            node.getParamsDec()[ind] = operationType.mutate(node.getParamsDec()[ind]);
+        if (node.getParamsDec().size() > 0) {
+            int ind = random.nextInt(node.getParamsDec().size());
+            node.getParamsDec().set(ind, operationType.mutate(node.getParamsDec().get(ind)));
             return node;
         }
         return null;

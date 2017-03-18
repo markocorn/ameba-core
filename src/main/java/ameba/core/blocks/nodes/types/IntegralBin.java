@@ -28,8 +28,8 @@ public class IntegralBin extends NodeMem {
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsBin(new Boolean[]{par});
-        setParamsLimitsBin(new Boolean[][]{parLimits});
+        getParamsBin().add(par);
+        getParamsLimitsBin().add(parLimits);
 
         clearNode();
     }
@@ -38,10 +38,10 @@ public class IntegralBin extends NodeMem {
     @Override
     public void clcNode() throws Exception {
         if (getCollectorsTargetBin().get(0).getSignal()) {
-            getCollectorsSourceBin().get(0).setSignal(!getParamsBin()[0]);
+            getCollectorsSourceBin().get(0).setSignal(!getParamsBin().get(0));
             signalOld = true;
         }
-        if (getParamsBin()[0]) {
+        if (getParamsBin().get(0)) {
             getCollectorsSourceBin().get(0).setSignal(!signalOld);
         } else {
             getCollectorsSourceBin().get(0).setSignal(signalOld);

@@ -17,19 +17,19 @@ public class SwitchConstInt extends Node {
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceInt(new CollectorSourceInt(this));
 
-        setParamsInt(new Integer[]{par});
-        setParamsLimitsInt(new Integer[][]{parLimits});
+        getParamsInt().add(par);
+        getParamsLimitsInt().add(parLimits);
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
         if (!getCollectorsTargetBin().get(0).getSignal()) {
-            getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(1).getSignal());
+            getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(0).getSignal());
         } else {
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-            getCollectorsTargetInt().get(1).getSignal();
-            getCollectorsSourceInt().get(0).setSignal(getParamsInt()[0]);
+            getCollectorsTargetInt().get(0).getSignal();
+            getCollectorsSourceInt().get(0).setSignal(getParamsInt().get(0));
         }
     }
 }

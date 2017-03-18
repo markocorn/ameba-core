@@ -88,26 +88,26 @@ public class FactoryCell {
                 break;
             }
 
-            CollectorSource collectorOut = getCollectorSourceRndNoNode(collectorTarget.getType(), cell, collectorTarget.getNodeAttached());
+            CollectorSource collectorSource = getCollectorSourceRndNoNode(collectorTarget.getType(), cell, collectorTarget.getNodeAttached());
 
-            if (collectorOut != null) {
-                cell.addEdge(edgeFactory.genEdge(collectorTarget.getType(), collectorOut, collectorTarget));
+            if (collectorSource != null) {
+                cell.addEdge(edgeFactory.genEdge(collectorTarget.getType(), collectorSource, collectorTarget));
             } else {
                 switch (collectorTarget.getType()) {
                     case DECIMAL:
-                        if (nodeFactory.settings.get("ConstantDec").getAvailable()) {
+                        if (nodeFactory.nodeSettingsHashMap.get("ConstantDec").getAvailable()) {
                             cell.addNode(nodeFactory.genNodeRndPar("ConstantDec"));
                         } else
                             throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantDec nodes.");
                         break;
                     case INTEGER:
-                        if (nodeFactory.settings.get("ConstantInt").getAvailable()) {
+                        if (nodeFactory.nodeSettingsHashMap.get("ConstantInt").getAvailable()) {
                             cell.addNode(nodeFactory.genNodeRndPar("ConstantInt"));
                         } else
                             throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantInt nodes.");
                         break;
                     case BOOLEAN:
-                        if (nodeFactory.settings.get("ConstantBin").getAvailable()) {
+                        if (nodeFactory.nodeSettingsHashMap.get("ConstantBin").getAvailable()) {
                             cell.addNode(nodeFactory.genNodeRndPar("ConstantBin"));
                         } else
                             throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantBin nodes.");
@@ -153,7 +153,7 @@ public class FactoryCell {
     /**
      * Generate random number for the initial size of nodes in cell.
      *
-     * @return Randomly generated number with constrains from cell settings.
+     * @return Randomly generated number with constrains from cell nodeSettingsHashMap.
      */
     public int genNmbNodesInitial() {
         if (Objects.equals(cellFactorySettings.getNodeInitial()[1], cellFactorySettings.getNodeInitial()[0])) {

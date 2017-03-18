@@ -23,13 +23,13 @@ public class SwitchDec extends Node {
     @Override
     public void clcNode() throws Exception {
         if (!getCollectorsTargetBin().get(0).getSignal()) {
-            getCollectorsSourceDec().get(0).setSignal(getCollectorsTargetDec().get(1).getSignal());
-            //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-            getCollectorsTargetDec().get(2).getSignal();
-        } else {
-            getCollectorsSourceDec().get(0).setSignal(getCollectorsTargetDec().get(2).getSignal());
+            getCollectorsSourceDec().get(0).setSignal(getCollectorsTargetDec().get(0).getSignal());
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.
             getCollectorsTargetDec().get(1).getSignal();
+        } else {
+            getCollectorsSourceDec().get(0).setSignal(getCollectorsTargetDec().get(1).getSignal());
+            //Be carefully allays initiate get method for inputs to set send flag of input nodes.
+            getCollectorsTargetDec().get(0).getSignal();
         }
     }
 }

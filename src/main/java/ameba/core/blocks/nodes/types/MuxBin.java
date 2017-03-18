@@ -20,8 +20,8 @@ public class MuxBin extends Node {
         }
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsBin(new Boolean[]{par});
-        setParamsLimitsBin(new Boolean[][]{parLimits});
+        getParamsBin().add(par);
+        getParamsLimitsBin().add(parLimits);
     }
 
     //Calculate output value
@@ -35,7 +35,7 @@ public class MuxBin extends Node {
         if (ind < inp.length && ind >= 0) {
             getCollectorsSourceBin().get(0).setSignal(inp[ind]);
         } else {
-            getCollectorsSourceBin().get(0).setSignal(getParamsBin()[0]);
+            getCollectorsSourceBin().get(0).setSignal(getParamsBin().get(0));
         }
     }
 }

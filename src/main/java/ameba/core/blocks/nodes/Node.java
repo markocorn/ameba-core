@@ -34,12 +34,12 @@ public class Node implements Cloneable {
     private boolean signalReady;
     private boolean signalClcDone;
 
-    private Double[] paramsDec;
-    private Double[][] paramsLimitsDec;
-    private Integer[] paramsInt;
-    private Integer[][] paramsLimitsInt;
-    private Boolean[] paramsBin;
-    private Boolean[][] paramsLimitsBin;
+    private ArrayList<Double> paramsDec;
+    private ArrayList<Double[]> paramsLimitsDec;
+    private ArrayList<Integer> paramsInt;
+    private ArrayList<Integer[]> paramsLimitsInt;
+    private ArrayList<Boolean> paramsBin;
+    private ArrayList<Boolean[]> paramsLimitsBin;
 
 
     public Node(int[] inpColLimitDec, int[] inpColLimitInt, int[] inpColLimitBin, int[] outColLimitDec, int[] outColLimitInt, int[] outColLimitBin) {
@@ -59,12 +59,12 @@ public class Node implements Cloneable {
         collectorsSourceInt = new ArrayList<>();
         collectorsSourceBin = new ArrayList<>();
 
-        paramsDec = null;
-        paramsLimitsDec = null;
-        paramsInt = null;
-        paramsLimitsInt = null;
-        paramsBin = null;
-        paramsLimitsBin = null;
+        paramsDec = new ArrayList<>();
+        paramsLimitsDec = new ArrayList<>();
+        paramsInt = new ArrayList<>();
+        paramsLimitsInt = new ArrayList<>();
+        paramsBin = new ArrayList<>();
+        paramsLimitsBin = new ArrayList<>();
 
         signalReady = false;
         signalClcDone = false;
@@ -73,23 +73,23 @@ public class Node implements Cloneable {
     public int[] getCollectorTargetLimit(Cell.Signal type) {
         switch (type) {
             case DECIMAL:
-                return collectorTargetLimitsDec;
+                return getCollectorTargetLimitsDec();
             case INTEGER:
-                return collectorTargetLimitsInt;
+                return getCollectorTargetLimitsInt();
             case BOOLEAN:
-                return collectorTargetLimitsBin;
+                return getCollectorTargetLimitsBin();
         }
         return null;
     }
 
-    public int[] getColSourceLimit(Cell.Signal type) throws Exception {
+    public int[] getCollectorSourceLimit(Cell.Signal type) {
         switch (type) {
             case DECIMAL:
-                return collectorSourceLimitsDec;
+                return getCollectorSourceLimitsDec();
             case INTEGER:
-                return collectorSourceLimitsInt;
+                return getCollectorSourceLimitsInt();
             case BOOLEAN:
-                return collectorSourceLimitsBin;
+                return getCollectorSourceLimitsBin();
         }
         return null;
     }
@@ -502,51 +502,51 @@ public class Node implements Cloneable {
         return false;
     }
 
-    public Double[] getParamsDec() {
+    public ArrayList<Double> getParamsDec() {
         return paramsDec;
     }
 
-    public void setParamsDec(Double[] paramsDec) {
+    public void setParamsDec(ArrayList<Double> paramsDec) {
         this.paramsDec = paramsDec;
     }
 
-    public Double[][] getParamsLimitsDec() {
+    public ArrayList<Double[]> getParamsLimitsDec() {
         return paramsLimitsDec;
     }
 
-    public void setParamsLimitsDec(Double[][] paramsLimitsDec) {
+    public void setParamsLimitsDec(ArrayList<Double[]> paramsLimitsDec) {
         this.paramsLimitsDec = paramsLimitsDec;
     }
 
-    public Integer[] getParamsInt() {
+    public ArrayList<Integer> getParamsInt() {
         return paramsInt;
     }
 
-    public void setParamsInt(Integer[] paramsInt) {
+    public void setParamsInt(ArrayList<Integer> paramsInt) {
         this.paramsInt = paramsInt;
     }
 
-    public Integer[][] getParamsLimitsInt() {
+    public ArrayList<Integer[]> getParamsLimitsInt() {
         return paramsLimitsInt;
     }
 
-    public void setParamsLimitsInt(Integer[][] paramsLimitsInt) {
+    public void setParamsLimitsInt(ArrayList<Integer[]> paramsLimitsInt) {
         this.paramsLimitsInt = paramsLimitsInt;
     }
 
-    public Boolean[] getParamsBin() {
+    public ArrayList<Boolean> getParamsBin() {
         return paramsBin;
     }
 
-    public void setParamsBin(Boolean[] paramsBin) {
+    public void setParamsBin(ArrayList<Boolean> paramsBin) {
         this.paramsBin = paramsBin;
     }
 
-    public Boolean[][] getParamsLimitsBin() {
+    public ArrayList<Boolean[]> getParamsLimitsBin() {
         return paramsLimitsBin;
     }
 
-    public void setParamsLimitsBin(Boolean[][] paramsLimitsBin) {
+    public void setParamsLimitsBin(ArrayList<Boolean[]> paramsLimitsBin) {
         this.paramsLimitsBin = paramsLimitsBin;
     }
 
@@ -589,7 +589,6 @@ public class Node implements Cloneable {
     public void setSignalClcDone(boolean signalClcDone) {
         this.signalClcDone = signalClcDone;
     }
-
 
     public Node clone() {
         Cloner cloner = new Cloner();

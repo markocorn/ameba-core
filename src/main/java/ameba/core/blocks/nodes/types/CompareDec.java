@@ -11,15 +11,15 @@ public class CompareDec extends Node {
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
-        setParamsInt(new Integer[]{par});
-        setParamsLimitsInt(new Integer[][]{{0, 2}});
+        getParamsInt().add(par);
+        getParamsLimitsInt().add(new Integer[]{0, 2});
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
         getCollectorsSourceBin().get(0).setSignal(false);
-        switch (getParamsInt()[0]) {
+        switch (getParamsInt().get(0)) {
             //Greater than par
             case 0: {
                 if (getCollectorsTargetDec().get(0).getSignal() > getCollectorsTargetDec().get(1).getSignal()) {

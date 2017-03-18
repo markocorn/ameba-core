@@ -18,8 +18,8 @@ public class MuxInt extends Node {
         }
         addCollectorSourceInt(new CollectorSourceInt(this));
 
-        setParamsInt(new Integer[]{par});
-        setParamsLimitsInt(new Integer[][]{parLimits});
+        getParamsInt().add(par);
+        getParamsLimitsInt().add(parLimits);
     }
 
     //Calculate output value
@@ -33,7 +33,7 @@ public class MuxInt extends Node {
         if (ind < inp.length && ind >= 0) {
             getCollectorsSourceInt().get(0).setSignal(inp[ind]);
         } else {
-            getCollectorsSourceInt().get(0).setSignal(getParamsInt()[0]);
+            getCollectorsSourceInt().get(0).setSignal(getParamsInt().get(0));
         }
     }
 }

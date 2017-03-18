@@ -232,24 +232,45 @@ public class Cell {
      */
     public void addEdge(Edge edge) throws Exception {
         if (edge instanceof EdgeDec) {
-            if (!edgesDec.contains(edge)) {
-                ((EdgeDec) edge).getSource().addEdge((EdgeDec) edge);
-                return;
-            } else throw new Exception("Edge to be added already contained");
+            addEdgeDec((EdgeDec) edge);
+            return;
         }
         if (edge instanceof EdgeInt) {
-            if (!edgesInt.contains(edge)) {
-                ((EdgeInt) edge).getSource().addEdge((EdgeInt) edge);
-                return;
-            } else throw new Exception("Edge to be added already contained");
+            addEdgeInt((EdgeInt) edge);
+            return;
         }
         if (edge instanceof EdgeBin) {
-            if (!edgesBin.contains(edge)) {
-                ((EdgeBin) edge).getSource().addEdge((EdgeBin) edge);
-                return;
-            } else throw new Exception("Edge to be added already contained");
+            addEdgeBin((EdgeBin) edge);
+            return;
         }
         throw new Exception("Edge object not valid");
+    }
+
+    public void addEdgeDec(EdgeDec edge) throws Exception {
+        if (!edgesDec.contains(edge)) {
+            edge.getSource().addEdgeDec(edge);
+            edge.getTarget().addEdgeDec(edge);
+            edges.add(edge);
+            edgesDec.add(edge);
+        }else throw new Exception("EdgeDec to be added already contained");
+    }
+
+    public void addEdgeInt(EdgeInt edge) throws Exception {
+        if (!edgesInt.contains(edge)) {
+            edge.getSource().addEdgeInt(edge);
+            edge.getTarget().addEdgeInt(edge);
+            edges.add(edge);
+            edgesInt.add(edge);
+        }else throw new Exception("EdgeInt to be added already contained");
+    }
+
+    public void addEdgeBin(EdgeBin edge) throws Exception {
+        if (!edgesBin.contains(edge)) {
+            edge.getSource().addEdgeBin(edge);
+            edge.getTarget().addEdgeBin(edge);
+            edges.add(edge);
+            edgesBin.add(edge);
+        }else throw new Exception("EdgeBin to be added already contained");
     }
 
     /**
@@ -335,6 +356,7 @@ public class Cell {
     public void runEvent(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) throws Exception {
         importSignals(signalsDec, signalsInt, signalsBin);
         runEvent();
+        exportSignals();
     }
 
     public void runEvent() throws Exception {
@@ -378,20 +400,26 @@ public class Cell {
      * Execute calculation process of data transition trough nodes and connectivity of the cell.
      */
     private void clcCell() throws Exception {
-        while (!isCellClcDone()) {
+        int n=isCellClcDone();
+        int m=0;
+        while (!(n==0 || m==n)) {
+            m=n;
             for (Node node : nodes) {
                 node.processNode();
             }
+            n=isCellClcDone();
         }
     }
 
-    private boolean isCellClcDone() {
+    private int isCellClcDone() {
+        //n number of edges that has not transited but they have conditions
+        int n=0;
         for (Edge edge : getEdges()) {
             if (!edge.isSignalTransmitted() && edge.getSource().isSignalReady()) {
-                return false;
+                n++;
             }
         }
-        return true;
+        return n;
     }
 
     public double[] getExportedValuesDec() {

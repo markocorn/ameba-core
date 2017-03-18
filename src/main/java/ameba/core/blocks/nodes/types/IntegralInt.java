@@ -28,8 +28,8 @@ public class IntegralInt extends NodeMem {
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceInt(new CollectorSourceInt(this));
 
-        setParamsInt(new Integer[]{par});
-        setParamsLimitsInt(new Integer[][]{parLimits});
+        getParamsInt().add(par);
+        getParamsLimitsInt().add(parLimits);
 
         clearNode();
     }
@@ -37,7 +37,7 @@ public class IntegralInt extends NodeMem {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(0).getSignal() * getParamsInt()[0] + signalOld);
+        getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(0).getSignal() * getParamsInt().get(0) + signalOld);
         signalOld = getCollectorsSourceInt().get(0).getSignal();
     }
 

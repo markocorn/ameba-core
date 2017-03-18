@@ -17,8 +17,8 @@ public class SwitchConstDec extends Node {
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceDec(new CollectorSourceDec(this));
 
-        setParamsDec(new Double[]{par});
-        setParamsLimitsDec(new Double[][]{parLimits});
+        getParamsDec().add(par);
+        getParamsLimitsDec().add(parLimits);
     }
 
     //Calculate output value
@@ -29,7 +29,7 @@ public class SwitchConstDec extends Node {
         } else {
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.
             getCollectorsTargetDec().get(1).getSignal();
-            getCollectorsSourceDec().get(0).setSignal(getParamsDec()[0]);
+            getCollectorsSourceDec().get(0).setSignal(getParamsDec().get(0));
         }
     }
 }

@@ -11,15 +11,15 @@ public class CompareInt extends Node {
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
-        setParamsInt(new Integer[]{par});
-        setParamsLimitsInt(new Integer[][]{{0, 2}});
+        getParamsInt().add(par);
+        getParamsLimitsInt().add(new Integer[]{0, 2});
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
         getCollectorsSourceBin().get(0).setSignal(false);
-        switch (getParamsInt()[0]) {
+        switch (getParamsInt().get(0)) {
             //Greater than par
             case 0: {
                 if (getCollectorsTargetInt().get(0).getSignal() > getCollectorsTargetInt().get(1).getSignal()) {

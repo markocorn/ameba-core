@@ -11,35 +11,35 @@ public class CompareConstInt extends Node {
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
         //compare against parameter
-        setParamsInt(new Integer[]{par1});
-        setParamsLimitsInt(new Integer[][]{par1Limits});
+        getParamsInt().add(par1);
+        getParamsLimitsInt().add(par1Limits);
         //operation select parameter
-        setParamsInt(new Integer[]{par2});
-        setParamsLimitsInt(new Integer[][]{{0, 2}});
+        getParamsInt().add(par2);
+        getParamsLimitsInt().add(new Integer[]{0, 2});
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
         getCollectorsSourceBin().get(0).setSignal(false);
-        switch (getParamsInt()[0]) {
+        switch (getParamsInt().get(0)) {
             //Greater than par
             case 0: {
-                if (getCollectorsTargetInt().get(0).getSignal() > getParamsInt()[0]) {
+                if (getCollectorsTargetInt().get(0).getSignal() > getParamsInt().get(0)) {
                     getCollectorsSourceBin().get(0).setSignal(true);
                 }
             }
             break;
             //Less than par
             case 1: {
-                if (getCollectorsTargetInt().get(0).getSignal() < getParamsInt()[0]) {
+                if (getCollectorsTargetInt().get(0).getSignal() < getParamsInt().get(0)) {
                     getCollectorsSourceBin().get(0).setSignal(true);
                 }
             }
             break;
             //Equal to par
             case 2: {
-                if (getCollectorsTargetInt().get(0).getSignal() == getParamsInt()[0]) {
+                if (getCollectorsTargetInt().get(0).getSignal() == getParamsInt().get(0)) {
                     getCollectorsSourceBin().get(0).setSignal(true);
                 }
             }

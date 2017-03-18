@@ -19,8 +19,8 @@ public class MuxDec extends Node {
         }
         addCollectorSourceDec(new CollectorSourceDec(this));
 
-        setParamsDec(new Double[]{par});
-        setParamsLimitsDec(new Double[][]{parLimits});
+        getParamsDec().add(par);
+        getParamsLimitsDec().add(parLimits);
     }
 
     //Calculate output value
@@ -34,7 +34,7 @@ public class MuxDec extends Node {
         if (ind < inp.length && ind >= 0) {
             getCollectorsSourceDec().get(0).setSignal(inp[ind]);
         } else {
-            getCollectorsSourceDec().get(0).setSignal(getParamsDec()[0]);
+            getCollectorsSourceDec().get(0).setSignal(getParamsDec().get(0));
         }
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.util.Arrays;
 
 
 /**
@@ -49,7 +50,7 @@ public class main {
                     ex.printStackTrace();
                 }
                 for (int k = 0; k < outBin.length; k++) {
-                    System.out.print(outDec[k] + " : " + outInt[k] + " : " + outBin[k]);
+                    System.out.println(Arrays.toString(outDec[k]) + " : " + Arrays.toString(outInt[k]) + " : " + Arrays.toString(outBin[k]));
                 }
 
             }

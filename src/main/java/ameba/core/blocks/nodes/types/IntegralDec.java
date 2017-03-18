@@ -28,8 +28,8 @@ public class IntegralDec extends NodeMem {
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceDec(new CollectorSourceDec(this));
 
-        setParamsDec(new Double[]{par});
-        setParamsLimitsDec(new Double[][]{parLimits});
+        getParamsDec().add(par);
+        getParamsLimitsDec().add(parLimits);
 
         clearNode();
     }
@@ -37,7 +37,7 @@ public class IntegralDec extends NodeMem {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        getCollectorsSourceDec().get(0).setSignal(getCollectorsTargetDec().get(0).getSignal() * getParamsDec()[0] + signalOld);
+        getCollectorsSourceDec().get(0).setSignal(getCollectorsTargetDec().get(0).getSignal() * getParamsDec().get(0) + signalOld);
         signalOld = getCollectorsSourceDec().get(0).getSignal();
     }
 

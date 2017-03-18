@@ -28,8 +28,8 @@ public class DerivativeDec extends NodeMem {
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceDec(new CollectorSourceDec(this));
 
-        setParamsDec(new Double[]{par});
-        setParamsLimitsDec(new Double[][]{parLimits});
+        getParamsDec().add(par);
+        getParamsLimitsDec().add(parLimits);
 
         clearNode();
     }
@@ -37,7 +37,7 @@ public class DerivativeDec extends NodeMem {
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        getCollectorsSourceDec().get(0).setSignal((getCollectorsTargetDec().get(0).getSignal() - signalOld) / getParamsDec()[0]);
+        getCollectorsSourceDec().get(0).setSignal((getCollectorsTargetDec().get(0).getSignal() - signalOld) / getParamsDec().get(0));
         signalOld = getCollectorsTargetDec().get(0).getSignal();
     }
 

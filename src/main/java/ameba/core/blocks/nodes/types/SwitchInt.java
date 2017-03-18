@@ -23,13 +23,13 @@ public class SwitchInt extends Node {
     @Override
     public void clcNode() throws Exception {
         if (!getCollectorsTargetBin().get(0).getSignal()) {
-            getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(1).getSignal());
-            //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-            getCollectorsTargetInt().get(2).getSignal();
-        } else {
-            getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(2).getSignal());
+            getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(0).getSignal());
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.
             getCollectorsTargetInt().get(1).getSignal();
+        } else {
+            getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(1).getSignal());
+            //Be carefully allays initiate get method for inputs to set send flag of input nodes.
+            getCollectorsTargetInt().get(0).getSignal();
         }
     }
 }

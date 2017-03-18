@@ -9,8 +9,8 @@ public class ConstantDec extends NodeMem {
     public ConstantDec(Double par, Double[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
         addCollectorSourceDec(new CollectorSourceDec(this));
-        setParamsDec(new Double[]{par});
-        setParamsLimitsDec(new Double[][]{parLimits});
+        getParamsDec().add(par);
+        getParamsLimitsDec().add(parLimits);
     }
 
     /**
@@ -18,7 +18,7 @@ public class ConstantDec extends NodeMem {
      */
     @Override
     public void clcNode() {
-        getCollectorsSourceDec().get(0).setSignal(getParamsDec()[0]);
+        getCollectorsSourceDec().get(0).setSignal(getParamsDec().get(0));
     }
 }
 

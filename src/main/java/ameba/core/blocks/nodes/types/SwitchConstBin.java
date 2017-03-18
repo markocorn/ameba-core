@@ -16,8 +16,8 @@ public class SwitchConstBin extends Node {
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsBin(new Boolean[]{par});
-        setParamsLimitsBin(new Boolean[][]{parLimits});
+        getParamsBin().add(par);
+        getParamsLimitsBin().add(parLimits);
     }
 
     //Calculate output value
@@ -28,7 +28,7 @@ public class SwitchConstBin extends Node {
         } else {
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.
             getCollectorsTargetBin().get(1).getSignal();
-            getCollectorsSourceBin().get(0).setSignal(getParamsBin()[0]);
+            getCollectorsSourceBin().get(0).setSignal(getParamsBin().get(0));
         }
     }
 }

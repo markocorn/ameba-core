@@ -26,8 +26,8 @@ public class DelayInt extends NodeMem {
     public DelayInt(int initial, Integer par, Integer[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
         this.initValue = initial;
-        setParamsInt(new Integer[]{par});
-        setParamsLimitsInt(new Integer[][]{parLimits});
+        getParamsInt().add(par);
+        getParamsLimitsInt().add(parLimits);
 
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceInt(new CollectorSourceInt(this));

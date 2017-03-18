@@ -23,7 +23,7 @@ public class CollectorSourceInt extends CollectorSource {
 
     @Override
     public void addEdge(Edge edge) throws Exception {
-        if (!(edge instanceof EdgeBin)) throw new Exception("Edge not of proper type");
+        if (!(edge instanceof EdgeInt)) throw new Exception("Edge not of proper type");
         addEdgeInt((EdgeInt) edge);
     }
 
@@ -41,7 +41,7 @@ public class CollectorSourceInt extends CollectorSource {
     }
 
     public int getSignal() {
-        return getSignal();
+        return signal;
     }
 
     public void setSignal(int signal) {

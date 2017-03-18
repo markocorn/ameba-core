@@ -15,16 +15,16 @@ public class Interval2ConstInt extends Node {
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsInt(new Integer[]{par1});
-        setParamsLimitsInt(new Integer[][]{par1Limits});
-        setParamsInt(new Integer[]{par2});
-        setParamsLimitsInt(new Integer[][]{par2Limits});
+        getParamsInt().add(par1);
+        getParamsLimitsInt().add(par1Limits);
+        getParamsInt().add(par2);
+        getParamsLimitsInt().add(par2Limits);
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        if (getParamsInt()[0] <= getCollectorsTargetInt().get(0).getSignal() && getCollectorsTargetInt().get(0).getSignal() <= getParamsInt()[1]) {
+        if (getParamsInt().get(0) <= getCollectorsTargetInt().get(0).getSignal() && getCollectorsTargetInt().get(0).getSignal() <= getParamsInt().get(1)) {
             getCollectorsSourceBin().get(0).setSignal(true);
         } else getCollectorsSourceBin().get(0).setSignal(false);
     }

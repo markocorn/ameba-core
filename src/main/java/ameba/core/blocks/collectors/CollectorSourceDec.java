@@ -24,7 +24,7 @@ public class CollectorSourceDec extends CollectorSource {
 
     @Override
     public void addEdge(Edge edge) throws Exception {
-        if (!(edge instanceof EdgeBin)) throw new Exception("Edge not of proper type");
+        if (!(edge instanceof EdgeDec)) throw new Exception("Edge not of proper type");
         addEdgeDec((EdgeDec) edge);
     }
 

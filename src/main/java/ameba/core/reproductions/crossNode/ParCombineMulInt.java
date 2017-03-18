@@ -19,10 +19,10 @@ public class ParCombineMulInt implements ICrossNode {
 
     @Override
     public Node cross(Node node1, Node node2) throws Exception {
-        if (node1.getParamsInt().length > 0 && node2.getParamsInt().length > 0) {
-            int ind1 = random.nextInt(node1.getParamsInt().length);
-            int ind2 = random.nextInt(node1.getParamsInt().length);
-            node1.getParamsInt()[ind1] = operationType.crossover(node1.getParamsInt()[ind1], node2.getParamsInt()[ind2]);
+        if (node1.getParamsInt().size() > 0 && node2.getParamsInt().size() > 0) {
+            int ind1 = random.nextInt(node1.getParamsInt().size());
+            int ind2 = random.nextInt(node1.getParamsInt().size());
+            node1.getParamsInt().set(ind1, operationType.crossover(node1.getParamsInt().get(ind1), node2.getParamsInt().get(ind2)));
             return node1;
         }
         return null;

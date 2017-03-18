@@ -23,7 +23,7 @@ public class FactoryEdge {
     Random rndGen;
 
     /**
-     * @param factoryEdgeSettings Edge factory settings.
+     * @param factoryEdgeSettings Edge factory nodeSettingsHashMap.
      */
     public FactoryEdge(FactoryEdgeSettings factoryEdgeSettings) {
         this.factoryEdgeSettings = factoryEdgeSettings;

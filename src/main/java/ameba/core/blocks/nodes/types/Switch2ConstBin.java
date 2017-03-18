@@ -15,19 +15,19 @@ public class Switch2ConstBin extends Node {
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsBin(new Boolean[]{par1});
-        setParamsLimitsBin(new Boolean[][]{par1Limits});
-        setParamsBin(new Boolean[]{par2});
-        setParamsLimitsBin(new Boolean[][]{par2Limits});
+        getParamsBin().add(par1);
+        getParamsLimitsBin().add(par1Limits);
+        getParamsBin().add(par2);
+        getParamsLimitsBin().add(par2Limits);
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
         if (getCollectorsTargetBin().get(0).getSignal()) {
-            getCollectorsSourceBin().get(0).setSignal(getParamsBin()[1]);
+            getCollectorsSourceBin().get(0).setSignal(getParamsBin().get(1));
         } else {
-            getCollectorsSourceBin().get(0).setSignal(getParamsBin()[0]);
+            getCollectorsSourceBin().get(0).setSignal(getParamsBin().get(0));
         }
     }
 }

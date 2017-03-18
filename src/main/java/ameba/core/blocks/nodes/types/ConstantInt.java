@@ -9,8 +9,8 @@ public class ConstantInt extends Node {
     public ConstantInt(Integer par, Integer[] parLimits) throws Exception {
         super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
         addCollectorSourceInt(new CollectorSourceInt(this));
-        setParamsInt(new Integer[]{par});
-        setParamsLimitsInt(new Integer[][]{parLimits});
+        getParamsInt().add(par);
+        getParamsLimitsInt().add(parLimits);
     }
 
     /**
@@ -18,7 +18,7 @@ public class ConstantInt extends Node {
      */
     @Override
     public void clcNode() {
-        getCollectorsSourceInt().get(0).setSignal(getParamsInt()[0]);
+        getCollectorsSourceInt().get(0).setSignal(getParamsInt().get(0));
 
     }
 }

@@ -16,14 +16,14 @@ public class IntervalConstInt extends Node {
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
 
-        setParamsInt(new Integer[]{par});
-        setParamsLimitsInt(new Integer[][]{parLimits});
+        getParamsInt().add(par);
+        getParamsLimitsInt().add(parLimits);
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
-        int[] inputs = new int[]{getCollectorsTargetInt().get(0).getSignal(), getCollectorsTargetInt().get(1).getSignal(), getParamsInt()[0]};
+        int[] inputs = new int[]{getCollectorsTargetInt().get(0).getSignal(), getCollectorsTargetInt().get(1).getSignal(), getParamsInt().get(0)};
         if (inputs[1] <= inputs[0] && inputs[0] <= inputs[2]) {
             getCollectorsSourceBin().get(0).setSignal(true);
         } else getCollectorsSourceBin().get(0).setSignal(false);

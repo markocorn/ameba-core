@@ -19,8 +19,8 @@ public class DMuxDec extends Node {
             addCollectorSourceDec(new CollectorSourceDec(this));
         }
 
-        setParamsDec(new Double[]{par});
-        setParamsLimitsDec(new Double[][]{parLimits});
+        getParamsDec().add(par);
+        getParamsLimitsDec().add(parLimits);
     }
 
     //Calculate output value
@@ -33,7 +33,7 @@ public class DMuxDec extends Node {
             if (i == ind) {
                 getCollectorsSourceDec().get(i).setSignal(value);
             } else {
-                getCollectorsSourceDec().get(i).setSignal(getParamsDec()[0]);
+                getCollectorsSourceDec().get(i).setSignal(getParamsDec().get(0));
             }
         }
     }

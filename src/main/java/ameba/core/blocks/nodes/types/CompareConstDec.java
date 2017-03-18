@@ -11,35 +11,35 @@ public class CompareConstDec extends Node {
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
         //AddDec compare against parameter
-        setParamsDec(new Double[]{par1});
-        setParamsLimitsDec(new Double[][]{par1Limits});
+        getParamsDec().add(par1);
+        getParamsLimitsDec().add(par1Limits);
         //AddDec operation select parameter
-        setParamsInt(new Integer[]{par2});
-        setParamsLimitsInt(new Integer[][]{{0, 2}});
+        getParamsInt().add(par2);
+        getParamsLimitsInt().add(new Integer[]{0, 2});
     }
 
     //Calculate output value
     @Override
     public void clcNode() throws Exception {
         getCollectorsSourceBin().get(0).setSignal(false);
-        switch (getParamsInt()[0]) {
+        switch (getParamsInt().get(0)) {
             //Greater than par
             case 0: {
-                if (getCollectorsTargetDec().get(0).getSignal() > getParamsDec()[0]) {
+                if (getCollectorsTargetDec().get(0).getSignal() > getParamsDec().get(0)) {
                     getCollectorsSourceBin().get(0).setSignal(true);
                 }
             }
             break;
             //Less than par
             case 1: {
-                if (getCollectorsTargetDec().get(0).getSignal() < getParamsDec()[0]) {
+                if (getCollectorsTargetDec().get(0).getSignal() < getParamsDec().get(0)) {
                     getCollectorsSourceBin().get(0).setSignal(true);
                 }
             }
             break;
             //Equal to par
             case 2: {
-                if (getCollectorsTargetDec().get(0).getSignal() == getParamsDec()[0]) {
+                if (getCollectorsTargetDec().get(0).getSignal() == getParamsDec().get(0)) {
                     getCollectorsSourceBin().get(0).setSignal(true);
                 }
             }

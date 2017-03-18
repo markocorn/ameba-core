@@ -21,9 +21,9 @@ public class ParAddValueBin extends Reproduction implements IMutateNode {
 
     @Override
     public Node mutate(Node node) throws Exception {
-        if (node.getParamsBin().length > 0) {
-            int ind = random.nextInt(node.getParamsBin().length);
-            node.getParamsBin()[ind] = operationType.mutate(node.getParamsBin()[ind]);
+        if (node.getParamsBin().size() > 0) {
+            int ind = random.nextInt(node.getParamsBin().size());
+            node.getParamsBin().set(ind, operationType.mutate(node.getParamsBin().get(ind)));
             return node;
         }
         return null;

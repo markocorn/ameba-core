@@ -19,10 +19,10 @@ public class ParCombineAddDec implements ICrossNode {
 
     @Override
     public Node cross(Node node1, Node node2) throws Exception {
-        if (node1.getParamsDec().length > 0 && node2.getParamsDec().length > 0) {
-            int ind1 = random.nextInt(node1.getParamsDec().length);
-            int ind2 = random.nextInt(node1.getParamsDec().length);
-            node1.getParamsDec()[ind1] = operationType.crossover(node1.getParamsDec()[ind1], node2.getParamsDec()[ind2]);
+        if (node1.getParamsDec().size() > 0 && node2.getParamsDec().size() > 0) {
+            int ind1 = random.nextInt(node1.getParamsDec().size());
+            int ind2 = random.nextInt(node1.getParamsDec().size());
+            node1.getParamsDec().set(ind1, operationType.crossover(node1.getParamsDec().get(ind1), node2.getParamsDec().get(ind2)));
             return node1;
         }
         return null;
