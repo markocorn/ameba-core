@@ -36,7 +36,7 @@ public class main {
         boolean[][] outBin = new boolean[10][1];
 
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 10000; i++) {
                 System.out.println(i + " Run number");
                 Cell cell = factoryCell.genCellRnd();
                 try {

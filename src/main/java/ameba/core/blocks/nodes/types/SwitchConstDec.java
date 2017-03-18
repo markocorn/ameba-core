@@ -25,10 +25,10 @@ public class SwitchConstDec extends Node {
     @Override
     public void clcNode() throws Exception {
         if (!getCollectorsTargetBin().get(0).getSignal()) {
-            getCollectorsSourceDec().get(0).setSignal(getCollectorsTargetDec().get(1).getSignal());
+            getCollectorsSourceDec().get(0).setSignal(getCollectorsTargetDec().get(0).getSignal());
         } else {
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.
-            getCollectorsTargetDec().get(1).getSignal();
+            getCollectorsTargetDec().get(0).getSignal();
             getCollectorsSourceDec().get(0).setSignal(getParamsDec().get(0));
         }
     }
