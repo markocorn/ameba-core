@@ -22,30 +22,38 @@ public class RemoveNode1 implements IMutateCell {
         random = new Random();
     }
 
+    /**
+     * Remove node serial
+     * <p>
+     * Remove node and reconnect output edges with input edges of the removed node.
+     *
+     * @param cell
+     * @return
+     * @throws Exception
+     */
     @Override
     public Cell mutate(Cell cell) throws Exception {
         //Node to be removed
         if (cell.getInnerNodes().size() > 0) {
             Node node = cell.getInnerNodes().get(random.nextInt(cell.getInnerNodes().size()));
-            ArrayList<CollectorSource> outs = new ArrayList<>();
-            for (CollectorTarget collectorInp : node.getCollectorsTargetConnected()) {
-                outs.add(collectorInp.getEdges().get(0).getSource());
-                collectorInp.getEdges().get(0).getSource().removeEdge(collectorInp.getEdges().get(0));
-                cell.removeEdge(collectorInp.getEdges().get(0));
+            ArrayList<CollectorSource> ss = new ArrayList<>();
+            for (CollectorTarget t : node.getCollectorsTargetConnected()) {
+                ss.add(t.getEdges().get(0).getSource());
+                cell.removeEdge(t.getEdges().get(0));
             }
-            for (CollectorSource collectorOut : node.getCollectorsSource()) {
-                for (Edge edge : collectorOut.getEdges()) {
-                    edge.getTarget().removeEdge(edge);
-                    CollectorSource collectorOut1 = cellFactory.getCollectorSourceRnd(edge.getType(), outs);
-                    if (collectorOut1 != null) {
-                        outs.remove(collectorOut1);
+            for (CollectorSource s : node.getCollectorsSourceConnected()) {
+                for (Edge e : s.getEdges()) {
+                    CollectorSource s1 = cellFactory.getCollectorSourceRnd(e.getType(), ss);
+                    if (s1 != null) {
+                        ss.remove(s1);
                     } else {
-                        collectorOut1 = cellFactory.getCollectorSourceRndNoNode(edge.getSource().getType(), cell, node);
+                        s1 = cellFactory.getCollectorSourceRndNoNode(e.getSource().getType(), cell, node);
                     }
-                    if (collectorOut1 != null) {
-                        edge.setSource(collectorOut1);
+                    if (s1 != null) {
+                        e.setSource(s1);
+                        s1.addEdge(e);
                     } else {
-                        cell.removeEdge(edge);
+                        cell.removeEdge(e);
                     }
                 }
             }

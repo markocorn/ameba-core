@@ -184,6 +184,7 @@ public class Cell {
                 return new ArrayList<>();
         }
     }
+
     /**
      * AddDec node to the cell.
      *
@@ -246,31 +247,48 @@ public class Cell {
         throw new Exception("Edge object not valid");
     }
 
+    public void addEdgeNoVerification(Edge edge) throws Exception {
+        edges.add(edge);
+        if (edge instanceof EdgeDec) {
+            edgesDec.add((EdgeDec) edge);
+            return;
+        }
+        if (edge instanceof EdgeInt) {
+            edgesInt.add((EdgeInt) edge);
+            return;
+        }
+        if (edge instanceof EdgeBin) {
+            edgesBin.add((EdgeBin) edge);
+            return;
+        }
+        throw new Exception("Edge object not valid");
+    }
+
     public void addEdgeDec(EdgeDec edge) throws Exception {
         if (!edgesDec.contains(edge)) {
-            edge.getSource().addEdgeDec(edge);
-            edge.getTarget().addEdgeDec(edge);
+            edge.getSourceDec().addEdgeDec(edge);
+            edge.getTargetDec().addEdgeDec(edge);
             edges.add(edge);
             edgesDec.add(edge);
-        }else throw new Exception("EdgeDec to be added already contained");
+        } else throw new Exception("EdgeDec to be added already contained");
     }
 
     public void addEdgeInt(EdgeInt edge) throws Exception {
         if (!edgesInt.contains(edge)) {
-            edge.getSource().addEdgeInt(edge);
-            edge.getTarget().addEdgeInt(edge);
+            edge.getSourceInt().addEdgeInt(edge);
+            edge.getTargetInt().addEdgeInt(edge);
             edges.add(edge);
             edgesInt.add(edge);
-        }else throw new Exception("EdgeInt to be added already contained");
+        } else throw new Exception("EdgeInt to be added already contained");
     }
 
     public void addEdgeBin(EdgeBin edge) throws Exception {
         if (!edgesBin.contains(edge)) {
-            edge.getSource().addEdgeBin(edge);
-            edge.getTarget().addEdgeBin(edge);
+            edge.getSourceBin().addEdgeBin(edge);
+            edge.getTargetBin().addEdgeBin(edge);
             edges.add(edge);
             edgesBin.add(edge);
-        }else throw new Exception("EdgeBin to be added already contained");
+        } else throw new Exception("EdgeBin to be added already contained");
     }
 
     /**
@@ -400,20 +418,20 @@ public class Cell {
      * Execute calculation process of data transition trough nodes and connectivity of the cell.
      */
     private void clcCell() throws Exception {
-        int n=isCellClcDone();
-        int m=0;
-        while (!(n==0 || m==n)) {
-            m=n;
+        int n = isCellClcDone();
+        int m = 0;
+        while (!(n == 0 || m == n)) {
+            m = n;
             for (Node node : nodes) {
                 node.processNode();
             }
-            n=isCellClcDone();
+            n = isCellClcDone();
         }
     }
 
     private int isCellClcDone() {
         //n number of edges that has not transited but they have conditions
-        int n=0;
+        int n = 0;
         for (Edge edge : getEdges()) {
             if (!edge.isSignalTransmitted() && edge.getSource().isSignalReady()) {
                 n++;
@@ -521,37 +539,37 @@ public class Cell {
         for (ArrayList<Node> levels : group) {
             for (Node node : levels) {
                 for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Signal.DECIMAL)) {
-                    if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
+                    if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached()) && !edgesDec.contains(collectorInp.getEdges().get(0))) {
                         edgesDec.add(collectorInp.getEdges().get(0));
                     }
                 }
                 for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Signal.INTEGER)) {
-                    if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
+                    if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached()) && !edgesInt.contains(collectorInp.getEdges().get(0))) {
                         edgesInt.add(collectorInp.getEdges().get(0));
                     }
                 }
                 for (CollectorTarget collectorInp : node.getCollectorsTargetConnected(Signal.BOOLEAN)) {
-                    if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached())) {
+                    if (containsNodeGroup(group, collectorInp.getEdges().get(0).getSource().getNodeAttached()) && !edgesBin.contains(collectorInp.getEdges().get(0))) {
                         edgesBin.add(collectorInp.getEdges().get(0));
                     }
                 }
                 for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Signal.DECIMAL)) {
                     for (Edge edge : collectorOut.getEdges()) {
-                        if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
+                        if (containsNodeGroup(group, edge.getTarget().getNodeAttached()) && !edgesDec.contains(edge)) {
                             edgesDec.add(edge);
                         }
                     }
                 }
                 for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Signal.INTEGER)) {
                     for (Edge edge : collectorOut.getEdges()) {
-                        if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
+                        if (containsNodeGroup(group, edge.getTarget().getNodeAttached()) && !edgesInt.contains(edge)) {
                             edgesInt.add(edge);
                         }
                     }
                 }
                 for (CollectorSource collectorOut : node.getCollectorsSourceConnected(Signal.BOOLEAN)) {
                     for (Edge edge : collectorOut.getEdges()) {
-                        if (containsNodeGroup(group, edge.getTarget().getNodeAttached())) {
+                        if (containsNodeGroup(group, edge.getTarget().getNodeAttached()) && !edgesBin.contains(edge)) {
                             edgesBin.add(edge);
                         }
                     }
@@ -625,15 +643,48 @@ public class Cell {
 
     public ArrayList<String> checkCell() {
         ArrayList<String> out = new ArrayList<>();
-        //Check edges
+        //Check edges for missing connectors
         for (Edge edge : getEdges()) {
             //Check edge connection and sources
             if (!edge.getSource().getEdges().contains(edge))
-                out.add("Output collector:" + edge.getSource().toString() + " not connected to the source of edge: " + edge.toString());
+                out.add("Source collector:" + edge.getSource().toString() + "of node: " + edge.getSource().getNodeAttached().toString() + " not connected to the source of edge: " + edge.toString());
             if (!edge.getTarget().getEdges().contains(edge))
-                out.add("Input collector:" + edge.getSource().toString() + " not connected to the target of edge: " + edge.toString());
+                out.add("Target collector:" + edge.getTarget().toString() + "of node: " + edge.getTarget().getNodeAttached().toString() + " not connected to the target of edge: " + edge.toString());
+            //Check for missing nodes
+            if (!nodes.contains(edge.getSource().getNodeAttached())) {
+                out.add("Node: " + edge.getSource().getNodeAttached().toString() + " is not par of the cell from edges source");
+            }
+            if (!nodes.contains(edge.getTarget().getNodeAttached())) {
+                out.add("Node: " + edge.getTarget().getNodeAttached().toString() + " is not par of the cell from edges target");
+            }
+        }
+        //Check for missing edges
+        for (Node node : getNodes()) {
+            //Check collectors sources
+            for (CollectorSource source : node.getCollectorsSource()) {
+                for (Edge edge : source.getEdges()) {
+                    if (!getEdges().contains(edge)) {
+                        out.add("Missing Edge: " + edge.toString() + "from source collector.");
+                    }
+                }
+            }
+            //Check collectors targets
+            for (CollectorTarget target : node.getCollectorsTarget()) {
+                for (Edge edge : target.getEdges()) {
+                    if (!getEdges().contains(edge)) {
+                        out.add("Missing Edge: " + edge.toString() + "from target collector.");
+                    }
+                }
+            }
         }
         return out;
+    }
+
+    public void checkCellPrint() {
+        ArrayList<String> error = checkCell();
+        for (String s : error) {
+            System.out.println(s);
+        }
     }
 
     public enum Signal {DECIMAL, INTEGER, BOOLEAN}

@@ -27,19 +27,34 @@ public class RemoveNodesGroup implements IMutateCell {
     @Override
     public Cell mutate(Cell cell) throws Exception {
         if (cell.getInnerNodes().size() < 1) throw new Exception("Number of inner nodes must be grater than zero");
-        ArrayList<ArrayList<Node>> group = cell.getGroup(cell.getInnerNodes().get(random.nextInt(cell.getInnerNodes().size())), random.nextInt(maxRemove));
+        ArrayList<ArrayList<Node>> group = cell.getGroup(cell.getInnerNodes().get(random.nextInt(cell.getInnerNodes().size())), random.nextInt(maxRemove) + 1);
         HashMap<String, ArrayList<Edge>> borderEdges = cell.getGroupEdgesBorder(group);
-        //Reconnect edges
-        reconnectEdges(Double.class, cell, borderEdges);
-        reconnectEdges(Integer.class, cell, borderEdges);
-        reconnectEdges(Boolean.class, cell, borderEdges);
+        HashMap<String, ArrayList<Edge>> innerEdges = cell.getGroupEdgesInner(group);
+
         //Remove nodes
         for (ArrayList<Node> nodes : group) {
             for (Node node : nodes) {
                 cell.removeNode(node);
             }
         }
+        //Remove inner edges
+        for (Edge edge : innerEdges.get("edgesDec")) {
+            cell.removeEdge(edge);
+        }
+        for (Edge edge : innerEdges.get("edgesInt")) {
+            cell.removeEdge(edge);
+        }
+        for (Edge edge : innerEdges.get("edgesBin")) {
+            cell.removeEdge(edge);
+        }
+
+        //Reconnect edges
+        reconnectEdges(Double.class, cell, borderEdges);
+        reconnectEdges(Integer.class, cell, borderEdges);
+        reconnectEdges(Boolean.class, cell, borderEdges);
+
         cellFactory.connectsMinFreeInputs(cell);
+
         return cell;
     }
 

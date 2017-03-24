@@ -51,4 +51,6 @@ public class CollectorSourceBin extends CollectorSource {
     public Cell.Signal getType() {
         return Cell.Signal.BOOLEAN;
     }
+
+
 }

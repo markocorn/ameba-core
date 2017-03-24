@@ -38,7 +38,7 @@ public class SwitchEdgesTargets implements IMutateCell {
             switch (opt) {
                 case "Dec": {
                     Collections.shuffle(cell.getEdgesDec());
-                    CollectorSourceDec collectorOut = cell.getEdgesDec().get(0).getSource();
+                    CollectorSourceDec collectorOut = cell.getEdgesDec().get(0).getSourceDec();
                     cell.getEdgesDec().get(0).getSource().getEdges().set(cell.getEdgesDec().get(0).getSource().getEdges().indexOf(cell.getEdgesDec().get(0)), cell.getEdgesDec().get(1));
                     cell.getEdgesDec().get(1).getSource().getEdges().set(cell.getEdgesDec().get(1).getSource().getEdges().indexOf(cell.getEdgesDec().get(1)), cell.getEdgesDec().get(0));
                     cell.getEdgesDec().get(0).setSource(cell.getEdgesDec().get(1).getSource());
@@ -47,7 +47,7 @@ public class SwitchEdgesTargets implements IMutateCell {
                 break;
                 case "Int": {
                     Collections.shuffle(cell.getEdgesInt());
-                    CollectorSourceInt collectorOut = cell.getEdgesInt().get(0).getSource();
+                    CollectorSourceInt collectorOut = cell.getEdgesInt().get(0).getSourceInt();
                     cell.getEdgesInt().get(0).getSource().getEdges().set(cell.getEdgesInt().get(0).getSource().getEdges().indexOf(cell.getEdgesInt().get(0)), cell.getEdgesInt().get(1));
                     cell.getEdgesInt().get(1).getSource().getEdges().set(cell.getEdgesInt().get(1).getSource().getEdges().indexOf(cell.getEdgesInt().get(1)), cell.getEdgesInt().get(0));
                     cell.getEdgesInt().get(0).setSource(cell.getEdgesInt().get(1).getSource());
@@ -56,7 +56,7 @@ public class SwitchEdgesTargets implements IMutateCell {
                 break;
                 case "Bin": {
                     Collections.shuffle(cell.getEdgesBin());
-                    CollectorSourceBin collectorOut = cell.getEdgesBin().get(0).getSource();
+                    CollectorSourceBin collectorOut = cell.getEdgesBin().get(0).getSourceBin();
                     cell.getEdgesBin().get(0).getSource().getEdges().set(cell.getEdgesBin().get(0).getSource().getEdges().indexOf(cell.getEdgesBin().get(0)), cell.getEdgesBin().get(1));
                     cell.getEdgesBin().get(1).getSource().getEdges().set(cell.getEdgesBin().get(1).getSource().getEdges().indexOf(cell.getEdgesBin().get(1)), cell.getEdgesBin().get(0));
                     cell.getEdgesBin().get(0).setSource(cell.getEdgesBin().get(1).getSource());

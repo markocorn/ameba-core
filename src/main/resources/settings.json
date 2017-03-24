@@ -10,7 +10,7 @@
     "nodeOutDec": 1,
     "nodeOutInt": 1,
     "nodeOutBin": 1,
-    "nodeMax": 120
+    "nodeMax": 150
   },
   "edgeFactorySettings": {
     "weightInitialDec": [

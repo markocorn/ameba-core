@@ -1,4 +1,4 @@
-package ameba.core.reproductions.mutateCell;
+package ameba.core.reproductions.crossCell;
 
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
@@ -13,62 +13,61 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
- * Created by marko on 2/28/17.
+ * Created by marko on 3/21/17.
  */
-public class AddNodesGroup implements IMutateCell {
+public class AddNodes implements ICrossCell {
     FactoryNode nodeFactory;
     FactoryCell cellFactory;
     FactoryEdge edgeFactory;
     Random random;
     int maxNodes;
 
-    public AddNodesGroup(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int maxNodes) {
+    /**
+     * Add new nodes from cell2 to cell1
+     *
+     * @param nodeFactory
+     * @param cellFactory
+     * @param edgeFactory
+     * @param maxNodes
+     */
+    public AddNodes(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int maxNodes) {
         this.nodeFactory = nodeFactory;
-        this.cellFactory = cellFactory.clone();
+        this.cellFactory = cellFactory;
         this.edgeFactory = edgeFactory;
-        random = new Random();
         this.maxNodes = maxNodes;
-        this.cellFactory.getCellFactorySettings().setNodeInitial(new Integer[]{maxNodes * 10, maxNodes * 10});
-
-        this.cellFactory.getCellFactorySettings().setNodeInpDec(1);
-        this.cellFactory.getCellFactorySettings().setNodeInpInt(1);
-        this.cellFactory.getCellFactorySettings().setNodeInpBin(1);
-
-        this.cellFactory.getCellFactorySettings().setNodeOutDec(1);
-        this.cellFactory.getCellFactorySettings().setNodeOutInt(1);
-        this.cellFactory.getCellFactorySettings().setNodeOutBin(1);
+        random = new Random();
     }
 
     @Override
-    public Cell mutate(Cell cell) throws Exception {
-        Cell cellBase = cellFactory.genCellRnd();
-        ArrayList<ArrayList<Node>> group = cellBase.getGroup(cellBase.getInnerNodes().get(random.nextInt(cellBase.getInnerNodes().size())), random.nextInt(maxNodes - 1) + 2);
-        HashMap<String, ArrayList<Edge>> borderEdges = cellBase.getGroupEdgesBorder(group);
-        HashMap<String, ArrayList<Edge>> innerEdges = cellBase.getGroupEdgesInner(group);
+    public Cell cross(Cell cell1, Cell cell2) throws Exception {
+        ArrayList<ArrayList<Node>> group = cell2.getGroup(cell2.getInnerNodes().get(random.nextInt(cell2.getInnerNodes().size())), random.nextInt(maxNodes - 1) + 2);
+        HashMap<String, ArrayList<Edge>> borderEdges = cell2.getGroupEdgesBorder(group);
+        HashMap<String, ArrayList<Edge>> innerEdges = cell2.getGroupEdgesInner(group);
         //Add new nodes
         for (ArrayList<Node> nodes : group) {
             for (Node node : nodes) {
-                cell.addNode(node);
+                cell1.addNode(node);
             }
         }
         //Add inner edges
         for (Edge edge : innerEdges.get("edgesDec")) {
-            cell.addEdgeNoVerification(edge);
+            cell1.addEdgeNoVerification(edge);
         }
         for (Edge edge : innerEdges.get("edgesInt")) {
-            cell.addEdgeNoVerification(edge);
+            cell1.addEdgeNoVerification(edge);
         }
         for (Edge edge : innerEdges.get("edgesBin")) {
-            cell.addEdgeNoVerification(edge);
+            cell1.addEdgeNoVerification(edge);
         }
 
         //Reconnect border edges
-        reconnectEdges(Cell.Signal.DECIMAL, cell, borderEdges);
-        reconnectEdges(Cell.Signal.INTEGER, cell, borderEdges);
-        reconnectEdges(Cell.Signal.BOOLEAN, cell, borderEdges);
+        reconnectEdges(Cell.Signal.DECIMAL, cell1, borderEdges);
+        reconnectEdges(Cell.Signal.INTEGER, cell1, borderEdges);
+        reconnectEdges(Cell.Signal.BOOLEAN, cell1, borderEdges);
 
-        return cell;
+        return cell1;
     }
+
 
     private void reconnectEdges(Cell.Signal type, Cell cell, HashMap<String, ArrayList<Edge>> borderEdges) throws Exception {
         String ind = "";

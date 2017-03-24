@@ -25,7 +25,7 @@ public class main {
         factoryCell.getCellFactorySettings().setNodeOutDec(1);
         factoryCell.getCellFactorySettings().setNodeOutInt(1);
         factoryCell.getCellFactorySettings().setNodeOutBin(1);
-        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{3, 3});
+        factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{5, 5});
 
         double[][] inpDec = new double[][]{{0.0}, {1.0}, {2.0}, {3.0}, {4.0}, {5.0}, {6.0}, {7.0}, {8.0}, {9.0}};
         int[][] inpInt = new int[][]{{0}, {1}, {-1}, {2}, {-2}, {3}, {-3}, {4}, {-4}, {5}};

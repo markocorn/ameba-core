@@ -34,6 +34,8 @@ public class ReplaceNode implements IMutateCell {
         Node nodeOld = cellFactory.getNodeRndInner(cell);
         Node nodeNew = nodeFactory.genNodeRnd();
 
+        cell.getNodes().set(cell.getNodes().indexOf(nodeOld), nodeNew);
+
         reconnectInputs(Cell.Signal.DECIMAL, cell, nodeOld, nodeNew);
         reconnectInputs(Cell.Signal.INTEGER, cell, nodeOld, nodeNew);
         reconnectInputs(Cell.Signal.BOOLEAN, cell, nodeOld, nodeNew);
@@ -42,30 +44,30 @@ public class ReplaceNode implements IMutateCell {
         reconnectsOutputs(Cell.Signal.INTEGER, cell, nodeOld, nodeNew);
         reconnectsOutputs(Cell.Signal.BOOLEAN, cell, nodeOld, nodeNew);
 
-        cell.getNodes().set(cell.getNodes().indexOf(nodeOld), nodeNew);
         return cell;
     }
 
     private void reconnectInputs(Cell.Signal type, Cell cell, Node nodeOld, Node nodeNew) throws Exception {
-        ArrayList<CollectorTarget> oldInpCol = nodeOld.getCollectorsTargetConnected(type);
-        Collections.shuffle(oldInpCol);
-        int diff = oldInpCol.size() - nodeNew.getCollectorTargetLimit(type)[0];
-        int same = Math.min(oldInpCol.size(), nodeNew.getCollectorTargetLimit(type)[0]);
+        ArrayList<CollectorTarget> tt = nodeOld.getCollectorsTargetConnected(type);
+        Collections.shuffle(tt);
+        int diff = tt.size() - nodeNew.getCollectorTargetLimit(type)[0];
+        int same = Math.min(tt.size(), nodeNew.getCollectorTargetLimit(type)[0]);
         for (int i = 0; i < same; i++) {
-            Edge edge = oldInpCol.get(i).getEdges().get(0);
-            edge.setTarget(oldInpCol.get(i));
-            nodeNew.getCollectorsTarget(type).get(i).addEdge(edge);
+            Edge e = tt.get(i).getEdges().get(0);
+            e.setTarget(nodeNew.getCollectorsTarget(type).get(i));
+            e.getTarget().addEdge(e);
         }
+
         //If number of old input edges is greater than number of minimum edges of new node the edges are removed from cell
         for (int i = 0; i < diff; i++) {
-            cell.removeEdge(oldInpCol.get(same + i).getEdges().get(0));
+            cell.removeEdge(tt.get(same + i).getEdges().get(0));
         }
         //If number of old input edges is less than number of minimum edges of new node the empty spots are connected with new edges
         for (int i = 0; i < -diff; i++) {
-            CollectorSource collectorOut = cellFactory.getCollectorSourceRndNoNode(type, cell, nodeOld);
+            CollectorSource s = cellFactory.getCollectorSourceRndNoNode(type, cell, nodeOld);
             Edge edge;
-            if (collectorOut != null) {
-                edge = edgeFactory.genEdge(type, collectorOut, nodeNew.getCollectorsTarget(type).get(same + i));
+            if (s != null) {
+                edge = edgeFactory.genEdge(type, s, nodeNew.getCollectorsTarget(type).get(same + i));
             } else {
                 //No proper node generate constant node
                 if (nodeFactory.isConstantNodeAvailable(type)) {
