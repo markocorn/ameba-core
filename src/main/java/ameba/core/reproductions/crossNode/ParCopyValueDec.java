@@ -1,6 +1,7 @@
 package ameba.core.reproductions.crossNode;
 
 import ameba.core.blocks.nodes.Node;
+import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParCrossover.CopyValueDec;
 
 import java.util.Random;
@@ -8,11 +9,12 @@ import java.util.Random;
 /**
  * Created by marko on 12/28/16.
  */
-public class ParCopyValueDec implements ICrossNode {
+public class ParCopyValueDec extends Reproduction implements ICrossNode {
     CopyValueDec operationType;
     Random random;
 
     public ParCopyValueDec(CopyValueDec operationType) {
+        super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
         random = new Random();
     }

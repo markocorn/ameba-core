@@ -23,13 +23,6 @@ public class ParOperationSettings {
 
 
     public ParOperationSettings() {
-        this.probability = 100;
-        this.changeLimitDec = new Double[]{0.01, 10.0};
-        this.changeLimitInt = new Integer[]{1, 10};
-        this.changeLimitBin = new Boolean[]{false, true};
-        this.valueLimitDec = new Double[]{-1e6, 1e6};
-        this.valueLimitInt = new Integer[]{-1000000, 1000000};
-        this.valueLimitBin = new Boolean[]{false, true};
     }
 
     public ParOperationSettings(Integer probability, Double[] changeLimitDec, Integer[] changeLimitInt, Boolean[] changeLimitBin, Double[] valueLimitDec, Integer[] valueLimitInt, Boolean[] valueLimitBin) {

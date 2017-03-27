@@ -1,6 +1,7 @@
 package ameba.core.reproductions.crossNode;
 
 import ameba.core.blocks.nodes.Node;
+import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParCrossover.CombineSubDec;
 
 import java.util.Random;
@@ -8,11 +9,12 @@ import java.util.Random;
 /**
  * Created by marko on 12/28/16.
  */
-public class ParCombineSubDec implements ICrossNode {
+public class ParCombineSubDec extends Reproduction implements ICrossNode {
     CombineSubDec operationType;
     Random random;
 
     public ParCombineSubDec(CombineSubDec operationType) {
+        super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
         random = new Random();
     }

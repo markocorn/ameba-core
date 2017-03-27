@@ -692,7 +692,7 @@
             true
           ]
         },
-        "weightInverseDec": {
+        "weightInverse": {
           "probability": 100,
           "changeLimitDec": [
             -0.01,
@@ -771,7 +771,7 @@
             1000.0
           ]
         },
-        "weightCombineDivDec": {
+        "weightCombineDiv": {
           "probability": 100,
           "changeLimitDec": [
             -0.01,
@@ -893,6 +893,230 @@
           ]
         },
         "weightCombineOr": {
+          "probability": 100,
+          "changeLimitBin": [
+            false,
+            true
+          ],
+          "valueLimitBin": [
+            false,
+            true
+          ]
+        }
+      },
+      "mutateNode": {
+        "parAddValueDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "parAddValueInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "parInverse": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "parMixSignDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "parMixSignInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "parRandValueDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "parRandValueInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "parRandValueBin": {
+          "probability": 100,
+          "changeLimitBin": [
+            false,
+            true
+          ],
+          "valueLimitBin": [
+            false,
+            true
+          ]
+        }
+      },
+      "crossNode": {
+        "parCombineAddDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "parCombineAddInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "parCombineAnd": {
+          "probability": 100,
+          "changeLimitBin": [
+            false,
+            true
+          ],
+          "valueLimitBin": [
+            false,
+            true
+          ]
+        },
+        "parCombineOr": {
+          "probability": 100,
+          "changeLimitBin": [
+            false,
+            true
+          ],
+          "valueLimitBin": [
+            false,
+            true
+          ]
+        },
+        "parCombineDiv": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "parCombineMulDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "parCombineMulInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "parCombineSubDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "parCombineSubInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "parCopyValueDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "parCopyValueInt": {
+          "probability": 100,
+          "changeLimitInt": [
+            -1,
+            1
+          ],
+          "valueLimitInt": [
+            -1000,
+            1000
+          ]
+        },
+        "parCopyValueBin": {
           "probability": 100,
           "changeLimitBin": [
             false,
