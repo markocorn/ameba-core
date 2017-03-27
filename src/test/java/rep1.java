@@ -21,7 +21,6 @@ public class rep1 {
         FactoryEdge factoryEdge = new FactoryEdge(mapper.readValue(jsonSettings.get("edgeFactorySettings").toString(), FactoryEdgeSettings.class));
         FactoryCell factoryCell = new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), factoryNode, factoryEdge);
 
-
         factoryCell.getCellFactorySettings().setNodeInpDec(1);
         factoryCell.getCellFactorySettings().setNodeInpInt(1);
         factoryCell.getCellFactorySettings().setNodeInpBin(1);
@@ -57,7 +56,7 @@ public class rep1 {
                 Cell cell = factoryCell.genCellRnd();
                 try {
                     cell = factoryCell.genCellRnd();
-                    cell = transferNodes.cross(cell, cell.clone());
+                    cell = replaceNode.mutate(cell);
 //                    cell = removeNodesGroup.mutate(cell);
                     if (cell.checkCell().size() > 0) {
                         int t = 0;

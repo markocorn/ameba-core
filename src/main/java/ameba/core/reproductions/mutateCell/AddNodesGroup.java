@@ -53,13 +53,13 @@ public class AddNodesGroup implements IMutateCell {
         }
         //Add inner edges
         for (Edge edge : innerEdges.get("edgesDec")) {
-            cell.addEdgeNoVerification(edge);
+            cell.addEdgeNotSafe(edge);
         }
         for (Edge edge : innerEdges.get("edgesInt")) {
-            cell.addEdgeNoVerification(edge);
+            cell.addEdgeNotSafe(edge);
         }
         for (Edge edge : innerEdges.get("edgesBin")) {
-            cell.addEdgeNoVerification(edge);
+            cell.addEdgeNotSafe(edge);
         }
 
         //Reconnect border edges

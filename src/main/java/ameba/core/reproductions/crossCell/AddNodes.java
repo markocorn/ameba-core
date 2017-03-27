@@ -51,13 +51,13 @@ public class AddNodes implements ICrossCell {
         }
         //Add inner edges
         for (Edge edge : innerEdges.get("edgesDec")) {
-            cell1.addEdgeNoVerification(edge);
+            cell1.addEdgeNotSafe(edge);
         }
         for (Edge edge : innerEdges.get("edgesInt")) {
-            cell1.addEdgeNoVerification(edge);
+            cell1.addEdgeNotSafe(edge);
         }
         for (Edge edge : innerEdges.get("edgesBin")) {
-            cell1.addEdgeNoVerification(edge);
+            cell1.addEdgeNotSafe(edge);
         }
 
         //Reconnect border edges

@@ -9,6 +9,7 @@ import ameba.core.blocks.edges.EdgeBin;
 import ameba.core.blocks.edges.EdgeDec;
 import ameba.core.blocks.edges.EdgeInt;
 import ameba.core.blocks.nodes.*;
+import ameba.core.blocks.nodes.types.*;
 import com.rits.cloning.Cloner;
 
 import java.util.ArrayList;
@@ -27,9 +28,6 @@ public class Cell {
      * List of nodes without InputDec and OutputDec type.
      */
     private ArrayList<Node> nodes;
-    private ArrayList<Node> innerNodes;
-    private ArrayList<Node> inputNodes;
-    private ArrayList<Node> outputNodes;
     /**
      * List of input nodes interfaces.
      */
@@ -43,9 +41,7 @@ public class Cell {
     private ArrayList<INodeOutputInt> outNodesInt;
     private ArrayList<INodeOutputBin> outNodesBin;
     private ArrayList<Edge> edges;
-    private ArrayList<EdgeDec> edgesDec;
-    private ArrayList<EdgeInt> edgesInt;
-    private ArrayList<EdgeBin> edgesBin;
+
     private int maxNodes;
 
     /**
@@ -54,7 +50,6 @@ public class Cell {
     public Cell(int maxNodes) {
         fitnessValue = 0.0;
         nodes = new ArrayList<>();
-        innerNodes = new ArrayList<>();
         inpNodesDec = new ArrayList<>();
         inpNodesInt = new ArrayList<>();
         inpNodesBin = new ArrayList<>();
@@ -62,17 +57,11 @@ public class Cell {
         outNodesInt = new ArrayList<>();
         outNodesBin = new ArrayList<>();
         edges = new ArrayList<>();
-        edgesDec = new ArrayList<>();
-        edgesInt = new ArrayList<>();
-        edgesBin = new ArrayList<>();
         this.maxNodes = maxNodes;
 
         double[][] outDataDec = new double[][]{{0.0}};
         int[][] outDataInt = new int[][]{{1}};
         boolean[][] outDataBin = new boolean[][]{{false}};
-
-        this.inputNodes = new ArrayList<>();
-        this.outputNodes = new ArrayList<>();
     }
 
     public static int countGroup(ArrayList<ArrayList<Node>> group) {
@@ -149,37 +138,43 @@ public class Cell {
     }
 
     public ArrayList<EdgeDec> getEdgesDec() {
-        return edgesDec;
-    }
-
-    public void setEdgesDec(ArrayList<EdgeDec> edgesDec) {
-        this.edgesDec = edgesDec;
+        ArrayList<EdgeDec> edge1 = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (edge instanceof EdgeDec) {
+                edge1.add((EdgeDec) edge);
+            }
+        }
+        return edge1;
     }
 
     public ArrayList<EdgeInt> getEdgesInt() {
-        return edgesInt;
-    }
-
-    public void setEdgesInt(ArrayList<EdgeInt> edgesInt) {
-        this.edgesInt = edgesInt;
+        ArrayList<EdgeInt> edge1 = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (edge instanceof EdgeInt) {
+                edge1.add((EdgeInt) edge);
+            }
+        }
+        return edge1;
     }
 
     public ArrayList<EdgeBin> getEdgesBin() {
-        return edgesBin;
-    }
-
-    public void setEdgesBin(ArrayList<EdgeBin> edgesBin) {
-        this.edgesBin = edgesBin;
+        ArrayList<EdgeBin> edge1 = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (edge instanceof EdgeBin) {
+                edge1.add((EdgeBin) edge);
+            }
+        }
+        return edge1;
     }
 
     public ArrayList<? extends Edge> getEdges(Signal type) throws Exception {
         switch (type) {
             case DECIMAL:
-                return edgesDec;
+                return getEdgesDec();
             case INTEGER:
-                return edgesInt;
+                return getEdgesInt();
             case BOOLEAN:
-                return edgesBin;
+                return getEdgesBin();
             default:
                 return new ArrayList<>();
         }
@@ -218,12 +213,17 @@ public class Cell {
                 outNodesBin.add((INodeOutputBin) node);
                 return;
             }
-            innerNodes.add(node);
         } else throw new Exception("Maximum number of nodes exceeded");
     }
 
     public ArrayList<Node> getInnerNodes() {
-        return innerNodes;
+        ArrayList<Node> nodes1 = new ArrayList<>();
+        for (Node node : nodes) {
+            if (!(node instanceof InputDec || node instanceof InputInt || node instanceof InputBin || node instanceof OutputDec || node instanceof OutputInt || node instanceof OutputBin)) {
+                nodes1.add(node);
+            }
+        }
+        return nodes1;
     }
 
     /**
@@ -232,63 +232,15 @@ public class Cell {
      * @param edge
      */
     public void addEdge(Edge edge) throws Exception {
-        if (edge instanceof EdgeDec) {
-            addEdgeDec((EdgeDec) edge);
-            return;
-        }
-        if (edge instanceof EdgeInt) {
-            addEdgeInt((EdgeInt) edge);
-            return;
-        }
-        if (edge instanceof EdgeBin) {
-            addEdgeBin((EdgeBin) edge);
-            return;
-        }
-        throw new Exception("Edge object not valid");
+        if (!edges.contains(edge)) {
+            edge.getSource().addEdge(edge);
+            edge.getTarget().addEdge(edge);
+            edges.add(edge);
+        } else throw new Exception("Edge to be added already contained");
     }
 
-    public void addEdgeNoVerification(Edge edge) throws Exception {
+    public void addEdgeNotSafe(Edge edge) throws Exception {
         edges.add(edge);
-        if (edge instanceof EdgeDec) {
-            edgesDec.add((EdgeDec) edge);
-            return;
-        }
-        if (edge instanceof EdgeInt) {
-            edgesInt.add((EdgeInt) edge);
-            return;
-        }
-        if (edge instanceof EdgeBin) {
-            edgesBin.add((EdgeBin) edge);
-            return;
-        }
-        throw new Exception("Edge object not valid");
-    }
-
-    public void addEdgeDec(EdgeDec edge) throws Exception {
-        if (!edgesDec.contains(edge)) {
-            edge.getSourceDec().addEdgeDec(edge);
-            edge.getTargetDec().addEdgeDec(edge);
-            edges.add(edge);
-            edgesDec.add(edge);
-        } else throw new Exception("EdgeDec to be added already contained");
-    }
-
-    public void addEdgeInt(EdgeInt edge) throws Exception {
-        if (!edgesInt.contains(edge)) {
-            edge.getSourceInt().addEdgeInt(edge);
-            edge.getTargetInt().addEdgeInt(edge);
-            edges.add(edge);
-            edgesInt.add(edge);
-        } else throw new Exception("EdgeInt to be added already contained");
-    }
-
-    public void addEdgeBin(EdgeBin edge) throws Exception {
-        if (!edgesBin.contains(edge)) {
-            edge.getSourceBin().addEdgeBin(edge);
-            edge.getTargetBin().addEdgeBin(edge);
-            edges.add(edge);
-            edgesBin.add(edge);
-        } else throw new Exception("EdgeBin to be added already contained");
     }
 
     /**
@@ -302,22 +254,6 @@ public class Cell {
             edge.getSource().removeEdge(edge);
             edge.getTarget().removeEdge(edge);
         }
-    }
-
-    public ArrayList<Node> getInputNodes() {
-        return inputNodes;
-    }
-
-    public void setInputNodes(ArrayList<Node> inputNodes) {
-        this.inputNodes = inputNodes;
-    }
-
-    public ArrayList<Node> getOutputNodes() {
-        return outputNodes;
-    }
-
-    public void setOutputNodes(ArrayList<Node> outputNodes) {
-        this.outputNodes = outputNodes;
     }
 
     public ArrayList<INodeInputDec> getInpNodesDec() {
@@ -362,31 +298,27 @@ public class Cell {
         }
         //Remove node from the cell
         nodes.remove(node);
-        innerNodes.remove(node);
     }
 
     public void removeNode(Node node) throws Exception {
         //Remove node from the cell
         nodes.remove(node);
-        innerNodes.remove(node);
     }
 
     public void runEvent(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) throws Exception {
         importSignals(signalsDec, signalsInt, signalsBin);
-        runEvent();
+        clcCell();
         exportSignals();
     }
 
-    public void runEvent() throws Exception {
-        clcCell();
-    }
 
     public void importSignals(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) throws Exception {
         if (signalsDec.length == inpNodesDec.size()) {
             for (int i = 0; i < inpNodesDec.size(); i++) {
                 inpNodesDec.get(i).importSignal(signalsDec[i]);
             }
-        } else throw new Exception("Input array of doubles not equal to the number of input decimal nodes");
+        } else
+            throw new Exception("Input array of doubles not equal to the number of input decimal nodes");
         if (signalsInt.length == inpNodesInt.size()) {
             for (int i = 0; i < inpNodesInt.size(); i++) {
                 inpNodesInt.get(i).importSignal(signalsInt[i]);

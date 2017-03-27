@@ -1,5 +1,4 @@
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.types.*;
 import ameba.core.factories.*;
 import ameba.core.reproductions.crossCell.TransferNodes;
@@ -50,13 +49,14 @@ public class rep3 {
 
         cell.addNode(factoryNode.genNode("SwitchConstDec"));
         cell.addNode(factoryNode.genNode("IntegralInt"));
-        cell.addEdge(new Edge(cell.getNodes().get(0), cell.getNodes().get(6), ));
+
+//        cell.addEdge(new EdgeDec(cell.getInputNodes().get(0).getCollectorsSourceDec().get(0),cell.getNodes()));
 
 
         try {
             for (int i = 0; i < 1000; i++) {
                 System.out.println(i + " Run number");
-                Cell cell = factoryCell.genCellRnd();
+//                Cell cell = factoryCell.genCellRnd();
                 try {
                     cell = factoryCell.genCellRnd();
                     cell = transferNodes.cross(cell, cell.clone());

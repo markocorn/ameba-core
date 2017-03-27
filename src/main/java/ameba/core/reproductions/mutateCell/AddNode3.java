@@ -58,7 +58,7 @@ public class AddNode3 implements IMutateCell {
 
         //Add new node to the cell
         cell.addNode(nodeNew);
-        cell.addEdgeNoVerification(e2);
+        cell.addEdgeNotSafe(e2);
 
 
         //Connects free inputs of new node

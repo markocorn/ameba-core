@@ -76,13 +76,13 @@ public class TransferNodes implements ICrossCell {
         }
         //Add inner edges
         for (Edge edge : innerEdges2.get("edgesDec")) {
-            cell1.addEdgeNoVerification(edge);
+            cell1.addEdgeNotSafe(edge);
         }
         for (Edge edge : innerEdges2.get("edgesInt")) {
-            cell1.addEdgeNoVerification(edge);
+            cell1.addEdgeNotSafe(edge);
         }
         for (Edge edge : innerEdges2.get("edgesBin")) {
-            cell1.addEdgeNoVerification(edge);
+            cell1.addEdgeNotSafe(edge);
         }
 
         //Reconnect edges
