@@ -8,7 +8,8 @@ public class EdgeInt extends Edge {
     private int weight;
 
     public EdgeInt(CollectorSourceInt source, CollectorTargetInt target, int weight) {
-        super(source, target);
+        setSource(source);
+        setTarget(target);
         this.weight = weight;
     }
 

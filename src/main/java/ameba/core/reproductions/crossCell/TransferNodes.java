@@ -41,10 +41,8 @@ public class TransferNodes implements ICrossCell {
 
     @Override
     public Cell cross(Cell cell1, Cell cell2) throws Exception {
-        Cell cell3 = cell1.clone(), cell4 = cell2.clone();
-
         //Remove group of nodes with edges from cell1
-        ArrayList<ArrayList<Node>> group = cell1.getGroup(cell1.getInnerNodes().get(random.nextInt(cell1.getInnerNodes().size())), random.nextInt(maxNodes) + 1);
+        ArrayList<ArrayList<Node>> group = cell1.getGroup(cell1.getInnerNodes().get(random.nextInt(cell1.getInnerNodes().size())), random.nextInt(maxNodes - 1) + 2);
         HashMap<String, ArrayList<Edge>> borderEdges = cell1.getGroupEdgesBorder(group);
         HashMap<String, ArrayList<Edge>> innerEdges = cell1.getGroupEdgesInner(group);
         //Remove inner edges
@@ -139,13 +137,13 @@ public class TransferNodes implements ICrossCell {
             System.out.println("4");
         }
         if (diff > 0) {
-            for (int i = same; i < same - diff; i++) {
+            for (int i = same; i < same + diff; i++) {
                 borderEdges1.get(i).getTarget().removeEdge(borderEdges1.get(i));
                 cell.removeEdge(borderEdges1.get(i));
                 System.out.println("5");
             }
         } else {
-            for (int i = same; i < same + diff; i++) {
+            for (int i = same; i < same - diff; i++) {
                 borderEdges2.get(i).getSource().removeEdge(borderEdges2.get(i));
                 System.out.println("6");
             }

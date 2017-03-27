@@ -359,6 +359,7 @@ public class Cell {
             }
             n = isCellClcDone();
         }
+        rstCell();
     }
 
     private int isCellClcDone() {
@@ -404,6 +405,10 @@ public class Cell {
         //Reset all nodes
         for (Node node : nodes) {
             node.rstNode();
+        }
+        //Reset all edges
+        for (Edge edge : edges) {
+            edge.rstEdge();
         }
     }
 

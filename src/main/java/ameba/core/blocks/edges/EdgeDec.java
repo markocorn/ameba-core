@@ -9,7 +9,8 @@ public class EdgeDec extends Edge {
     private double weight;
 
     public EdgeDec(CollectorSourceDec source, CollectorTargetDec target, double weight) {
-        super(source, target);
+        setSource(source);
+        setTarget(target);
         this.weight = weight;
     }
 

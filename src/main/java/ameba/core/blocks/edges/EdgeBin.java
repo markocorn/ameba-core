@@ -9,7 +9,8 @@ public class EdgeBin extends Edge {
     private boolean weight;
 
     public EdgeBin(CollectorSourceBin source, CollectorTargetBin target, boolean weight) {
-        super(source, target);
+        setSource(source);
+        setTarget(target);
         this.weight = weight;
     }
 

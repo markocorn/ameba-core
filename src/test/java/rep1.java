@@ -79,45 +79,5 @@ public class rep1 {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        ArrayList<ArrayList<Signal>> inputs = new ArrayList<>();
-//        for (int i = 0; i < 10; i++) {
-//            inputs.add(new ArrayList(Arrays.asList(Signal.createDouble(i), Signal.createInteger(i - 5), Signal.createBoolean(true))));
-//        }
-//
-//        try {
-//            Cell cell = factoryCell.genCellRnd();
-//            Cell cell1 = cell;
-//            for (int i = 0; i < 100; i++) {
-//                System.out.println(i + " Run number");
-//
-//                try {
-////                    cell1 = replaceNode.mutate(cell);
-////                    cell1 = addNodesGroup.mutate(factoryCell.genCellRnd());
-//                    cell1 = addNodesGroup.mutate(cell1);
-//                } catch (Exception ex) {
-//                    ex.printStackTrace();
-//                    cell1 = addNodesGroup.mutate(cell1);
-//                }
-//
-//                ArrayList<String> test = cell1.checkCell();
-//                System.out.println(test);
-//                ArrayList<ArrayList<Signal>> outputs = new ArrayList<>();
-//                try {
-//                    outputs = cell1.run(inputs);
-//                } catch (Exception ex) {
-//                    ex.printStackTrace();
-//                }
-//                for (ArrayList<Signal> out : outputs) {
-//                    for (Signal obj : out) {
-//                        System.out.print(obj.getValue());
-//                        System.out.print(":");
-//                    }
-//                    System.out.println();
-//                }
-//
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 }

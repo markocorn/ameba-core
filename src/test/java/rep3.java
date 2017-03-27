@@ -1,5 +1,4 @@
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.nodes.types.*;
 import ameba.core.factories.*;
 import ameba.core.reproductions.crossCell.TransferNodes;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,26 +38,28 @@ public class rep3 {
         int[][] outInt = new int[10][1];
         boolean[][] outBin = new boolean[10][1];
 
-        Cell cell = new Cell(10);
-        cell.addNode(new InputDec());
-        cell.addNode(new InputInt());
-        cell.addNode(new InputBin());
-        cell.addNode(new OutputDec());
-        cell.addNode(new OutputInt());
-        cell.addNode(new OutputBin());
-
-        cell.addNode(factoryNode.genNode("SwitchConstDec"));
-        cell.addNode(factoryNode.genNode("IntegralInt"));
-
-//        cell.addEdge(new EdgeDec(cell.getInputNodes().get(0).getCollectorsSourceDec().get(0),cell.getNodes()));
-
+//        Cell cell = new Cell(10);
+//        cell.addNode(new InputDec());
+//        cell.addNode(new InputInt());
+//        cell.addNode(new InputBin());
+//        cell.addNode(new OutputDec());
+//        cell.addNode(new OutputInt());
+//        cell.addNode(new OutputBin());
+//
+//        cell.addNode(factoryNode.genNode("SwitchConstDec"));
+//        cell.addNode(factoryNode.genNode("IntegralInt"));
+//
+//        cell.addEdge(new EdgeDec(cell.getNodes().get(0).getCollectorsSourceDec().get(0),cell.getNodes().get(6).getCollectorsTargetDec().get(0),1.0));
+//        cell.addEdge(new EdgeDec(cell.getNodes().get(6).getCollectorsSourceDec().get(0),cell.getNodes().get(3).getCollectorsTargetDec().get(0),1.0));
+//        cell.addEdge(new EdgeInt(cell.getNodes().get(1).getCollectorsSourceInt().get(0),cell.getNodes().get(7).getCollectorsTargetInt().get(0),1));
+//        cell.addEdge(new EdgeInt(cell.getNodes().get(7).getCollectorsSourceInt().get(0),cell.getNodes().get(4).getCollectorsTargetInt().get(0),1));
+//        cell.addEdge(new EdgeBin(cell.getNodes().get(1).getCollectorsSourceBin().get(0),cell.getNodes().get(7).getCollectorsTargetBin().get(0),false));
 
         try {
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 10000; i++) {
                 System.out.println(i + " Run number");
-//                Cell cell = factoryCell.genCellRnd();
+                Cell cell = factoryCell.genCellRnd();
                 try {
-                    cell = factoryCell.genCellRnd();
                     cell = transferNodes.cross(cell, cell.clone());
 //                    cell = removeNodesGroup.mutate(cell);
                     if (cell.checkCell().size() > 0) {

@@ -16,14 +16,6 @@ public class Edge implements Cloneable {
 
     private boolean signalTransmitted;
 
-
-    public Edge(CollectorSource source, CollectorTarget target) {
-        this.source = source;
-        this.target = target;
-        this.signalTransmitted = false;
-    }
-
-
     public CollectorSource getSource() {
         return source;
     }
