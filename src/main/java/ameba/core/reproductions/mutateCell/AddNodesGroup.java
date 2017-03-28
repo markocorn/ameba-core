@@ -6,6 +6,7 @@ import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 import ameba.core.factories.FactoryEdge;
 import ameba.core.factories.FactoryNode;
+import ameba.core.reproductions.Reproduction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,19 +16,22 @@ import java.util.Random;
 /**
  * Created by marko on 2/28/17.
  */
-public class AddNodesGroup implements IMutateCell {
+public class AddNodesGroup extends Reproduction implements IMutateCell {
     FactoryNode nodeFactory;
     FactoryCell cellFactory;
     FactoryEdge edgeFactory;
     Random random;
     int maxNodes;
+    int minNodes;
 
-    public AddNodesGroup(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int maxNodes) {
+    public AddNodesGroup(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int maxNodes, int minNodes, int probability) {
+        super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory.clone();
         this.edgeFactory = edgeFactory;
         random = new Random();
         this.maxNodes = maxNodes;
+        this.minNodes = minNodes;
         this.cellFactory.getCellFactorySettings().setNodeInitial(new Integer[]{maxNodes * 10, maxNodes * 10});
 
         this.cellFactory.getCellFactorySettings().setNodeInpDec(1);
@@ -42,7 +46,7 @@ public class AddNodesGroup implements IMutateCell {
     @Override
     public Cell mutate(Cell cell) throws Exception {
         Cell cellBase = cellFactory.genCellRnd();
-        ArrayList<ArrayList<Node>> group = cellBase.getGroup(cellBase.getInnerNodes().get(random.nextInt(cellBase.getInnerNodes().size())), random.nextInt(maxNodes - 1) + 2);
+        ArrayList<ArrayList<Node>> group = cellBase.getGroup(cellBase.getInnerNodes().get(random.nextInt(cellBase.getInnerNodes().size())), random.nextInt(maxNodes - minNodes) + minNodes);
         HashMap<String, ArrayList<Edge>> borderEdges = cellBase.getGroupEdgesBorder(group);
         HashMap<String, ArrayList<Edge>> innerEdges = cellBase.getGroupEdgesInner(group);
         //Add new nodes

@@ -30,7 +30,7 @@ public class rep1 {
         factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{2, 2});
 
         ReplaceNode replaceNode = new ReplaceNode(factoryNode, factoryCell, factoryEdge);
-        AddNode1 addNode1 = new AddNode1(factoryNode, factoryCell);
+//        AddNode1 addNode1 = new AddNode1(factoryNode, factoryCell);
         AddNode2 addNode2 = new AddNode2(factoryNode, factoryCell);
         AddNode3 addNode3 = new AddNode3(factoryNode, factoryCell, factoryEdge);
         RemoveNode removeNode = new RemoveNode(factoryCell);

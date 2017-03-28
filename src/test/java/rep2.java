@@ -16,7 +16,7 @@ public class rep2 {
         FactoryEdge factoryEdge = new FactoryEdge(mapper.readValue(jsonSettings.get("edgeFactorySettings").toString(), FactoryEdgeSettings.class));
         FactoryCell factoryCell = new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), factoryNode, factoryEdge);
 
-        FactoryReproduction factoryReproduction = new FactoryReproduction();
+        FactoryReproduction factoryReproduction = new FactoryReproduction(factoryEdge, factoryNode, factoryCell);
         factoryReproduction.loadSettings(jsonSettings.get("reproductionSettings").toString());
 
 

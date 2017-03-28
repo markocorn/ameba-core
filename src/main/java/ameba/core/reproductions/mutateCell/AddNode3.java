@@ -8,19 +8,21 @@ import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 import ameba.core.factories.FactoryEdge;
 import ameba.core.factories.FactoryNode;
+import ameba.core.reproductions.Reproduction;
 
 import java.util.Random;
 
 /**
  * Created by marko on 2/28/17.
  */
-public class AddNode3 implements IMutateCell {
+public class AddNode3 extends Reproduction implements IMutateCell {
     FactoryNode nodeFactory;
     FactoryCell cellFactory;
     FactoryEdge edgeFactory;
     Random random;
 
-    public AddNode3(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory) {
+    public AddNode3(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int probability) {
+        super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
         this.edgeFactory = edgeFactory;

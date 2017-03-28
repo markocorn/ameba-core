@@ -1127,6 +1127,22 @@
             true
           ]
         }
+      },
+      "mutateCell": {
+        "addNode1": {
+          "probability": 100
+        },
+        "addNode2": {
+          "probability": 100
+        },
+        "addNode3": {
+          "probability": 100
+        },
+        "addNodesGroup": {
+          "probability": 100,
+          "minNodes": 2,
+          "maxNodes": 5
+        }
       }
     }
   ]
