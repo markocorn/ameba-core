@@ -4,6 +4,7 @@ import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
+import ameba.core.reproductions.Reproduction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,21 +14,22 @@ import java.util.Random;
 /**
  * Created by marko on 3/1/17.
  */
-public class RemoveNodesGroup implements IMutateCell {
+public class RemoveNodesGroup extends Reproduction implements IMutateCell {
     FactoryCell cellFactory;
     Random random;
-    int maxRemove;
+    int[] nodesLimit;
 
-    public RemoveNodesGroup(FactoryCell cellFactory, int maxRemove) {
+    public RemoveNodesGroup(FactoryCell cellFactory, int[] nodesLimit, int probability) {
+        super(probability);
         this.cellFactory = cellFactory;
-        this.maxRemove = maxRemove;
+        this.nodesLimit = nodesLimit;
         random = new Random();
     }
 
     @Override
     public Cell mutate(Cell cell) throws Exception {
         if (cell.getInnerNodes().size() < 1) throw new Exception("Number of inner nodes must be grater than zero");
-        ArrayList<ArrayList<Node>> group = cell.getGroup(cell.getInnerNodes().get(random.nextInt(cell.getInnerNodes().size())), random.nextInt(maxRemove) + 1);
+        ArrayList<ArrayList<Node>> group = cell.getGroup(cell.getInnerNodes().get(random.nextInt(cell.getInnerNodes().size())), random.nextInt(nodesLimit[1] - nodesLimit[0]) + nodesLimit[0]);
         HashMap<String, ArrayList<Edge>> borderEdges = cell.getGroupEdgesBorder(group);
         HashMap<String, ArrayList<Edge>> innerEdges = cell.getGroupEdgesInner(group);
 

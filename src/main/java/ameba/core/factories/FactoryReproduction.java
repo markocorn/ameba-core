@@ -1,7 +1,9 @@
 package ameba.core.factories;
 
 import ameba.core.reproductions.Reproduction;
+import ameba.core.reproductions.crossCell.AddNodes;
 import ameba.core.reproductions.crossCell.ICrossCell;
+import ameba.core.reproductions.crossCell.TransferNodes;
 import ameba.core.reproductions.crossEdge.*;
 import ameba.core.reproductions.crossNode.*;
 import ameba.core.reproductions.mutateCell.*;
@@ -34,6 +36,7 @@ public class FactoryReproduction {
     HashMap<String, ICrossNode> crossNodes;
     HashMap<String, ICrossCell> crossCells;
 
+    ArrayList<String> bagReproductions;
     ArrayList<String> bagMutateEdgeDec;
     ArrayList<String> bagMutateEdgeInt;
     ArrayList<String> bagMutateEdgeBin;
@@ -65,6 +68,7 @@ public class FactoryReproduction {
         crossNodes = new HashMap<>();
         crossCells = new HashMap<>();
 
+        this.bagReproductions = new ArrayList<>();
         this.bagMutateEdgeDec = new ArrayList();
         this.bagMutateEdgeInt = new ArrayList();
         this.bagMutateEdgeBin = new ArrayList();
@@ -85,9 +89,12 @@ public class FactoryReproduction {
         loadNodeMutations(node);
         loadNodeCross(node);
         loadCellMutations(node);
+        loadCellCross(node);
     }
 
     private void loadEdgeMutations(JsonNode node) throws IOException {
+        bagReproductions.addAll(Collections.nCopies(node.get(0).get("mutateEdge").get("probability").asInt(), "mutateEdge"));
+
         String name = "weightAddValueDec";
         WeightAddValueDec weightAddValueDec = new WeightAddValueDec(new AddValueDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));
         mutateEdgesDec.put(name, weightAddValueDec);
@@ -144,6 +151,8 @@ public class FactoryReproduction {
     }
 
     private void loadEdgeCross(JsonNode node) throws IOException {
+        bagReproductions.addAll(Collections.nCopies(node.get(0).get("crossEdge").get("probability").asInt(), "crossEdge"));
+
         String name = "weightCombineAddDec";
         WeightCombineAddDec weightCombineAddDec = new WeightCombineAddDec(new CombineAddDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdgesDec.put(name, weightCombineAddDec);
@@ -218,6 +227,8 @@ public class FactoryReproduction {
     }
 
     private void loadNodeMutations(JsonNode node) throws IOException {
+        bagReproductions.addAll(Collections.nCopies(node.get(0).get("mutateNode").get("probability").asInt(), "mutateNode"));
+
         String name = "parAddValueInt";
         ParAddValueInt parAddValueInt = new ParAddValueInt(new AddValueInt(ParOperationSettings.create(node.get(0).get("mutateNode").get(name).toString())));
         mutateNodes.put(name, parAddValueInt);
@@ -268,6 +279,8 @@ public class FactoryReproduction {
     }
 
     private void loadNodeCross(JsonNode node) throws IOException {
+        bagReproductions.addAll(Collections.nCopies(node.get(0).get("crossNode").get("probability").asInt(), "crossNode"));
+
         String name = "parCombineAddDec";
         ParCombineAddDec parCombineAddDec = new ParCombineAddDec(new CombineAddDec(ParOperationSettings.create(node.get(0).get("crossNode").get(name).toString())));
         crossNodes.put(name, parCombineAddDec);
@@ -342,6 +355,8 @@ public class FactoryReproduction {
     }
 
     private void loadCellMutations(JsonNode node) throws IOException {
+        bagReproductions.addAll(Collections.nCopies(node.get(0).get("mutateCell").get("probability").asInt(), "mutateCell"));
+
         String name = "addNode1";
         AddNode1 addNode1 = new AddNode1(factoryNode, factoryCell, node.get(0).get("mutateCell").get(name).get("probability").asInt());
         mutateCells.put(name, addNode1);
@@ -362,12 +377,78 @@ public class FactoryReproduction {
 
         name = "addNodesGroup";
         AddNodesGroup addNodesGroup = new AddNodesGroup(factoryNode, factoryCell, factoryEdge,
-                node.get(0).get("mutateCell").get(name).get("minNodes").asInt(),
-                node.get(0).get("mutateCell").get(name).get("maxNodes").asInt(),
+                new int[]{node.get(0).get("mutateCell").get(name).get("nodesLimit").get(0).asInt(), node.get(0).get("mutateCell").get(name).get("nodesLimit").get(1).asInt()},
                 node.get(0).get("mutateCell").get(name).get("probability").asInt());
         mutateCells.put(name, addNodesGroup);
         reproductions.add(addNodesGroup);
         bagMutateCell.addAll(Collections.nCopies(addNodesGroup.getProbability(), name));
+
+        name = "randCell";
+        RandCell randCell = new RandCell(factoryCell, node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, randCell);
+        reproductions.add(randCell);
+        bagMutateCell.addAll(Collections.nCopies(randCell.getProbability(), name));
+
+        name = "removeNode";
+        RemoveNode removeNode = new RemoveNode(factoryCell, node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, removeNode);
+        reproductions.add(removeNode);
+        bagMutateCell.addAll(Collections.nCopies(removeNode.getProbability(), name));
+
+        name = "removeNode1";
+        RemoveNode1 removeNode1 = new RemoveNode1(factoryCell, node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, removeNode1);
+        reproductions.add(removeNode1);
+        bagMutateCell.addAll(Collections.nCopies(removeNode1.getProbability(), name));
+
+        name = "removeNodesGroup";
+        RemoveNodesGroup removeNodesGroup = new RemoveNodesGroup(factoryCell,
+                new int[]{node.get(0).get("mutateCell").get(name).get("nodesLimit").get(0).asInt(), node.get(0).get("mutateCell").get(name).get("nodesLimit").get(1).asInt()},
+                node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, removeNodesGroup);
+        reproductions.add(removeNodesGroup);
+        bagMutateCell.addAll(Collections.nCopies(removeNodesGroup.getProbability(), name));
+
+        name = "replaceNode";
+        ReplaceNode replaceNode = new ReplaceNode(factoryNode, factoryCell, factoryEdge, node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, replaceNode);
+        reproductions.add(replaceNode);
+        bagMutateCell.addAll(Collections.nCopies(replaceNode.getProbability(), name));
+
+        name = "switchEdgesSources";
+        SwitchEdgesSources switchEdgesSources = new SwitchEdgesSources(node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, switchEdgesSources);
+        reproductions.add(switchEdgesSources);
+        bagMutateCell.addAll(Collections.nCopies(switchEdgesSources.getProbability(), name));
+
+        name = "switchEdgesTargets";
+        SwitchEdgesTargets switchEdgesTargets = new SwitchEdgesTargets(node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, switchEdgesTargets);
+        reproductions.add(switchEdgesTargets);
+        bagMutateCell.addAll(Collections.nCopies(switchEdgesTargets.getProbability(), name));
     }
+
+    private void loadCellCross(JsonNode node) throws IOException {
+        bagReproductions.addAll(Collections.nCopies(node.get(0).get("crossCell").get("probability").asInt(), "crossCell"));
+
+        String name = "addNodes";
+        AddNodes addNodes = new AddNodes(factoryNode, factoryCell, factoryEdge,
+                new int[]{node.get(0).get("crossCell").get(name).get("nodesLimit").get(0).asInt(), node.get(0).get("crossCell").get(name).get("nodesLimit").get(1).asInt()},
+                node.get(0).get("crossCell").get(name).get("probability").asInt());
+        crossCells.put(name, addNodes);
+        reproductions.add(addNodes);
+        bagCrossCell.addAll(Collections.nCopies(addNodes.getProbability(), name));
+
+        name = "transferNodes";
+        TransferNodes transferNodes = new TransferNodes(factoryNode, factoryCell, factoryEdge,
+                new int[]{node.get(0).get("crossCell").get(name).get("nodesLimitRemove").get(0).asInt(), node.get(0).get("crossCell").get(name).get("nodesLimitRemove").get(1).asInt()},
+                new int[]{node.get(0).get("crossCell").get(name).get("nodesLimitAdd").get(0).asInt(), node.get(0).get("crossCell").get(name).get("nodesLimitAdd").get(1).asInt()},
+                node.get(0).get("crossCell").get(name).get("probability").asInt());
+        crossCells.put(name, transferNodes);
+        reproductions.add(transferNodes);
+        bagCrossCell.addAll(Collections.nCopies(transferNodes.getProbability(), name));
+    }
+
+
 }
 

@@ -1,8 +1,5 @@
 import ameba.core.blocks.Cell;
 import ameba.core.factories.*;
-import ameba.core.reproductions.crossCell.AddNodes;
-import ameba.core.reproductions.crossCell.TransferNodes;
-import ameba.core.reproductions.mutateCell.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,18 +26,18 @@ public class rep1 {
         factoryCell.getCellFactorySettings().setNodeOutBin(1);
         factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{2, 2});
 
-        ReplaceNode replaceNode = new ReplaceNode(factoryNode, factoryCell, factoryEdge);
+//        ReplaceNode replaceNode = new ReplaceNode(factoryNode, factoryCell, factoryEdge);
 //        AddNode1 addNode1 = new AddNode1(factoryNode, factoryCell);
-        AddNode2 addNode2 = new AddNode2(factoryNode, factoryCell);
-        AddNode3 addNode3 = new AddNode3(factoryNode, factoryCell, factoryEdge);
-        RemoveNode removeNode = new RemoveNode(factoryCell);
-        RemoveNode1 removeNode1 = new RemoveNode1(factoryCell);
-        SwitchEdgesTargets switchEdges1 = new SwitchEdgesTargets();
-        SwitchEdgesSources switchEdges2 = new SwitchEdgesSources();
-        RemoveNodesGroup removeNodesGroup = new RemoveNodesGroup(factoryCell, 5);
-        AddNodesGroup addNodesGroup = new AddNodesGroup(factoryNode, factoryCell, factoryEdge, 5);
-        AddNodes addNodes = new AddNodes(factoryNode, factoryCell, factoryEdge, 5);
-        TransferNodes transferNodes = new TransferNodes(factoryNode, factoryCell, factoryEdge, 5);
+//        AddNode2 addNode2 = new AddNode2(factoryNode, factoryCell);
+//        AddNode3 addNode3 = new AddNode3(factoryNode, factoryCell, factoryEdge);
+//        RemoveNode removeNode = new RemoveNode(factoryCell);
+//        RemoveNode1 removeNode1 = new RemoveNode1(factoryCell);
+//        SwitchEdgesTargets switchEdges1 = new SwitchEdgesTargets();
+//        SwitchEdgesSources switchEdges2 = new SwitchEdgesSources();
+//        RemoveNodesGroup removeNodesGroup = new RemoveNodesGroup(factoryCell, 5);
+//        AddNodesGroup addNodesGroup = new AddNodesGroup(factoryNode, factoryCell, factoryEdge, 5);
+//        AddNodes addNodes = new AddNodes(factoryNode, factoryCell, factoryEdge, 5);
+//        TransferNodes transferNodes = new TransferNodes(factoryNode, factoryCell, factoryEdge, 5);
 
         double[][] inpDec = new double[][]{{0.0}, {1.0}, {2.0}, {3.0}, {4.0}, {5.0}, {6.0}, {7.0}, {8.0}, {9.0}};
         int[][] inpInt = new int[][]{{0}, {1}, {-1}, {2}, {-2}, {3}, {-3}, {4}, {-4}, {5}};
@@ -56,7 +53,7 @@ public class rep1 {
                 Cell cell = factoryCell.genCellRnd();
                 try {
                     cell = factoryCell.genCellRnd();
-                    cell = replaceNode.mutate(cell);
+//                    cell = replaceNode.mutate(cell);
 //                    cell = removeNodesGroup.mutate(cell);
                     if (cell.checkCell().size() > 0) {
                         int t = 0;

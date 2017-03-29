@@ -4,6 +4,7 @@ import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.CollectorSourceBin;
 import ameba.core.blocks.collectors.CollectorSourceDec;
 import ameba.core.blocks.collectors.CollectorSourceInt;
+import ameba.core.reproductions.Reproduction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,10 +13,11 @@ import java.util.Random;
 /**
  * Created by marko on 2/28/17.
  */
-public class SwitchEdgesTargets implements IMutateCell {
+public class SwitchEdgesTargets extends Reproduction implements IMutateCell {
     Random random;
 
-    public SwitchEdgesTargets() {
+    public SwitchEdgesTargets(int probability) {
+        super(probability);
         random = new Random();
     }
 

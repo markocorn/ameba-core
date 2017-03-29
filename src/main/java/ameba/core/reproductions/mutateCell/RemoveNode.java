@@ -6,17 +6,19 @@ import ameba.core.blocks.collectors.CollectorTarget;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
+import ameba.core.reproductions.Reproduction;
 
 import java.util.Random;
 
 /**
  * Created by marko on 3/1/17.
  */
-public class RemoveNode implements IMutateCell {
+public class RemoveNode extends Reproduction implements IMutateCell {
     FactoryCell cellFactory;
     Random random;
 
-    public RemoveNode(FactoryCell cellFactory) {
+    public RemoveNode(FactoryCell cellFactory, int probability) {
+        super(probability);
         this.cellFactory = cellFactory;
         random = new Random();
     }

@@ -659,6 +659,7 @@
   "reproductionSettings": [
     {
       "mutateEdge": {
+        "probability": 100,
         "weightAddValueDec": {
           "probability": 100,
           "changeLimitDec": [
@@ -760,6 +761,7 @@
         }
       },
       "crossEdge": {
+        "probability": 100,
         "weightCombineAddDec": {
           "probability": 100,
           "changeLimitDec": [
@@ -905,6 +907,7 @@
         }
       },
       "mutateNode": {
+        "probability": 100,
         "parAddValueDec": {
           "probability": 100,
           "changeLimitDec": [
@@ -995,6 +998,7 @@
         }
       },
       "crossNode": {
+        "probability": 100,
         "parCombineAddDec": {
           "probability": 100,
           "changeLimitDec": [
@@ -1129,6 +1133,7 @@
         }
       },
       "mutateCell": {
+        "probability": 100,
         "addNode1": {
           "probability": 100
         },
@@ -1140,8 +1145,56 @@
         },
         "addNodesGroup": {
           "probability": 100,
-          "minNodes": 2,
-          "maxNodes": 5
+          "nodesLimit": [
+            2,
+            5
+          ]
+        },
+        "randCell": {
+          "probability": 100
+        },
+        "removeNode": {
+          "probability": 100
+        },
+        "removeNode1": {
+          "probability": 100
+        },
+        "removeNodesGroup": {
+          "probability": 100,
+          "nodesLimit": [
+            2,
+            5
+          ]
+        },
+        "replaceNode": {
+          "probability": 100
+        },
+        "switchEdgesSources": {
+          "probability": 100
+        },
+        "switchEdgesTargets": {
+          "probability": 100
+        }
+      },
+      "crossCell": {
+        "probability": 100,
+        "addNodes": {
+          "probability": 100,
+          "nodesLimit": [
+            2,
+            5
+          ]
+        },
+        "transferNodes": {
+          "probability": 100,
+          "nodesLimitRemove": [
+            2,
+            5
+          ],
+          "nodesLimitAdd": [
+            2,
+            5
+          ]
         }
       }
     }

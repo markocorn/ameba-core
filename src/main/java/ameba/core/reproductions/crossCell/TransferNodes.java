@@ -7,6 +7,7 @@ import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 import ameba.core.factories.FactoryEdge;
 import ameba.core.factories.FactoryNode;
+import ameba.core.reproductions.Reproduction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,12 +17,13 @@ import java.util.Random;
 /**
  * Created by marko on 3/21/17.
  */
-public class TransferNodes implements ICrossCell {
+public class TransferNodes extends Reproduction implements ICrossCell {
     FactoryNode nodeFactory;
     FactoryCell cellFactory;
     FactoryEdge edgeFactory;
     Random random;
-    int maxNodes;
+    int[] nodesLimitRemove;
+    int[] nodesLimitAdd;
 
     /**
      * Transfer group of nodes from cell2 to cell1 where first the different group of nodes is removed.
@@ -29,20 +31,22 @@ public class TransferNodes implements ICrossCell {
      * @param nodeFactory
      * @param cellFactory
      * @param edgeFactory
-     * @param maxNodes
+
      */
-    public TransferNodes(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int maxNodes) {
+    public TransferNodes(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int[] nodesLimitRemove, int[] nodesLimitAdd, int probability) {
+        super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
         this.edgeFactory = edgeFactory;
-        this.maxNodes = maxNodes;
+        this.nodesLimitRemove = nodesLimitRemove;
+        this.nodesLimitAdd = nodesLimitAdd;
         random = new Random();
     }
 
     @Override
     public Cell cross(Cell cell1, Cell cell2) throws Exception {
         //Remove group of nodes with edges from cell1
-        ArrayList<ArrayList<Node>> group = cell1.getGroup(cell1.getInnerNodes().get(random.nextInt(cell1.getInnerNodes().size())), random.nextInt(maxNodes - 1) + 2);
+        ArrayList<ArrayList<Node>> group = cell1.getGroup(cell1.getInnerNodes().get(random.nextInt(cell1.getInnerNodes().size())), random.nextInt(nodesLimitRemove[1] - nodesLimitRemove[0]) + nodesLimitRemove[0]);
         HashMap<String, ArrayList<Edge>> borderEdges = cell1.getGroupEdgesBorder(group);
         HashMap<String, ArrayList<Edge>> innerEdges = cell1.getGroupEdgesInner(group);
         //Remove inner edges
@@ -63,7 +67,7 @@ public class TransferNodes implements ICrossCell {
         }
 
         //Add group of nodes and edges from cell2 to cell 1
-        ArrayList<ArrayList<Node>> group2 = cell2.getGroup(cell2.getInnerNodes().get(random.nextInt(cell2.getInnerNodes().size())), random.nextInt(maxNodes - 1) + 2);
+        ArrayList<ArrayList<Node>> group2 = cell2.getGroup(cell2.getInnerNodes().get(random.nextInt(cell2.getInnerNodes().size())), random.nextInt(nodesLimitAdd[1] - nodesLimitAdd[0]) + nodesLimitAdd[0]);
         HashMap<String, ArrayList<Edge>> borderEdges2 = cell2.getGroupEdgesBorder(group2);
         HashMap<String, ArrayList<Edge>> innerEdges2 = cell2.getGroupEdgesInner(group2);
         //Add new nodes to cell 1

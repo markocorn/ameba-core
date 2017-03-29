@@ -8,6 +8,7 @@ import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 import ameba.core.factories.FactoryEdge;
 import ameba.core.factories.FactoryNode;
+import ameba.core.reproductions.Reproduction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,13 +17,14 @@ import java.util.Random;
 /**
  * Created by marko on 12/30/16.
  */
-public class ReplaceNode implements IMutateCell {
+public class ReplaceNode extends Reproduction implements IMutateCell {
     FactoryNode nodeFactory;
     FactoryCell cellFactory;
     FactoryEdge edgeFactory;
     Random random;
 
-    public ReplaceNode(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory) {
+    public ReplaceNode(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int probability) {
+        super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
         this.edgeFactory = edgeFactory;

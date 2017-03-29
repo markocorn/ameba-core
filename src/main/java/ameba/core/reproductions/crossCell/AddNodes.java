@@ -6,6 +6,7 @@ import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 import ameba.core.factories.FactoryEdge;
 import ameba.core.factories.FactoryNode;
+import ameba.core.reproductions.Reproduction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,12 +16,12 @@ import java.util.Random;
 /**
  * Created by marko on 3/21/17.
  */
-public class AddNodes implements ICrossCell {
+public class AddNodes extends Reproduction implements ICrossCell {
     FactoryNode nodeFactory;
     FactoryCell cellFactory;
     FactoryEdge edgeFactory;
     Random random;
-    int maxNodes;
+    int[] nodesLimit;
 
     /**
      * Add new nodes from cell2 to cell1
@@ -28,19 +29,19 @@ public class AddNodes implements ICrossCell {
      * @param nodeFactory
      * @param cellFactory
      * @param edgeFactory
-     * @param maxNodes
      */
-    public AddNodes(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int maxNodes) {
+    public AddNodes(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int[] nodesLimit, int probability) {
+        super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
         this.edgeFactory = edgeFactory;
-        this.maxNodes = maxNodes;
+        this.nodesLimit = nodesLimit;
         random = new Random();
     }
 
     @Override
     public Cell cross(Cell cell1, Cell cell2) throws Exception {
-        ArrayList<ArrayList<Node>> group = cell2.getGroup(cell2.getInnerNodes().get(random.nextInt(cell2.getInnerNodes().size())), random.nextInt(maxNodes - 1) + 2);
+        ArrayList<ArrayList<Node>> group = cell2.getGroup(cell2.getInnerNodes().get(random.nextInt(cell2.getInnerNodes().size())), random.nextInt(nodesLimit[1] - nodesLimit[0]) + nodesLimit[0]);
         HashMap<String, ArrayList<Edge>> borderEdges = cell2.getGroupEdgesBorder(group);
         HashMap<String, ArrayList<Edge>> innerEdges = cell2.getGroupEdgesInner(group);
         //Add new nodes

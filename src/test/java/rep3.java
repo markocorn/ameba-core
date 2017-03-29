@@ -1,6 +1,5 @@
 import ameba.core.blocks.Cell;
 import ameba.core.factories.*;
-import ameba.core.reproductions.crossCell.TransferNodes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,7 +27,7 @@ public class rep3 {
         factoryCell.getCellFactorySettings().setNodeOutBin(1);
         factoryCell.getCellFactorySettings().setNodeInitial(new Integer[]{2, 2});
 
-        TransferNodes transferNodes = new TransferNodes(factoryNode, factoryCell, factoryEdge, 5);
+//        TransferNodes transferNodes = new TransferNodes(factoryNode, factoryCell, factoryEdge, 5);
 
         double[][] inpDec = new double[][]{{0.0}, {1.0}, {2.0}, {3.0}, {4.0}, {5.0}, {6.0}, {7.0}, {8.0}, {9.0}};
         int[][] inpInt = new int[][]{{0}, {1}, {-1}, {2}, {-2}, {3}, {-3}, {4}, {-4}, {5}};
@@ -60,7 +59,7 @@ public class rep3 {
                 System.out.println(i + " Run number");
                 Cell cell = factoryCell.genCellRnd();
                 try {
-                    cell = transferNodes.cross(cell, cell.clone());
+//                    cell = transferNodes.cross(cell, cell.clone());
 //                    cell = removeNodesGroup.mutate(cell);
                     if (cell.checkCell().size() > 0) {
                         int t = 0;

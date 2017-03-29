@@ -21,18 +21,16 @@ public class AddNodesGroup extends Reproduction implements IMutateCell {
     FactoryCell cellFactory;
     FactoryEdge edgeFactory;
     Random random;
-    int maxNodes;
-    int minNodes;
+    int[] nodesLimits;
 
-    public AddNodesGroup(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int maxNodes, int minNodes, int probability) {
+    public AddNodesGroup(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int[] nodesLimits, int probability) {
         super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory.clone();
         this.edgeFactory = edgeFactory;
         random = new Random();
-        this.maxNodes = maxNodes;
-        this.minNodes = minNodes;
-        this.cellFactory.getCellFactorySettings().setNodeInitial(new Integer[]{maxNodes * 10, maxNodes * 10});
+        this.nodesLimits = nodesLimits;
+        this.cellFactory.getCellFactorySettings().setNodeInitial(new Integer[]{nodesLimits[1] * 10, nodesLimits[1] * 10});
 
         this.cellFactory.getCellFactorySettings().setNodeInpDec(1);
         this.cellFactory.getCellFactorySettings().setNodeInpInt(1);
@@ -46,7 +44,7 @@ public class AddNodesGroup extends Reproduction implements IMutateCell {
     @Override
     public Cell mutate(Cell cell) throws Exception {
         Cell cellBase = cellFactory.genCellRnd();
-        ArrayList<ArrayList<Node>> group = cellBase.getGroup(cellBase.getInnerNodes().get(random.nextInt(cellBase.getInnerNodes().size())), random.nextInt(maxNodes - minNodes) + minNodes);
+        ArrayList<ArrayList<Node>> group = cellBase.getGroup(cellBase.getInnerNodes().get(random.nextInt(cellBase.getInnerNodes().size())), random.nextInt(nodesLimits[1] - nodesLimits[0]) + nodesLimits[1]);
         HashMap<String, ArrayList<Edge>> borderEdges = cellBase.getGroupEdgesBorder(group);
         HashMap<String, ArrayList<Edge>> innerEdges = cellBase.getGroupEdgesInner(group);
         //Add new nodes
