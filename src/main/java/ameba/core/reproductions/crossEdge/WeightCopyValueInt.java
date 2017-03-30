@@ -1,6 +1,7 @@
 package ameba.core.reproductions.crossEdge;
 
 import ameba.core.blocks.Cell;
+import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.edges.EdgeInt;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParCrossover.CopyValueInt;
@@ -8,7 +9,7 @@ import ameba.core.reproductions.parametersOperations.genParCrossover.CopyValueIn
 /**
  * Created by marko on 12/28/16.
  */
-public class WeightCopyValueInt extends Reproduction implements ICrossEdgeInt {
+public class WeightCopyValueInt extends Reproduction implements ICrossEdge {
     CopyValueInt operationType;
 
     public WeightCopyValueInt(CopyValueInt operationType) {
@@ -17,9 +18,9 @@ public class WeightCopyValueInt extends Reproduction implements ICrossEdgeInt {
     }
 
     @Override
-    public EdgeInt cross(EdgeInt edge1, EdgeInt edge2) throws Exception {
-        edge1.setWeight(operationType.crossover(edge1.getWeight(), edge2.getWeight()));
-        return edge1;
+    public Edge cross(Edge edge1, Edge edge2) {
+        ((EdgeInt) edge1).setWeight(operationType.crossover(((EdgeInt) edge1).getWeight(), ((EdgeInt) edge2).getWeight()));
+        return null;
     }
 
     @Override

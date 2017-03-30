@@ -1,5 +1,6 @@
 package ameba.core.reproductions.mutateNode;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParMutation.MixSignInt;
@@ -27,5 +28,10 @@ public class ParMixSignInt extends Reproduction implements IMutateNode {
             return node;
         }
         return null;
+    }
+
+    @Override
+    public Cell.Signal getType() {
+        return Cell.Signal.INTEGER;
     }
 }

@@ -111,18 +111,15 @@ public class TransferNodes extends Reproduction implements ICrossCell {
             Edge e2 = borderEdges2.get(i);
             e1.setTarget(e2.getTarget());
             e2.getTarget().addEdge(e1);
-            System.out.println("1");
         }
         if (diff > 0) {
             for (int i = same; i < same + diff; i++) {
                 cell.removeEdge(borderEdges1.get(i));
-                System.out.println("2");
             }
 
         } else {
             for (int i = same; i < same - diff; i++) {
                 borderEdges2.get(i).getTarget().removeEdge(borderEdges2.get(i));
-                System.out.println("3");
             }
         }
     }
@@ -138,18 +135,15 @@ public class TransferNodes extends Reproduction implements ICrossCell {
             e1.setSource(s);
             s.removeEdge(e2);
             s.addEdge(e1);
-            System.out.println("4");
         }
         if (diff > 0) {
             for (int i = same; i < same + diff; i++) {
                 borderEdges1.get(i).getTarget().removeEdge(borderEdges1.get(i));
                 cell.removeEdge(borderEdges1.get(i));
-                System.out.println("5");
             }
         } else {
             for (int i = same; i < same - diff; i++) {
                 borderEdges2.get(i).getSource().removeEdge(borderEdges2.get(i));
-                System.out.println("6");
             }
         }
     }

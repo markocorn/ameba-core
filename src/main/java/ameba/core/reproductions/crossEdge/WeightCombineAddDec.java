@@ -1,6 +1,7 @@
 package ameba.core.reproductions.crossEdge;
 
 import ameba.core.blocks.Cell;
+import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.edges.EdgeDec;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParCrossover.CombineAddDec;
@@ -8,7 +9,7 @@ import ameba.core.reproductions.parametersOperations.genParCrossover.CombineAddD
 /**
  * Created by marko on 12/28/16.
  */
-public class WeightCombineAddDec extends Reproduction implements ICrossEdgeDec {
+public class WeightCombineAddDec extends Reproduction implements ICrossEdge {
     CombineAddDec operationType;
 
     public WeightCombineAddDec(CombineAddDec operationType) {
@@ -17,13 +18,13 @@ public class WeightCombineAddDec extends Reproduction implements ICrossEdgeDec {
     }
 
     @Override
-    public EdgeDec cross(EdgeDec edge1, EdgeDec edge2) throws Exception {
-        edge1.setWeight(operationType.crossover(edge1.getWeight(), edge2.getWeight()));
-        return edge1;
+    public Cell.Signal getEdgeType() {
+        return Cell.Signal.DECIMAL;
     }
 
     @Override
-    public Cell.Signal getEdgeType() {
-        return Cell.Signal.DECIMAL;
+    public Edge cross(Edge edge1, Edge edge2) {
+        ((EdgeDec) edge1).setWeight(operationType.crossover(((EdgeDec) edge1).getWeight(), ((EdgeDec) edge2).getWeight()));
+        return null;
     }
 }

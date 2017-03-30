@@ -1,5 +1,6 @@
 package ameba.core.reproductions.mutateNode;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.nodes.Node;
 
 /**
@@ -7,4 +8,6 @@ import ameba.core.blocks.nodes.Node;
  */
 public interface IMutateNode {
     Node mutate(Node node) throws Exception;
+
+    Cell.Signal getType();
 }

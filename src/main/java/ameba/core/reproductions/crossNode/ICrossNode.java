@@ -1,5 +1,6 @@
 package ameba.core.reproductions.crossNode;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.nodes.Node;
 
 /**
@@ -7,4 +8,6 @@ import ameba.core.blocks.nodes.Node;
  */
 public interface ICrossNode {
     Node cross(Node node1, Node node2) throws Exception;
+
+    Cell.Signal getType();
 }

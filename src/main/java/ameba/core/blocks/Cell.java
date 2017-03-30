@@ -270,6 +270,26 @@ public class Cell {
         return nodes1;
     }
 
+    public ArrayList<Node> getInnerNodesParType(Signal type) {
+        ArrayList<Node> nodes1 = new ArrayList<>();
+        for (Node node : nodes) {
+            if (!(node instanceof InputDec || node instanceof InputInt || node instanceof InputBin || node instanceof OutputDec || node instanceof OutputInt || node instanceof OutputBin) && node.getParTypes().contains(type)) {
+                nodes1.add(node);
+            }
+        }
+        return nodes1;
+    }
+
+    public ArrayList<Node> getInnerNodesParType(Signal type, Node nodeNot) {
+        ArrayList<Node> nodes1 = new ArrayList<>();
+        for (Node node : nodes) {
+            if (!(node instanceof InputDec || node instanceof InputInt || node instanceof InputBin || node instanceof OutputDec || node instanceof OutputInt || node instanceof OutputBin) && node.getParTypes().contains(type) && !node.equals(nodeNot)) {
+                nodes1.add(node);
+            }
+        }
+        return nodes1;
+    }
+
     /**
      * AddDec edge to the cell.
      *

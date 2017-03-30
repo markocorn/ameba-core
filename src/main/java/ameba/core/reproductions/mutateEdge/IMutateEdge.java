@@ -1,10 +1,13 @@
 package ameba.core.reproductions.mutateEdge;
 
 import ameba.core.blocks.Cell;
+import ameba.core.blocks.edges.Edge;
 
 /**
  * Created by marko on 3/30/17.
  */
 public interface IMutateEdge {
-    public Cell.Signal getEdgeType();
+    Edge mutate(Edge edge) throws Exception;
+
+    Cell.Signal getEdgeType();
 }

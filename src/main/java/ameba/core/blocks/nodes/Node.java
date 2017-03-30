@@ -291,7 +291,6 @@ public class Node implements Cloneable {
         return collectors;
     }
 
-
     public ArrayList<CollectorTarget> getCollectorsTargetMin(Cell.Signal type) {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         int num;
@@ -593,6 +592,29 @@ public class Node implements Cloneable {
     public Node clone() {
         Cloner cloner = new Cloner();
         return cloner.deepClone(this);
+    }
+
+    public boolean hasParDec() {
+        if (paramsDec.size() > 0) return true;
+        return false;
+    }
+
+    public boolean hasParInt() {
+        if (paramsInt.size() > 0) return true;
+        return false;
+    }
+
+    public boolean hasParBin() {
+        if (paramsBin.size() > 0) return true;
+        return false;
+    }
+
+    public ArrayList<Cell.Signal> getParTypes() {
+        ArrayList<Cell.Signal> types = new ArrayList<>();
+        if (hasParDec()) types.add(Cell.Signal.DECIMAL);
+        if (hasParInt()) types.add(Cell.Signal.INTEGER);
+        if (hasParBin()) types.add(Cell.Signal.BOOLEAN);
+        return types;
     }
 }
 
