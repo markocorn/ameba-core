@@ -147,14 +147,34 @@ public class Cell {
         return edge1;
     }
 
-    public ArrayList<EdgeInt> getEdgesInt() {
-        ArrayList<EdgeInt> edge1 = new ArrayList<>();
-        for (Edge edge : edges) {
-            if (edge instanceof EdgeInt) {
-                edge1.add((EdgeInt) edge);
+    public ArrayList<EdgeDec> getEdgesDec(Edge edge) {
+        ArrayList<EdgeDec> edges1 = new ArrayList<>();
+        for (Edge edge1 : edges) {
+            if (edge1 instanceof EdgeDec && !edge1.equals(edge)) {
+                edges1.add((EdgeDec) edge1);
             }
         }
-        return edge1;
+        return edges1;
+    }
+
+    public ArrayList<EdgeInt> getEdgesInt() {
+        ArrayList<EdgeInt> edges1 = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (edge instanceof EdgeInt) {
+                edges1.add((EdgeInt) edge);
+            }
+        }
+        return edges1;
+    }
+
+    public ArrayList<EdgeInt> getEdgesInt(Edge edge) {
+        ArrayList<EdgeInt> edges1 = new ArrayList<>();
+        for (Edge edge1 : edges) {
+            if (edge1 instanceof EdgeInt && !edge1.equals(edge)) {
+                edges1.add((EdgeInt) edge1);
+            }
+        }
+        return edges1;
     }
 
     public ArrayList<EdgeBin> getEdgesBin() {
@@ -167,6 +187,16 @@ public class Cell {
         return edge1;
     }
 
+    public ArrayList<EdgeBin> getEdgesBin(Edge edge) {
+        ArrayList<EdgeBin> edges1 = new ArrayList<>();
+        for (Edge edge1 : edges) {
+            if (edge1 instanceof EdgeBin && !edge1.equals(edge)) {
+                edges1.add((EdgeBin) edge1);
+            }
+        }
+        return edges1;
+    }
+
     public ArrayList<? extends Edge> getEdges(Signal type) throws Exception {
         switch (type) {
             case DECIMAL:
@@ -175,6 +205,20 @@ public class Cell {
                 return getEdgesInt();
             case BOOLEAN:
                 return getEdgesBin();
+            default:
+                return new ArrayList<>();
+        }
+    }
+
+
+    public ArrayList<? extends Edge> getEdges(Signal type, Edge edge) throws Exception {
+        switch (type) {
+            case DECIMAL:
+                return getEdgesDec(edge);
+            case INTEGER:
+                return getEdgesInt(edge);
+            case BOOLEAN:
+                return getEdgesBin(edge);
             default:
                 return new ArrayList<>();
         }

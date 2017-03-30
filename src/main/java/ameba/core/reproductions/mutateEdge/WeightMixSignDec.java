@@ -1,5 +1,6 @@
 package ameba.core.reproductions.mutateEdge;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.EdgeDec;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParMutation.MixSignDec;
@@ -21,4 +22,8 @@ public class WeightMixSignDec extends Reproduction implements IMutateEdgeDec {
         return edge;
     }
 
+    @Override
+    public Cell.Signal getEdgeType() {
+        return Cell.Signal.DECIMAL;
+    }
 }

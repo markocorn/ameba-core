@@ -1,5 +1,6 @@
 package ameba.core.reproductions.crossEdge;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.EdgeDec;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParCrossover.CopyValueDec;
@@ -19,5 +20,10 @@ public class WeightCopyValueDec extends Reproduction implements ICrossEdgeDec {
     public EdgeDec cross(EdgeDec edge1, EdgeDec edge2) throws Exception {
         edge1.setWeight(operationType.crossover(edge1.getWeight(), edge2.getWeight()));
         return edge1;
+    }
+
+    @Override
+    public Cell.Signal getEdgeType() {
+        return Cell.Signal.DECIMAL;
     }
 }

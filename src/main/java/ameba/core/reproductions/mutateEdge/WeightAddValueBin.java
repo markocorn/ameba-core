@@ -1,5 +1,6 @@
 package ameba.core.reproductions.mutateEdge;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.EdgeBin;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParMutation.AddValueBin;
@@ -21,4 +22,8 @@ public class WeightAddValueBin extends Reproduction implements IMutateEdgeBin {
         return edge;
     }
 
+    @Override
+    public Cell.Signal getEdgeType() {
+        return Cell.Signal.BOOLEAN;
+    }
 }

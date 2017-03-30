@@ -1,5 +1,6 @@
 package ameba.core.reproductions.mutateEdge;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.EdgeInt;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParMutation.RandValueInt;
@@ -21,4 +22,8 @@ public class WeightRandValueInt extends Reproduction implements IMutateEdgeInt {
         return edge;
     }
 
+    @Override
+    public Cell.Signal getEdgeType() {
+        return Cell.Signal.INTEGER;
+    }
 }

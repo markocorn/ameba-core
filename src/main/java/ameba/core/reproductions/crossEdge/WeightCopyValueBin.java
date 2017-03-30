@@ -1,5 +1,6 @@
 package ameba.core.reproductions.crossEdge;
 
+import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.EdgeBin;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParCrossover.CopyValueBin;
@@ -19,5 +20,10 @@ public class WeightCopyValueBin extends Reproduction implements ICrossEdgeBin {
     public EdgeBin cross(EdgeBin edge1, EdgeBin edge2) throws Exception {
         edge1.setWeight(operationType.crossover(edge1.getWeight(), edge2.getWeight()));
         return edge1;
+    }
+
+    @Override
+    public Cell.Signal getEdgeType() {
+        return Cell.Signal.BOOLEAN;
     }
 }

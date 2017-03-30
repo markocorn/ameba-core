@@ -19,7 +19,9 @@ public class rep2 {
         FactoryReproduction factoryReproduction = new FactoryReproduction(factoryEdge, factoryNode, factoryCell);
         factoryReproduction.loadSettings(jsonSettings.get("reproductionSettings").toString());
 
-
+        for (int i = 0; i < 1000; i++) {
+            factoryReproduction.repCell(factoryCell.genCellRnd());
+        }
         int t = 0;
 
     }
