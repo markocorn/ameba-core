@@ -20,7 +20,7 @@ public class IntervalInt extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         int[] inputs = new int[]{getCollectorsTargetInt().get(0).getSignal(), getCollectorsTargetInt().get(1).getSignal(), getCollectorsTargetInt().get(2).getSignal()};
         if (inputs[1] <= inputs[0] && inputs[0] <= inputs[2]) {
             getCollectorsSourceBin().get(0).setSignal(true);

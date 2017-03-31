@@ -25,7 +25,7 @@ public class DMuxDec extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         int ind = getCollectorsTargetInt().get(0).getSignal();
         double value = getCollectorsTargetDec().get(0).getSignal();
 

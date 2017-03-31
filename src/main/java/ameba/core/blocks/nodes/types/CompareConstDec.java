@@ -13,14 +13,14 @@ public class CompareConstDec extends Node {
         //AddDec compare against parameter
         getParamsDec().add(par1);
         getParamsLimitsDec().add(par1Limits);
-        //AddDec operation select parameter
+        //AddDec operation ISelect parameter
         getParamsInt().add(par2);
         getParamsLimitsInt().add(new Integer[]{0, 2});
     }
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceBin().get(0).setSignal(false);
         switch (getParamsInt().get(0)) {
             //Greater than par

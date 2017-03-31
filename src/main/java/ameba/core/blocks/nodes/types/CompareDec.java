@@ -17,7 +17,7 @@ public class CompareDec extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceBin().get(0).setSignal(false);
         switch (getParamsInt().get(0)) {
             //Greater than par

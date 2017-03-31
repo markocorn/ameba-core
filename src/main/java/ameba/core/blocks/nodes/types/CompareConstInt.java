@@ -13,14 +13,14 @@ public class CompareConstInt extends Node {
         //compare against parameter
         getParamsInt().add(par1);
         getParamsLimitsInt().add(par1Limits);
-        //operation select parameter
+        //operation ISelect parameter
         getParamsInt().add(par2);
         getParamsLimitsInt().add(new Integer[]{0, 2});
     }
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceBin().get(0).setSignal(false);
         switch (getParamsInt().get(0)) {
             //Greater than par

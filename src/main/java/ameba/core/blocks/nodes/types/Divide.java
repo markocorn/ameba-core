@@ -16,7 +16,7 @@ public class Divide extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceDec().get(0).setSignal(1.0);
         for (CollectorTargetDec collectorInp : getCollectorsTargetConnectedDec()) {
             if (collectorInp.getSignal() == 0) {

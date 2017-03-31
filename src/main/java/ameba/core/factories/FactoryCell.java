@@ -233,7 +233,7 @@ public class FactoryCell {
     /**
      * Get random input collector of proper type and without edge.
      *
-     * @param cell Cell to select node from.
+     * @param cell Cell to ISelect node from.
      * @return Selected node.
      * @Param node Node that can't be selected.
      */

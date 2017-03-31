@@ -22,7 +22,7 @@ public class IntervalConstInt extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         int[] inputs = new int[]{getCollectorsTargetInt().get(0).getSignal(), getCollectorsTargetInt().get(1).getSignal(), getParamsInt().get(0)};
         if (inputs[1] <= inputs[0] && inputs[0] <= inputs[2]) {
             getCollectorsSourceBin().get(0).setSignal(true);

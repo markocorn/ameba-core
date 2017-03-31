@@ -16,7 +16,7 @@ public class OrBin extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceBin().get(0).setSignal(false);
         for (CollectorTargetBin collectorInp : getCollectorsTargetConnectedBin()) {
             //AddDec all sources signals together.

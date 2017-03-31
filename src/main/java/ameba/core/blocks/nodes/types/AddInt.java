@@ -16,7 +16,7 @@ public class AddInt extends Node {
     }
 
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceInt().get(0).setSignal(0);
         for (CollectorTargetInt collector : getCollectorsTargetConnectedInt()) {
             getCollectorsSourceInt().get(0).setSignal(getCollectorsSourceInt().get(0).getSignal() + collector.getSignal());

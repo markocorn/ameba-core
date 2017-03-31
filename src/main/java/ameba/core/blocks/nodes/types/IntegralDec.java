@@ -36,7 +36,7 @@ public class IntegralDec extends NodeMem {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceDec().get(0).setSignal(getCollectorsTargetDec().get(0).getSignal() * getParamsDec().get(0) + signalOld);
         signalOld = getCollectorsSourceDec().get(0).getSignal();
     }

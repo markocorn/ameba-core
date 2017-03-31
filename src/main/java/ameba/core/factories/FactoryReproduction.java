@@ -74,6 +74,62 @@ public class FactoryReproduction {
         this.bagCrossCell = new ArrayList();
     }
 
+    public Cell repCell(Cell parent1, Cell parent2) throws Exception {
+        Cell child = parent1.clone();
+        repGroup = bagReproductions.get(random.nextInt(bagReproductions.size()));
+        switch (repGroup) {
+            case "mutateEdges": {
+                rep = bagMutateEdge.get(random.nextInt(bagMutateEdge.size()));
+                Edge edge = child.getEdges(mutateEdges.get(rep).getEdgeType()).get(random.nextInt(child.getEdges(mutateEdges.get(rep).getEdgeType()).size()));
+                mutateEdges.get(rep).mutate(edge);
+            }
+            break;
+            case "crossEdge": {
+                rep = bagCrossEdge.get(random.nextInt(bagCrossEdge.size()));
+                if (child.getEdges(crossEdges.get(rep).getEdgeType()).size() > 1) {
+                    Edge edge1 = child.getEdges(crossEdges.get(rep).getEdgeType()).get(random.nextInt(child.getEdges(crossEdges.get(rep).getEdgeType()).size()));
+                    Edge edge2 = child.getEdges(crossEdges.get(rep).getEdgeType(), edge1).get(random.nextInt(child.getEdges(crossEdges.get(rep).getEdgeType(), edge1).size()));
+                    crossEdges.get(rep).cross(edge1, edge2);
+                }
+            }
+            break;
+            case "mutateNode": {
+                rep = bagMutateNode.get(random.nextInt(bagMutateNode.size()));
+                if (child.getInnerNodesParType(mutateNodes.get(rep).getType()).size() > 0) {
+                    Node node = child.getInnerNodesParType(mutateNodes.get(rep).getType()).get(random.nextInt(child.getInnerNodesParType(mutateNodes.get(rep).getType()).size()));
+                    mutateNodes.get(rep).mutate(node);
+                }
+            }
+            break;
+            case "crossNode": {
+                rep = bagCrossNode.get(random.nextInt(bagCrossNode.size()));
+                if (child.getInnerNodesParType(crossNodes.get(rep).getType()).size() > 1) {
+                    Node node1 = child.getInnerNodesParType(crossNodes.get(rep).getType()).get(random.nextInt(child.getInnerNodesParType(crossNodes.get(rep).getType()).size()));
+                    Node node2 = child.getInnerNodesParType(crossNodes.get(rep).getType(), node1).get(random.nextInt(child.getInnerNodesParType(crossNodes.get(rep).getType(), node1).size()));
+                    crossNodes.get(rep).cross(node1, node2);
+                }
+            }
+            break;
+            case "mutateCell":
+                rep = bagMutateCell.get(random.nextInt(bagMutateCell.size()));
+                mutateCells.get(rep).mutate(child);
+                break;
+            case "crossCell":
+                rep = bagCrossCell.get(random.nextInt(bagCrossCell.size()));
+                crossCells.get(rep).cross(child, parent2);
+                break;
+        }
+        return child;
+    }
+
+    public String getRepGroup() {
+        return repGroup;
+    }
+
+    public String getRep() {
+        return rep;
+    }
+
     public void loadSettings(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(json);
@@ -440,62 +496,6 @@ public class FactoryReproduction {
         crossCells.put(name, transferNodes);
         reproductions.add(transferNodes);
         bagCrossCell.addAll(Collections.nCopies(transferNodes.getProbability(), name));
-    }
-
-    public Cell repCell(Cell parent1, Cell parent2) throws Exception {
-        Cell child = parent1.clone();
-        repGroup = bagReproductions.get(random.nextInt(bagReproductions.size()));
-        switch (repGroup) {
-            case "mutateEdges": {
-                rep = bagMutateEdge.get(random.nextInt(bagMutateEdge.size()));
-                Edge edge = child.getEdges(mutateEdges.get(rep).getEdgeType()).get(random.nextInt(child.getEdges(mutateEdges.get(rep).getEdgeType()).size()));
-                mutateEdges.get(rep).mutate(edge);
-            }
-            break;
-            case "crossEdge": {
-                rep = bagCrossEdge.get(random.nextInt(bagCrossEdge.size()));
-                if (child.getEdges(crossEdges.get(rep).getEdgeType()).size() > 1) {
-                    Edge edge1 = child.getEdges(crossEdges.get(rep).getEdgeType()).get(random.nextInt(child.getEdges(crossEdges.get(rep).getEdgeType()).size()));
-                    Edge edge2 = child.getEdges(crossEdges.get(rep).getEdgeType(), edge1).get(random.nextInt(child.getEdges(crossEdges.get(rep).getEdgeType(), edge1).size()));
-                    crossEdges.get(rep).cross(edge1, edge2);
-                }
-            }
-            break;
-            case "mutateNode": {
-                rep = bagMutateNode.get(random.nextInt(bagMutateNode.size()));
-                if (child.getInnerNodesParType(mutateNodes.get(rep).getType()).size() > 0) {
-                    Node node = child.getInnerNodesParType(mutateNodes.get(rep).getType()).get(random.nextInt(child.getInnerNodesParType(mutateNodes.get(rep).getType()).size()));
-                    mutateNodes.get(rep).mutate(node);
-                }
-            }
-            break;
-            case "crossNode": {
-                rep = bagCrossNode.get(random.nextInt(bagCrossNode.size()));
-                if (child.getInnerNodesParType(crossNodes.get(rep).getType()).size() > 1) {
-                    Node node1 = child.getInnerNodesParType(crossNodes.get(rep).getType()).get(random.nextInt(child.getInnerNodesParType(crossNodes.get(rep).getType()).size()));
-                    Node node2 = child.getInnerNodesParType(crossNodes.get(rep).getType(), node1).get(random.nextInt(child.getInnerNodesParType(crossNodes.get(rep).getType(), node1).size()));
-                    crossNodes.get(rep).cross(node1, node2);
-                }
-            }
-            break;
-            case "mutateCell":
-                rep = bagMutateCell.get(random.nextInt(bagMutateCell.size()));
-                mutateCells.get(rep).mutate(child);
-                break;
-            case "crossCell":
-                rep = bagCrossCell.get(random.nextInt(bagCrossCell.size()));
-                crossCells.get(rep).cross(child, parent2);
-                break;
-        }
-        return child;
-    }
-
-    public String getRepGroup() {
-        return repGroup;
-    }
-
-    public String getRep() {
-        return rep;
     }
 }
 

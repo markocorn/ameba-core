@@ -16,7 +16,7 @@ public class AndBin extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceBin().get(0).setSignal(true);
         for (CollectorTargetBin collector : getCollectorsTargetConnectedBin()) {
             if (!collector.getSignal())

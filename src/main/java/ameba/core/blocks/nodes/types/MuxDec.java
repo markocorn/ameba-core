@@ -25,7 +25,7 @@ public class MuxDec extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         int ind = getCollectorsTargetInt().get(0).getSignal();
         double[] inp = new double[getCollectorsTargetConnectedDec().size()];
         for (int i = 0; i < getCollectorsTargetConnectedDec().size(); i++) {

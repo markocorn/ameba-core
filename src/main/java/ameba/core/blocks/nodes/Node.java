@@ -549,7 +549,7 @@ public class Node implements Cloneable {
         this.paramsLimitsBin = paramsLimitsBin;
     }
 
-    public void processNode() throws Exception {
+    public void processNode() {
         if (isSignalInputsReady()) {
             clcNode();
             setSignalClcDone(true);
@@ -566,7 +566,7 @@ public class Node implements Cloneable {
         signalClcDone = false;
     }
 
-    public void clcNode() throws Exception {
+    public void clcNode() {
 
     }
 

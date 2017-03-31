@@ -23,7 +23,7 @@ public class Switch2ConstDec extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         if (getCollectorsTargetBin().get(0).getSignal()) {
             getCollectorsSourceDec().get(0).setSignal(getParamsDec().get(1));
         } else {

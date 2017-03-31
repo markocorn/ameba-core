@@ -35,7 +35,7 @@ public class DerivativeBin extends NodeMem {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceBin().get(0).setSignal(getParamsBin().get(0));
         if (!signalOld == getCollectorsTargetBin().get(0).getSignal()) {
             getCollectorsSourceBin().get(0).setSignal(!getParamsBin().get(0));

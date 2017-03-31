@@ -16,7 +16,7 @@ public class XorBin extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceBin().get(0).setSignal(true);
         for (int i = 1; i < getCollectorsTargetConnectedBin().size(); i++) {
             getCollectorsSourceBin().get(0).setSignal(getCollectorsTargetConnectedBin().get(i - 1).getSignal() ^ getCollectorsTargetConnectedBin().get(i).getSignal());

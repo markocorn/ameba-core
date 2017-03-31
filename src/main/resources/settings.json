@@ -1198,5 +1198,18 @@
         }
       }
     }
-  ]
+  ],
+  "incubatorSettings": {
+    "populationSize": 100,
+    "eliteSize": 1,
+    "selection": 0,
+    "initialPopulation": "",
+    "fitnessType": 0,
+    "fitWeightDec": 100.0,
+    "fitWeightInt": 100.0,
+    "fitWeightBin": 100.0,
+    "prefCellSize": 10,
+    "weightDown": 0.0,
+    "weightUp": 0.01
+  }
 }

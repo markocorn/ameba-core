@@ -17,7 +17,7 @@ public class MultiplyInt extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         getCollectorsSourceInt().get(0).setSignal(1);
         for (CollectorTargetInt collectorInp : getCollectorsTargetConnectedInt()) {
             getCollectorsSourceInt().get(0).setSignal(getCollectorsSourceInt().get(0).getSignal() * collectorInp.getSignal());

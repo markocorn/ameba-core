@@ -25,7 +25,7 @@ public class DMuxBin extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         int ind = getCollectorsTargetInt().get(0).getSignal();
         boolean value = getCollectorsTargetBin().get(0).getSignal();
 

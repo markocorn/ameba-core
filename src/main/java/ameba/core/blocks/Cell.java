@@ -93,15 +93,6 @@ public class Cell {
      */
 
     /**
-     * Set cell's fitness function value.
-     *
-     * @param fitnessValue value of the fitness function.
-     */
-    public void setFitnessValue(double fitnessValue) {
-        this.fitnessValue = fitnessValue;
-    }
-
-    /**
      * Get cell's nodes
      *
      * @return
@@ -209,7 +200,6 @@ public class Cell {
                 return new ArrayList<>();
         }
     }
-
 
     public ArrayList<? extends Edge> getEdges(Signal type, Edge edge) throws Exception {
         switch (type) {
@@ -369,30 +359,22 @@ public class Cell {
         nodes.remove(node);
     }
 
-    public void runEvent(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) throws Exception {
+    public void runEvent(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) {
         importSignals(signalsDec, signalsInt, signalsBin);
         clcCell();
         exportSignals();
     }
 
-
-    public void importSignals(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) throws Exception {
-        if (signalsDec.length == inpNodesDec.size()) {
+    public void importSignals(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) {
             for (int i = 0; i < inpNodesDec.size(); i++) {
                 inpNodesDec.get(i).importSignal(signalsDec[i]);
             }
-        } else
-            throw new Exception("Input array of doubles not equal to the number of input decimal nodes");
-        if (signalsInt.length == inpNodesInt.size()) {
             for (int i = 0; i < inpNodesInt.size(); i++) {
                 inpNodesInt.get(i).importSignal(signalsInt[i]);
             }
-        } else throw new Exception("Input array of integers not equal to the number of input integer nodes");
-        if (signalsBin.length == inpNodesBin.size()) {
             for (int i = 0; i < inpNodesBin.size(); i++) {
                 inpNodesBin.get(i).importSignal(signalsBin[i]);
             }
-        } else throw new Exception("Input array of booleans not equal to the number of input binary nodes");
     }
 
     public void exportSignals() {
@@ -413,7 +395,7 @@ public class Cell {
     /**
      * Execute calculation process of data transition trough nodes and connectivity of the cell.
      */
-    private void clcCell() throws Exception {
+    private void clcCell() {
         int n = isCellClcDone();
         int m = 0;
         while (!(n == 0 || m == n)) {
@@ -483,6 +465,19 @@ public class Cell {
         for (Node node : nodes) {
             node.clearNode();
         }
+    }
+
+    public double getFitnessValue() {
+        return fitnessValue;
+    }
+
+    /**
+     * Set cell's fitness function value.
+     *
+     * @param fitnessValue value of the fitness function.
+     */
+    public void setFitnessValue(double fitnessValue) {
+        this.fitnessValue = fitnessValue;
     }
 
     public Cell clone() {

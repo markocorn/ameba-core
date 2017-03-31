@@ -23,7 +23,7 @@ public class Switch2ConstInt extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         if (getCollectorsTargetBin().get(0).getSignal()) {
             getCollectorsSourceInt().get(0).setSignal(getParamsInt().get(1));
         } else {

@@ -21,7 +21,7 @@ public class SwitchDec extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         if (!getCollectorsTargetBin().get(0).getSignal()) {
             getCollectorsSourceDec().get(0).setSignal(getCollectorsTargetDec().get(0).getSignal());
             //Be carefully allays initiate get method for inputs to set send flag of input nodes.

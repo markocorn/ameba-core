@@ -36,7 +36,7 @@ public class IntegralBin extends NodeMem {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         if (getCollectorsTargetBin().get(0).getSignal()) {
             getCollectorsSourceBin().get(0).setSignal(!getParamsBin().get(0));
             signalOld = true;

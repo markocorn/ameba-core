@@ -10,7 +10,7 @@ public class NodeMem extends Node {
     }
 
     @Override
-    public void processNode() throws Exception {
+    public void processNode() {
         if (isSignalInputsReady()) {
             clcNode();
             setSignalClcDone(true);

@@ -23,7 +23,7 @@ public class Interval2ConstDec extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         if (getParamsDec().get(0) <= getCollectorsTargetDec().get(0).getSignal() && getCollectorsTargetDec().get(0).getSignal() <= getParamsDec().get(1)) {
             getCollectorsSourceBin().get(0).setSignal(true);
         } else getCollectorsSourceBin().get(0).setSignal(false);

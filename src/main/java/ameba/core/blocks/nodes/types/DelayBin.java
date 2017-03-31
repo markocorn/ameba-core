@@ -39,7 +39,7 @@ public class DelayBin extends NodeMem {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         buffer[ind] = getCollectorsTargetBin().get(0).getSignal();
         ind++;
         if (ind >= buffer.length) ind = 0;

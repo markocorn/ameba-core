@@ -26,7 +26,7 @@ public class MuxBin extends Node {
 
     //Calculate output value
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         int ind = getCollectorsTargetInt().get(0).getSignal();
         boolean[] inp = new boolean[getCollectorsTargetConnectedBin().size()];
         for (int i = 0; i < getCollectorsTargetConnectedBin().size(); i++) {

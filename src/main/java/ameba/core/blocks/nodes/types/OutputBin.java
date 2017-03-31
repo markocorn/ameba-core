@@ -24,7 +24,7 @@ public class OutputBin extends Node implements INodeOutputBin {
     }
 
     @Override
-    public void clcNode() throws Exception {
+    public void clcNode() {
         value = getCollectorsTargetBin().get(0).getSignal();
     }
 
