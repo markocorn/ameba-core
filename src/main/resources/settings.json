@@ -4,12 +4,12 @@
       1,
       10
     ],
-    "nodeInpDec": 1,
-    "nodeInpInt": 1,
-    "nodeInpBin": 1,
-    "nodeOutDec": 1,
-    "nodeOutInt": 1,
-    "nodeOutBin": 1,
+    "nodeInpDec": 4,
+    "nodeInpInt": 0,
+    "nodeInpBin": 0,
+    "nodeOutDec": 16,
+    "nodeOutInt": 0,
+    "nodeOutBin": 0,
     "nodeMax": 150
   },
   "edgeFactorySettings": {
@@ -1200,9 +1200,10 @@
     }
   ],
   "incubatorSettings": {
-    "populationSize": 100,
+    "populationSize": 10,
     "eliteSize": 1,
-    "selection": 0,
+    "selectionType": 0,
+    "chosen": 3,
     "initialPopulation": "",
     "fitnessType": 0,
     "fitWeightDec": 100.0,

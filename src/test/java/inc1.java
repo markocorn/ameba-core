@@ -23,23 +23,37 @@ public class inc1 {
         FactoryReproduction factoryReproduction = new FactoryReproduction(factoryEdge, factoryNode, factoryCell);
         factoryReproduction.loadSettings(jsonSettings.get("reproductionSettings").toString());
 
+        //Prepare data
+        JsonNode dataJson = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core/src/main/resources/data.json"));
+
+        double[][] inpDec = new double[dataJson.get("inpDec").size()][dataJson.get("inpDec").get(0).size()];
+        double[][] outDec = new double[dataJson.get("outDec").size()][dataJson.get("outDec").get(0).size()];
+        for (int i = 0; i < inpDec.length; i++) {
+            for (int j = 0; j < inpDec[i].length; j++) {
+                inpDec[i][j] = dataJson.get("inpDec").get(i).get(j).asDouble();
+            }
+            for (int j = 0; j < outDec[i].length; j++) {
+                outDec[i][j] = dataJson.get("outDec").get(i).get(j).asDouble();
+            }
+        }
+
         IncubatorSettings incubatorSettings = mapper.readValue(jsonSettings.get("incubatorSettings").toString(), IncubatorSettings.class);
-        Incubator incubator = new Incubator(factoryCell, incubatorSettings, new BestOf(), new FitnessAbsolute());
+
+        Incubator incubator = new Incubator(factoryCell, factoryReproduction, incubatorSettings, new BestOf(), new FitnessAbsolute(outDec, null, null, 10.0, 10.0, 10.0));
 
         incubator.populateInitial();
-        double[][] inpDec = new double[][]{{0.0}, {1.0}, {2.0}, {3.0}, {4.0}, {5.0}, {6.0}, {7.0}, {8.0}, {9.0}};
-        int[][] inpInt = new int[][]{{0}, {1}, {-1}, {2}, {-2}, {3}, {-3}, {4}, {-4}, {5}};
-        boolean[][] inpBin = new boolean[][]{{false}, {false}, {true}, {true}, {true}, {false}, {false}, {true}, {true}, {true}};
 
         incubator.importData(inpDec);
-        incubator.importData(inpInt);
-        incubator.importData(inpBin);
 
         incubator.checkDataMatch();
 
-        incubator.simPopulation();
+        for (int i = 0; i < 1000; i++) {
+            incubator.simPopulation();
+            incubator.reproduce();
+            System.out.println(i + ": fitness: " + incubator.getPopulation().get(0).getFitnessValue());
+            System.out.println("cell size: " + incubator.getPopulation().get(0).getInnerNodes().size());
+        }
+
         int t = 0;
-
-
     }
 }

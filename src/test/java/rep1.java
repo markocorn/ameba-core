@@ -60,7 +60,7 @@ public class rep1 {
                     }
                     cell.checkCellPrint();
                     for (int j = 0; j < inpDec.length; j++) {
-                        cell.runEvent(inpDec[j], inpInt[j], inpBin[j]);
+//                        cell.runEvent(inpDec[j], inpInt[j], inpBin[j]);
                         outBin[j] = cell.getExportedValuesBin();
                         outInt[j] = cell.getExportedValuesInt();
                         outDec[j] = cell.getExportedValuesDec();

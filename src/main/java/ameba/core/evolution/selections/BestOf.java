@@ -11,8 +11,8 @@ import java.util.Comparator;
  */
 public class BestOf implements ISelect {
     @Override
-    public ArrayList<Cell> select(ArrayList<Cell> parents, int numChild) {
+    public ArrayList<Cell> select(ArrayList<Cell> parents, int chosen) {
         Collections.sort(parents, Comparator.comparingDouble(Cell::getFitnessValue));
-        return (ArrayList<Cell>) parents.subList(0, numChild);
+        return new ArrayList<Cell>(parents.subList(0, chosen));
     }
 }

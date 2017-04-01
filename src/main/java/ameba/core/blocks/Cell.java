@@ -12,11 +12,15 @@ import ameba.core.blocks.nodes.*;
 import ameba.core.blocks.nodes.types.*;
 import com.rits.cloning.Cloner;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
 public class Cell {
+    public String lastRep = "";
     double[] exportsDec;
     int[] exportsInt;
     boolean[] exportsBin;
@@ -359,8 +363,7 @@ public class Cell {
         nodes.remove(node);
     }
 
-    public void runEvent(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) {
-        importSignals(signalsDec, signalsInt, signalsBin);
+    public void runEvent() {
         clcCell();
         exportSignals();
     }
@@ -375,6 +378,24 @@ public class Cell {
             for (int i = 0; i < inpNodesBin.size(); i++) {
                 inpNodesBin.get(i).importSignal(signalsBin[i]);
             }
+    }
+
+    public void importSignals(double[] signalsDec) {
+        for (int i = 0; i < inpNodesDec.size(); i++) {
+            inpNodesDec.get(i).importSignal(signalsDec[i]);
+        }
+    }
+
+    public void importSignals(int[] signalsInt, boolean[] signalsBin) {
+        for (int i = 0; i < inpNodesInt.size(); i++) {
+            inpNodesInt.get(i).importSignal(signalsInt[i]);
+        }
+    }
+
+    public void importSignals(boolean[] signalsBin) {
+        for (int i = 0; i < inpNodesBin.size(); i++) {
+            inpNodesBin.get(i).importSignal(signalsBin[i]);
+        }
     }
 
     public void exportSignals() {
@@ -447,7 +468,7 @@ public class Cell {
     /**
      * Reset cell's nodes.
      */
-    private void rstCell() {
+    public void rstCell() {
         //Reset all nodes
         for (Node node : nodes) {
             node.rstNode();
@@ -461,7 +482,8 @@ public class Cell {
     /**
      * Clear cell's nodes.
      */
-    private void clearCell() {
+    public void clearCell() {
+        rstCell();
         for (Node node : nodes) {
             node.clearNode();
         }
@@ -681,6 +703,12 @@ public class Cell {
         for (String s : error) {
             System.out.println(s);
         }
+    }
+
+    public void writeToFile(String filepath) throws IOException {
+        FileOutputStream fout = new FileOutputStream(filepath);
+        ObjectOutputStream oos = new ObjectOutputStream(fout);
+        oos.writeObject(this);
     }
 
     public enum Signal {DECIMAL, INTEGER, BOOLEAN}

@@ -80,8 +80,11 @@ public class FactoryReproduction {
         switch (repGroup) {
             case "mutateEdges": {
                 rep = bagMutateEdge.get(random.nextInt(bagMutateEdge.size()));
-                Edge edge = child.getEdges(mutateEdges.get(rep).getEdgeType()).get(random.nextInt(child.getEdges(mutateEdges.get(rep).getEdgeType()).size()));
-                mutateEdges.get(rep).mutate(edge);
+                if (child.getEdges(mutateEdges.get(rep).getEdgeType()).size() > 0) {
+                    Edge edge = child.getEdges(mutateEdges.get(rep).getEdgeType()).get(random.nextInt(child.getEdges(mutateEdges.get(rep).getEdgeType()).size()));
+                    mutateEdges.get(rep).mutate(edge);
+                } else
+                    throw new Exception("Can't find edge of type: " + mutateEdges.get(rep).getEdgeType().toString() + " skipping this reproduction");
             }
             break;
             case "crossEdge": {
@@ -119,6 +122,8 @@ public class FactoryReproduction {
                 crossCells.get(rep).cross(child, parent2);
                 break;
         }
+        child.lastRep = rep;
+        child.checkCellPrint();
         return child;
     }
 

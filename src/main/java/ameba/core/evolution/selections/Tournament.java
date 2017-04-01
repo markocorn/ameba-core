@@ -16,9 +16,9 @@ public class Tournament implements ISelect {
     }
 
     @Override
-    public ArrayList<Cell> select(ArrayList<Cell> parents, int numChild) {
+    public ArrayList<Cell> select(ArrayList<Cell> parents, int chosen) {
         ArrayList<Cell> selected = new ArrayList<>();
-        for (int i = 0; i < numChild; i++) {
+        for (int i = 0; i < chosen; i++) {
             Cell cell1 = parents.get(random.nextInt(parents.size()));
             Cell cell2 = parents.get(random.nextInt(parents.size()));
             if (cell1.getFitnessValue() < cell2.getFitnessValue()) {

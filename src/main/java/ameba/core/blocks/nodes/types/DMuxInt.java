@@ -25,15 +25,21 @@ public class DMuxInt extends Node {
     //Calculate output value
     @Override
     public void clcNode() {
-        int ind = getCollectorsTargetInt().get(0).getSignal();
-        int value = getCollectorsTargetInt().get(0).getSignal();
+        try {
+            int ind = getCollectorsTargetInt().get(0).getSignal();
+            int value = getCollectorsTargetInt().get(0).getSignal();
 
-        for (int i = 0; i < getCollectorsSourceInt().size(); i++) {
-            if (i == ind) {
-                getCollectorsSourceInt().get(i).setSignal(value);
-            } else {
-                getCollectorsSourceInt().get(i).setSignal(getParamsInt().get(0));
+            for (int i = 0; i < getCollectorsSourceInt().size(); i++) {
+                if (i == ind) {
+                    getCollectorsSourceInt().get(i).setSignal(value);
+                } else {
+                    getCollectorsSourceInt().get(i).setSignal(getParamsInt().get(0));
+                }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+
+
     }
 }

@@ -12,25 +12,27 @@ import java.io.IOException;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IncubatorSettings {
-    Integer populationSize;
-    Integer eliteSize;
-    Integer selection;
-    String initialPopulation;
-    Integer fitnessType;
-    Integer prefCellSize;
-    Double weightDown;
-    Double weightUp;
-    Double fitWeightDec;
-    Double fitWeightInt;
-    Double fitWeightBin;
+    private Integer populationSize;
+    private Integer eliteSize;
+    private Integer selectionType;
+    private Integer chosen;
+    private String initialPopulation;
+    private Integer fitnessType;
+    private Integer prefCellSize;
+    private Double weightDown;
+    private Double weightUp;
+    private Double fitWeightDec;
+    private Double fitWeightInt;
+    private Double fitWeightBin;
 
     public IncubatorSettings() {
     }
 
-    public IncubatorSettings(Integer populationSize, Integer eliteSize, Integer selection, String initialPopulation, Integer fitnessType, Integer prefCellSize, Double weightDown, Double weightUp, Double fitWeightDec, Double fitWeightInt, Double fitWeightBin) {
+    public IncubatorSettings(Integer populationSize, Integer eliteSize, Integer selectionType, Integer chosen, String initialPopulation, Integer fitnessType, Integer prefCellSize, Double weightDown, Double weightUp, Double fitWeightDec, Double fitWeightInt, Double fitWeightBin) {
         this.populationSize = populationSize;
         this.eliteSize = eliteSize;
-        this.selection = selection;
+        this.selectionType = selectionType;
+        this.chosen = chosen;
         this.initialPopulation = initialPopulation;
         this.fitnessType = fitnessType;
         this.prefCellSize = prefCellSize;
@@ -50,6 +52,14 @@ public class IncubatorSettings {
     public String getStringJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(this);
+    }
+
+    public Integer getChosen() {
+        return chosen;
+    }
+
+    public void setChosen(Integer chosen) {
+        this.chosen = chosen;
     }
 
     public Double getFitWeightDec() {
@@ -92,12 +102,12 @@ public class IncubatorSettings {
         this.eliteSize = eliteSize;
     }
 
-    public Integer getSelection() {
-        return selection;
+    public Integer getSelectionType() {
+        return selectionType;
     }
 
-    public void setSelection(Integer selection) {
-        this.selection = selection;
+    public void setSelectionType(Integer selectionType) {
+        this.selectionType = selectionType;
     }
 
     public String getInitialPopulation() {
