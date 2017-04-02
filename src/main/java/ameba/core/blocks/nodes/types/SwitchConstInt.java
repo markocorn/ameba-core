@@ -24,7 +24,6 @@ public class SwitchConstInt extends Node {
     //Calculate output value
     @Override
     public void clcNode() {
-        try {
             if (!getCollectorsTargetBin().get(0).getSignal()) {
                 getCollectorsSourceInt().get(0).setSignal(getCollectorsTargetInt().get(0).getSignal());
             } else {
@@ -32,9 +31,5 @@ public class SwitchConstInt extends Node {
                 getCollectorsTargetInt().get(0).getSignal();
                 getCollectorsSourceInt().get(0).setSignal(getParamsInt().get(0));
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
     }
 }

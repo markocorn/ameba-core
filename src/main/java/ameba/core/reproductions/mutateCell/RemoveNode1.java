@@ -44,6 +44,7 @@ public class RemoveNode1 extends Reproduction implements IMutateCell {
                 cell.removeEdge(t.getEdges().get(0));
             }
             for (CollectorSource s : node.getCollectorsSourceConnected()) {
+                ArrayList<Edge> forRemoval = new ArrayList<>();
                 for (Edge e : s.getEdges()) {
                     CollectorSource s1 = cellFactory.getCollectorSourceRnd(e.getType(), ss);
                     if (s1 != null) {
@@ -55,12 +56,15 @@ public class RemoveNode1 extends Reproduction implements IMutateCell {
                         e.setSource(s1);
                         s1.addEdge(e);
                     } else {
-                        cell.removeEdge(e);
+                        forRemoval.add(e);
                     }
                 }
+                cell.removeEdge(forRemoval);
             }
             cell.removeNode(node);
-            cellFactory.connectsMinFreeInputs(cell);
+            cellFactory.connectsMinFreeInputs(cell, Cell.Signal.DECIMAL);
+            cellFactory.connectsMinFreeInputs(cell, Cell.Signal.INTEGER);
+            cellFactory.connectsMinFreeInputs(cell, Cell.Signal.BOOLEAN);
         } else throw new Exception("Number of inner nodes is zero");
         return cell;
     }

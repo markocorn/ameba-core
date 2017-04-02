@@ -1,7 +1,7 @@
 {
   "cellFactorySettings": {
     "nodeInitial": [
-      1,
+      5,
       10
     ],
     "nodeInpDec": 4,
@@ -659,7 +659,7 @@
   "reproductionSettings": [
     {
       "mutateEdge": {
-        "probability": 100,
+        "probability": 0,
         "weightAddValueDec": {
           "probability": 100,
           "changeLimitDec": [
@@ -761,7 +761,7 @@
         }
       },
       "crossEdge": {
-        "probability": 100,
+        "probability": 0,
         "weightCombineAddDec": {
           "probability": 100,
           "changeLimitDec": [
@@ -907,7 +907,7 @@
         }
       },
       "mutateNode": {
-        "probability": 100,
+        "probability": 0,
         "parAddValueDec": {
           "probability": 100,
           "changeLimitDec": [
@@ -998,7 +998,7 @@
         }
       },
       "crossNode": {
-        "probability": 100,
+        "probability": 0,
         "parCombineAddDec": {
           "probability": 100,
           "changeLimitDec": [
@@ -1135,29 +1135,29 @@
       "mutateCell": {
         "probability": 100,
         "addNode1": {
-          "probability": 100
+          "probability": 0
         },
         "addNode2": {
-          "probability": 100
+          "probability": 0
         },
         "addNode3": {
-          "probability": 100
+          "probability": 0
         },
         "addNodesGroup": {
-          "probability": 100,
+          "probability": 0,
           "nodesLimit": [
             2,
             5
           ]
         },
         "randCell": {
-          "probability": 100
+          "probability": 0
         },
         "removeNode": {
-          "probability": 100
+          "probability": 0
         },
         "removeNode1": {
-          "probability": 100
+          "probability": 0
         },
         "removeNodesGroup": {
           "probability": 100,
@@ -1167,17 +1167,17 @@
           ]
         },
         "replaceNode": {
-          "probability": 100
+          "probability": 0
         },
         "switchEdgesSources": {
-          "probability": 100
+          "probability": 0
         },
         "switchEdgesTargets": {
-          "probability": 100
+          "probability": 0
         }
       },
       "crossCell": {
-        "probability": 100,
+        "probability": 0,
         "addNodes": {
           "probability": 100,
           "nodesLimit": [
@@ -1186,7 +1186,7 @@
           ]
         },
         "transferNodes": {
-          "probability": 100,
+          "probability": 0,
           "nodesLimitRemove": [
             2,
             5

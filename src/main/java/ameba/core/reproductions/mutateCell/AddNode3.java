@@ -46,7 +46,7 @@ public class AddNode3 extends Reproduction implements IMutateCell {
         Node nodeNew = nodeFactory.genNodeRndCollectorsType(e1.getType(), e1.getType());
         if (nodeNew == null)
             throw new Exception("Can't generate node with " + e1.getType().toString() + " type of input and output collector");
-        CollectorTarget t2 = nodeNew.getCollectorsTargetMin(e1.getType()).get(random.nextInt(nodeNew.getCollectorsTargetMin(e1.getType()).size()));
+        CollectorTarget t2 = nodeNew.getCollectorsTargetToConnect(e1.getType()).get(random.nextInt(nodeNew.getCollectorsTargetToConnect(e1.getType()).size()));
         CollectorSource s2 = nodeNew.getCollectorsSource(e1.getType()).get(random.nextInt(nodeNew.getCollectorsSource(e1.getType()).size()));
         //Create new edge to connect output od new node to the source of old connected node
         Edge e2 = edgeFactory.genEdge(e1.getType(), s2, t1);

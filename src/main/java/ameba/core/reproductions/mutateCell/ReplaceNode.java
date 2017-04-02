@@ -50,7 +50,7 @@ public class ReplaceNode extends Reproduction implements IMutateCell {
     }
 
     private void reconnectInputs(Cell.Signal type, Cell cell, Node nodeOld, Node nodeNew) throws Exception {
-        ArrayList<CollectorTarget> tt = nodeOld.getCollectorsTargetConnected(type);
+        ArrayList<? extends CollectorTarget> tt = nodeOld.getCollectorsTargetConnected(type);
         Collections.shuffle(tt);
         int diff = tt.size() - nodeNew.getCollectorTargetLimit(type)[0];
         int same = Math.min(tt.size(), nodeNew.getCollectorTargetLimit(type)[0]);

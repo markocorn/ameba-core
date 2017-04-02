@@ -67,10 +67,10 @@ public class Incubator {
         }
         for (int i = incubatorSettings.getEliteSize(); i < incubatorSettings.getPopulationSize(); i++) {
             try {
-                newGeneration.add(factoryReproduction.repCell(chosen.get(random.nextInt(chosen.size())), chosen.get(random.nextInt(chosen.size()))));
+                newGeneration.add(factoryReproduction.repCell(chosen.get(random.nextInt(chosen.size())).clone(), chosen.get(random.nextInt(chosen.size()))).clone());
             } catch (Exception ex) {
                 i--;
-                ex.printStackTrace();
+//                ex.printStackTrace();
             }
         }
         population = newGeneration;

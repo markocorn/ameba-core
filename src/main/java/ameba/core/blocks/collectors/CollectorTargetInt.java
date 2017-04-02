@@ -38,12 +38,7 @@ public class CollectorTargetInt extends CollectorTarget {
     }
 
     public int getSignal() {
-        try {
-            return edges.get(0).getSignal();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return 0;
+        return edges.get(0).getSignal();
     }
 
     @Override

@@ -314,6 +314,12 @@ public class Cell {
         }
     }
 
+    public void removeEdge(ArrayList<Edge> edges) throws Exception {
+        for (Edge edge : edges) {
+            removeEdge(edge);
+        }
+    }
+
     public ArrayList<INodeInputDec> getInpNodesDec() {
         return inpNodesDec;
     }
@@ -692,6 +698,24 @@ public class Cell {
                     if (!getEdges().contains(edge)) {
                         out.add("Missing Edge: " + edge.toString() + "from target collector.");
                     }
+                }
+            }
+        }
+        //Check for minimum connections
+        for (Node node : nodes) {
+            for (CollectorTarget t : node.getCollectorsTargetToConnect(Signal.DECIMAL)) {
+                if (t.getEdges().size() == 0) {
+                    out.add("Nodes: " + node.toString() + " target collector Dec: " + t.toString() + "not connected.");
+                }
+            }
+            for (CollectorTarget t : node.getCollectorsTargetToConnect(Signal.INTEGER)) {
+                if (t.getEdges().size() == 0) {
+                    out.add("Nodes: " + node.toString() + " target collector Int: " + t.toString() + "not connected.");
+                }
+            }
+            for (CollectorTarget t : node.getCollectorsTargetToConnect(Signal.BOOLEAN)) {
+                if (t.getEdges().size() == 0) {
+                    out.add("Nodes: " + node.toString() + " target collector Bin: " + t.toString() + "not connected.");
                 }
             }
         }

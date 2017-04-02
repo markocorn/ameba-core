@@ -123,6 +123,9 @@ public class FactoryReproduction {
                 break;
         }
         child.lastRep = rep;
+        if (child.checkCell().size() > 0) {
+            int t = 0;
+        }
         child.checkCellPrint();
         return child;
     }

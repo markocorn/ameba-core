@@ -96,7 +96,9 @@ public class TransferNodes extends Reproduction implements ICrossCell {
         reconnectEdgesOut(cell1, borderEdges.get("edgesOutInt"), borderEdges2.get("edgesOutInt"));
         reconnectEdgesOut(cell1, borderEdges.get("edgesOutBin"), borderEdges2.get("edgesOutBin"));
 
-        cellFactory.connectsMinFreeInputs(cell1);
+        cellFactory.connectsMinFreeInputs(cell1, Cell.Signal.DECIMAL);
+        cellFactory.connectsMinFreeInputs(cell1, Cell.Signal.INTEGER);
+        cellFactory.connectsMinFreeInputs(cell1, Cell.Signal.BOOLEAN);
 
         return cell1;
     }

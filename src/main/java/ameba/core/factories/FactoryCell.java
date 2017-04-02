@@ -2,13 +2,12 @@ package ameba.core.factories;
 
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.*;
+import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
 import com.rits.cloning.Cloner;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by marko on 10/20/16.
@@ -64,7 +63,7 @@ public class FactoryCell {
         for (int i = 0; i < numNodes; i++) {
             Node node;
             //Get target collector that must be connected
-            CollectorTarget collectorTarget = getCollectorTargetMinRnd(cell);
+            CollectorTarget collectorTarget = getCollectorTargetToConnectRnd(cell);
             if (collectorTarget == null) {
                 // if there is no collector fine one on the source side of nodes
                 CollectorSource collectorSource = getCollectorSourceRnd(cell);
@@ -76,20 +75,29 @@ public class FactoryCell {
             if (node == null) throw new Exception("Not possible to generate nodes");
             cell.addNode(node);
         }
-        connectsMinFreeInputs(cell);
+        connectsMinFreeInputs(cell, Cell.Signal.DECIMAL);
+        connectsMinFreeInputs(cell, Cell.Signal.INTEGER);
+        connectsMinFreeInputs(cell, Cell.Signal.BOOLEAN);
 
         return cell;
     }
 
     public void connectsMinFreeInputs(Cell cell) throws Exception {
+        connectsMinFreeInputs(cell, Cell.Signal.DECIMAL);
+        connectsMinFreeInputs(cell, Cell.Signal.INTEGER);
+        connectsMinFreeInputs(cell, Cell.Signal.BOOLEAN);
+    }
+
+    public void connectsMinFreeInputs(Cell cell, Cell.Signal type) throws Exception {
         while (true) {
-            CollectorTarget collectorTarget = getCollectorTargetMinRnd(cell);
+            CollectorTarget collectorTarget = getCollectorTargetToConnectRnd(cell, type);
             if (collectorTarget == null) {
+                if (cell.checkCell().size() > 0) {
+                    int t = 0;
+                }
                 break;
             }
-
             CollectorSource collectorSource = getCollectorSourceRndNoNode(collectorTarget.getType(), cell, collectorTarget.getNodeAttached());
-
             if (collectorSource != null) {
                 cell.addEdge(edgeFactory.genEdge(collectorTarget.getType(), collectorSource, collectorTarget));
             } else {
@@ -115,6 +123,57 @@ public class FactoryCell {
                 }
             }
         }
+    }
+
+    public void reconnectEdges(Cell.Signal type, Cell cell, HashMap<String, ArrayList<Edge>> borderEdges) throws Exception {
+        String ind = "";
+        if (type.equals(Cell.Signal.DECIMAL)) ind = "Dec";
+        if (type.equals(Cell.Signal.INTEGER)) ind = "Int";
+        if (type.equals(Cell.Signal.BOOLEAN)) ind = "Bin";
+        ArrayList<Edge> oldEdges = (ArrayList<Edge>) cell.getEdges(type);
+        int diff = borderEdges.get("edgesInp" + ind).size() - oldEdges.size();
+        int same = Math.min(borderEdges.get("edgesInp" + ind).size(), oldEdges.size());
+        Collections.shuffle(oldEdges);
+        ArrayList<Edge> remains = new ArrayList<>();
+        for (int i = 0; i < same; i++) {
+            Edge edge1 = oldEdges.get(i);
+            Edge edge2 = borderEdges.get("edgesInp" + ind).get(i);
+            //Remove edge 2 from source
+            edge2.getSource().removeEdge(edge2);
+            //Set new source for edge 2
+            edge2.setSource(edge1.getSource());
+            //Remove edge 1 from its source collector
+            edge2.getSource().removeEdge(edge1);
+            remains.add(edge1);
+            //Add edge 2 to cell
+            cell.addEdge(edge2);
+        }
+        if (diff > 0) {
+            for (int i = same; i < same + diff; i++) {
+                borderEdges.get("edgesInp" + ind).get(i).getTarget().removeEdge(borderEdges.get("edgesInp" + ind).get(i));
+            }
+        }
+        //Reconnect output edges
+        diff = borderEdges.get("edgesOut" + ind).size() - remains.size();
+        same = Math.min(borderEdges.get("edgesOut" + ind).size(), remains.size());
+        for (int i = 0; i < same; i++) {
+            Edge edge3 = borderEdges.get("edgesOut" + ind).get(i);
+            Edge edge1 = remains.get(i);
+            edge1.setSource(edge3.getSource());
+            edge1.getSource().addEdge(edge1);
+            edge1.getSource().removeEdge(edge3);
+        }
+        if (diff > 0) {
+            for (int i = same; i < same + diff; i++) {
+                borderEdges.get("edgesOut" + ind).get(i).getSource().removeEdge(borderEdges.get("edgesOut" + ind).get(i));
+            }
+        } else {
+            for (int i = same; i < same - diff; i++) {
+                remains.get(i).getTarget().removeEdge(remains.get(i));
+                cell.removeEdge(remains.get(i));
+            }
+        }
+        connectsMinFreeInputs(cell, type);
     }
 
     public CollectorSource getCollectorSourceRnd(Cell.Signal type, ArrayList<CollectorSource> collectorOuts) {
@@ -259,46 +318,33 @@ public class FactoryCell {
      * @throws Exception
      */
 
-    public CollectorTarget getCollectorTargetMinRnd(Cell cell) {
+    public CollectorTarget getCollectorTargetToConnectRnd(Cell cell) {
+        if (getCollectorTargetToConnect(cell).size() > 0) {
+            return getCollectorTargetToConnect(cell).get(rndGen.nextInt(getCollectorTargetToConnect(cell).size()));
+        } else return null;
+    }
+
+    public CollectorTarget getCollectorTargetToConnectRnd(Cell cell, Cell.Signal type) {
+        if (getCollectorTargetToConnect(cell, type).size() > 0) {
+            return getCollectorTargetToConnect(cell, type).get(rndGen.nextInt(getCollectorTargetToConnect(cell, type).size()));
+        } else return null;
+    }
+
+    public ArrayList<CollectorTarget> getCollectorTargetToConnect(Cell cell) {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            collectors.addAll(node.getCollectorsTargetMinConnect());
+            collectors.addAll(node.getCollectorsTargetToConnect());
         }
-        if (collectors.size() > 0) {
-            return collectors.get(rndGen.nextInt(collectors.size()));
-        } else return null;
+        return collectors;
     }
 
-    public CollectorTargetDec getCollectorTargetMinRndDec(Cell cell) throws Exception {
-        ArrayList<CollectorTargetDec> collectors = new ArrayList<>();
+    public ArrayList<CollectorTarget> getCollectorTargetToConnect(Cell cell, Cell.Signal type) {
+        ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            collectors.addAll(node.getCollectorsTargetMinConnectDec());
+            collectors.addAll(node.getCollectorsTargetToConnect(type));
         }
-        if (collectors.size() > 0) {
-            return collectors.get(rndGen.nextInt(collectors.size()));
-        } else return null;
+        return collectors;
     }
-
-    public CollectorTargetInt getCollectorTargetMinRndInt(Cell cell) throws Exception {
-        ArrayList<CollectorTargetInt> collectors = new ArrayList<>();
-        for (Node node : cell.getNodes()) {
-            collectors.addAll(node.getCollectorsTargetMinConnectInt());
-        }
-        if (collectors.size() > 0) {
-            return collectors.get(rndGen.nextInt(collectors.size()));
-        } else return null;
-    }
-
-    public CollectorTargetBin getCollectorTargetMinRndBin(Cell cell) throws Exception {
-        ArrayList<CollectorTargetBin> collectors = new ArrayList<>();
-        for (Node node : cell.getNodes()) {
-            collectors.addAll(node.getCollectorsTargetMinConnectBin());
-        }
-        if (collectors.size() > 0) {
-            return collectors.get(rndGen.nextInt(collectors.size()));
-        } else return null;
-    }
-
 
     /**
      * Get random input connector from node's where only one free input connector from node is taken into pool to be randomly selected.

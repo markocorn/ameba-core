@@ -37,7 +37,13 @@ public class SimCell {
     public void simulate() {
         for (int i = 0; i < dataInpDec.length; i++) {
             cell.importSignals(dataInpDec[i]);
-            cell.runEvent();
+            try {
+                cell.runEvent();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                cell.checkCellPrint();
+                cell.runEvent();
+            }
             if (dataOutBin.length > 0) {
                 dataOutBin[i] = cell.getExportedValuesBin();
             }

@@ -185,32 +185,24 @@ public class Node implements Cloneable {
             throw new Exception("Collector can't be added. Maximum output collectors limitation of node: " + this.getClass().getSimpleName());
     }
 
-    public ArrayList<CollectorTarget> getCollectorsTargetConnected(Cell.Signal type) {
+    public ArrayList<CollectorTarget> getCollectorsTargetConnected() {
         ArrayList<CollectorTarget> collectorInps = new ArrayList<>();
+        collectorInps.addAll(getCollectorsTargetConnectedDec());
+        collectorInps.addAll(getCollectorsTargetConnectedInt());
+        collectorInps.addAll(getCollectorsTargetConnectedBin());
+        return collectorInps;
+    }
+
+    public ArrayList<? extends CollectorTarget> getCollectorsTargetConnected(Cell.Signal type) {
         switch (type) {
             case DECIMAL:
-                for (CollectorTarget collectorInp : collectorsTargetDec) {
-                    if (collectorInp.getEdges().size() > 0) {
-                        collectorInps.add(collectorInp);
-                    }
-                }
-                break;
+                return getCollectorsTargetConnectedDec();
             case INTEGER:
-                for (CollectorTarget collectorInp : collectorsTargetInt) {
-                    if (collectorInp.getEdges().size() > 0) {
-                        collectorInps.add(collectorInp);
-                    }
-                }
-                break;
+                return getCollectorsTargetConnectedInt();
             case BOOLEAN:
-                for (CollectorTarget collectorInp : collectorsTargetBin) {
-                    if (collectorInp.getEdges().size() > 0) {
-                        collectorInps.add(collectorInp);
-                    }
-                }
-                break;
+                return getCollectorsTargetConnectedBin();
         }
-        return collectorInps;
+        return new ArrayList<>();
     }
 
     public ArrayList<CollectorTargetDec> getCollectorsTargetConnectedDec() {
@@ -243,133 +235,79 @@ public class Node implements Cloneable {
         return collectorInps;
     }
 
-    public ArrayList<CollectorTarget> getCollectorsTargetConnected() {
-        ArrayList<CollectorTarget> collectorInps = new ArrayList<>();
-        for (CollectorTarget collectorInp : collectorsTarget) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorInps.add(collectorInp);
-            }
-        }
-        return collectorInps;
-    }
-
     public ArrayList<CollectorSource> getCollectorsSourceConnected() {
         ArrayList<CollectorSource> collectorOuts = new ArrayList<>();
-        for (CollectorSource collectorOut : collectorSources) {
-            if (collectorOut.getEdges().size() > 0) {
-                collectorOuts.add(collectorOut);
-            }
-        }
+        collectorOuts.addAll(getCollectorsSourceConnectedDec());
+        collectorOuts.addAll(getCollectorsSourceConnectedInt());
+        collectorOuts.addAll(getCollectorsSourceConnectedBin());
+
         return collectorOuts;
     }
 
-    public ArrayList<CollectorSource> getCollectorsSourceConnected(Cell.Signal type) {
-        ArrayList<CollectorSource> collectors = new ArrayList<>();
+    public ArrayList<? extends CollectorSource> getCollectorsSourceConnected(Cell.Signal type) {
         switch (type) {
             case DECIMAL:
-                for (CollectorSource collector : collectorsSourceDec) {
-                    if (collector.getEdges().size() > 0) {
-                        collectors.add(collector);
-                    }
-                }
-                break;
+                return getCollectorsSourceConnectedDec();
             case INTEGER:
-                for (CollectorSource collector : collectorsSourceInt) {
-                    if (collector.getEdges().size() > 0) {
-                        collectors.add(collector);
-                    }
-                }
-                break;
+                return getCollectorsSourceConnectedInt();
             case BOOLEAN:
-                for (CollectorSource collector : collectorsSourceBin) {
-                    if (collector.getEdges().size() > 0) {
-                        collectors.add(collector);
-                    }
-                }
-                break;
+                return getCollectorsSourceConnectedBin();
+        }
+        return new ArrayList<>();
+    }
+
+    public ArrayList<CollectorSourceDec> getCollectorsSourceConnectedDec() {
+        ArrayList<CollectorSourceDec> collectors = new ArrayList<>();
+        for (CollectorSourceDec collector : collectorsSourceDec) {
+            if (collector.getEdges().size() > 0) {
+                collectors.add(collector);
+            }
         }
         return collectors;
     }
 
-    public ArrayList<CollectorTarget> getCollectorsTargetMin(Cell.Signal type) {
-        ArrayList<CollectorTarget> collectors = new ArrayList<>();
-        int num;
-        if (type == Cell.Signal.DECIMAL) {
-            num = getCollectorTargetLimitsDec()[0];
-            for (CollectorTarget collector : collectorsTargetDec) {
-                if (collector.getEdges().size() == 0) {
-                    collectors.add(collector);
-                    num--;
-                }
-                if (num <= 0) {
-                    break;
-                }
+    public ArrayList<CollectorSourceInt> getCollectorsSourceConnectedInt() {
+        ArrayList<CollectorSourceInt> collectors = new ArrayList<>();
+        for (CollectorSourceInt collector : collectorsSourceInt) {
+            if (collector.getEdges().size() > 0) {
+                collectors.add(collector);
             }
+        }
+        return collectors;
+    }
+
+    public ArrayList<CollectorSourceBin> getCollectorsSourceConnectedBin() {
+        ArrayList<CollectorSourceBin> collectors = new ArrayList<>();
+        for (CollectorSourceBin collector : collectorsSourceBin) {
+            if (collector.getEdges().size() > 0) {
+                collectors.add(collector);
+            }
+        }
+        return collectors;
+    }
+
+    public ArrayList<? extends CollectorTarget> getCollectorsTargetToConnect() {
+        ArrayList<CollectorTarget> list = new ArrayList<>();
+        list.addAll(getCollectorsTargetToConnectDec());
+        list.addAll(getCollectorsTargetToConnectInt());
+        list.addAll(getCollectorsTargetToConnectBin());
+        return list;
+    }
+
+    public ArrayList<? extends CollectorTarget> getCollectorsTargetToConnect(Cell.Signal type) {
+        if (type == Cell.Signal.DECIMAL) {
+            return getCollectorsTargetToConnectDec();
         }
         if (type == Cell.Signal.INTEGER) {
-            num = getCollectorTargetLimitsInt()[0];
-            for (CollectorTarget collector : collectorsTargetInt) {
-                if (collector.getEdges().size() == 0) {
-                    collectors.add(collector);
-                    num--;
-                }
-                if (num <= 0) {
-                    break;
-                }
-            }
+            return getCollectorsTargetToConnectInt();
         }
         if (type == Cell.Signal.BOOLEAN) {
-            num = getCollectorTargetLimitsBin()[0];
-            for (CollectorTarget collector : collectorsTargetBin) {
-                if (collector.getEdges().size() == 0) {
-                    collectors.add(collector);
-                    num--;
-                }
-                if (num <= 0) {
-                    break;
-                }
-            }
+            return getCollectorsTargetToConnectBin();
         }
-
-        return collectors;
+        return new ArrayList<>();
     }
 
-    public ArrayList<CollectorTarget> getCollectorsTargetMinConnect() {
-        ArrayList<CollectorTarget> collectors = new ArrayList<>();
-        int min = 0;
-        for (CollectorTarget collector : collectorsTargetBin) {
-            min++;
-            if (collector.getEdges().size() == 0) {
-                collectors.add(collector);
-            }
-            if (min >= getCollectorTargetLimitsBin()[0]) {
-                break;
-            }
-        }
-        min = 0;
-        for (CollectorTarget collector : collectorsTargetInt) {
-            min++;
-            if (collector.getEdges().size() == 0) {
-                collectors.add(collector);
-            }
-            if (min >= getCollectorTargetLimitsInt()[0]) {
-                break;
-            }
-        }
-        min = 0;
-        for (CollectorTarget collector : collectorsTargetDec) {
-            min++;
-            if (collector.getEdges().size() == 0) {
-                collectors.add(collector);
-            }
-            if (min >= getCollectorTargetLimitsDec()[0]) {
-                break;
-            }
-        }
-        return collectors;
-    }
-
-    public ArrayList<CollectorTargetDec> getCollectorsTargetMinConnectDec() {
+    public ArrayList<CollectorTargetDec> getCollectorsTargetToConnectDec() {
         ArrayList<CollectorTargetDec> collectors = new ArrayList<>();
         int min = 0;
         for (CollectorTargetDec collector : collectorsTargetDec) {
@@ -384,10 +322,25 @@ public class Node implements Cloneable {
         return collectors;
     }
 
-    public ArrayList<CollectorTargetInt> getCollectorsTargetMinConnectInt() {
+    public ArrayList<CollectorTargetInt> getCollectorsTargetToConnectInt() {
         ArrayList<CollectorTargetInt> collectors = new ArrayList<>();
         int min = 0;
         for (CollectorTargetInt collector : collectorsTargetInt) {
+            min++;
+            if (collector.getEdges().size() == 0) {
+                collectors.add(collector);
+            }
+            if (min >= getCollectorTargetLimitsInt()[0]) {
+                break;
+            }
+        }
+        return collectors;
+    }
+
+    public ArrayList<CollectorTargetBin> getCollectorsTargetToConnectBin() {
+        ArrayList<CollectorTargetBin> collectors = new ArrayList<>();
+        int min = 0;
+        for (CollectorTargetBin collector : collectorsTargetBin) {
             min++;
             if (collector.getEdges().size() == 0) {
                 collectors.add(collector);
@@ -475,21 +428,6 @@ public class Node implements Cloneable {
 
     public void setCollectorsSourceBin(ArrayList<CollectorSourceBin> collectorsSourceBin) {
         this.collectorsSourceBin = collectorsSourceBin;
-    }
-
-    public ArrayList<CollectorTargetBin> getCollectorsTargetMinConnectBin() {
-        ArrayList<CollectorTargetBin> collectors = new ArrayList<>();
-        int min = 0;
-        for (CollectorTargetBin collector : collectorsTargetBin) {
-            min++;
-            if (collector.getEdges().size() == 0) {
-                collectors.add(collector);
-            }
-            if (min >= getCollectorTargetLimitsBin()[0]) {
-                break;
-            }
-        }
-        return collectors;
     }
 
     public boolean isSourceConnected() {

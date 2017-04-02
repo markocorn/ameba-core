@@ -28,7 +28,7 @@ public class RemoveNodesGroup extends Reproduction implements IMutateCell {
 
     @Override
     public Cell mutate(Cell cell) throws Exception {
-        if (cell.getInnerNodes().size() < 1) throw new Exception("Number of inner nodes must be grater than zero");
+        if (cell.getInnerNodes().size() < 2) throw new Exception("Number of inner nodes must be grater than one");
         ArrayList<ArrayList<Node>> group = cell.getGroup(cell.getInnerNodes().get(random.nextInt(cell.getInnerNodes().size())), random.nextInt(nodesLimit[1] - nodesLimit[0]) + nodesLimit[0]);
         HashMap<String, ArrayList<Edge>> borderEdges = cell.getGroupEdgesBorder(group);
         HashMap<String, ArrayList<Edge>> innerEdges = cell.getGroupEdgesInner(group);
@@ -54,8 +54,6 @@ public class RemoveNodesGroup extends Reproduction implements IMutateCell {
         reconnectEdges(Double.class, cell, borderEdges);
         reconnectEdges(Integer.class, cell, borderEdges);
         reconnectEdges(Boolean.class, cell, borderEdges);
-
-        cellFactory.connectsMinFreeInputs(cell);
 
         return cell;
     }
