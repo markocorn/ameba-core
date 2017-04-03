@@ -106,7 +106,19 @@ public class Evolution {
         } else {
             FileInputStream inputFileStream = new FileInputStream(evolutionSettings.getInitialPopulationPathFile());
             ObjectInputStream objectInputStream = new ObjectInputStream(inputFileStream);
-            incubator.setPopulation((ArrayList<Cell>) objectInputStream.readObject());
+            ArrayList<Cell> popLoaded = (ArrayList<Cell>) objectInputStream.readObject();
+            int diff = popLoaded.size() - incubator.incubatorSettings.getPopulationSize();
+            int same = Math.min(popLoaded.size(), incubator.incubatorSettings.getPopulationSize());
+            ArrayList<Cell> pop = new ArrayList<>();
+            for (int i = 0; i < same; i++) {
+                pop.add(popLoaded.get(i));
+            }
+            if (diff < 0) {
+                for (int i = 0; i < -diff; i++) {
+                    pop.add(factoryCell.genCellRnd());
+                }
+            }
+            incubator.setPopulation(pop);
             objectInputStream.close();
             inputFileStream.close();
             System.out.println("Initial population loaded from file.");

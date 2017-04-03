@@ -1200,7 +1200,7 @@
     }
   ],
   "incubatorSettings": {
-    "populationSize": 10,
+    "populationSize": 5,
     "eliteSize": 1,
     "selectionType": 0,
     "chosen": 3,
