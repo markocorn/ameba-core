@@ -1217,7 +1217,7 @@
     "savePopulationPathFile": "./src/main/resources/popBest",
     "savePopulationPeriod": 100,
     "evolutionExitType": 0,
-    "maxGenerations": 10000,
+    "maxGenerations": 100,
     "fitnessChange": 100,
     "dataPathFile": "./src/main/resources/data.json",
     "enableGPU": false
