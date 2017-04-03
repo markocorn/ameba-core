@@ -15,11 +15,12 @@ import com.rits.cloning.Cloner;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class Cell {
+public class Cell implements Serializable {
     public String lastRep = "";
     double[] exportsDec;
     int[] exportsInt;

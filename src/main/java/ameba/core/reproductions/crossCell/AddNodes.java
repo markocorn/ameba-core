@@ -65,9 +65,6 @@ public class AddNodes extends Reproduction implements ICrossCell {
         cellFactory.reconnectEdges(Cell.Signal.INTEGER, cell1, borderEdges);
         cellFactory.reconnectEdges(Cell.Signal.BOOLEAN, cell1, borderEdges);
 
-        if (cell1.checkCell().size() > 0) {
-            int t = 0;
-        }
         return cell1;
     }
 }

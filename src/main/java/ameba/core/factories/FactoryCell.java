@@ -78,7 +78,9 @@ public class FactoryCell {
         connectsMinFreeInputs(cell, Cell.Signal.DECIMAL);
         connectsMinFreeInputs(cell, Cell.Signal.INTEGER);
         connectsMinFreeInputs(cell, Cell.Signal.BOOLEAN);
-
+        if (cell.checkCell().size() > 0) {
+            throw new Exception("Cell not properly generated. Cell Factory");
+        }
         return cell;
     }
 

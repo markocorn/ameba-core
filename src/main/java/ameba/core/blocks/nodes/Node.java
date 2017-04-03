@@ -5,12 +5,13 @@ import ameba.core.blocks.collectors.*;
 import ameba.core.blocks.edges.Edge;
 import com.rits.cloning.Cloner;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Base node class.
  */
-public class Node implements Cloneable {
+public class Node implements Cloneable, Serializable {
     /**
      * List of input collectors of the node.
      */

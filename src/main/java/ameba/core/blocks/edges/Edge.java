@@ -4,7 +4,9 @@ import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.CollectorSource;
 import ameba.core.blocks.collectors.CollectorTarget;
 
-public class Edge implements Cloneable {
+import java.io.Serializable;
+
+public class Edge implements Cloneable, Serializable {
     /**
      * Source collector of the edge.
      */

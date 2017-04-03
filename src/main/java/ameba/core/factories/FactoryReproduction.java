@@ -119,7 +119,7 @@ public class FactoryReproduction {
                 break;
             case "crossCell":
                 rep = bagCrossCell.get(random.nextInt(bagCrossCell.size()));
-                crossCells.get(rep).cross(child, parent2);
+                crossCells.get(rep).cross(child, parent2.clone());
                 break;
         }
         child.lastRep = rep;

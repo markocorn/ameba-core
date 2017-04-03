@@ -37,16 +37,12 @@ public class Incubator {
         dataInt = new int[0][0];
         dataBin = new boolean[0][0];
         this.random = new Random();
-
     }
 
     public void populateInitial() throws Exception {
         //Populate population
-        if (incubatorSettings.getInitialPopulation().equals("")) {
-            for (int i = 0; i < incubatorSettings.getPopulationSize(); i++) {
-                population.add(factoryCell.genCellRnd());
-            }
-        } else {
+        for (int i = 0; i < incubatorSettings.getPopulationSize(); i++) {
+            population.add(factoryCell.genCellRnd());
         }
     }
 
@@ -65,12 +61,13 @@ public class Incubator {
         for (int i = 0; i < incubatorSettings.getEliteSize(); i++) {
             newGeneration.add(chosen.get(i).clone());
         }
+
         for (int i = incubatorSettings.getEliteSize(); i < incubatorSettings.getPopulationSize(); i++) {
             try {
+
                 newGeneration.add(factoryReproduction.repCell(chosen.get(random.nextInt(chosen.size())).clone(), chosen.get(random.nextInt(chosen.size()))).clone());
             } catch (Exception ex) {
                 i--;
-//                ex.printStackTrace();
             }
         }
         population = newGeneration;
@@ -88,23 +85,11 @@ public class Incubator {
         dataBin = data;
     }
 
-    public void checkDataMatch() throws Exception {
-        Cell cell = population.get(0);
-        if (dataDec.length > 0) {
-            if (cell.getInpNodesDec().size() != dataDec[0].length)
-                throw new Exception("Number of decimal input nodes not equal to the number of input decimal signals");
-        }
-        if (dataInt.length > 0) {
-            if (cell.getInpNodesInt().size() != dataInt[0].length)
-                throw new Exception("Number of integer input nodes not equal to the number of input integer signals");
-        }
-        if (dataBin.length > 0) {
-            if (cell.getInpNodesBin().size() != dataBin[0].length)
-                throw new Exception("Number of boolean input nodes not equal to the number of input boolean signals");
-        }
-    }
-
     public ArrayList<Cell> getPopulation() {
         return population;
+    }
+
+    public void setPopulation(ArrayList<Cell> population) {
+        this.population = population;
     }
 }

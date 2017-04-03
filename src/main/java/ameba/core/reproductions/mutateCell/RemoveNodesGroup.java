@@ -55,6 +55,8 @@ public class RemoveNodesGroup extends Reproduction implements IMutateCell {
         reconnectEdges(Integer.class, cell, borderEdges);
         reconnectEdges(Boolean.class, cell, borderEdges);
 
+        cellFactory.connectsMinFreeInputs(cell);
+
         return cell;
     }
 

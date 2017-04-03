@@ -4,12 +4,13 @@ import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by marko on 1/10/17.
  */
-public class Collector {
+public class Collector implements Serializable {
     private ArrayList<Edge> edges;
     private Node nodeAttached;
 

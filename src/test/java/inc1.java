@@ -14,7 +14,7 @@ import java.io.File;
 public class inc1 {
     public static void main(String[] args) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core/src/main/resources/settings.json"));
+        JsonNode jsonSettings = mapper.readTree(new File("./src/main/resources/settings.json"));
         FactoryNode factoryNode = new FactoryNode();
         factoryNode.loadSettings(jsonSettings.get("nodeFactorySettings").toString());
         FactoryEdge factoryEdge = new FactoryEdge(mapper.readValue(jsonSettings.get("edgeFactorySettings").toString(), FactoryEdgeSettings.class));
@@ -24,7 +24,7 @@ public class inc1 {
         factoryReproduction.loadSettings(jsonSettings.get("reproductionSettings").toString());
 
         //Prepare data
-        JsonNode dataJson = mapper.readTree(new File("/home/marko/IdeaProjects/ameba-core/src/main/resources/data.json"));
+        JsonNode dataJson = mapper.readTree(new File("./src/main/resources/data.json"));
 
         double[][] inpDec = new double[dataJson.get("inpDec").size()][dataJson.get("inpDec").get(0).size()];
         double[][] outDec = new double[dataJson.get("outDec").size()][dataJson.get("outDec").get(0).size()];
@@ -41,11 +41,9 @@ public class inc1 {
 
         Incubator incubator = new Incubator(factoryCell, factoryReproduction, incubatorSettings, new BestOf(), new FitnessAbsolute(outDec, null, null, 10.0, 10.0, 10.0));
 
-        incubator.populateInitial();
 
         incubator.importData(inpDec);
 
-        incubator.checkDataMatch();
 
         for (int i = 0; i < 1000; i++) {
             incubator.simPopulation();

@@ -16,7 +16,6 @@ public class IncubatorSettings {
     private Integer eliteSize;
     private Integer selectionType;
     private Integer chosen;
-    private String initialPopulation;
     private Integer fitnessType;
     private Integer prefCellSize;
     private Double weightDown;
@@ -25,15 +24,16 @@ public class IncubatorSettings {
     private Double fitWeightInt;
     private Double fitWeightBin;
 
+
     public IncubatorSettings() {
     }
 
-    public IncubatorSettings(Integer populationSize, Integer eliteSize, Integer selectionType, Integer chosen, String initialPopulation, Integer fitnessType, Integer prefCellSize, Double weightDown, Double weightUp, Double fitWeightDec, Double fitWeightInt, Double fitWeightBin) {
+
+    public IncubatorSettings(Integer populationSize, Integer eliteSize, Integer selectionType, Integer chosen, Integer fitnessType, Integer prefCellSize, Double weightDown, Double weightUp, Double fitWeightDec, Double fitWeightInt, Double fitWeightBin) {
         this.populationSize = populationSize;
         this.eliteSize = eliteSize;
         this.selectionType = selectionType;
         this.chosen = chosen;
-        this.initialPopulation = initialPopulation;
         this.fitnessType = fitnessType;
         this.prefCellSize = prefCellSize;
         this.weightDown = weightDown;
@@ -108,14 +108,6 @@ public class IncubatorSettings {
 
     public void setSelectionType(Integer selectionType) {
         this.selectionType = selectionType;
-    }
-
-    public String getInitialPopulation() {
-        return initialPopulation;
-    }
-
-    public void setInitialPopulation(String initialPopulation) {
-        this.initialPopulation = initialPopulation;
     }
 
     public Integer getFitnessType() {
