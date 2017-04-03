@@ -95,8 +95,10 @@ public class Evolution {
                 outBin[i][j] = dataJson.get("outBin").get(i).get(j).asBoolean();
             }
         }
-
-        incubator = new Incubator(factoryCell, factoryReproduction, mapper.readValue(jsonSettings.get("incubatorSettings").toString(), IncubatorSettings.class), new BestOf(), new FitnessAbsolute(outDec, null, null, 10.0, 10.0, 10.0));
+        if (evolutionSettings.getEnableGPU()) {
+            incubator = new IncubatorGPU(factoryCell, factoryReproduction, mapper.readValue(jsonSettings.get("incubatorSettings").toString(), IncubatorSettings.class), new BestOf(), new FitnessAbsolute(outDec, null, null, 10.0, 10.0, 10.0));
+        } else
+            incubator = new Incubator(factoryCell, factoryReproduction, mapper.readValue(jsonSettings.get("incubatorSettings").toString(), IncubatorSettings.class), new BestOf(), new FitnessAbsolute(outDec, null, null, 10.0, 10.0, 10.0));
         incubator.importData(inpDec);
         incubator.importData(inpInt);
         incubator.importData(inpBin);
@@ -134,7 +136,7 @@ public class Evolution {
             if (evolutionSettings.getSavePopulationPeriod() > 0 && generation % evolutionSettings.getSavePopulationPeriod() == 0) {
                 saveGeneration();
             }
-            System.out.println(generation + ": fitness: " + incubator.getPopulation().get(0).getFitnessValue());
+            System.out.println(generation + ": size: " + incubator.getPopulation().get(0).getInnerNodes().size() + " ; fitness: " + incubator.getPopulation().get(0).getFitnessValue());
             if (evolutionSettings.getEvolutionExitType() == 0) {
                 if (generation > evolutionSettings.getMaxGenerations()) {
                     exitRun();

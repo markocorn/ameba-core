@@ -7,7 +7,7 @@
     "nodeInpDec": 4,
     "nodeInpInt": 0,
     "nodeInpBin": 0,
-    "nodeOutDec": 16,
+    "nodeOutDec": 24,
     "nodeOutInt": 0,
     "nodeOutBin": 0,
     "nodeMax": 150
@@ -55,7 +55,7 @@
         10
       ],
       "available": true,
-      "probability": 100
+      "probability": 0
     },
     {
       "type": "AndBin",
@@ -92,7 +92,7 @@
     {
       "type": "CompareInt",
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersInt": [
         0
       ],
@@ -129,7 +129,7 @@
     {
       "type": "CompareConstInt",
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersInt": [
         0,
         1
@@ -162,7 +162,7 @@
     {
       "type": "ConstantInt",
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersInt": [
         1
       ],
@@ -205,7 +205,7 @@
     {
       "type": "DelayInt",
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "initialValueInt": 0,
       "parametersInt": [
         1
@@ -250,7 +250,7 @@
     {
       "type": "DerivativeInt",
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "initialValueInt": 0,
       "parametersInt": [
         1
@@ -297,7 +297,7 @@
         10
       ],
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersDec": [
         1.0
       ],
@@ -315,7 +315,7 @@
         10
       ],
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersInt": [
         1.0
       ],
@@ -337,7 +337,7 @@
         10
       ],
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersBin": [
         false
       ],
@@ -355,7 +355,7 @@
         10
       ],
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersDec": [
         1.0
       ],
@@ -373,7 +373,7 @@
         10
       ],
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersInt": [
         1.0
       ],
@@ -391,7 +391,7 @@
         10
       ],
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersBin": [
         false
       ],
@@ -420,7 +420,7 @@
     {
       "type": "IntegralInt",
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "initialValueInt": 0,
       "parametersInt": [
         1
@@ -455,7 +455,7 @@
     {
       "type": "IntervalInt",
       "available": true,
-      "probability": 100
+      "probability": 0
     },
     {
       "type": "IntervalConstDec",
@@ -474,7 +474,7 @@
     {
       "type": "IntervalConstInt",
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersInt": [
         1
       ],
@@ -507,7 +507,7 @@
     {
       "type": "Interval2ConstInt",
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersInt": [
         1,
         1
@@ -539,7 +539,7 @@
         10
       ],
       "available": true,
-      "probability": 100
+      "probability": 0
     },
     {
       "type": "SwitchDec",
@@ -549,7 +549,7 @@
     {
       "type": "SwitchInt",
       "available": true,
-      "probability": 100
+      "probability": 0
     },
     {
       "type": "SwitchBin",
@@ -573,7 +573,7 @@
     {
       "type": "SwitchConstInt",
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersInt": [
         1
       ],
@@ -620,7 +620,7 @@
     {
       "type": "Switch2ConstInt",
       "available": true,
-      "probability": 100,
+      "probability": 0,
       "parametersInt": [
         1,
         1
@@ -1200,7 +1200,7 @@
     }
   ],
   "incubatorSettings": {
-    "populationSize": 5,
+    "populationSize": 30,
     "eliteSize": 1,
     "selectionType": 0,
     "chosen": 3,
@@ -1210,15 +1210,16 @@
     "fitWeightBin": 100.0,
     "prefCellSize": 10,
     "weightDown": 0.0,
-    "weightUp": 0.01
+    "weightUp": 0.1
   },
   "evolutionSettings": {
     "initialPopulationPathFile": "./src/main/resources/popBest",
     "savePopulationPathFile": "./src/main/resources/popBest",
     "savePopulationPeriod": 100,
     "evolutionExitType": 0,
-    "maxGenerations": 1000,
+    "maxGenerations": 10000,
     "fitnessChange": 100,
-    "dataPathFile": "./src/main/resources/data.json"
+    "dataPathFile": "./src/main/resources/data.json",
+    "enableGPU": false
   }
 }
