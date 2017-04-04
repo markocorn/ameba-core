@@ -1213,11 +1213,12 @@
     "weightUp": 0.1
   },
   "evolutionSettings": {
-    "initialPopulationPathFile": "./src/main/resources/popBest",
+    "initialPopulationPathFile": "",
     "savePopulationPathFile": "./src/main/resources/popBest",
     "savePopulationPeriod": 100,
+    "savePopulationSize": 1,
     "evolutionExitType": 0,
-    "maxGenerations": 100,
+    "maxGenerations": 100000,
     "fitnessChange": 100,
     "dataPathFile": "./src/main/resources/data.json",
     "enableGPU": false

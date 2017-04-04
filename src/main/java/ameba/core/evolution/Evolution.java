@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Created by marko on 4/3/17.
  */
-public class Evolution {
+public class Evolution extends Thread {
     EvolutionSettings evolutionSettings;
     FactoryCell factoryCell;
     FactoryNode factoryNode;
@@ -127,12 +127,21 @@ public class Evolution {
         }
     }
 
-    public void run() throws Exception {
+    public void run() {
         generation = 0;
         while (true) {
+            if (Thread.currentThread().isInterrupted()) {
+                exitRun();
+                System.out.println("Stop evolution by user.");
+                break;
+            }
             generation++;
             incubator.simPopulation();
-            incubator.reproduce();
+            try {
+                incubator.reproduce();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if (evolutionSettings.getSavePopulationPeriod() > 0 && generation % evolutionSettings.getSavePopulationPeriod() == 0) {
                 saveGeneration();
             }
@@ -149,16 +158,27 @@ public class Evolution {
         }
     }
 
-    public void saveGeneration() throws IOException {
-        FileOutputStream fout = new FileOutputStream(evolutionSettings.getSavePopulationPathFile());
-        ObjectOutputStream oos = new ObjectOutputStream(fout);
-        oos.writeObject(incubator.population);
-        System.out.println("Saved population at generation: " + generation);
+    public void saveGeneration() {
+        FileOutputStream fout = null;
+        try {
+            fout = new FileOutputStream(evolutionSettings.getSavePopulationPathFile());
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+            ArrayList<Cell> p = new ArrayList<>();
+            for (int i = 0; i < evolutionSettings.getSavePopulationSize(); i++) {
+                p.add(incubator.population.get(i));
+            }
+            oos.writeObject(p);
+            System.out.println("Saved population at generation: " + generation);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    private void exitRun() throws IOException {
-        System.out.println("Evolution ended");
+    private void exitRun() {
+        System.out.println("Main ended");
         saveGeneration();
-
     }
 }

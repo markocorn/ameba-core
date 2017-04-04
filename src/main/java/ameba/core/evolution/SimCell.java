@@ -35,6 +35,7 @@ public class SimCell {
     }
 
     public void simulate() {
+        cell.clearCell();
         for (int i = 0; i < dataInpDec.length; i++) {
             cell.importSignals(dataInpDec[i]);
             try {
@@ -54,7 +55,6 @@ public class SimCell {
                 dataOutDec[i] = cell.getExportedValuesDec();
             }
         }
-        cell.clearCell();
     }
 
     public void fitness() {

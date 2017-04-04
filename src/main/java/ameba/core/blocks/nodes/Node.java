@@ -24,6 +24,10 @@ public class Node implements Cloneable, Serializable {
     private ArrayList<CollectorSourceInt> collectorsSourceInt;
     private ArrayList<CollectorSourceBin> collectorsSourceBin;
 
+    private ArrayList<CollectorTargetDec> collectorsTargetConDec;
+    private ArrayList<CollectorTargetInt> collectorsTargetConInt;
+    private ArrayList<CollectorTargetBin> collectorsTargetConBin;
+
     private int[] collectorTargetLimitsDec;
     private int[] collectorTargetLimitsInt;
     private int[] collectorTargetLimitsBin;
@@ -60,6 +64,10 @@ public class Node implements Cloneable, Serializable {
         collectorsSourceInt = new ArrayList<>();
         collectorsSourceBin = new ArrayList<>();
 
+        collectorsTargetConDec = new ArrayList<>();
+        collectorsTargetConInt = new ArrayList<>();
+        collectorsTargetConBin = new ArrayList<>();
+
         paramsDec = new ArrayList<>();
         paramsLimitsDec = new ArrayList<>();
         paramsInt = new ArrayList<>();
@@ -69,6 +77,28 @@ public class Node implements Cloneable, Serializable {
 
         signalReady = false;
         signalClcDone = false;
+    }
+
+    //For optimization purposes
+    public void loadConnectedEdges() {
+        collectorsTargetConDec.clear();
+        for (CollectorTargetDec collectorInp : collectorsTargetDec) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorsTargetConDec.add(collectorInp);
+            }
+        }
+        collectorsTargetConInt.clear();
+        for (CollectorTargetInt collectorInp : collectorsTargetInt) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorsTargetConInt.add(collectorInp);
+            }
+        }
+        collectorsTargetConBin.clear();
+        for (CollectorTargetBin collectorInp : collectorsTargetBin) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorsTargetConBin.add(collectorInp);
+            }
+        }
     }
 
     public int[] getCollectorTargetLimit(Cell.Signal type) {
@@ -207,33 +237,15 @@ public class Node implements Cloneable, Serializable {
     }
 
     public ArrayList<CollectorTargetDec> getCollectorsTargetConnectedDec() {
-        ArrayList<CollectorTargetDec> collectorInps = new ArrayList<>();
-        for (CollectorTargetDec collectorInp : collectorsTargetDec) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorInps.add(collectorInp);
-            }
-        }
-        return collectorInps;
+        return collectorsTargetConDec;
     }
 
     public ArrayList<CollectorTargetInt> getCollectorsTargetConnectedInt() {
-        ArrayList<CollectorTargetInt> collectorInps = new ArrayList<>();
-        for (CollectorTargetInt collectorInp : collectorsTargetInt) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorInps.add(collectorInp);
-            }
-        }
-        return collectorInps;
+        return collectorsTargetConInt;
     }
 
     public ArrayList<CollectorTargetBin> getCollectorsTargetConnectedBin() {
-        ArrayList<CollectorTargetBin> collectorInps = new ArrayList<>();
-        for (CollectorTargetBin collectorInp : collectorsTargetBin) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorInps.add(collectorInp);
-            }
-        }
-        return collectorInps;
+        return collectorsTargetConBin;
     }
 
     public ArrayList<CollectorSource> getCollectorsSourceConnected() {

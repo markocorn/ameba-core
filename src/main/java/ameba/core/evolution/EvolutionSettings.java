@@ -15,6 +15,7 @@ public class EvolutionSettings {
     private String initialPopulationPathFile;
     private String savePopulationPathFile;
     private Integer savePopulationPeriod;
+    private Integer savePopulationSize;
     private Integer evolutionExitType;
     private Integer maxGenerations;
     private Integer fitnessChange;
@@ -24,12 +25,13 @@ public class EvolutionSettings {
     public EvolutionSettings() {
     }
 
-    public EvolutionSettings(String settingsPathFile, String dataPathFile, String initialPopulationPathFile, String savePopulationPathFile, Integer savePopulationPeriod, Integer evolutionExitType, Integer maxGenerations, Integer fitnessChange, Boolean enableGPU) {
+    public EvolutionSettings(String settingsPathFile, String dataPathFile, String initialPopulationPathFile, String savePopulationPathFile, Integer savePopulationPeriod, Integer savePopulationSize, Integer evolutionExitType, Integer maxGenerations, Integer fitnessChange, Boolean enableGPU) {
         this.settingsPathFile = settingsPathFile;
         this.dataPathFile = dataPathFile;
         this.initialPopulationPathFile = initialPopulationPathFile;
         this.savePopulationPathFile = savePopulationPathFile;
         this.savePopulationPeriod = savePopulationPeriod;
+        this.savePopulationSize = savePopulationSize;
         this.evolutionExitType = evolutionExitType;
         this.maxGenerations = maxGenerations;
         this.fitnessChange = fitnessChange;
@@ -45,6 +47,14 @@ public class EvolutionSettings {
     public String getStringJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(this);
+    }
+
+    public Integer getSavePopulationSize() {
+        return savePopulationSize;
+    }
+
+    public void setSavePopulationSize(Integer savePopulationSize) {
+        this.savePopulationSize = savePopulationSize;
     }
 
     public Boolean getEnableGPU() {

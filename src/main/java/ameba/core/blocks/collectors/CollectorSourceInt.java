@@ -2,7 +2,6 @@ package ameba.core.blocks.collectors;
 
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
-import ameba.core.blocks.edges.EdgeBin;
 import ameba.core.blocks.edges.EdgeInt;
 import ameba.core.blocks.nodes.Node;
 
