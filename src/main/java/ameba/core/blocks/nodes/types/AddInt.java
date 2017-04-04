@@ -18,7 +18,7 @@ public class AddInt extends Node {
     @Override
     public void clcNode() {
         getCollectorsSourceInt().get(0).setSignal(0);
-        for (CollectorTargetInt collector : getCollectorsTargetConnectedInt()) {
+        for (CollectorTargetInt collector : getCollectorsTargetConnectedIntSim()) {
             getCollectorsSourceInt().get(0).setSignal(getCollectorsSourceInt().get(0).getSignal() + collector.getSignal());
         }
     }

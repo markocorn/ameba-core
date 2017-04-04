@@ -28,9 +28,9 @@ public class MuxBin extends Node {
     @Override
     public void clcNode() {
         int ind = getCollectorsTargetInt().get(0).getSignal();
-        boolean[] inp = new boolean[getCollectorsTargetConnectedBin().size()];
-        for (int i = 0; i < getCollectorsTargetConnectedBin().size(); i++) {
-            inp[i] = getCollectorsTargetConnectedBin().get(i).getSignal();
+        boolean[] inp = new boolean[getCollectorsTargetConnectedBinSim().size()];
+        for (int i = 0; i < getCollectorsTargetConnectedBinSim().size(); i++) {
+            inp[i] = getCollectorsTargetConnectedBinSim().get(i).getSignal();
         }
         if (ind < inp.length && ind >= 0) {
             getCollectorsSourceBin().get(0).setSignal(inp[ind]);

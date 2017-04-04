@@ -19,7 +19,7 @@ public class MultiplyInt extends Node {
     @Override
     public void clcNode() {
         getCollectorsSourceInt().get(0).setSignal(1);
-        for (CollectorTargetInt collectorInp : getCollectorsTargetConnectedInt()) {
+        for (CollectorTargetInt collectorInp : getCollectorsTargetConnectedIntSim()) {
             getCollectorsSourceInt().get(0).setSignal(getCollectorsSourceInt().get(0).getSignal() * collectorInp.getSignal());
         }
 

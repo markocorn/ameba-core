@@ -18,7 +18,7 @@ public class OrBin extends Node {
     @Override
     public void clcNode() {
         getCollectorsSourceBin().get(0).setSignal(false);
-        for (CollectorTargetBin collectorInp : getCollectorsTargetConnectedBin()) {
+        for (CollectorTargetBin collectorInp : getCollectorsTargetConnectedBinSim()) {
             //AddDec all sources signals together.
             if (collectorInp.getSignal())
                 getCollectorsSourceBin().get(0).setSignal(true);

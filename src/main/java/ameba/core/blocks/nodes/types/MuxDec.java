@@ -27,9 +27,9 @@ public class MuxDec extends Node {
     @Override
     public void clcNode() {
         int ind = getCollectorsTargetInt().get(0).getSignal();
-        double[] inp = new double[getCollectorsTargetConnectedDec().size()];
-        for (int i = 0; i < getCollectorsTargetConnectedDec().size(); i++) {
-            inp[i] = getCollectorsTargetConnectedDec().get(i).getSignal();
+        double[] inp = new double[getCollectorsTargetConnectedDecSim().size()];
+        for (int i = 0; i < getCollectorsTargetConnectedDecSim().size(); i++) {
+            inp[i] = getCollectorsTargetConnectedDecSim().get(i).getSignal();
         }
         if (ind < inp.length && ind >= 0) {
             getCollectorsSourceDec().get(0).setSignal(inp[ind]);

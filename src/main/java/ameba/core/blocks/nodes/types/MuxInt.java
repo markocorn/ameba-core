@@ -26,9 +26,9 @@ public class MuxInt extends Node {
     @Override
     public void clcNode() {
         int ind = getCollectorsTargetInt().get(0).getSignal();
-        int[] inp = new int[getCollectorsTargetConnectedInt().size()];
-        for (int i = 0; i < getCollectorsTargetConnectedInt().size(); i++) {
-            inp[i] = getCollectorsTargetConnectedInt().get(i).getSignal();
+        int[] inp = new int[getCollectorsTargetConnectedIntSim().size()];
+        for (int i = 0; i < getCollectorsTargetConnectedIntSim().size(); i++) {
+            inp[i] = getCollectorsTargetConnectedIntSim().get(i).getSignal();
         }
         if (ind < inp.length && ind >= 0) {
             getCollectorsSourceInt().get(0).setSignal(inp[ind]);

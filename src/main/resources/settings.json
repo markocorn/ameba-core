@@ -1213,7 +1213,7 @@
     "weightUp": 0.1
   },
   "evolutionSettings": {
-    "initialPopulationPathFile": "",
+    "initialPopulationPathFile": "./src/main/resources/popBest",
     "savePopulationPathFile": "./src/main/resources/popBest",
     "savePopulationPeriod": 100,
     "savePopulationSize": 1,

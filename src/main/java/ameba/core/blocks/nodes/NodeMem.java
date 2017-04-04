@@ -11,9 +11,11 @@ public class NodeMem extends Node {
 
     @Override
     public void processNode() {
-        if (isSignalInputsReady()) {
-            clcNode();
-            setSignalClcDone(true);
+        if (!isSignalClcDone()) {//Optimisation process not call if note is calculated already
+            if (isSignalInputsReady()) {
+                clcNode();
+                setSignalClcDone(true);
+            }
         }
     }
 

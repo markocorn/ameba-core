@@ -18,8 +18,8 @@ public class XorBin extends Node {
     @Override
     public void clcNode() {
         getCollectorsSourceBin().get(0).setSignal(true);
-        for (int i = 1; i < getCollectorsTargetConnectedBin().size(); i++) {
-            getCollectorsSourceBin().get(0).setSignal(getCollectorsTargetConnectedBin().get(i - 1).getSignal() ^ getCollectorsTargetConnectedBin().get(i).getSignal());
+        for (int i = 1; i < getCollectorsTargetConnectedBinSim().size(); i++) {
+            getCollectorsSourceBin().get(0).setSignal(getCollectorsTargetConnectedBinSim().get(i - 1).getSignal() ^ getCollectorsTargetConnectedBinSim().get(i).getSignal());
         }
     }
 }

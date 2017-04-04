@@ -296,9 +296,6 @@ public class Cell implements Serializable {
             edge.getTarget().addEdge(edge);
             edges.add(edge);
         } else throw new Exception("Edge to be added already contained");
-        for (Node node : nodes) {
-            node.loadConnectedEdges();
-        }
     }
 
     public void addEdgeNotSafe(Edge edge) throws Exception {
@@ -315,9 +312,6 @@ public class Cell implements Serializable {
             edges.remove(edge);
             edge.getSource().removeEdge(edge);
             edge.getTarget().removeEdge(edge);
-        }
-        for (Node node : nodes) {
-            node.loadConnectedEdges();
         }
     }
 

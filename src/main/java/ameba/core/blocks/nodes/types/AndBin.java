@@ -18,7 +18,7 @@ public class AndBin extends Node {
     @Override
     public void clcNode() {
         getCollectorsSourceBin().get(0).setSignal(true);
-        for (CollectorTargetBin collector : getCollectorsTargetConnectedBin()) {
+        for (CollectorTargetBin collector : getCollectorsTargetConnectedBinSim()) {
             if (!collector.getSignal())
                 getCollectorsSourceBin().get(0).setSignal(false);
         }

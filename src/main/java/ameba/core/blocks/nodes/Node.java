@@ -79,27 +79,6 @@ public class Node implements Cloneable, Serializable {
         signalClcDone = false;
     }
 
-    //For optimization purposes
-    public void loadConnectedEdges() {
-        collectorsTargetConDec.clear();
-        for (CollectorTargetDec collectorInp : collectorsTargetDec) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorsTargetConDec.add(collectorInp);
-            }
-        }
-        collectorsTargetConInt.clear();
-        for (CollectorTargetInt collectorInp : collectorsTargetInt) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorsTargetConInt.add(collectorInp);
-            }
-        }
-        collectorsTargetConBin.clear();
-        for (CollectorTargetBin collectorInp : collectorsTargetBin) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorsTargetConBin.add(collectorInp);
-            }
-        }
-    }
 
     public int[] getCollectorTargetLimit(Cell.Signal type) {
         switch (type) {
@@ -167,6 +146,7 @@ public class Node implements Cloneable, Serializable {
     public void setSignalReady(boolean signalReady) {
         this.signalReady = signalReady;
     }
+
 
     public void addCollectorTargetDec(CollectorTargetDec collector) throws Exception {
         if (collectorsTargetDec.size() < collectorTargetLimitsDec[1]) {
@@ -237,14 +217,45 @@ public class Node implements Cloneable, Serializable {
     }
 
     public ArrayList<CollectorTargetDec> getCollectorsTargetConnectedDec() {
+        collectorsTargetConDec.clear();
+        for (CollectorTargetDec collectorInp : collectorsTargetDec) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorsTargetConDec.add(collectorInp);
+            }
+        }
         return collectorsTargetConDec;
     }
 
     public ArrayList<CollectorTargetInt> getCollectorsTargetConnectedInt() {
+        collectorsTargetConInt.clear();
+        for (CollectorTargetInt collectorInp : collectorsTargetInt) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorsTargetConInt.add(collectorInp);
+            }
+        }
         return collectorsTargetConInt;
     }
 
     public ArrayList<CollectorTargetBin> getCollectorsTargetConnectedBin() {
+        collectorsTargetConBin.clear();
+        for (CollectorTargetBin collectorInp : collectorsTargetBin) {
+            if (collectorInp.getEdges().size() > 0) {
+                collectorsTargetConBin.add(collectorInp);
+            }
+        }
+        return collectorsTargetConBin;
+    }
+
+    //Optimisation calls
+    public ArrayList<CollectorTargetDec> getCollectorsTargetConnectedDecSim() {
+        return collectorsTargetConDec;
+    }
+
+    public ArrayList<CollectorTargetInt> getCollectorsTargetConnectedIntSim() {
+        return collectorsTargetConInt;
+    }
+
+    public ArrayList<CollectorTargetBin> getCollectorsTargetConnectedBinSim() {
         return collectorsTargetConBin;
     }
 
@@ -501,10 +512,12 @@ public class Node implements Cloneable, Serializable {
     }
 
     public void processNode() {
-        if (isSignalInputsReady()) {
-            clcNode();
-            setSignalClcDone(true);
-            setSignalReady(true);
+        if (!isSignalReady()) {//Optimisation process don't verify node clc if node has already been calculateds
+            if (isSignalInputsReady()) {
+                clcNode();
+                setSignalClcDone(true);
+                setSignalReady(true);
+            }
         }
     }
 

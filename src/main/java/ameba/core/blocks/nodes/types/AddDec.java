@@ -18,7 +18,7 @@ public class AddDec extends Node {
     @Override
     public void clcNode() {
         getCollectorsSourceDec().get(0).setSignal(0.0);
-        for (CollectorTargetDec collector : getCollectorsTargetConnectedDec()) {
+        for (CollectorTargetDec collector : getCollectorsTargetConnectedDecSim()) {
             getCollectorsSourceDec().get(0).setSignal(getCollectorsSourceDec().get(0).getSignal() + collector.getSignal());
         }
     }
