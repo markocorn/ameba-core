@@ -10,8 +10,12 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws Exception {
         System.out.println("Ameba started.");
-        Evolution evolution = new Evolution("./src/main/resources/settings.json");
-        evolution.init();
+        Evolution evolution;
+        if (args.length > 0) {
+            evolution = new Evolution(args[0]);
+        } else {
+            evolution = new Evolution();
+        }
         Thread t = new Thread(evolution);
         t.start();
         Scanner reader = new Scanner(System.in);

@@ -7,37 +7,28 @@ import ameba.core.evolution.fitness.IFitness;
  * Created by marko on 3/31/17.
  */
 public class SimCell {
-    double[][] dataInpDec;
-    int[][] dataInpInt;
-    boolean[][] dataInpBin;
-    double[][] dataOutDec;
-    int[][] dataOutInt;
-    boolean[][] dataOutBin;
+    DataEvo data;
     Cell cell;
     IFitness fitness;
     int prefCellSize;
     double weightDown;
     double weightUp;
 
-    public SimCell(IFitness fitness, double[][] dataInpDec, int[][] dataInpInt, boolean[][] dataInpBin, Cell cell, int prefCellSize, double weightDown, double weightUp) {
-        this.dataInpDec = dataInpDec;
-        this.dataInpInt = dataInpInt;
-        this.dataInpBin = dataInpBin;
-        this.dataOutDec = new double[dataInpDec.length][cell.getOutNodesDec().size()];
-        this.dataOutInt = new int[dataInpInt.length][cell.getOutNodesInt().size()];
-        this.dataOutBin = new boolean[dataInpBin.length][cell.getOutNodesBin().size()];
+    public SimCell(IFitness fitness, DataEvo data, Cell cell, int prefCellSize, double weightDown, double weightUp) {
+        this.data = data;
         this.fitness = fitness;
         this.prefCellSize = prefCellSize;
         this.weightDown = weightDown;
         this.weightUp = weightUp;
-
         this.cell = cell;
     }
 
     public void simulate() {
         cell.clearCell();
-        for (int i = 0; i < dataInpDec.length; i++) {
-            cell.importSignals(dataInpDec[i]);
+        cell.setFitnessValue(0.0);
+        boolean[] c = new boolean[]{cell.getOutNodesDec().isEmpty(), cell.getOutNodesInt().isEmpty(), cell.getOutNodesBin().isEmpty()};
+        for (int i = 0; i < Math.max(data.getInpDec().length, Math.max(data.getInpInt().length, data.getInpBin().length)); i++) {
+            cell.importSignals(data.getInpDec()[i], data.getInpInt()[i], data.getInpBin()[i]);
             try {
                 cell.runEvent();
             } catch (Exception ex) {
@@ -45,48 +36,24 @@ public class SimCell {
                 cell.checkCellPrint();
                 cell.runEvent();
             }
-            if (dataOutBin.length > 0) {
-                dataOutBin[i] = cell.getExportedValuesBin();
+            if (!c[0]) {
+                cell.addFitnessValue(fitness.clcFitnessDec(cell.getExportedValuesDec(), data.getOutDec()[i]));
             }
-            if (dataOutInt.length < 0) {
-                dataOutInt[i] = cell.getExportedValuesInt();
+            if (!c[1]) {
+                cell.addFitnessValue(fitness.clcFitnessInt(cell.getExportedValuesInt(), data.getOutInt()[i]));
             }
-            if (dataOutDec.length > 0) {
-                dataOutDec[i] = cell.getExportedValuesDec();
+            if (!c[2]) {
+                cell.addFitnessValue(fitness.clcFitnessBin(cell.getExportedValuesBin(), data.getOutBin()[i]));
             }
         }
-    }
-
-    public void fitness() {
-        double fit = 0.0;
+        double fit;
         int diff = cell.getInnerNodes().size() - prefCellSize;
         if (diff > 0) {
             fit = diff * weightUp;
         } else {
             fit = -diff * weightDown;
         }
-        cell.setFitnessValue(fit);
-        if (dataOutDec.length > 0) {
-            cell.setFitnessValue(cell.getFitnessValue() + fitness.clcFitnessDec(dataOutDec));
-        }
-        if (dataOutInt.length > 0) {
-            cell.setFitnessValue(cell.getFitnessValue() + fitness.clcFitnessInt(dataOutInt));
-        }
-        if (dataOutBin.length > 0) {
-            cell.setFitnessValue(cell.getFitnessValue() + fitness.clcFitnessBin(dataOutBin));
-        }
-    }
-
-    public double[][] getDataOutDec() {
-        return dataOutDec;
-    }
-
-    public int[][] getDataOutInt() {
-        return dataOutInt;
-    }
-
-    public boolean[][] getDataOutBin() {
-        return dataOutBin;
+        cell.addFitnessValue(fit);
     }
 
     public Cell getCell() {

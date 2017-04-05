@@ -5,40 +5,34 @@ package ameba.core.evolution.fitness;
  */
 public class FitnessAbsolute extends Fitness {
 
-    public FitnessAbsolute(double[][] dataRefDec, int[][] dataRefInt, boolean[][] dataRefBin, double weightDec, double weightInt, double weightBin) {
-        super(dataRefDec, dataRefInt, dataRefBin, weightDec, weightInt, weightBin);
+    public FitnessAbsolute(double weightDec, double weightInt, double weightBin) {
+        super(weightDec, weightInt, weightBin);
     }
 
     @Override
-    public double clcFitnessDec(double[][] results) {
+    public double clcFitnessDec(double[] results, double[] resultsRef) {
         double fit = 0.0;
         for (int i = 0; i < results.length; i++) {
-            for (int j = 0; j < results[i].length; j++) {
-                fit += Math.abs(results[i][j] - dataRefDec[i][j]);
+            fit += Math.abs(results[i] - resultsRef[i]);
             }
+        return fit * weightDec;
+    }
+
+    @Override
+    public double clcFitnessInt(int[] results, int[] resultsRef) {
+        double fit = 0.0;
+        for (int i = 0; i < results.length; i++) {
+            fit += Math.abs(results[i] - resultsRef[i]);
         }
         return fit * weightDec;
     }
 
     @Override
-    public double clcFitnessInt(int[][] results) {
+    public double clcFitnessBin(boolean[] results, boolean[] resultsRef) {
         double fit = 0.0;
         for (int i = 0; i < results.length; i++) {
-            for (int j = 0; j < results[i].length; j++) {
-                fit += Math.abs(results[i][j] - dataRefInt[i][j]);
+            if (results[i] ^ resultsRef[i]) fit += 1;
             }
-        }
-        return fit * weightInt;
-    }
-
-    @Override
-    public double clcFitnessBin(boolean[][] results) {
-        double fit = 0.0;
-        for (int i = 0; i < results.length; i++) {
-            for (int j = 0; j < results[i].length; j++) {
-                if (results[i][j] ^ dataRefBin[i][j]) fit += 1;
-            }
-        }
         return fit * weightBin;
     }
 }

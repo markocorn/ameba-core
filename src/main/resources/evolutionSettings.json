@@ -1,0 +1,12 @@
+{
+  "evolutionSettings": {
+    "initialPopulationPathFile": "",
+    "savePopulationPathFile": "",
+    "savePopulationPeriod": 100,
+    "savePopulationSize": 1,
+    "evolutionExitType": 0,
+    "maxGenerations": 100000,
+    "fitnessChange": 100,
+    "dataPathFile": ""
+  }
+}

@@ -1,0 +1,620 @@
+{
+  "nodeFactorySettings": [
+    {
+      "type": "AddDec",
+      "inpColLimitDec": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "AddInt",
+      "inpColLimitInt": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "AndBin",
+      "inpColLimitBin": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "OrBin",
+      "inpColLimitBin": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "CompareDec",
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        0
+      ],
+      "parametersLimitsInt": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "type": "CompareInt",
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        0
+      ],
+      "parametersLimitsInt": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "type": "CompareConstDec",
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        0
+      ],
+      "parametersLimitsInt": [
+        [
+          0,
+          2
+        ]
+      ],
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          -100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "type": "CompareConstInt",
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        0,
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          0,
+          2
+        ],
+        [
+          -100,
+          100
+        ]
+      ]
+    },
+    {
+      "type": "ConstantDec",
+      "available": true,
+      "probability": 100,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          -10.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "ConstantInt",
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          -100,
+          100
+        ]
+      ]
+    },
+    {
+      "type": "ConstantBin",
+      "available": true,
+      "probability": 100,
+      "parametersBin": [
+        true
+      ],
+      "parametersLimitsBin": [
+        [
+          false,
+          true
+        ]
+      ]
+    },
+    {
+      "type": "DelayDec",
+      "available": true,
+      "probability": 100,
+      "initialValueDec": 0.0,
+      "parametersInt": [
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    {
+      "type": "DelayInt",
+      "available": true,
+      "probability": 100,
+      "initialValueInt": 0,
+      "parametersInt": [
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    {
+      "type": "DelayBin",
+      "available": true,
+      "probability": 100,
+      "initialValueBin": false,
+      "parametersInt": [
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    {
+      "type": "DerivativeDec",
+      "available": true,
+      "probability": 100,
+      "initialValueDec": 0.0,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "DerivativeInt",
+      "available": true,
+      "probability": 100,
+      "initialValueInt": 0,
+      "parametersInt": [
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    {
+      "type": "DerivativeBin",
+      "available": true,
+      "probability": 100,
+      "initialValueBin": false,
+      "parametersBin": [
+        false
+      ],
+      "parametersLimitsBin": [
+        [
+          false,
+          true
+        ]
+      ]
+    },
+    {
+      "type": "Divide",
+      "inpColLimitDec": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "MuxDec",
+      "inpColLimitInt": [
+        1,
+        1
+      ],
+      "inpColLimitDec": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "MuxInt",
+      "inpColLimitInt": [
+        3,
+        10
+      ],
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        1.0
+      ],
+      "parametersLimitsInt": [
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "MuxBin",
+      "inpColLimitInt": [
+        1,
+        1
+      ],
+      "inpColLimitBin": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100,
+      "parametersBin": [
+        false
+      ],
+      "parametersLimitsBin": [
+        [
+          true,
+          false
+        ]
+      ]
+    },
+    {
+      "type": "DMuxDec",
+      "outColLimitDec": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "DMuxInt",
+      "outColLimitInt": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        1.0
+      ],
+      "parametersLimitsInt": [
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "DMuxBin",
+      "outColLimitBin": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100,
+      "parametersBin": [
+        false
+      ],
+      "parametersLimitsBin": [
+        [
+          true,
+          false
+        ]
+      ]
+    },
+    {
+      "type": "IntegralDec",
+      "available": true,
+      "probability": 100,
+      "initialValueDec": 0.0,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "IntegralInt",
+      "available": true,
+      "probability": 100,
+      "initialValueInt": 0,
+      "parametersInt": [
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    {
+      "type": "IntegralBin",
+      "available": true,
+      "probability": 100,
+      "initialValueBin": false,
+      "parametersBin": [
+        false
+      ],
+      "parametersLimitsBin": [
+        [
+          false,
+          true
+        ]
+      ]
+    },
+    {
+      "type": "IntervalDec",
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "IntervalInt",
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "IntervalConstDec",
+      "available": true,
+      "probability": 100,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "IntervalConstInt",
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    {
+      "type": "Interval2ConstDec",
+      "available": true,
+      "probability": 100,
+      "parametersDec": [
+        1.0,
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          1.0,
+          10.0
+        ],
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "Interval2ConstInt",
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        1,
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          1,
+          10
+        ],
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    {
+      "type": "MultiplyDec",
+      "inpColLimitDec": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "MultiplyInt",
+      "inpColLimitInt": [
+        2,
+        10
+      ],
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "SwitchDec",
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "SwitchInt",
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "SwitchBin",
+      "available": true,
+      "probability": 100
+    },
+    {
+      "type": "SwitchConstDec",
+      "available": true,
+      "probability": 100,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "SwitchConstInt",
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    {
+      "type": "SwitchConstBin",
+      "available": true,
+      "probability": 100,
+      "parametersBin": [
+        false
+      ],
+      "parametersLimitsBin": [
+        [
+          false,
+          true
+        ]
+      ]
+    },
+    {
+      "type": "Switch2ConstDec",
+      "available": true,
+      "probability": 100,
+      "parametersDec": [
+        1.0,
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          1.0,
+          10.0
+        ],
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "Switch2ConstInt",
+      "available": true,
+      "probability": 100,
+      "parametersInt": [
+        1,
+        1
+      ],
+      "parametersLimitsInt": [
+        [
+          1,
+          10
+        ],
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    {
+      "type": "Switch2ConstBin",
+      "available": true,
+      "probability": 100,
+      "parametersBin": [
+        false,
+        false
+      ],
+      "parametersLimitsBin": [
+        [
+          false,
+          true
+        ],
+        [
+          false,
+          true
+        ]
+      ]
+    }
+  ]
+}

@@ -20,22 +20,18 @@ public class Incubator {
     ArrayList<SimCell> sims;
     FactoryCell factoryCell;
     FactoryReproduction factoryReproduction;
-    double[][] dataDec;
-    int[][] dataInt;
-    boolean[][] dataBin;
     Random random;
+    DataEvo data;
 
 
-    public Incubator(FactoryCell factoryCell, FactoryReproduction factoryReproduction, IncubatorSettings incubatorSettings, ISelect selection, Fitness fitness) {
+    public Incubator(FactoryCell factoryCell, FactoryReproduction factoryReproduction, IncubatorSettings incubatorSettings, ISelect selection, Fitness fitness, DataEvo data) {
         this.factoryCell = factoryCell;
         this.factoryReproduction = factoryReproduction;
         this.incubatorSettings = incubatorSettings;
         this.selection = selection;
         this.fitness = fitness;
+        this.data = data;
         population = new ArrayList<>();
-        dataDec = new double[0][0];
-        dataInt = new int[0][0];
-        dataBin = new boolean[0][0];
         this.random = new Random();
     }
 
@@ -49,10 +45,9 @@ public class Incubator {
     public void simPopulation() {
         ArrayList<SimCell> sims = new ArrayList<>();
         for (Cell cell : population) {
-            sims.add(new SimCell(fitness, dataDec, dataInt, dataBin, cell, incubatorSettings.getPrefCellSize(), incubatorSettings.getWeightDown(), incubatorSettings.getWeightUp()));
+            sims.add(new SimCell(fitness, data, cell, incubatorSettings.getPrefCellSize(), incubatorSettings.getWeightDown(), incubatorSettings.getWeightUp()));
         }
         sims.parallelStream().forEach(SimCell::simulate);
-        sims.parallelStream().forEach(SimCell::fitness);
     }
 
     public void reproduce() throws Exception {
@@ -64,25 +59,12 @@ public class Incubator {
 
         for (int i = incubatorSettings.getEliteSize(); i < incubatorSettings.getPopulationSize(); i++) {
             try {
-
                 newGeneration.add(factoryReproduction.repCell(chosen.get(random.nextInt(chosen.size())).clone(), chosen.get(random.nextInt(chosen.size()))).clone());
             } catch (Exception ex) {
                 i--;
             }
         }
         population = newGeneration;
-    }
-
-    public void importData(double[][] data) {
-        dataDec = data;
-    }
-
-    public void importData(int[][] data) {
-        dataInt = data;
-    }
-
-    public void importData(boolean[][] data) {
-        dataBin = data;
     }
 
     public ArrayList<Cell> getPopulation() {

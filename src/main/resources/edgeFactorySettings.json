@@ -1,0 +1,28 @@
+{
+  "edgeFactorySettings": {
+    "weightInitialDec": [
+      -1.0,
+      1.0
+    ],
+    "weightInitialInt": [
+      -1,
+      1
+    ],
+    "weightInitialBin": [
+      false,
+      true
+    ],
+    "weighLimitsDec": [
+      -10.0,
+      10.0
+    ],
+    "weighLimitsInt": [
+      -10,
+      10
+    ],
+    "weighLimitsBin": [
+      false,
+      true
+    ]
+  }
+}

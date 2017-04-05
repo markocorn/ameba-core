@@ -21,87 +21,33 @@ public class Evolution extends Thread {
     FactoryReproduction factoryReproduction;
     Incubator incubator;
     ObjectMapper mapper;
-    double[][] inpDec;
-    double[][] outDec;
-    int[][] inpInt;
-    int[][] outInt;
-    boolean[][] inpBin;
-    boolean[][] outBin;
+    DataEvo dataEvo;
     int generation;
 
-    public Evolution(String settingsFilePath) throws IOException {
+    public Evolution(String dataPathName) throws Exception {
         mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(new File(settingsFilePath));
-        this.evolutionSettings = EvolutionSettings.create(jsonSettings.get("evolutionSettings").toString());
-        this.evolutionSettings.setSettingsPathFile(settingsFilePath);
-        inpDec = new double[0][0];
-        outDec = new double[0][0];
-        inpInt = new int[0][0];
-        outInt = new int[0][0];
-        inpBin = new boolean[0][0];
-        outBin = new boolean[0][0];
         generation = 0;
+        ClassLoader classLoader = getClass().getClassLoader();
+        JsonNode jsonSettings = mapper.readTree(new File(classLoader.getResource(dataPathName).getFile()));
+        dataEvo = DataEvo.create(jsonSettings.toString());
+        loadResourcesDefault();
     }
 
-    public void init() throws Exception {
-        JsonNode jsonSettings = mapper.readTree(new File(evolutionSettings.getSettingsPathFile()));
+    public void loadResourcesDefault() throws Exception {
+        ClassLoader classLoader = getClass().getClassLoader();
+        JsonNode jsonSettings = mapper.readTree(new File(classLoader.getResource("nodeFactorySettings.json").getFile()));
         factoryNode = new FactoryNode();
         factoryNode.loadSettings(jsonSettings.get("nodeFactorySettings").toString());
+        jsonSettings = mapper.readTree(new File(classLoader.getResource("edgeFactorySettings.json").getFile()));
         factoryEdge = new FactoryEdge(mapper.readValue(jsonSettings.get("edgeFactorySettings").toString(), FactoryEdgeSettings.class));
+        jsonSettings = mapper.readTree(new File(classLoader.getResource("cellFactorySettings.json").getFile()));
         factoryCell = new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), factoryNode, factoryEdge);
         factoryReproduction = new FactoryReproduction(factoryEdge, factoryNode, factoryCell);
+        jsonSettings = mapper.readTree(new File(classLoader.getResource("factoryFactorySettings.json").getFile()));
         factoryReproduction.loadSettings(jsonSettings.get("reproductionSettings").toString());
-        //Prepare data
-        JsonNode dataJson = mapper.readTree(new File(evolutionSettings.getDataPathFile()));
-        if (dataJson.has("inpDec")) {
-            inpDec = new double[dataJson.get("inpDec").size()][dataJson.get("inpDec").get(0).size()];
-        }
-        if (dataJson.has("outDec")) {
-            outDec = new double[dataJson.get("outDec").size()][dataJson.get("outDec").get(0).size()];
-        }
-        if (dataJson.has("inpInt")) {
-            inpInt = new int[dataJson.get("inpInt").size()][dataJson.get("inpInt").get(0).size()];
-        }
-        if (dataJson.has("outInt")) {
-            outInt = new int[dataJson.get("outInt").size()][dataJson.get("outInt").get(0).size()];
-        }
-        if (dataJson.has("inpBin")) {
-            inpBin = new boolean[dataJson.get("inpBin").size()][dataJson.get("inpBin").get(0).size()];
-        }
-        if (dataJson.has("outBin")) {
-            outBin = new boolean[dataJson.get("outBin").size()][dataJson.get("outBin").get(0).size()];
-        }
-        for (int i = 0; i < inpDec.length; i++) {
-            for (int j = 0; j < inpDec[i].length; j++) {
-                inpDec[i][j] = dataJson.get("inpDec").get(i).get(j).asDouble();
-            }
-            for (int j = 0; j < outDec[i].length; j++) {
-                outDec[i][j] = dataJson.get("outDec").get(i).get(j).asDouble();
-            }
-        }
-        for (int i = 0; i < inpInt.length; i++) {
-            for (int j = 0; j < inpInt[i].length; j++) {
-                inpInt[i][j] = dataJson.get("inpInt").get(i).get(j).asInt();
-            }
-            for (int j = 0; j < outInt[i].length; j++) {
-                outInt[i][j] = dataJson.get("outInt").get(i).get(j).asInt();
-            }
-        }
-        for (int i = 0; i < inpBin.length; i++) {
-            for (int j = 0; j < inpBin[i].length; j++) {
-                inpBin[i][j] = dataJson.get("inpBin").get(i).get(j).asBoolean();
-            }
-            for (int j = 0; j < outBin[i].length; j++) {
-                outBin[i][j] = dataJson.get("outBin").get(i).get(j).asBoolean();
-            }
-        }
-        if (evolutionSettings.getEnableGPU()) {
-            incubator = new IncubatorGPU(factoryCell, factoryReproduction, mapper.readValue(jsonSettings.get("incubatorSettings").toString(), IncubatorSettings.class), new BestOf(), new FitnessAbsolute(outDec, null, null, 10.0, 10.0, 10.0));
-        } else
-            incubator = new Incubator(factoryCell, factoryReproduction, mapper.readValue(jsonSettings.get("incubatorSettings").toString(), IncubatorSettings.class), new BestOf(), new FitnessAbsolute(outDec, null, null, 10.0, 10.0, 10.0));
-        incubator.importData(inpDec);
-        incubator.importData(inpInt);
-        incubator.importData(inpBin);
+        jsonSettings = mapper.readTree(new File(classLoader.getResource("evolutionSettings.json").getFile()));
+        this.evolutionSettings = EvolutionSettings.create(jsonSettings.get("evolutionSettings.json").toString());
+        incubator = new Incubator(factoryCell, factoryReproduction, mapper.readValue(jsonSettings.get("incubatorSettings").toString(), IncubatorSettings.class), new BestOf(), new FitnessAbsolute(10.0, 10.0, 10.0), dataEvo);
         //Load or generate population
         if (evolutionSettings.getInitialPopulationPathFile().equals("")) {
             incubator.populateInitial();
@@ -126,7 +72,6 @@ public class Evolution extends Thread {
             System.out.println("Initial population loaded from file.");
         }
     }
-
     public void run() {
         generation = 0;
         while (true) {

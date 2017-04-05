@@ -1,0 +1,15 @@
+{
+  "cellFactorySettings": {
+    "nodeInitial": [
+      5,
+      10
+    ],
+    "nodeInpDec": 4,
+    "nodeInpInt": 0,
+    "nodeInpBin": 0,
+    "nodeOutDec": 24,
+    "nodeOutInt": 0,
+    "nodeOutBin": 0,
+    "nodeMax": 150
+  }
+}

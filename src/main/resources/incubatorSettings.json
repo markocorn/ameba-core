@@ -1,0 +1,15 @@
+{
+  "incubatorSettings": {
+    "populationSize": 30,
+    "eliteSize": 1,
+    "selectionType": 0,
+    "chosen": 3,
+    "fitnessType": 0,
+    "fitWeightDec": 100.0,
+    "fitWeightInt": 100.0,
+    "fitWeightBin": 100.0,
+    "prefCellSize": 10,
+    "weightDown": 0.0,
+    "weightUp": 0.1
+  }
+}

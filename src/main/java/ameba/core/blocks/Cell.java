@@ -509,6 +509,10 @@ public class Cell implements Serializable {
         this.fitnessValue = fitnessValue;
     }
 
+    public void addFitnessValue(double fitnessValue) {
+        this.fitnessValue += fitnessValue;
+    }
+
     public Cell clone() {
         Cloner cloner = new Cloner();
         return cloner.deepClone(this);
