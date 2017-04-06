@@ -20,6 +20,12 @@ public class DataEvo {
     boolean[][] outBin;
 
     public DataEvo() {
+        this.inpDec = new double[0][0];
+        this.inpInt = new int[0][0];
+        this.inpBin = new boolean[0][0];
+        this.outDec = new double[0][0];
+        this.outInt = new int[0][0];
+        this.outBin = new boolean[0][0];
     }
 
     public DataEvo(double[][] inpDec, int[][] inpInt, boolean[][] inpBin, double[][] outDec, int[][] outInt, boolean[][] outBin) {

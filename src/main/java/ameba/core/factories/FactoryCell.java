@@ -5,8 +5,11 @@ import ameba.core.blocks.collectors.*;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rits.cloning.Cloner;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -26,8 +29,30 @@ public class FactoryCell {
         rndGen = new Random();
     }
 
+    public static FactoryCell build() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonSettings = mapper.readTree(new File(FactoryCell.class.getClassLoader().getResource("cellFactorySettings.json").getFile()));
+        return new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), FactoryNode.build(), FactoryEdge.build());
+    }
+
     public FactoryCellSettings getCellFactorySettings() {
         return cellFactorySettings;
+    }
+
+    public FactoryNode getNodeFactory() {
+        return nodeFactory;
+    }
+
+    public void setNodeFactory(FactoryNode nodeFactory) {
+        this.nodeFactory = nodeFactory;
+    }
+
+    public FactoryEdge getEdgeFactory() {
+        return edgeFactory;
+    }
+
+    public void setEdgeFactory(FactoryEdge edgeFactory) {
+        this.edgeFactory = edgeFactory;
     }
 
     /**

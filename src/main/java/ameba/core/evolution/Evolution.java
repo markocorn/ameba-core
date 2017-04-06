@@ -20,34 +20,66 @@ public class Evolution extends Thread {
     FactoryEdge factoryEdge;
     FactoryReproduction factoryReproduction;
     Incubator incubator;
-    ObjectMapper mapper;
     DataEvo dataEvo;
     int generation;
 
-    public Evolution(String dataPathName) throws Exception {
-        mapper = new ObjectMapper();
-        generation = 0;
-        ClassLoader classLoader = getClass().getClassLoader();
-        JsonNode jsonSettings = mapper.readTree(new File(classLoader.getResource(dataPathName).getFile()));
-        dataEvo = DataEvo.create(jsonSettings.toString());
-        loadResourcesDefault();
+    private Evolution() {
     }
 
-    public void loadResourcesDefault() throws Exception {
-        ClassLoader classLoader = getClass().getClassLoader();
-        JsonNode jsonSettings = mapper.readTree(new File(classLoader.getResource("nodeFactorySettings.json").getFile()));
+    public Evolution(DataEvo data, String settingsPathName) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonSettings = mapper.readTree(new File(settingsPathName));
         factoryNode = new FactoryNode();
         factoryNode.loadSettings(jsonSettings.get("nodeFactorySettings").toString());
-        jsonSettings = mapper.readTree(new File(classLoader.getResource("edgeFactorySettings.json").getFile()));
         factoryEdge = new FactoryEdge(mapper.readValue(jsonSettings.get("edgeFactorySettings").toString(), FactoryEdgeSettings.class));
-        jsonSettings = mapper.readTree(new File(classLoader.getResource("cellFactorySettings.json").getFile()));
         factoryCell = new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), factoryNode, factoryEdge);
         factoryReproduction = new FactoryReproduction(factoryEdge, factoryNode, factoryCell);
-        jsonSettings = mapper.readTree(new File(classLoader.getResource("factoryFactorySettings.json").getFile()));
         factoryReproduction.loadSettings(jsonSettings.get("reproductionSettings").toString());
-        jsonSettings = mapper.readTree(new File(classLoader.getResource("evolutionSettings.json").getFile()));
-        this.evolutionSettings = EvolutionSettings.create(jsonSettings.get("evolutionSettings.json").toString());
-        incubator = new Incubator(factoryCell, factoryReproduction, mapper.readValue(jsonSettings.get("incubatorSettings").toString(), IncubatorSettings.class), new BestOf(), new FitnessAbsolute(10.0, 10.0, 10.0), dataEvo);
+        dataEvo = data;
+        IncubatorSettings settings = mapper.readValue(jsonSettings.get("incubatorSettings").toString(), IncubatorSettings.class);
+        incubator = new Incubator(
+                factoryCell,
+                factoryReproduction,
+                settings,
+                new BestOf(),
+                new FitnessAbsolute(
+                        settings.getFitWeightDec(),
+                        settings.getFitWeightInt(),
+                        settings.getFitWeightBin()),
+                dataEvo);
+        generation = 0;
+        evolutionSettings = EvolutionSettings.create(jsonSettings.get("evolutionSettings").toString());
+    }
+
+    public static Evolution build(DataEvo data) throws Exception {
+        Evolution evo = new Evolution();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonSettings = mapper.readTree(new File(Evolution.class.getClassLoader().getResource("evolutionSettings.json").getFile()));
+
+        evo.evolutionSettings = EvolutionSettings.create(jsonSettings.get("evolutionSettings").toString());
+        evo.factoryCell = FactoryCell.build();
+        evo.factoryNode = evo.factoryCell.getNodeFactory();
+        evo.factoryEdge = evo.factoryCell.getEdgeFactory();
+        evo.factoryReproduction = FactoryReproduction.build();
+        jsonSettings = mapper.readTree(new File(IncubatorSettings.class.getClassLoader().getResource("incubatorSettings.json").getFile()));
+        evo.dataEvo = data;
+        IncubatorSettings settings = IncubatorSettings.create(jsonSettings.get("incubatorSettings").toString());
+        evo.incubator = new Incubator(
+                evo.factoryCell,
+                evo.factoryReproduction,
+                settings,
+                new BestOf(),
+                new FitnessAbsolute(
+                        settings.getFitWeightDec(),
+                        settings.getFitWeightInt(),
+                        settings.getFitWeightBin()),
+                evo.dataEvo);
+
+        evo.generation = 0;
+        return evo;
+    }
+
+    public void initRun() throws Exception {
         //Load or generate population
         if (evolutionSettings.getInitialPopulationPathFile().equals("")) {
             incubator.populateInitial();
@@ -72,6 +104,7 @@ public class Evolution extends Thread {
             System.out.println("Initial population loaded from file.");
         }
     }
+
     public void run() {
         generation = 0;
         while (true) {
@@ -81,13 +114,17 @@ public class Evolution extends Thread {
                 break;
             }
             generation++;
+
             incubator.simPopulation();
+
             try {
                 incubator.reproduce();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (evolutionSettings.getSavePopulationPeriod() > 0 && generation % evolutionSettings.getSavePopulationPeriod() == 0) {
+            if (evolutionSettings.getSavePopulationPeriod() > 0
+                    && generation % evolutionSettings.getSavePopulationPeriod() == 0
+                    && !evolutionSettings.getSavePopulationPathFile().equals("")) {
                 saveGeneration();
             }
             System.out.println(generation + ": size: " + incubator.getPopulation().get(0).getInnerNodes().size() + " ; fitness: " + incubator.getPopulation().get(0).getFitnessValue());
@@ -119,11 +156,30 @@ public class Evolution extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public void saveCellBackup() {
+        FileOutputStream fout = null;
+        try {
+            fout = new FileOutputStream(System.getProperty("user.dir") + "/cellBackup");
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+            ArrayList<Cell> p = new ArrayList<>();
+            p.add(incubator.population.get(0));
+            oos.writeObject(p);
+            System.out.println("Saved cell backup at generation: " + generation);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void exitRun() {
         System.out.println("Main ended");
-        saveGeneration();
+        if (evolutionSettings.getSavePopulationPathFile().equals("")) {
+            saveCellBackup();
+        } else {
+            saveGeneration();
+        }
     }
 }

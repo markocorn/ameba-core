@@ -24,6 +24,7 @@ public class Node implements Cloneable, Serializable {
     private ArrayList<CollectorSourceInt> collectorsSourceInt;
     private ArrayList<CollectorSourceBin> collectorsSourceBin;
 
+    private ArrayList<CollectorTarget> collectorsTargetCon;
     private ArrayList<CollectorTargetDec> collectorsTargetConDec;
     private ArrayList<CollectorTargetInt> collectorsTargetConInt;
     private ArrayList<CollectorTargetBin> collectorsTargetConBin;
@@ -64,6 +65,7 @@ public class Node implements Cloneable, Serializable {
         collectorsSourceInt = new ArrayList<>();
         collectorsSourceBin = new ArrayList<>();
 
+        collectorsTargetCon = new ArrayList<>();
         collectorsTargetConDec = new ArrayList<>();
         collectorsTargetConInt = new ArrayList<>();
         collectorsTargetConBin = new ArrayList<>();
@@ -223,6 +225,11 @@ public class Node implements Cloneable, Serializable {
                 collectorsTargetConDec.add(collectorInp);
             }
         }
+        //Perforamnce optimization
+        collectorsTargetCon.clear();
+        collectorsTargetCon.addAll(collectorsTargetConDec);
+        collectorsTargetCon.addAll(collectorsTargetConInt);
+        collectorsTargetCon.addAll(collectorsTargetConBin);
         return collectorsTargetConDec;
     }
 
@@ -233,6 +240,11 @@ public class Node implements Cloneable, Serializable {
                 collectorsTargetConInt.add(collectorInp);
             }
         }
+        //Perforamnce optimization
+        collectorsTargetCon.clear();
+        collectorsTargetCon.addAll(collectorsTargetConDec);
+        collectorsTargetCon.addAll(collectorsTargetConInt);
+        collectorsTargetCon.addAll(collectorsTargetConBin);
         return collectorsTargetConInt;
     }
 
@@ -243,6 +255,11 @@ public class Node implements Cloneable, Serializable {
                 collectorsTargetConBin.add(collectorInp);
             }
         }
+        //Perforamnce optimization
+        collectorsTargetCon.clear();
+        collectorsTargetCon.addAll(collectorsTargetConDec);
+        collectorsTargetCon.addAll(collectorsTargetConInt);
+        collectorsTargetCon.addAll(collectorsTargetConBin);
         return collectorsTargetConBin;
     }
 
@@ -535,7 +552,7 @@ public class Node implements Cloneable, Serializable {
     }
 
     public boolean isSignalInputsReady() {
-        for (CollectorTarget collectorInp : collectorsTarget) {
+        for (CollectorTarget collectorInp : collectorsTargetCon) {
             for (Edge edge : collectorInp.getEdges()) {
                 if (!edge.isSignalReady()) {
                     return false;

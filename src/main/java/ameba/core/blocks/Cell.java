@@ -393,7 +393,7 @@ public class Cell implements Serializable {
         }
     }
 
-    public void importSignals(int[] signalsInt, boolean[] signalsBin) {
+    public void importSignals(int[] signalsInt) {
         for (int i = 0; i < inpNodesInt.size(); i++) {
             inpNodesInt.get(i).importSignal(signalsInt[i]);
         }

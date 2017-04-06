@@ -27,8 +27,18 @@ public class SimCell {
         cell.clearCell();
         cell.setFitnessValue(0.0);
         boolean[] c = new boolean[]{cell.getOutNodesDec().isEmpty(), cell.getOutNodesInt().isEmpty(), cell.getOutNodesBin().isEmpty()};
-        for (int i = 0; i < Math.max(data.getInpDec().length, Math.max(data.getInpInt().length, data.getInpBin().length)); i++) {
-            cell.importSignals(data.getInpDec()[i], data.getInpInt()[i], data.getInpBin()[i]);
+        int max = Math.max(data.getInpDec().length, Math.max(data.getInpInt().length, data.getInpBin().length));
+
+        for (int i = 0; i < max; i++) {
+            if (!c[0]) {
+                cell.importSignals(data.getInpDec()[i]);
+            }
+            if (!c[1]) {
+                cell.importSignals(data.getInpInt()[i]);
+            }
+            if (!c[2]) {
+                cell.importSignals(data.getInpBin()[i]);
+            }
             try {
                 cell.runEvent();
             } catch (Exception ex) {

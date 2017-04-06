@@ -1,5 +1,5 @@
 {
-  "reproductionSettings": [
+  "reproductionFactorySettings": [
     {
       "mutateEdge": {
         "probability": 100,

@@ -1,7 +1,10 @@
 package ameba.core;
 
+import ameba.core.evolution.DataEvo;
 import ameba.core.evolution.Evolution;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 /**
@@ -10,12 +13,30 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws Exception {
         System.out.println("Ameba started.");
-        Evolution evolution;
-        if (args.length > 0) {
-            evolution = new Evolution(args[0]);
-        } else {
-            evolution = new Evolution();
+        String data = "";
+        String settings = "";
+        DataEvo dataEvo;
+        for (int i = 0; i < args.length - 1; i++) {
+            if (args[i].equals("-data")) data = args[i + 1];
+            if (args[i].equals("-settings")) settings = args[i + 1];
         }
+        if (data.equals("")) {
+            throw new Exception("No data specified. Can't perform evolution.");
+        } else {
+            dataEvo = DataEvo.create(new String(Files.readAllBytes(Paths.get(data))));
+        }
+
+        Evolution evolution;
+        if (settings.equals("")) {
+            System.out.println("No settings specified. Default settings will be loaded.");
+            evolution = Evolution.build(dataEvo);
+        } else {
+            evolution = new Evolution(dataEvo, settings);
+            System.out.println("Settings from user loaded");
+        }
+
+        evolution.initRun();
+
         Thread t = new Thread(evolution);
         t.start();
         Scanner reader = new Scanner(System.in);

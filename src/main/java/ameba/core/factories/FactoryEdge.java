@@ -6,7 +6,11 @@ import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.edges.EdgeBin;
 import ameba.core.blocks.edges.EdgeDec;
 import ameba.core.blocks.edges.EdgeInt;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
 /**
@@ -29,6 +33,13 @@ public class FactoryEdge {
         this.factoryEdgeSettings = factoryEdgeSettings;
         rndGen = new Random();
     }
+
+    public static FactoryEdge build() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonSettings = mapper.readTree(new File(FactoryEdge.class.getClassLoader().getResource("edgeFactorySettings.json").getFile()));
+        return new FactoryEdge(mapper.readValue(jsonSettings.get("edgeFactorySettings").toString(), FactoryEdgeSettings.class));
+    }
+
 
     /**
      * @param source Source node for the edge.

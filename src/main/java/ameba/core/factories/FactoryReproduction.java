@@ -18,6 +18,7 @@ import ameba.core.reproductions.parametersOperations.genParMutation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,6 +73,14 @@ public class FactoryReproduction {
         this.bagCrossEdge = new ArrayList();
         this.bagCrossNode = new ArrayList();
         this.bagCrossCell = new ArrayList();
+    }
+
+    public static FactoryReproduction build() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonSettings = mapper.readTree(new File(FactoryReproduction.class.getClassLoader().getResource("reproductionFactorySettings.json").getFile()));
+        FactoryReproduction factoryNode = new FactoryReproduction(FactoryEdge.build(), FactoryNode.build(), FactoryCell.build());
+        factoryNode.loadSettings(jsonSettings.get("reproductionFactorySettings").toString());
+        return factoryNode;
     }
 
     public Cell repCell(Cell parent1, Cell parent2) throws Exception {
