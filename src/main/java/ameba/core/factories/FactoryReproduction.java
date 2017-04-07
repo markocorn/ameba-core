@@ -18,7 +18,6 @@ import ameba.core.reproductions.parametersOperations.genParMutation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,7 +76,7 @@ public class FactoryReproduction {
 
     public static FactoryReproduction build() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(new File(FactoryReproduction.class.getClassLoader().getResource("reproductionFactorySettings.json").getFile()));
+        JsonNode jsonSettings = mapper.readTree(FactoryReproduction.class.getClassLoader().getResourceAsStream("reproductionFactorySettings.json"));
         FactoryReproduction factoryNode = new FactoryReproduction(FactoryEdge.build(), FactoryNode.build(), FactoryCell.build());
         factoryNode.loadSettings(jsonSettings.get("reproductionFactorySettings").toString());
         return factoryNode;

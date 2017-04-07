@@ -54,14 +54,14 @@ public class Evolution extends Thread {
     public static Evolution build(DataEvo data) throws Exception {
         Evolution evo = new Evolution();
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(new File(Evolution.class.getClassLoader().getResource("evolutionSettings.json").getFile()));
+        JsonNode jsonSettings = mapper.readTree(Evolution.class.getClassLoader().getResourceAsStream("evolutionSettings.json"));
 
         evo.evolutionSettings = EvolutionSettings.create(jsonSettings.get("evolutionSettings").toString());
         evo.factoryCell = FactoryCell.build();
         evo.factoryNode = evo.factoryCell.getNodeFactory();
         evo.factoryEdge = evo.factoryCell.getEdgeFactory();
         evo.factoryReproduction = FactoryReproduction.build();
-        jsonSettings = mapper.readTree(new File(IncubatorSettings.class.getClassLoader().getResource("incubatorSettings.json").getFile()));
+        jsonSettings = mapper.readTree(Evolution.class.getClassLoader().getResourceAsStream("incubatorSettings.json"));
         evo.dataEvo = data;
         IncubatorSettings settings = IncubatorSettings.create(jsonSettings.get("incubatorSettings").toString());
         evo.incubator = new Incubator(
@@ -81,7 +81,7 @@ public class Evolution extends Thread {
 
     public void initRun() throws Exception {
         //Load or generate population
-        if (evolutionSettings.getInitialPopulationPathFile().equals("")) {
+        if (!evolutionSettings.getLoadInitialPopulation()) {
             incubator.populateInitial();
         } else {
             FileInputStream inputFileStream = new FileInputStream(evolutionSettings.getInitialPopulationPathFile());
@@ -124,7 +124,7 @@ public class Evolution extends Thread {
             }
             if (evolutionSettings.getSavePopulationPeriod() > 0
                     && generation % evolutionSettings.getSavePopulationPeriod() == 0
-                    && !evolutionSettings.getSavePopulationPathFile().equals("")) {
+                    && evolutionSettings.getSavePopulation()) {
                 saveGeneration();
             }
             System.out.println(generation + ": size: " + incubator.getPopulation().get(0).getInnerNodes().size() + " ; fitness: " + incubator.getPopulation().get(0).getFitnessValue());

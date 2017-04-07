@@ -17,7 +17,6 @@ public class Incubator {
     ISelect selection;
     Fitness fitness;
     ArrayList<Cell> population;
-    ArrayList<SimCell> sims;
     FactoryCell factoryCell;
     FactoryReproduction factoryReproduction;
     Random random;

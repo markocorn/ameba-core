@@ -12,7 +12,9 @@ import java.io.IOException;
 public class EvolutionSettings {
     private String settingsPathFile;
     private String dataPathFile;
+    private Boolean loadInitialPopulation;
     private String initialPopulationPathFile;
+    private Boolean savePopulation;
     private String savePopulationPathFile;
     private Integer savePopulationPeriod;
     private Integer savePopulationSize;
@@ -25,10 +27,12 @@ public class EvolutionSettings {
     public EvolutionSettings() {
     }
 
-    public EvolutionSettings(String settingsPathFile, String dataPathFile, String initialPopulationPathFile, String savePopulationPathFile, Integer savePopulationPeriod, Integer savePopulationSize, Integer evolutionExitType, Integer maxGenerations, Integer fitnessChange, Boolean enableGPU) {
+    public EvolutionSettings(String settingsPathFile, String dataPathFile, Boolean loadInitialPopulation, String initialPopulationPathFile, Boolean savePopulation, String savePopulationPathFile, Integer savePopulationPeriod, Integer savePopulationSize, Integer evolutionExitType, Integer maxGenerations, Integer fitnessChange, Boolean enableGPU) {
         this.settingsPathFile = settingsPathFile;
         this.dataPathFile = dataPathFile;
+        this.loadInitialPopulation = loadInitialPopulation;
         this.initialPopulationPathFile = initialPopulationPathFile;
+        this.savePopulation = savePopulation;
         this.savePopulationPathFile = savePopulationPathFile;
         this.savePopulationPeriod = savePopulationPeriod;
         this.savePopulationSize = savePopulationSize;
@@ -47,6 +51,22 @@ public class EvolutionSettings {
     public String getStringJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(this);
+    }
+
+    public Boolean getLoadInitialPopulation() {
+        return loadInitialPopulation;
+    }
+
+    public void setLoadInitialPopulation(Boolean loadInitialPopulation) {
+        this.loadInitialPopulation = loadInitialPopulation;
+    }
+
+    public Boolean getSavePopulation() {
+        return savePopulation;
+    }
+
+    public void setSavePopulation(Boolean savePopulation) {
+        this.savePopulation = savePopulation;
     }
 
     public Integer getSavePopulationSize() {

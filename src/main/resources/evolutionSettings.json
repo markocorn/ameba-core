@@ -1,6 +1,8 @@
 {
   "evolutionSettings": {
+    "loadInitialPopulation": false,
     "initialPopulationPathFile": "",
+    "savePopulation": false,
     "savePopulationPathFile": "",
     "savePopulationPeriod": 100,
     "savePopulationSize": 1,

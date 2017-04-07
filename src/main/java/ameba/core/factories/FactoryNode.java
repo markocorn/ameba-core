@@ -6,7 +6,6 @@ import ameba.core.blocks.nodes.types.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -61,7 +60,7 @@ public class FactoryNode {
 
     public static FactoryNode build() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(new File(FactoryNode.class.getClassLoader().getResource("nodeFactorySettings.json").getFile()));
+        JsonNode jsonSettings = mapper.readTree(FactoryNode.class.getClassLoader().getResourceAsStream("nodeFactorySettings.json"));
         FactoryNode factoryNode = new FactoryNode();
         factoryNode.loadSettings(jsonSettings.get("nodeFactorySettings").toString());
         return factoryNode;
