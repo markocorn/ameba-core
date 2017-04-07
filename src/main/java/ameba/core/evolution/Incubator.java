@@ -73,4 +73,52 @@ public class Incubator {
     public void setPopulation(ArrayList<Cell> population) {
         this.population = population;
     }
+
+    public IncubatorSettings getIncubatorSettings() {
+        return incubatorSettings;
+    }
+
+    public void setIncubatorSettings(IncubatorSettings incubatorSettings) {
+        this.incubatorSettings = incubatorSettings;
+    }
+
+    public ISelect getSelection() {
+        return selection;
+    }
+
+    public void setSelection(ISelect selection) {
+        this.selection = selection;
+    }
+
+    public Fitness getFitness() {
+        return fitness;
+    }
+
+    public void setFitness(Fitness fitness) {
+        this.fitness = fitness;
+    }
+
+    public FactoryCell getFactoryCell() {
+        return factoryCell;
+    }
+
+    public void setFactoryCell(FactoryCell factoryCell) {
+        this.factoryCell = factoryCell;
+    }
+
+    public FactoryReproduction getFactoryReproduction() {
+        return factoryReproduction;
+    }
+
+    public void setFactoryReproduction(FactoryReproduction factoryReproduction) {
+        this.factoryReproduction = factoryReproduction;
+    }
+
+    public DataEvo getData() {
+        return data;
+    }
+
+    public void setData(DataEvo data) {
+        this.data = data;
+    }
 }

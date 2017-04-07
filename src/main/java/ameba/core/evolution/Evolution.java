@@ -182,4 +182,68 @@ public class Evolution extends Thread {
             saveGeneration();
         }
     }
+
+    public EvolutionSettings getEvolutionSettings() {
+        return evolutionSettings;
+    }
+
+    public void setEvolutionSettings(EvolutionSettings evolutionSettings) {
+        this.evolutionSettings = evolutionSettings;
+    }
+
+    public FactoryCell getFactoryCell() {
+        return factoryCell;
+    }
+
+    public void setFactoryCell(FactoryCell factoryCell) {
+        this.factoryCell = factoryCell;
+    }
+
+    public FactoryNode getFactoryNode() {
+        return factoryNode;
+    }
+
+    public void setFactoryNode(FactoryNode factoryNode) {
+        this.factoryNode = factoryNode;
+    }
+
+    public FactoryEdge getFactoryEdge() {
+        return factoryEdge;
+    }
+
+    public void setFactoryEdge(FactoryEdge factoryEdge) {
+        this.factoryEdge = factoryEdge;
+    }
+
+    public FactoryReproduction getFactoryReproduction() {
+        return factoryReproduction;
+    }
+
+    public void setFactoryReproduction(FactoryReproduction factoryReproduction) {
+        this.factoryReproduction = factoryReproduction;
+    }
+
+    public Incubator getIncubator() {
+        return incubator;
+    }
+
+    public void setIncubator(Incubator incubator) {
+        this.incubator = incubator;
+    }
+
+    public DataEvo getDataEvo() {
+        return dataEvo;
+    }
+
+    public void setDataEvo(DataEvo dataEvo) {
+        this.dataEvo = dataEvo;
+    }
+
+    public int getGeneration() {
+        return generation;
+    }
+
+    public void setGeneration(int generation) {
+        this.generation = generation;
+    }
 }
