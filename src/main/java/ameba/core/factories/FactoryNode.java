@@ -315,10 +315,32 @@ public class FactoryNode {
                             nodeSettingsHashMap.get(nodeType).getParametersBin()[0],
                             new Boolean[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][1]});
                     break;
+                case "FilterLPDec":
+                    node = new FilterLPDec(
+                            nodeSettingsHashMap.get(nodeType).getInitialValueDec(),
+                            nodeSettingsHashMap.get(nodeType).getParametersDec()[0],
+                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
+                    break;
+                case "FilterHPDec":
+                    node = new FilterHPDec(
+                            nodeSettingsHashMap.get(nodeType).getInitialValueDec(),
+                            nodeSettingsHashMap.get(nodeType).getParametersDec()[0],
+                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
+                    break;
                 case "Divide":
                     node = new Divide(
                             nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
                             nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1]);
+                    break;
+                case "ExponentBaseDec":
+                    node = new ExponentBaseDec(
+                            nodeSettingsHashMap.get(nodeType).getParametersDec()[0],
+                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
+                    break;
+                case "ExponentIndexDec":
+                    node = new ExponentIndexDec(
+                            nodeSettingsHashMap.get(nodeType).getParametersDec()[0],
+                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "MultiplyDec":
                     node = new MultiplyDec(

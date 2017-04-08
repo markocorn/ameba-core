@@ -51,6 +51,34 @@
       ]
     },
     {
+      "type": "ExponentBaseDec",
+      "available": true,
+      "probability": 100,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          -10.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "ExponentIndexDec",
+      "available": true,
+      "probability": 100,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          -10,
+          10
+        ]
+      ]
+    },
+    {
       "type": "CompareInt",
       "available": true,
       "probability": 100,
@@ -195,6 +223,36 @@
     },
     {
       "type": "DerivativeDec",
+      "available": true,
+      "probability": 100,
+      "initialValueDec": 0.0,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "FilterLPDec",
+      "available": true,
+      "probability": 100,
+      "initialValueDec": 0.0,
+      "parametersDec": [
+        1.0
+      ],
+      "parametersLimitsDec": [
+        [
+          1.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "type": "FilterHPDec",
       "available": true,
       "probability": 100,
       "initialValueDec": 0.0,
