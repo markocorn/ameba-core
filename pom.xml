@@ -24,6 +24,11 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
         </plugins>
     </build>
 
@@ -33,11 +38,6 @@
             <name>vmi81289.contabo.host-releases</name>
             <url>http://79.143.188.154:8081/artifactory/ameba-core</url>
         </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>vmi81289.contabo.host-snapshots</name>
-            <url>http://79.143.188.154:8081/artifactory/ameba-core</url>
-        </snapshotRepository>
     </distributionManagement>
 
     <dependencies>
