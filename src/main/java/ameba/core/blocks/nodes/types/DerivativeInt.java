@@ -38,7 +38,10 @@ public class DerivativeInt extends Node {
     //Calculate output value
     @Override
     public void clcNode() {
-        getCollectorsSourceInt().get(0).setSignal((getCollectorsTargetInt().get(0).getSignal() - signalOld) / getParamsInt().get(0));
+        if (getParamsInt().get(0) == 0) {
+            getCollectorsSourceInt().get(0).setSignal(0);
+        } else
+            getCollectorsSourceInt().get(0).setSignal((getCollectorsTargetInt().get(0).getSignal() - signalOld) / getParamsInt().get(0));
         signalOld = getCollectorsTargetInt().get(0).getSignal();
     }
 

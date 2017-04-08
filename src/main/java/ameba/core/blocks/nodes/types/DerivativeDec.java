@@ -37,7 +37,10 @@ public class DerivativeDec extends NodeMem {
     //Calculate output value
     @Override
     public void clcNode() {
-        getCollectorsSourceDec().get(0).setSignal((getCollectorsTargetDec().get(0).getSignal() - signalOld) / getParamsDec().get(0));
+        if (getParamsDec().get(0) == 0.0) {
+            getCollectorsSourceDec().get(0).setSignal(0.0);
+        } else
+            getCollectorsSourceDec().get(0).setSignal((getCollectorsTargetDec().get(0).getSignal() - signalOld) / getParamsDec().get(0));
         signalOld = getCollectorsTargetDec().get(0).getSignal();
     }
 
