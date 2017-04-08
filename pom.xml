@@ -4,28 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ameba-core</groupId>
+    <groupId>ameba</groupId>
     <artifactId>ameba-core</artifactId>
     <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <build>
-        <!--<resources>-->
-        <!--<resource>-->
-        <!--<directory>src/main/resources</directory>-->
-        <!--<includes>-->
-        <!--<include>cellFactorySettings.json</include>-->
-        <!--<include>edgeFactorySettings.json</include>-->
-        <!--<include>nodeFactorySettings.json</include>-->
-        <!--<include>reproductionFactorySettings.json</include>-->
-        <!--<include>evolutionSettings.json</include>-->
-        <!--<include>incubatorSettings.json</include>-->
-        <!--</includes>-->
-        <!--&lt;!&ndash; relative to target/classes-->
-        <!--i.e. ${project.build.outputDirectory} &ndash;&gt;-->
-        <!--<targetPath>..</targetPath>-->
-        <!--</resource>-->
-        <!--</resources>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -38,40 +22,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>ameba.core.Main</mainClass>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>ameba.core.Main</mainClass>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
         </plugins>
