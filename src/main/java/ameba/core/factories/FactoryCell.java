@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rits.cloning.Cloner;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -31,6 +32,12 @@ public class FactoryCell {
     public static FactoryCell build() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonSettings = mapper.readTree(FactoryCell.class.getClassLoader().getResourceAsStream("cellFactorySettings.json"));
+        return new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), FactoryNode.build(), FactoryEdge.build());
+    }
+
+    public static FactoryCell build(String filePath) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonSettings = mapper.readTree(new File(filePath));
         return new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), FactoryNode.build(), FactoryEdge.build());
     }
 
