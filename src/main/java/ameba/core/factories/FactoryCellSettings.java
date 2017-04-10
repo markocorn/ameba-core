@@ -53,6 +53,19 @@ public class FactoryCellSettings {
         return mapper.readValue(json, FactoryCellSettings.class);
     }
 
+    public void load(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        FactoryCellSettings settings = mapper.readValue(json, FactoryCellSettings.class);
+        this.nodeInitial = getNodeInitial();
+        this.nodeInpDec = settings.getNodeInpDec();
+        this.nodeInpInt = settings.getNodeInpInt();
+        this.nodeInpBin = settings.getNodeInpBin();
+        this.nodeOutDec = settings.getNodeOutDec();
+        this.nodeOutInt = settings.getNodeOutInt();
+        this.nodeOutBin = settings.getNodeOutBin();
+        this.nodeMax = settings.getNodeMax();
+    }
+
     @JsonIgnore
     public String getStringJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();

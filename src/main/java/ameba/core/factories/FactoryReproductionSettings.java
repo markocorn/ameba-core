@@ -16,6 +16,7 @@ public class FactoryReproductionSettings {
         return mapper.readValue(json, FactoryReproductionSettings.class);
     }
 
+
     @JsonIgnore
     public String getStringJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();

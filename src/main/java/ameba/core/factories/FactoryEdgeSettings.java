@@ -43,6 +43,17 @@ public class FactoryEdgeSettings {
         return mapper.readValue(json, FactoryEdgeSettings.class);
     }
 
+    public void load(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        FactoryEdgeSettings settings = mapper.readValue(json, FactoryEdgeSettings.class);
+        this.weightInitialDec = settings.getWeightInitialDec();
+        this.weightInitialInt = settings.getWeightInitialInt();
+        this.weightInitialBin = settings.getWeightInitialBin();
+        this.weighLimitsDec = settings.getWeighLimitsDec();
+        this.weighLimitsInt = settings.getWeighLimitsInt();
+        this.weighLimitsBin = settings.getWeighLimitsBin();
+    }
+
     @JsonIgnore
     public String getStringJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();

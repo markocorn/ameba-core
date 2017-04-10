@@ -52,9 +52,9 @@ public class FactoryNodeSettings {
     public FactoryNodeSettings() {
     }
 
-    public FactoryNodeSettings(String type, Integer[] inpColDecLimitDec, Integer[] inpColLimitInt, Integer[] inpColLimitBin, Integer[] outColLimitDec, Integer[] outColLimitInt, Integer[] outColLimitBin, Boolean available, Integer probability, Double initialValueDec, Integer initialValueInt, Boolean initialValueBin, Double[] parametersDec, Integer[] parametersInt, Boolean[] parametersBin, Double[][] parametersLimitsDec, Integer[][] parametersLimitsInt, Boolean[][] parametersLimitsBin) {
+    public FactoryNodeSettings(String type, Integer[] inpColLimitDec, Integer[] inpColLimitInt, Integer[] inpColLimitBin, Integer[] outColLimitDec, Integer[] outColLimitInt, Integer[] outColLimitBin, Boolean available, Integer probability, Double initialValueDec, Integer initialValueInt, Boolean initialValueBin, Double[] parametersDec, Integer[] parametersInt, Boolean[] parametersBin, Double[][] parametersLimitsDec, Integer[][] parametersLimitsInt, Boolean[][] parametersLimitsBin) {
         this.type = type;
-        this.inpColLimitDec = inpColDecLimitDec;
+        this.inpColLimitDec = inpColLimitDec;
         this.inpColLimitInt = inpColLimitInt;
         this.inpColLimitBin = inpColLimitBin;
         this.outColLimitDec = outColLimitDec;
@@ -76,6 +76,29 @@ public class FactoryNodeSettings {
     public static FactoryNodeSettings create(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(json, FactoryNodeSettings.class);
+    }
+
+    public void load(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        FactoryNodeSettings settings = mapper.readValue(json, FactoryNodeSettings.class);
+        this.type = settings.getType();
+        this.inpColLimitDec = settings.getInpColLimitDec();
+        this.inpColLimitInt = settings.getInpColLimitInt();
+        this.inpColLimitBin = settings.getInpColLimitBin();
+        this.outColLimitDec = settings.getOutColLimitDec();
+        this.outColLimitInt = settings.getOutColLimitInt();
+        this.outColLimitBin = settings.getOutColLimitBin();
+        this.available = settings.getAvailable();
+        this.probability = settings.getProbability();
+        this.initialValueDec = settings.getInitialValueDec();
+        this.initialValueInt = settings.getInitialValueInt();
+        this.initialValueBin = settings.getInitialValueBin();
+        this.parametersDec = settings.getParametersDec();
+        this.parametersInt = settings.getParametersInt();
+        this.parametersBin = settings.getParametersBin();
+        this.parametersLimitsDec = settings.getParametersLimitsDec();
+        this.parametersLimitsInt = settings.getParametersLimitsInt();
+        this.parametersLimitsBin = settings.getParametersLimitsBin();
     }
 
     @JsonIgnore
