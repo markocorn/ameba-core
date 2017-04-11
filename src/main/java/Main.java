@@ -18,7 +18,7 @@ public class Main {
             FactoryReproduction factoryReproduction = FactoryReproduction.build();
             for (int i = 0; i < 100; i++) {
                 factoryReproduction.repCell(factoryCell.genCellRnd(), factoryCell.genCellRnd());
-                System.out.println(factoryCell.genCellRnd().toJsonString());
+
             }
 
             Cell cell = new Cell(100);
@@ -56,7 +56,8 @@ public class Main {
             cell.clearCell();
 
             cell.checkCellPrint();
-
+            System.out.println(factoryCell.genCellRnd().toJsonString());
+            factoryCell.getCellJson("/home/marko/IdeaProjects/ameba-core/cellJson.json");
 
             //Simulate cell
             double[][] inpDec = new double[][]{{1.0}, {1.0}, {1.0}, {1.0}};

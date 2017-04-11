@@ -418,5 +418,53 @@ public class FactoryCell {
         return cloner.deepClone(this);
     }
 
+    public Cell getCellJson(String filepath) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(new File(filepath));
+        Cell cell = new Cell(cellFactorySettings.getNodeMax());
+        HashMap<Node, Integer> nodeIntegerHashMap = new HashMap<>();
+        HashMap<CollectorSource, Integer> sourceIntegerHashMap = new HashMap<>();
+        HashMap<CollectorTarget, Integer> targetIntegerHashMap = new HashMap<>();
+        //Set nodes and store collectors for edges
+        for (int i = 0; i < node.get("nodes").size(); i++) {
+            Node newNode = nodeFactory.genNode(node.get("nodes").get(i).get("type").asText());
+            nodeIntegerHashMap.put(newNode, node.get("nodes").get(i).get("id").asInt());
+            for (int j = 0; j < node.get("nodes").get(i).get("sourceCol").size(); j++) {
+                sourceIntegerHashMap.put(newNode.getCollectorsSource().get(j), node.get("nodes").get(i).get("sourceCol").get(j).get("id").asInt());
+            }
+            for (int j = 0; j < node.get("nodes").get(i).get("targetCol").size(); j++) {
+                targetIntegerHashMap.put(newNode.getCollectorsTarget().get(j), node.get("nodes").get(i).get("targetCol").get(j).get("id").asInt());
+            }
+            //Set parameters of the node
+            for (int j = 0; j < node.get("nodes").get(i).get("paramsDec").size(); j++) {
+                newNode.getParamsDec().set(j, node.get("nodes").get(i).get("paramsDec").get(j).asDouble());
+            }
+            for (int j = 0; j < node.get("nodes").get(i).get("paramsInt").size(); j++) {
+                newNode.getParamsInt().set(j, node.get("nodes").get(i).get("paramsInt").get(j).asInt());
+            }
+            for (int j = 0; j < node.get("nodes").get(i).get("paramsBin").size(); j++) {
+                newNode.getParamsBin().set(j, node.get("nodes").get(i).get("paramsBin").get(j).asBoolean());
+            }
+            cell.addNode(newNode);
+        }
+
+        for (int i = 0; i < node.get("edges").size(); i++) {
+            switch (node.get("edges").get(i).get("type").asText()) {
+                case "DECIMAL": {
+                }
+                break;
+                case "INTEGER": {
+                }
+                break;
+                case "BOOLEAN": {
+                }
+                break;
+            }
+        }
+
+        return cell;
+
+    }
+
 
 }
