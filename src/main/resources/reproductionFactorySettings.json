@@ -138,7 +138,7 @@
             1000.0
           ]
         },
-        "weightCombineMulSubDec": {
+        "weightCombineSubDec": {
           "probability": 100,
           "changeLimitDec": [
             -0.01,
@@ -182,7 +182,7 @@
             1000
           ]
         },
-        "weightCombineMulSubInt": {
+        "weightCombineSubInt": {
           "probability": 100,
           "changeLimitInt": [
             -1,

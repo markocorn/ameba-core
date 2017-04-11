@@ -194,6 +194,10 @@ public class FactoryNode {
         return nodeSettingsHashMap;
     }
 
+    public void setNodeSettingsHashMap(HashMap<String, FactoryNodeSettings> nodeSettingsHashMap) {
+        this.nodeSettingsHashMap = nodeSettingsHashMap;
+    }
+
     /**
      * Build node with randomly generated parameters with constraints derived from node factory nodeSettingsHashMap.
      *
@@ -556,64 +560,63 @@ public class FactoryNode {
     }
 
     public Node genNodeRndCollectorTargetType(Cell.Signal type) throws Exception {
-        if (type.equals(Cell.Signal.DECIMAL)) {
+        if (type.equals(Cell.Signal.DECIMAL) && bagInpColDec.size() > 0) {
             return genNodeRndPar(bagInpColDec.get(rndGen.nextInt(bagInpColDec.size())));
         }
-        if (type.equals(Cell.Signal.INTEGER)) {
+        if (type.equals(Cell.Signal.INTEGER) && bagInpColInt.size() > 0) {
             return genNodeRndPar(bagInpColInt.get(rndGen.nextInt(bagInpColInt.size())));
         }
-        if (type.equals(Cell.Signal.BOOLEAN)) {
+        if (type.equals(Cell.Signal.BOOLEAN) && bagInpColBin.size() > 0) {
             return genNodeRndPar(bagInpColBin.get(rndGen.nextInt(bagInpColBin.size())));
         }
-        throw new Exception();
+        return null;
     }
 
     public Node genNodeRndCollectorSourceType(Cell.Signal type) throws Exception {
-        if (type.equals(Cell.Signal.DECIMAL)) {
+        if (type.equals(Cell.Signal.DECIMAL) && bagOutColDec.size() > 0) {
             return genNodeRndPar(bagOutColDec.get(rndGen.nextInt(bagOutColDec.size())));
         }
-        if (type.equals(Cell.Signal.INTEGER)) {
+        if (type.equals(Cell.Signal.INTEGER) && bagOutColInt.size() > 0) {
             return genNodeRndPar(bagOutColInt.get(rndGen.nextInt(bagOutColInt.size())));
         }
-        if (type.equals(Cell.Signal.BOOLEAN)) {
+        if (type.equals(Cell.Signal.BOOLEAN) && bagOutColBin.size() > 0) {
             return genNodeRndPar(bagOutColBin.get(rndGen.nextInt(bagOutColBin.size())));
         }
-        throw new Exception();
+        return null;
     }
 
     public Node genNodeRndCollectorsType(Cell.Signal typeInp, Cell.Signal typeOut) throws Exception {
-        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.BOOLEAN)) {
+        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.BOOLEAN) && bagColBinBin.size() > 0) {
             return genNodeRndPar(bagColBinBin.get(rndGen.nextInt(bagColBinBin.size())));
         }
-        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.INTEGER)) {
+        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.INTEGER) && bagColBinInt.size() > 0) {
             return genNodeRndPar(bagColBinInt.get(rndGen.nextInt(bagColBinInt.size())));
         }
-        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.DECIMAL)) {
+        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.DECIMAL) && bagColBinDec.size() > 0) {
             return genNodeRndPar(bagColBinDec.get(rndGen.nextInt(bagColBinDec.size())));
         }
 
-        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.BOOLEAN)) {
+        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.BOOLEAN) && bagColIntBin.size() > 0) {
             return genNodeRndPar(bagColIntBin.get(rndGen.nextInt(bagColIntBin.size())));
         }
-        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.INTEGER)) {
+        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.INTEGER) && bagColIntInt.size() > 0) {
             return genNodeRndPar(bagColIntInt.get(rndGen.nextInt(bagColIntInt.size())));
         }
-        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.DECIMAL)) {
+        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.DECIMAL) && bagColIntDec.size() > 0) {
             return genNodeRndPar(bagColIntDec.get(rndGen.nextInt(bagColIntDec.size())));
         }
 
-        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.BOOLEAN)) {
+        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.BOOLEAN) && bagColDecBin.size() > 0) {
             return genNodeRndPar(bagColDecBin.get(rndGen.nextInt(bagColDecBin.size())));
         }
-        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.INTEGER)) {
+        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.INTEGER) && bagColDecInt.size() > 0) {
             return genNodeRndPar(bagColDecInt.get(rndGen.nextInt(bagColDecInt.size())));
         }
-        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.DECIMAL)) {
+        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.DECIMAL) && bagColDecDec.size() > 0) {
             return genNodeRndPar(bagColDecDec.get(rndGen.nextInt(bagColDecDec.size())));
         }
-        throw new Exception("Type does not exists.");
+        return null;
     }
-
 
     public double genRndSignalDec(double min, double max) throws Exception {
         if (min > max)
@@ -633,5 +636,133 @@ public class FactoryNode {
         if (min) return true;
         if (!max) return false;
         return rndGen.nextBoolean();
+    }
+
+    public ArrayList<String> getBag() {
+        return bag;
+    }
+
+    public void setBag(ArrayList<String> bag) {
+        this.bag = bag;
+    }
+
+    public ArrayList<String> getBagInpColDec() {
+        return bagInpColDec;
+    }
+
+    public void setBagInpColDec(ArrayList<String> bagInpColDec) {
+        this.bagInpColDec = bagInpColDec;
+    }
+
+    public ArrayList<String> getBagInpColInt() {
+        return bagInpColInt;
+    }
+
+    public void setBagInpColInt(ArrayList<String> bagInpColInt) {
+        this.bagInpColInt = bagInpColInt;
+    }
+
+    public ArrayList<String> getBagInpColBin() {
+        return bagInpColBin;
+    }
+
+    public void setBagInpColBin(ArrayList<String> bagInpColBin) {
+        this.bagInpColBin = bagInpColBin;
+    }
+
+    public ArrayList<String> getBagOutColDec() {
+        return bagOutColDec;
+    }
+
+    public void setBagOutColDec(ArrayList<String> bagOutColDec) {
+        this.bagOutColDec = bagOutColDec;
+    }
+
+    public ArrayList<String> getBagOutColInt() {
+        return bagOutColInt;
+    }
+
+    public void setBagOutColInt(ArrayList<String> bagOutColInt) {
+        this.bagOutColInt = bagOutColInt;
+    }
+
+    public ArrayList<String> getBagOutColBin() {
+        return bagOutColBin;
+    }
+
+    public void setBagOutColBin(ArrayList<String> bagOutColBin) {
+        this.bagOutColBin = bagOutColBin;
+    }
+
+    public ArrayList<String> getBagColBinBin() {
+        return bagColBinBin;
+    }
+
+    public void setBagColBinBin(ArrayList<String> bagColBinBin) {
+        this.bagColBinBin = bagColBinBin;
+    }
+
+    public ArrayList<String> getBagColBinDec() {
+        return bagColBinDec;
+    }
+
+    public void setBagColBinDec(ArrayList<String> bagColBinDec) {
+        this.bagColBinDec = bagColBinDec;
+    }
+
+    public ArrayList<String> getBagColBinInt() {
+        return bagColBinInt;
+    }
+
+    public void setBagColBinInt(ArrayList<String> bagColBinInt) {
+        this.bagColBinInt = bagColBinInt;
+    }
+
+    public ArrayList<String> getBagColIntBin() {
+        return bagColIntBin;
+    }
+
+    public void setBagColIntBin(ArrayList<String> bagColIntBin) {
+        this.bagColIntBin = bagColIntBin;
+    }
+
+    public ArrayList<String> getBagColIntDec() {
+        return bagColIntDec;
+    }
+
+    public void setBagColIntDec(ArrayList<String> bagColIntDec) {
+        this.bagColIntDec = bagColIntDec;
+    }
+
+    public ArrayList<String> getBagColIntInt() {
+        return bagColIntInt;
+    }
+
+    public void setBagColIntInt(ArrayList<String> bagColIntInt) {
+        this.bagColIntInt = bagColIntInt;
+    }
+
+    public ArrayList<String> getBagColDecBin() {
+        return bagColDecBin;
+    }
+
+    public void setBagColDecBin(ArrayList<String> bagColDecBin) {
+        this.bagColDecBin = bagColDecBin;
+    }
+
+    public ArrayList<String> getBagColDecDec() {
+        return bagColDecDec;
+    }
+
+    public void setBagColDecDec(ArrayList<String> bagColDecDec) {
+        this.bagColDecDec = bagColDecDec;
+    }
+
+    public ArrayList<String> getBagColDecInt() {
+        return bagColDecInt;
+    }
+
+    public void setBagColDecInt(ArrayList<String> bagColDecInt) {
+        this.bagColDecInt = bagColDecInt;
     }
 }

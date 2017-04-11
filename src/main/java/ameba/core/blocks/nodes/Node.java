@@ -220,16 +220,11 @@ public class Node implements Cloneable, Serializable {
 
     public ArrayList<CollectorTargetDec> getCollectorsTargetConnectedDec() {
         collectorsTargetConDec.clear();
-        for (CollectorTargetDec collectorInp : collectorsTargetDec) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorsTargetConDec.add(collectorInp);
+        for (CollectorTargetDec c : collectorsTargetDec) {
+            if (c.getEdges().size() > 0) {
+                collectorsTargetConDec.add(c);
             }
         }
-        //Perforamnce optimization
-        collectorsTargetCon.clear();
-        collectorsTargetCon.addAll(collectorsTargetConDec);
-        collectorsTargetCon.addAll(collectorsTargetConInt);
-        collectorsTargetCon.addAll(collectorsTargetConBin);
         return collectorsTargetConDec;
     }
 
@@ -240,11 +235,6 @@ public class Node implements Cloneable, Serializable {
                 collectorsTargetConInt.add(collectorInp);
             }
         }
-        //Perforamnce optimization
-        collectorsTargetCon.clear();
-        collectorsTargetCon.addAll(collectorsTargetConDec);
-        collectorsTargetCon.addAll(collectorsTargetConInt);
-        collectorsTargetCon.addAll(collectorsTargetConBin);
         return collectorsTargetConInt;
     }
 
@@ -255,12 +245,13 @@ public class Node implements Cloneable, Serializable {
                 collectorsTargetConBin.add(collectorInp);
             }
         }
-        //Perforamnce optimization
-        collectorsTargetCon.clear();
-        collectorsTargetCon.addAll(collectorsTargetConDec);
-        collectorsTargetCon.addAll(collectorsTargetConInt);
-        collectorsTargetCon.addAll(collectorsTargetConBin);
         return collectorsTargetConBin;
+    }
+
+    public void simOptimization() {
+        //Performance optimization
+        collectorsTargetCon.clear();
+        collectorsTargetCon.addAll(getCollectorsTargetConnected());
     }
 
     //Optimisation calls
@@ -529,7 +520,7 @@ public class Node implements Cloneable, Serializable {
     }
 
     public void processNode() {
-        if (!isSignalReady()) {//Optimisation process don't verify node clc if node has already been calculateds
+        if (!isSignalReady()) {//Optimisation process don't verify node clc if node has already been calculated
             if (isSignalInputsReady()) {
                 clcNode();
                 setSignalClcDone(true);

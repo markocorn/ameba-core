@@ -490,9 +490,11 @@ public class Cell implements Serializable {
      * Clear cell's nodes.
      */
     public void clearCell() {
+
         rstCell();
         for (Node node : nodes) {
             node.clearNode();
+            node.simOptimization();
         }
     }
 

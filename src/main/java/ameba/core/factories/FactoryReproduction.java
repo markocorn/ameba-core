@@ -83,10 +83,10 @@ public class FactoryReproduction {
         return factoryNode;
     }
 
-    public static FactoryReproduction build(String filePath) throws Exception {
+    public static FactoryReproduction build(String filePathReproduction, String filePathCell, String filePathNode, String filePathEdge) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(new File(filePath));
-        FactoryReproduction factoryNode = new FactoryReproduction(FactoryEdge.build(), FactoryNode.build(), FactoryCell.build());
+        JsonNode jsonSettings = mapper.readTree(new File(filePathReproduction));
+        FactoryReproduction factoryNode = new FactoryReproduction(FactoryEdge.build(filePathEdge), FactoryNode.build(filePathNode), FactoryCell.build(filePathCell, filePathNode, filePathEdge));
         factoryNode.loadSettings(jsonSettings.get("reproductionFactorySettings").toString());
         return factoryNode;
     }
@@ -269,13 +269,13 @@ public class FactoryReproduction {
         reproductions.add(weightCombineMulInt);
         bagCrossEdge.addAll(Collections.nCopies(weightCombineMulInt.getProbability(), name));
 
-        name = "weightCombineMulSubDec";
+        name = "weightCombineSubDec";
         WeightCombineSubDec weightCombineSubDec = new WeightCombineSubDec(new CombineSubDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, weightCombineSubDec);
         reproductions.add(weightCombineSubDec);
         bagCrossEdge.addAll(Collections.nCopies(weightCombineSubDec.getProbability(), name));
 
-        name = "weightCombineMulSubInt";
+        name = "weightCombineSubInt";
         WeightCombineSubInt weightCombineSubInt = new WeightCombineSubInt(new CombineSubInt(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, weightCombineSubInt);
         reproductions.add(weightCombineSubInt);

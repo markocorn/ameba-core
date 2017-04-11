@@ -35,10 +35,10 @@ public class FactoryCell {
         return new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), FactoryNode.build(), FactoryEdge.build());
     }
 
-    public static FactoryCell build(String filePath) throws Exception {
+    public static FactoryCell build(String filePathCell, String filePathNode, String filePathEdge) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(new File(filePath));
-        return new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), FactoryNode.build(), FactoryEdge.build());
+        JsonNode jsonSettings = mapper.readTree(new File(filePathCell));
+        return new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), FactoryNode.build(filePathNode), FactoryEdge.build(filePathEdge));
     }
 
     public FactoryCellSettings getCellFactorySettings() {

@@ -4,12 +4,12 @@
       5,
       10
     ],
-    "nodeInpDec": 4,
-    "nodeInpInt": 0,
-    "nodeInpBin": 0,
-    "nodeOutDec": 24,
-    "nodeOutInt": 0,
-    "nodeOutBin": 0,
+    "nodeInpDec": 1,
+    "nodeInpInt": 1,
+    "nodeInpBin": 1,
+    "nodeOutDec": 1,
+    "nodeOutInt": 1,
+    "nodeOutBin": 1,
     "nodeMax": 150
   }
 }
