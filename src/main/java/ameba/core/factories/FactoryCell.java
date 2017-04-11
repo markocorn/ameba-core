@@ -3,6 +3,9 @@ package ameba.core.factories;
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.*;
 import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.edges.EdgeBin;
+import ameba.core.blocks.edges.EdgeDec;
+import ameba.core.blocks.edges.EdgeInt;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -418,52 +421,104 @@ public class FactoryCell {
         return cloner.deepClone(this);
     }
 
-    public Cell getCellJson(String filepath) throws Exception {
+    public Cell getCellJson(String json) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(new File(filepath));
+        JsonNode node = mapper.readTree(json);
         Cell cell = new Cell(cellFactorySettings.getNodeMax());
-        HashMap<Node, Integer> nodeIntegerHashMap = new HashMap<>();
-        HashMap<CollectorSource, Integer> sourceIntegerHashMap = new HashMap<>();
-        HashMap<CollectorTarget, Integer> targetIntegerHashMap = new HashMap<>();
+        HashMap<Integer, Node> nodeIntegerHashMap = new HashMap<>();
+        HashMap<Integer, CollectorSource> sourceIntegerHashMap = new HashMap<>();
+        HashMap<Integer, CollectorTarget> targetIntegerHashMap = new HashMap<>();
         //Set nodes and store collectors for edges
-        for (int i = 0; i < node.get("nodes").size(); i++) {
-            Node newNode = nodeFactory.genNode(node.get("nodes").get(i).get("type").asText());
-            nodeIntegerHashMap.put(newNode, node.get("nodes").get(i).get("id").asInt());
-            for (int j = 0; j < node.get("nodes").get(i).get("sourceCol").size(); j++) {
-                sourceIntegerHashMap.put(newNode.getCollectorsSource().get(j), node.get("nodes").get(i).get("sourceCol").get(j).get("id").asInt());
+        for (int i = 0; i < node.get("cell").get("nodes").size(); i++) {
+            Node newNode = nodeFactory.genNode(node.get("cell").get("nodes").get(i).get("type").asText());
+            nodeIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("id").asInt(), newNode);
+            int[] count = new int[]{0, 0, 0};
+            for (int j = 0; j < node.get("cell").get("nodes").get(i).get("sourceCol").size(); j++) {
+                switch (node.get("cell").get("nodes").get(i).get("sourceCol").get(j).get("type").asText()) {
+                    case "DECIMAL": {
+                        sourceIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("sourceCol").get(j).get("id").asInt(), newNode.getCollectorsSourceDec().get(count[0]));
+                        count[0]++;
+                    }
+                    break;
+                    case "INTEGER": {
+                        sourceIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("sourceCol").get(j).get("id").asInt(), newNode.getCollectorsSourceInt().get(count[1]));
+                        count[1]++;
+                    }
+                    break;
+                    case "BOOLEAN": {
+                        sourceIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("sourceCol").get(j).get("id").asInt(), newNode.getCollectorsSourceBin().get(count[2]));
+                        count[2]++;
+                    }
+                    break;
+                }
             }
-            for (int j = 0; j < node.get("nodes").get(i).get("targetCol").size(); j++) {
-                targetIntegerHashMap.put(newNode.getCollectorsTarget().get(j), node.get("nodes").get(i).get("targetCol").get(j).get("id").asInt());
+            count = new int[]{0, 0, 0};
+            for (int j = 0; j < node.get("cell").get("nodes").get(i).get("targetCol").size(); j++) {
+                switch (node.get("cell").get("nodes").get(i).get("targetCol").get(j).get("type").asText()) {
+                    case "DECIMAL": {
+                        targetIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("targetCol").get(j).get("id").asInt(), newNode.getCollectorsTargetDec().get(count[0]));
+                        count[0]++;
+                    }
+                    break;
+                    case "INTEGER": {
+                        targetIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("targetCol").get(j).get("id").asInt(), newNode.getCollectorsTargetInt().get(count[1]));
+                        count[1]++;
+                    }
+                    break;
+                    case "BOOLEAN": {
+                        targetIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("targetCol").get(j).get("id").asInt(), newNode.getCollectorsTargetBin().get(count[2]));
+                        count[2]++;
+                    }
+                    break;
+                }
             }
             //Set parameters of the node
-            for (int j = 0; j < node.get("nodes").get(i).get("paramsDec").size(); j++) {
-                newNode.getParamsDec().set(j, node.get("nodes").get(i).get("paramsDec").get(j).asDouble());
+            for (int j = 0; j < node.get("cell").get("nodes").get(i).get("paramsDec").size(); j++) {
+                newNode.getParamsDec().set(j, node.get("cell").get("nodes").get(i).get("paramsDec").get(j).asDouble());
             }
-            for (int j = 0; j < node.get("nodes").get(i).get("paramsInt").size(); j++) {
-                newNode.getParamsInt().set(j, node.get("nodes").get(i).get("paramsInt").get(j).asInt());
+            for (int j = 0; j < node.get("cell").get("nodes").get(i).get("paramsInt").size(); j++) {
+                newNode.getParamsInt().set(j, node.get("cell").get("nodes").get(i).get("paramsInt").get(j).asInt());
             }
-            for (int j = 0; j < node.get("nodes").get(i).get("paramsBin").size(); j++) {
-                newNode.getParamsBin().set(j, node.get("nodes").get(i).get("paramsBin").get(j).asBoolean());
+            for (int j = 0; j < node.get("cell").get("nodes").get(i).get("paramsBin").size(); j++) {
+                newNode.getParamsBin().set(j, node.get("cell").get("nodes").get(i).get("paramsBin").get(j).asBoolean());
             }
             cell.addNode(newNode);
         }
 
-        for (int i = 0; i < node.get("edges").size(); i++) {
-            switch (node.get("edges").get(i).get("type").asText()) {
+        for (int i = 0; i < node.get("cell").get("edges").size(); i++) {
+            Edge edge = null;
+            switch (node.get("cell").get("edges").get(i).get("type").asText()) {
                 case "DECIMAL": {
+                    edge = new EdgeDec(
+                            (CollectorSourceDec) sourceIntegerHashMap.get(node.get("cell").get("edges").get(i).get("sourceCol").asInt()),
+                            (CollectorTargetDec) targetIntegerHashMap.get(node.get("cell").get("edges").get(i).get("targetCol").asInt()),
+                            node.get("cell").get("edges").get(i).get("weight").asDouble());
                 }
                 break;
                 case "INTEGER": {
+                    edge = new EdgeInt(
+                            (CollectorSourceInt) sourceIntegerHashMap.get(node.get("cell").get("edges").get(i).get("sourceCol").asInt()),
+                            (CollectorTargetInt) targetIntegerHashMap.get(node.get("cell").get("edges").get(i).get("targetCol").asInt()),
+                            node.get("cell").get("edges").get(i).get("weight").asInt());
                 }
                 break;
                 case "BOOLEAN": {
+                    edge = new EdgeBin(
+                            (CollectorSourceBin) sourceIntegerHashMap.get(node.get("cell").get("edges").get(i).get("sourceCol").asInt()),
+                            (CollectorTargetBin) targetIntegerHashMap.get(node.get("cell").get("edges").get(i).get("targetCol").asInt()),
+                            node.get("cell").get("edges").get(i).get("weight").asBoolean());
                 }
                 break;
             }
+            cell.addEdge(edge);
         }
-
         return cell;
+    }
 
+    public Cell getCellJsonFromFile(String filepath) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(new File(filepath));
+        return getCellJson(mapper.writeValueAsString(node));
     }
 
 

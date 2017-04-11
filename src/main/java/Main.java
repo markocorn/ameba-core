@@ -16,10 +16,13 @@ public class Main {
         try {
             FactoryCell factoryCell = FactoryCell.build();
             FactoryReproduction factoryReproduction = FactoryReproduction.build();
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 1000; i++) {
                 factoryReproduction.repCell(factoryCell.genCellRnd(), factoryCell.genCellRnd());
 
+
             }
+
+            factoryCell.getCellJson(factoryCell.genCellRnd().toJsonString());
 
             Cell cell = new Cell(100);
             Node inp1 = new InputDec();
@@ -56,9 +59,7 @@ public class Main {
             cell.clearCell();
 
             cell.checkCellPrint();
-            System.out.println(factoryCell.genCellRnd().toJsonString());
-            factoryCell.getCellJson("/home/marko/IdeaProjects/ameba-core/cellJson.json");
-
+            factoryCell.getCellJsonFromFile("/home/marko/IdeaProjects/ameba-core/cell.json");
             //Simulate cell
             double[][] inpDec = new double[][]{{1.0}, {1.0}, {1.0}, {1.0}};
             int[][] inpInt = new int[][]{{1}, {1}, {1}, {1}};

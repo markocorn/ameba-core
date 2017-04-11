@@ -1,6 +1,30 @@
 {
   "nodeFactorySettings": [
     {
+      "type": "InputDec",
+      "available": false
+    },
+    {
+      "type": "InputInt",
+      "available": false
+    },
+    {
+      "type": "InputBin",
+      "available": false
+    },
+    {
+      "type": "OutputDec",
+      "available": false
+    },
+    {
+      "type": "OutputInt",
+      "available": false
+    },
+    {
+      "type": "OutputBin",
+      "available": false
+    },
+    {
       "type": "AddDec",
       "inpColLimitDec": [
         2,

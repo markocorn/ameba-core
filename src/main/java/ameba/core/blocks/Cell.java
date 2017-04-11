@@ -818,7 +818,9 @@ public class Cell implements Serializable {
             edges.add(edge);
             ind++;
         }
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cell);
+        ObjectNode out = mapper.createObjectNode();
+        out.put("cell", cell);
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(out);
     }
 
     public enum Signal {DECIMAL, INTEGER, BOOLEAN}

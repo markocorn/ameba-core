@@ -110,7 +110,6 @@ public class FactoryNode {
         bagColDecInt.clear();
 
         for (FactoryNodeSettings settings : nodeSettingsHashMap.values()) {
-            settings.setProbability(1);
             if (settings.getAvailable().equals(true)) {
                 for (int i = 0; i < settings.getProbability(); i++) {
                     bag.add(settings.getType());
