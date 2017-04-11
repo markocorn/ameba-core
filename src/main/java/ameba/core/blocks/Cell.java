@@ -10,6 +10,10 @@ import ameba.core.blocks.edges.EdgeDec;
 import ameba.core.blocks.edges.EdgeInt;
 import ameba.core.blocks.nodes.*;
 import ameba.core.blocks.nodes.types.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.rits.cloning.Cloner;
 
 import java.io.FileOutputStream;
@@ -193,7 +197,7 @@ public class Cell implements Serializable {
         return edges1;
     }
 
-    public ArrayList<? extends Edge> getEdges(Signal type) throws Exception {
+    public ArrayList<? extends Edge> getEdges(Signal type) {
         switch (type) {
             case DECIMAL:
                 return getEdgesDec();
@@ -206,7 +210,7 @@ public class Cell implements Serializable {
         }
     }
 
-    public ArrayList<? extends Edge> getEdges(Signal type, Edge edge) throws Exception {
+    public ArrayList<? extends Edge> getEdges(Signal type, Edge edge) {
         switch (type) {
             case DECIMAL:
                 return getEdgesDec(edge);
@@ -376,15 +380,15 @@ public class Cell implements Serializable {
     }
 
     public void importSignals(double[] signalsDec, int[] signalsInt, boolean[] signalsBin) {
-            for (int i = 0; i < inpNodesDec.size(); i++) {
-                inpNodesDec.get(i).importSignal(signalsDec[i]);
-            }
-            for (int i = 0; i < inpNodesInt.size(); i++) {
-                inpNodesInt.get(i).importSignal(signalsInt[i]);
-            }
-            for (int i = 0; i < inpNodesBin.size(); i++) {
-                inpNodesBin.get(i).importSignal(signalsBin[i]);
-            }
+        for (int i = 0; i < inpNodesDec.size(); i++) {
+            inpNodesDec.get(i).importSignal(signalsDec[i]);
+        }
+        for (int i = 0; i < inpNodesInt.size(); i++) {
+            inpNodesInt.get(i).importSignal(signalsInt[i]);
+        }
+        for (int i = 0; i < inpNodesBin.size(); i++) {
+            inpNodesBin.get(i).importSignal(signalsBin[i]);
+        }
     }
 
     public void importSignals(double[] signalsDec) {
@@ -740,6 +744,81 @@ public class Cell implements Serializable {
         FileOutputStream fout = new FileOutputStream(filepath);
         ObjectOutputStream oos = new ObjectOutputStream(fout);
         oos.writeObject(this);
+    }
+
+    public String toJsonString() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode cell = mapper.createObjectNode();
+        ArrayNode nodes = cell.putArray("nodes");
+        HashMap<CollectorSource, Integer> sourceId = new HashMap<>();
+        HashMap<CollectorTarget, Integer> targetId = new HashMap<>();
+
+        int ind = 0;
+        for (int i = 0; i < getNodes().size(); i++) {
+            ObjectNode node = mapper.createObjectNode();
+            node.put("id", ind);
+            ind++;
+            node.put("type", getNodes().get(i).getClass().getSimpleName());
+            ArrayNode inpColDec = node.putArray("sourceCol");
+            for (int j = 0; j < getNodes().get(i).getCollectorsSourceConnected().size(); j++) {
+                inpColDec.add(mapper.createObjectNode().put("id", ind).put("type", getNodes().get(i).getCollectorsSourceConnected().get(j).getType().toString()));
+                sourceId.put(getNodes().get(i).getCollectorsSourceConnected().get(j), ind);
+                ind++;
+            }
+            ArrayNode outColDec = node.putArray("targetCol");
+            for (int j = 0; j < getNodes().get(i).getCollectorsTargetConnected().size(); j++) {
+                outColDec.add(mapper.createObjectNode().put("id", ind).put("type", getNodes().get(i).getCollectorsTargetConnected().get(j).getType().toString()));
+                targetId.put(getNodes().get(i).getCollectorsTargetConnected().get(j), ind);
+                ind++;
+            }
+            ArrayNode paramsDec = node.putArray("paramsDec");
+            for (int j = 0; j < getNodes().get(i).getParamsDec().size(); j++) {
+                paramsDec.add(getNodes().get(i).getParamsDec().get(j));
+            }
+            ArrayNode paramsInt = node.putArray("paramsInt");
+            for (int j = 0; j < getNodes().get(i).getParamsInt().size(); j++) {
+                paramsInt.add(getNodes().get(i).getParamsInt().get(j));
+            }
+            ArrayNode paramsBin = node.putArray("paramsBin");
+            for (int j = 0; j < getNodes().get(i).getParamsBin().size(); j++) {
+                paramsBin.add(getNodes().get(i).getParamsBin().get(j));
+            }
+            nodes.add(node);
+        }
+
+        ArrayNode edges = cell.putArray("edges");
+        for (int i = 0; i < getEdges().size(); i++) {
+            ObjectNode edge = mapper.createObjectNode();
+            switch (getEdges().get(i).getType()) {
+                case DECIMAL: {
+                    edge.put("id", ind)
+                            .put("type", getEdges().get(i).getType().toString())
+                            .put("weight", ((EdgeDec) getEdges().get(i)).getWeight())
+                            .put("sourceCol", sourceId.get(getEdges().get(i).getSource()))
+                            .put("targetCol", targetId.get(getEdges().get(i).getTarget()));
+                }
+                break;
+                case INTEGER: {
+                    edge.put("id", ind)
+                            .put("type", getEdges().get(i).getType().toString())
+                            .put("weight", ((EdgeInt) getEdges().get(i)).getWeight())
+                            .put("sourceCol", sourceId.get(getEdges().get(i).getSource()))
+                            .put("targetCol", targetId.get(getEdges().get(i).getTarget()));
+                }
+                break;
+                case BOOLEAN: {
+                    edge.put("id", ind)
+                            .put("type", getEdges().get(i).getType().toString())
+                            .put("weight", ((EdgeBin) getEdges().get(i)).getWeight())
+                            .put("sourceCol", sourceId.get(getEdges().get(i).getSource()))
+                            .put("targetCol", targetId.get(getEdges().get(i).getTarget()));
+                }
+                break;
+            }
+            edges.add(edge);
+            ind++;
+        }
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cell);
     }
 
     public enum Signal {DECIMAL, INTEGER, BOOLEAN}

@@ -5,6 +5,8 @@ import ameba.core.blocks.edges.EdgeDec;
 import ameba.core.blocks.edges.EdgeInt;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
+import ameba.core.factories.FactoryCell;
+import ameba.core.factories.FactoryReproduction;
 
 /**
  * Created by marko on 4/10/17.
@@ -12,11 +14,13 @@ import ameba.core.blocks.nodes.types.*;
 public class Main {
     public static void main(String[] args) {
         try {
-//            FactoryCell factoryCell = FactoryCell.build();
-//            FactoryReproduction factoryReproduction = FactoryReproduction.build();
-//            for (int i = 0; i < 100; i++) {
-//                factoryReproduction.repCell(factoryCell.genCellRnd(), factoryCell.genCellRnd());
-//            }
+            FactoryCell factoryCell = FactoryCell.build();
+            FactoryReproduction factoryReproduction = FactoryReproduction.build();
+            for (int i = 0; i < 100; i++) {
+                factoryReproduction.repCell(factoryCell.genCellRnd(), factoryCell.genCellRnd());
+                System.out.println(factoryCell.genCellRnd().toJsonString());
+            }
+
             Cell cell = new Cell(100);
             Node inp1 = new InputDec();
             Node inp2 = new InputInt();
@@ -52,6 +56,7 @@ public class Main {
             cell.clearCell();
 
             cell.checkCellPrint();
+
 
             //Simulate cell
             double[][] inpDec = new double[][]{{1.0}, {1.0}, {1.0}, {1.0}};
