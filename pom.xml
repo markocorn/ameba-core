@@ -64,13 +64,13 @@
     <distributionManagement>
         <repository>
             <id>central</id>
-            <name>vmi81289.contabo.host-releases</name>
-            <url>http://79.143.188.154:8081/artifactory/ameba-core</url>
+            <name>dev-code-releases</name>
+            <url>http://139.59.138.240:8081/artifactory/ameba-core</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <name>vmi81289.contabo.host-snapshots</name>
-            <url>http://79.143.188.154:8081/artifactory/ameba-core</url>
+            <name>dev-code-snapshots</name>
+            <url>http://139.59.138.240:8081/artifactory/ameba-core</url>
         </snapshotRepository>
     </distributionManagement>
 

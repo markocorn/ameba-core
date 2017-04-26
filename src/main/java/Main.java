@@ -59,7 +59,7 @@ public class Main {
             cell.clearCell();
 
             cell.checkCellPrint();
-            factoryCell.getCellJsonFromFile("/home/marko/IdeaProjects/ameba-core/cell.json");
+
             //Simulate cell
             double[][] inpDec = new double[][]{{1.0}, {1.0}, {1.0}, {1.0}};
             int[][] inpInt = new int[][]{{1}, {1}, {1}, {1}};
