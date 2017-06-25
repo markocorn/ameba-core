@@ -6,7 +6,7 @@
 
     <groupId>ameba</groupId>
     <artifactId>ameba-core</artifactId>
-    <version>2.0.0</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <build>
@@ -64,13 +64,13 @@
     <distributionManagement>
         <repository>
             <id>central</id>
-            <name>dev-code-releases</name>
-            <url>http://139.59.138.240:8081/artifactory/ameba-core</url>
+            <name>vmi117364.contaboserver.net-releases</name>
+            <url>http://5.189.146.53:8081/artifactory/ameba-core</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <name>dev-code-snapshots</name>
-            <url>http://139.59.138.240:8081/artifactory/ameba-core</url>
+            <name>vmi117364.contaboserver.net-snapshots</name>
+            <url>http://5.189.146.53:8081/artifactory/ameba-core</url>
         </snapshotRepository>
     </distributionManagement>
 
