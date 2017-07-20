@@ -32,7 +32,7 @@ public class CollectorTargetInt extends CollectorTarget {
     }
 
     @Override
-    public void removeEdge(Edge edge) throws Exception {
+    public void removeEdge(Edge edge) {
         super.removeEdge(edge);
         edges.remove(edge);
     }

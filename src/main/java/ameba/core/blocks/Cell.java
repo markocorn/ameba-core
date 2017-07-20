@@ -96,12 +96,6 @@ public class Cell implements Serializable {
     }
 
     /**
-     * Get cell's nodes of class InputDec
-     *
-     * @return
-     */
-
-    /**
      * Get cell's nodes
      *
      * @return
@@ -360,10 +354,10 @@ public class Cell implements Serializable {
     public void removeNodeSafe(Node node) throws Exception {
         //Remove input Edges of the node from collectors
         for (Collector collector : node.getCollectorsTarget()) {
-            collector.removeEdges();
+            collector.clearEdges();
         }
         for (Collector collector : node.getCollectorsSourceDec()) {
-            collector.removeEdges();
+            collector.clearEdges();
         }
         //Remove node from the cell
         nodes.remove(node);
