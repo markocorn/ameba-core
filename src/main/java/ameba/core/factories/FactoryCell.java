@@ -521,5 +521,22 @@ public class FactoryCell {
         return getCellJson(mapper.writeValueAsString(node));
     }
 
+    public ArrayList<Cell> getCellsJson(String cells) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(cells);
+        ArrayList<Cell> cells1 = new ArrayList<>();
+
+        for (int i = 0; i < node.size(); i++) {
+            cells1.add(getCellJson(node.get(i).asText()));
+        }
+        return cells1;
+    }
+
+    public ArrayList<Cell> getCellsJsonFromFile(String filepath) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(new File(filepath));
+        return getCellsJson(mapper.writeValueAsString(node));
+    }
+
 
 }
