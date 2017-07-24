@@ -527,7 +527,7 @@ public class FactoryCell {
         ArrayList<Cell> cells1 = new ArrayList<>();
 
         for (int i = 0; i < node.size(); i++) {
-            cells1.add(getCellJson(node.get(i).get("cell").toString()));
+            cells1.add(getCellJson(node.get(i).toString()));
         }
         return cells1;
     }
