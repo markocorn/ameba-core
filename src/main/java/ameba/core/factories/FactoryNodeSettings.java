@@ -41,18 +41,24 @@ public class FactoryNodeSettings {
 
     private Boolean initialValueBin;
 
-    private Double[] parametersDec;
-    private Integer[] parametersInt;
-    private Boolean[] parametersBin;
-
+    /**
+     * Parameters constrains
+     */
     private Double[][] parametersLimitsDec;
     private Integer[][] parametersLimitsInt;
     private Boolean[][] parametersLimitsBin;
 
+    /**
+     * Parameters initial generations constrains
+     */
+    private Double[][] parametersInitLimitsDec;
+    private Integer[][] parametersInitLimitsInt;
+    private Boolean[][] parametersInitLimitsBin;
+
     public FactoryNodeSettings() {
     }
 
-    public FactoryNodeSettings(String type, Integer[] inpColLimitDec, Integer[] inpColLimitInt, Integer[] inpColLimitBin, Integer[] outColLimitDec, Integer[] outColLimitInt, Integer[] outColLimitBin, Boolean available, Integer probability, Double initialValueDec, Integer initialValueInt, Boolean initialValueBin, Double[] parametersDec, Integer[] parametersInt, Boolean[] parametersBin, Double[][] parametersLimitsDec, Integer[][] parametersLimitsInt, Boolean[][] parametersLimitsBin) {
+    public FactoryNodeSettings(String type, Integer[] inpColLimitDec, Integer[] inpColLimitInt, Integer[] inpColLimitBin, Integer[] outColLimitDec, Integer[] outColLimitInt, Integer[] outColLimitBin, Boolean available, Integer probability, Double initialValueDec, Integer initialValueInt, Boolean initialValueBin, Double[][] parametersLimitsDec, Integer[][] parametersLimitsInt, Boolean[][] parametersLimitsBin, Double[][] parametersInitLimitsDec, Integer[][] parametersInitLimitsInt, Boolean[][] parametersInitLimitsBin) {
         this.type = type;
         this.inpColLimitDec = inpColLimitDec;
         this.inpColLimitInt = inpColLimitInt;
@@ -65,13 +71,14 @@ public class FactoryNodeSettings {
         this.initialValueDec = initialValueDec;
         this.initialValueInt = initialValueInt;
         this.initialValueBin = initialValueBin;
-        this.parametersDec = parametersDec;
-        this.parametersInt = parametersInt;
-        this.parametersBin = parametersBin;
         this.parametersLimitsDec = parametersLimitsDec;
         this.parametersLimitsInt = parametersLimitsInt;
         this.parametersLimitsBin = parametersLimitsBin;
+        this.parametersInitLimitsDec = parametersInitLimitsDec;
+        this.parametersInitLimitsInt = parametersInitLimitsInt;
+        this.parametersInitLimitsBin = parametersInitLimitsBin;
     }
+
 
     public static FactoryNodeSettings create(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -93,12 +100,12 @@ public class FactoryNodeSettings {
         this.initialValueDec = settings.getInitialValueDec();
         this.initialValueInt = settings.getInitialValueInt();
         this.initialValueBin = settings.getInitialValueBin();
-        this.parametersDec = settings.getParametersDec();
-        this.parametersInt = settings.getParametersInt();
-        this.parametersBin = settings.getParametersBin();
         this.parametersLimitsDec = settings.getParametersLimitsDec();
         this.parametersLimitsInt = settings.getParametersLimitsInt();
         this.parametersLimitsBin = settings.getParametersLimitsBin();
+        this.parametersInitLimitsDec = settings.getParametersInitLimitsDec();
+        this.parametersInitLimitsInt = settings.getParametersInitLimitsInt();
+        this.parametersInitLimitsBin = settings.getParametersInitLimitsBin();
     }
 
     @JsonIgnore
@@ -171,30 +178,6 @@ public class FactoryNodeSettings {
         this.initialValueBin = initialValueBin;
     }
 
-    public Double[] getParametersDec() {
-        return parametersDec;
-    }
-
-    public void setParametersDec(Double[] parametersDec) {
-        this.parametersDec = parametersDec;
-    }
-
-    public Integer[] getParametersInt() {
-        return parametersInt;
-    }
-
-    public void setParametersInt(Integer[] parametersInt) {
-        this.parametersInt = parametersInt;
-    }
-
-    public Boolean[] getParametersBin() {
-        return parametersBin;
-    }
-
-    public void setParametersBin(Boolean[] parametersBin) {
-        this.parametersBin = parametersBin;
-    }
-
     public Double[][] getParametersLimitsDec() {
         return parametersLimitsDec;
     }
@@ -249,5 +232,29 @@ public class FactoryNodeSettings {
 
     public void setOutColLimitBin(Integer[] outColLimitBin) {
         this.outColLimitBin = outColLimitBin;
+    }
+
+    public Double[][] getParametersInitLimitsDec() {
+        return parametersInitLimitsDec;
+    }
+
+    public void setParametersInitLimitsDec(Double[][] parametersInitLimitsDec) {
+        this.parametersInitLimitsDec = parametersInitLimitsDec;
+    }
+
+    public Integer[][] getParametersInitLimitsInt() {
+        return parametersInitLimitsInt;
+    }
+
+    public void setParametersInitLimitsInt(Integer[][] parametersInitLimitsInt) {
+        this.parametersInitLimitsInt = parametersInitLimitsInt;
+    }
+
+    public Boolean[][] getParametersInitLimitsBin() {
+        return parametersInitLimitsBin;
+    }
+
+    public void setParametersInitLimitsBin(Boolean[][] parametersInitLimitsBin) {
+        this.parametersInitLimitsBin = parametersInitLimitsBin;
     }
 }
