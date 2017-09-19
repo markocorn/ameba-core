@@ -101,7 +101,7 @@ public class FactoryCell {
             if (collectorTarget == null) {
                 // if there is no collector fine one on the source side of nodes
                 CollectorSource collectorSource = getCollectorSourceRnd(cell);
-                if (collectorSource == null) throw new Exception("Can't generate nod with no initial nodes");
+                if (collectorSource == null) throw new Exception("Can't generate cell with no initial nodes");
                 node = nodeFactory.genNodeRndCollectorSourceType(collectorSource.getType());
             } else {
                 node = nodeFactory.genNodeRndCollectorSourceType(collectorTarget.getType());
@@ -139,22 +139,22 @@ public class FactoryCell {
             } else {
                 switch (collectorTarget.getType()) {
                     case DECIMAL:
-                        if (nodeFactory.nodeSettingsHashMap.get("ConstantDec").getAvailable()) {
-                            cell.addNode(nodeFactory.genNodeRndPar("ConstantDec"));
+                        if (nodeFactory.nodeSettingsHashMap.get("ConstantDec").getProbability() > 0) {
+                            cell.addNode(nodeFactory.genNode("ConstantDec"));
                         } else
-                            throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantDec nodes.");
+                            throw new Exception("Cell can't be properly connected. Must allow the generation of ConstantDec nodes.");
                         break;
                     case INTEGER:
-                        if (nodeFactory.nodeSettingsHashMap.get("ConstantInt").getAvailable()) {
-                            cell.addNode(nodeFactory.genNodeRndPar("ConstantInt"));
+                        if (nodeFactory.nodeSettingsHashMap.get("ConstantInt").getProbability() > 0) {
+                            cell.addNode(nodeFactory.genNode("ConstantInt"));
                         } else
-                            throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantInt nodes.");
+                            throw new Exception("Cell can't be properly connected. Must allow the generation of ConstantInt nodes.");
                         break;
                     case BOOLEAN:
-                        if (nodeFactory.nodeSettingsHashMap.get("ConstantBin").getAvailable()) {
-                            cell.addNode(nodeFactory.genNodeRndPar("ConstantBin"));
+                        if (nodeFactory.nodeSettingsHashMap.get("ConstantBin").getProbability() > 0) {
+                            cell.addNode(nodeFactory.genNode("ConstantBin"));
                         } else
-                            throw new Exception("Cell can't be properly connected. Must allow the generation ov ConstantBin nodes.");
+                            throw new Exception("Cell can't be properly connected. Must allow the generation of ConstantBin nodes.");
                         break;
                 }
             }

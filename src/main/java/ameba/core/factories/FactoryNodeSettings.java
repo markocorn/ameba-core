@@ -30,7 +30,6 @@ public class FactoryNodeSettings {
     /**
      * Node availability for the cell generation.
      */
-    private Boolean available;
     private Integer probability;
     /**
      * Initial value if node has one.
@@ -58,7 +57,7 @@ public class FactoryNodeSettings {
     public FactoryNodeSettings() {
     }
 
-    public FactoryNodeSettings(String type, Integer[] inpColLimitDec, Integer[] inpColLimitInt, Integer[] inpColLimitBin, Integer[] outColLimitDec, Integer[] outColLimitInt, Integer[] outColLimitBin, Boolean available, Integer probability, Double initialValueDec, Integer initialValueInt, Boolean initialValueBin, Double[][] parametersLimitsDec, Integer[][] parametersLimitsInt, Boolean[][] parametersLimitsBin, Double[][] parametersInitLimitsDec, Integer[][] parametersInitLimitsInt, Boolean[][] parametersInitLimitsBin) {
+    public FactoryNodeSettings(String type, Integer[] inpColLimitDec, Integer[] inpColLimitInt, Integer[] inpColLimitBin, Integer[] outColLimitDec, Integer[] outColLimitInt, Integer[] outColLimitBin, Integer probability, Double initialValueDec, Integer initialValueInt, Boolean initialValueBin, Double[][] parametersLimitsDec, Integer[][] parametersLimitsInt, Boolean[][] parametersLimitsBin, Double[][] parametersInitLimitsDec, Integer[][] parametersInitLimitsInt, Boolean[][] parametersInitLimitsBin) {
         this.type = type;
         this.inpColLimitDec = inpColLimitDec;
         this.inpColLimitInt = inpColLimitInt;
@@ -66,7 +65,6 @@ public class FactoryNodeSettings {
         this.outColLimitDec = outColLimitDec;
         this.outColLimitInt = outColLimitInt;
         this.outColLimitBin = outColLimitBin;
-        this.available = available;
         this.probability = probability;
         this.initialValueDec = initialValueDec;
         this.initialValueInt = initialValueInt;
@@ -95,7 +93,6 @@ public class FactoryNodeSettings {
         this.outColLimitDec = settings.getOutColLimitDec();
         this.outColLimitInt = settings.getOutColLimitInt();
         this.outColLimitBin = settings.getOutColLimitBin();
-        this.available = settings.getAvailable();
         this.probability = settings.getProbability();
         this.initialValueDec = settings.getInitialValueDec();
         this.initialValueInt = settings.getInitialValueInt();
@@ -144,14 +141,6 @@ public class FactoryNodeSettings {
 
     public void setInpColLimitBin(Integer[] inpColLimitBin) {
         this.inpColLimitBin = inpColLimitBin;
-    }
-
-    public Boolean getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(Boolean available) {
-        this.available = available;
     }
 
     public Double getInitialValueDec() {

@@ -110,7 +110,7 @@ public class FactoryNode {
         bagColDecInt.clear();
 
         for (FactoryNodeSettings settings : nodeSettingsHashMap.values()) {
-            if (settings.getAvailable().equals(true)) {
+            if (settings.getProbability() > 0) {
                 for (int i = 0; i < settings.getProbability(); i++) {
                     bag.add(settings.getType());
                 }
@@ -499,38 +499,19 @@ public class FactoryNode {
                             genRndSignalBin(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][1]),
                             new Boolean[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[1][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[1][1]});
                     break;
-
             }
         }
-        return node;
-    }
-
-    public Node genNodeRndPar(String nodeType) throws Exception {
-        Node node = genNode(nodeType);
-        //Randomize parameters Dec
-        for (int i = 0; i < node.getParamsDec().size(); i++) {
-            node.getParamsDec().set(i, genRndSignalDec(node.getParamsLimitsDec().get(i)[0], node.getParamsLimitsDec().get(i)[1]));
-        }
-        //Randomize parameters Int
-        for (int i = 0; i < node.getParamsInt().size(); i++) {
-            node.getParamsInt().set(i, genRndSignalInt(node.getParamsLimitsInt().get(i)[0], node.getParamsLimitsInt().get(i)[1]));
-        }
-        //Randomize parameters Bin
-        for (int i = 0; i < node.getParamsBin().size(); i++) {
-            node.getParamsBin().set(i, genRndSignalBin(node.getParamsLimitsBin().get(i)[0], node.getParamsLimitsBin().get(i)[1]));
-        }
-        node.clearNode();
         return node;
     }
 
     public boolean isConstantNodeAvailable(Cell.Signal type) {
         switch (type) {
             case DECIMAL:
-                return nodeSettingsHashMap.get("ConstantDec").getAvailable();
+                return nodeSettingsHashMap.get("ConstantDec").getProbability() > 0;
             case INTEGER:
-                return nodeSettingsHashMap.get("ConstantInt").getAvailable();
+                return nodeSettingsHashMap.get("ConstantInt").getProbability() > 0;
             case BOOLEAN:
-                return nodeSettingsHashMap.get("ConstantBin").getAvailable();
+                return nodeSettingsHashMap.get("ConstantBin").getProbability() > 0;
             default:
                 return false;
         }
@@ -539,11 +520,11 @@ public class FactoryNode {
     public Node genConstantNode(Cell.Signal type) throws Exception {
         switch (type) {
             case DECIMAL:
-                return genNodeRndPar("ConstantDec");
+                return genNode("ConstantDec");
             case INTEGER:
-                return genNodeRndPar("ConstantInt");
+                return genNode("ConstantInt");
             case BOOLEAN:
-                return genNodeRndPar("ConstantBin");
+                return genNode("ConstantBin");
             default:
                 return null;
         }
@@ -555,64 +536,64 @@ public class FactoryNode {
      * @return Node of randomly generated type.
      */
     public Node genNodeRnd() throws Exception {
-        return genNodeRndPar(bag.get(rndGen.nextInt(bag.size())));
+        return genNode(bag.get(rndGen.nextInt(bag.size())));
     }
 
     public Node genNodeRndCollectorTargetType(Cell.Signal type) throws Exception {
         if (type.equals(Cell.Signal.DECIMAL) && bagInpColDec.size() > 0) {
-            return genNodeRndPar(bagInpColDec.get(rndGen.nextInt(bagInpColDec.size())));
+            return genNode(bagInpColDec.get(rndGen.nextInt(bagInpColDec.size())));
         }
         if (type.equals(Cell.Signal.INTEGER) && bagInpColInt.size() > 0) {
-            return genNodeRndPar(bagInpColInt.get(rndGen.nextInt(bagInpColInt.size())));
+            return genNode(bagInpColInt.get(rndGen.nextInt(bagInpColInt.size())));
         }
         if (type.equals(Cell.Signal.BOOLEAN) && bagInpColBin.size() > 0) {
-            return genNodeRndPar(bagInpColBin.get(rndGen.nextInt(bagInpColBin.size())));
+            return genNode(bagInpColBin.get(rndGen.nextInt(bagInpColBin.size())));
         }
         return null;
     }
 
     public Node genNodeRndCollectorSourceType(Cell.Signal type) throws Exception {
         if (type.equals(Cell.Signal.DECIMAL) && bagOutColDec.size() > 0) {
-            return genNodeRndPar(bagOutColDec.get(rndGen.nextInt(bagOutColDec.size())));
+            return genNode(bagOutColDec.get(rndGen.nextInt(bagOutColDec.size())));
         }
         if (type.equals(Cell.Signal.INTEGER) && bagOutColInt.size() > 0) {
-            return genNodeRndPar(bagOutColInt.get(rndGen.nextInt(bagOutColInt.size())));
+            return genNode(bagOutColInt.get(rndGen.nextInt(bagOutColInt.size())));
         }
         if (type.equals(Cell.Signal.BOOLEAN) && bagOutColBin.size() > 0) {
-            return genNodeRndPar(bagOutColBin.get(rndGen.nextInt(bagOutColBin.size())));
+            return genNode(bagOutColBin.get(rndGen.nextInt(bagOutColBin.size())));
         }
         return null;
     }
 
     public Node genNodeRndCollectorsType(Cell.Signal typeInp, Cell.Signal typeOut) throws Exception {
         if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.BOOLEAN) && bagColBinBin.size() > 0) {
-            return genNodeRndPar(bagColBinBin.get(rndGen.nextInt(bagColBinBin.size())));
+            return genNode(bagColBinBin.get(rndGen.nextInt(bagColBinBin.size())));
         }
         if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.INTEGER) && bagColBinInt.size() > 0) {
-            return genNodeRndPar(bagColBinInt.get(rndGen.nextInt(bagColBinInt.size())));
+            return genNode(bagColBinInt.get(rndGen.nextInt(bagColBinInt.size())));
         }
         if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.DECIMAL) && bagColBinDec.size() > 0) {
-            return genNodeRndPar(bagColBinDec.get(rndGen.nextInt(bagColBinDec.size())));
+            return genNode(bagColBinDec.get(rndGen.nextInt(bagColBinDec.size())));
         }
 
         if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.BOOLEAN) && bagColIntBin.size() > 0) {
-            return genNodeRndPar(bagColIntBin.get(rndGen.nextInt(bagColIntBin.size())));
+            return genNode(bagColIntBin.get(rndGen.nextInt(bagColIntBin.size())));
         }
         if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.INTEGER) && bagColIntInt.size() > 0) {
-            return genNodeRndPar(bagColIntInt.get(rndGen.nextInt(bagColIntInt.size())));
+            return genNode(bagColIntInt.get(rndGen.nextInt(bagColIntInt.size())));
         }
         if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.DECIMAL) && bagColIntDec.size() > 0) {
-            return genNodeRndPar(bagColIntDec.get(rndGen.nextInt(bagColIntDec.size())));
+            return genNode(bagColIntDec.get(rndGen.nextInt(bagColIntDec.size())));
         }
 
         if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.BOOLEAN) && bagColDecBin.size() > 0) {
-            return genNodeRndPar(bagColDecBin.get(rndGen.nextInt(bagColDecBin.size())));
+            return genNode(bagColDecBin.get(rndGen.nextInt(bagColDecBin.size())));
         }
         if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.INTEGER) && bagColDecInt.size() > 0) {
-            return genNodeRndPar(bagColDecInt.get(rndGen.nextInt(bagColDecInt.size())));
+            return genNode(bagColDecInt.get(rndGen.nextInt(bagColDecInt.size())));
         }
         if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.DECIMAL) && bagColDecDec.size() > 0) {
-            return genNodeRndPar(bagColDecDec.get(rndGen.nextInt(bagColDecDec.size())));
+            return genNode(bagColDecDec.get(rndGen.nextInt(bagColDecDec.size())));
         }
         return null;
     }

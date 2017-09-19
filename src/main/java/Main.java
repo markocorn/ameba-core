@@ -16,7 +16,7 @@ public class Main {
         try {
             FactoryCell factoryCell = FactoryCell.build();
             FactoryReproduction factoryReproduction = FactoryReproduction.build();
-            for (int i = 0; i < 100000; i++) {
+            for (int i = 0; i < 10000; i++) {
                 factoryReproduction.repCell(factoryCell.genCellRnd(), factoryCell.genCellRnd());
                 System.out.println(i);
 
