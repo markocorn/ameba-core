@@ -778,6 +778,14 @@
           true
         ]
       ]
+    },
+    {
+      "type": "NeuronStep",
+      "inpColLimitDec": [
+        1,
+        50
+      ],
+      "probability": 100
     }
   ]
 }

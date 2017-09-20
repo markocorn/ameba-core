@@ -16,7 +16,7 @@ public class Main {
         try {
             FactoryCell factoryCell = FactoryCell.build();
             FactoryReproduction factoryReproduction = FactoryReproduction.build();
-            for (int i = 0; i < 10000; i++) {
+            for (int i = 0; i < 1000; i++) {
                 factoryReproduction.repCell(factoryCell.genCellRnd(), factoryCell.genCellRnd());
                 System.out.println(i);
 
@@ -31,7 +31,7 @@ public class Main {
             Node out1 = new OutputDec();
             Node out2 = new OutputInt();
             Node out3 = new OutputBin();
-            Node node1 = new AddDec(2, 10);
+            Node node1 = new NeuronStep(2, 10);
             Node node2 = new DelayDec(-1.0, 1, new Integer[]{1, 5});
             Edge edge1 = new EdgeDec(inp1.getCollectorsSourceDec().get(0), node1.getCollectorsTargetDec().get(0), 1.0);
             Edge edge2 = new EdgeDec(node1.getCollectorsSourceDec().get(0), out1.getCollectorsTargetDec().get(0), 1.0);

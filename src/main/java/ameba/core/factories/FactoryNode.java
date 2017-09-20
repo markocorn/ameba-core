@@ -235,7 +235,11 @@ public class FactoryNode {
                             nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
                             nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1]);
                     break;
-
+                case "NeuronStep":
+                    node = new NeuronStep(
+                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
+                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1]);
+                    break;
                 case "AddInt":
                     node = new AddInt(
                             nodeSettingsHashMap.get(nodeType).getInpColLimitInt()[0],
