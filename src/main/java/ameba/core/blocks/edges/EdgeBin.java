@@ -24,7 +24,7 @@ public class EdgeBin extends Edge {
 
     public boolean getSignal() {
         setSignalTransmitted(true);
-        return ((CollectorSourceBin) getSource()).getSignal();
+        return ((CollectorSourceBin) getSource()).getSignal() ^ weight;
     }
 
     public boolean getWeight() {

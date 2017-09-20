@@ -24,7 +24,7 @@ public class EdgeDec extends Edge {
 
     public double getSignal() {
         setSignalTransmitted(true);
-        return ((CollectorSourceDec) getSource()).getSignal();
+        return ((CollectorSourceDec) getSource()).getSignal() * weight;
     }
 
     @Override

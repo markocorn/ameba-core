@@ -23,7 +23,7 @@ public class EdgeInt extends Edge {
 
     public int getSignal() {
         setSignalTransmitted(true);
-        return ((CollectorSourceInt) getSource()).getSignal();
+        return ((CollectorSourceInt) getSource()).getSignal() * weight;
     }
 
     public int getWeight() {
