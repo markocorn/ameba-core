@@ -55,6 +55,7 @@ public class DelayBin extends NodeMem {
     public void clearNode() {
         rstNode();
         ind = 0;
+        buffer = new boolean[getParamsInt().get(0)];
         Arrays.fill(buffer, initValue);
         getCollectorsSourceBin().get(0).setSignal(initValue);
     }

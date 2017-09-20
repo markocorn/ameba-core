@@ -55,6 +55,7 @@ public class DelayDec extends NodeMem {
     public void clearNode() {
         rstNode();
         ind = 0;
+        buffer = new double[getParamsInt().get(0)];
         Arrays.fill(buffer, initValue);
         getCollectorsSourceDec().get(0).setSignal(initValue);
     }

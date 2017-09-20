@@ -55,6 +55,7 @@ public class DelayInt extends NodeMem {
     public void clearNode() {
         rstNode();
         ind = 0;
+        buffer = new int[getParamsInt().get(0)];
         Arrays.fill(buffer, initValue);
         getCollectorsSourceInt().get(0).setSignal(initValue);
     }
