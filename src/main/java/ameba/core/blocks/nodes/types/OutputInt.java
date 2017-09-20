@@ -33,4 +33,10 @@ public class OutputInt extends Node implements INodeOutputInt {
     public int exportSignal() {
         return value;
     }
+
+    @Override
+    public void clearNode() {
+        super.rstNode();
+        value = 0;
+    }
 }

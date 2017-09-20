@@ -32,4 +32,10 @@ public class OutputDec extends Node implements INodeOutputDec {
     public double exportSignal() {
         return value;
     }
+
+    @Override
+    public void clearNode() {
+        super.rstNode();
+        value = 0.0;
+    }
 }

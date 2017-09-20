@@ -33,4 +33,10 @@ public class OutputBin extends Node implements INodeOutputBin {
     public boolean exportSignal() {
         return value;
     }
+
+    @Override
+    public void clearNode() {
+        super.rstNode();
+        value = false;
+    }
 }
