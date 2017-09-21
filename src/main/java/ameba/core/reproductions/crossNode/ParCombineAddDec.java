@@ -25,7 +25,7 @@ public class ParCombineAddDec extends Reproduction implements ICrossNode {
         if (node1.getParamsDec().size() > 0 && node2.getParamsDec().size() > 0) {
             int ind1 = random.nextInt(node1.getParamsDec().size());
             int ind2 = random.nextInt(node2.getParamsDec().size());
-            node1.getParamsDec().set(ind1, operationType.crossover(node1.getParamsDec().get(ind1), node2.getParamsDec().get(ind2)));
+            node1.setParamDec(ind1, operationType.crossover(node1.getParamsDec().get(ind1), node2.getParamsDec().get(ind2)));
             return node1;
         }
         return null;

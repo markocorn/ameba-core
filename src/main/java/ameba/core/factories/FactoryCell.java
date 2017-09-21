@@ -474,13 +474,13 @@ public class FactoryCell {
             }
             //Set parameters of the node
             for (int j = 0; j < node.get("cell").get("nodes").get(i).get("paramsDec").size(); j++) {
-                newNode.getParamsDec().set(j, node.get("cell").get("nodes").get(i).get("paramsDec").get(j).asDouble());
+                newNode.setParamDec(j, node.get("cell").get("nodes").get(i).get("paramsDec").get(j).asDouble());
             }
             for (int j = 0; j < node.get("cell").get("nodes").get(i).get("paramsInt").size(); j++) {
-                newNode.getParamsInt().set(j, node.get("cell").get("nodes").get(i).get("paramsInt").get(j).asInt());
+                newNode.setParamInt(j, node.get("cell").get("nodes").get(i).get("paramsInt").get(j).asInt());
             }
             for (int j = 0; j < node.get("cell").get("nodes").get(i).get("paramsBin").size(); j++) {
-                newNode.getParamsBin().set(j, node.get("cell").get("nodes").get(i).get("paramsBin").get(j).asBoolean());
+                newNode.setParamBin(j, node.get("cell").get("nodes").get(i).get("paramsBin").get(j).asBoolean());
             }
             cell.addNode(newNode);
         }

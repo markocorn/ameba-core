@@ -24,7 +24,7 @@ public class ParRandValueBin extends Reproduction implements IMutateNode {
     public Node mutate(Node node) throws Exception {
         if (node.getParamsBin().size() > 0) {
             int ind = random.nextInt(node.getParamsBin().size());
-            node.getParamsBin().set(ind, operationType.mutate(node.getParamsBin().get(ind)));
+            node.setParamBin(ind, operationType.mutate(node.getParamsBin().get(ind)));
             return node;
         }
         return null;

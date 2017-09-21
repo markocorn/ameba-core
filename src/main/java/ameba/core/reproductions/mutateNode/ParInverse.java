@@ -24,7 +24,7 @@ public class ParInverse extends Reproduction implements IMutateNode {
     public Node mutate(Node node) throws Exception {
         if (node.getParamsDec().size() > 0) {
             int ind = random.nextInt(node.getParamsDec().size());
-            node.getParamsDec().set(ind, operationType.mutate(node.getParamsDec().get(ind)));
+            node.setParamDec(ind, operationType.mutate(node.getParamsDec().get(ind)));
             return node;
         }
         return null;

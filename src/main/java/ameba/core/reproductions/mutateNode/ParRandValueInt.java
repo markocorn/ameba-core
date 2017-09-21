@@ -24,7 +24,7 @@ public class ParRandValueInt extends Reproduction implements IMutateNode {
     public Node mutate(Node node) throws Exception {
         if (node.getParamsInt().size() > 0) {
             int ind = random.nextInt(node.getParamsInt().size());
-            node.getParamsInt().set(ind, operationType.mutate(node.getParamsInt().get(ind)));
+            node.setParamInt(ind, operationType.mutate(node.getParamsInt().get(ind)));
             return node;
         }
         return null;

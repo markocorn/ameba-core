@@ -479,6 +479,12 @@ public class Node implements Cloneable, Serializable {
         this.paramsDec = paramsDec;
     }
 
+    public void setParamDec(int ind, Double paramDec) {
+        if (paramDec < paramsLimitsDec.get(ind)[0]) paramDec = paramsLimitsDec.get(ind)[0];
+        if (paramDec > paramsLimitsDec.get(ind)[1]) paramDec = paramsLimitsDec.get(ind)[1];
+        this.paramsDec.set(ind, paramDec);
+    }
+
     public ArrayList<Double[]> getParamsLimitsDec() {
         return paramsLimitsDec;
     }
@@ -495,6 +501,12 @@ public class Node implements Cloneable, Serializable {
         this.paramsInt = paramsInt;
     }
 
+    public void setParamInt(int ind, Integer paramInt) {
+        if (paramInt < paramsLimitsInt.get(ind)[0]) paramInt = paramsLimitsInt.get(ind)[0];
+        if (paramInt > paramsLimitsInt.get(ind)[1]) paramInt = paramsLimitsInt.get(ind)[1];
+        this.paramsInt.set(ind, paramInt);
+    }
+
     public ArrayList<Integer[]> getParamsLimitsInt() {
         return paramsLimitsInt;
     }
@@ -509,6 +521,13 @@ public class Node implements Cloneable, Serializable {
 
     public void setParamsBin(ArrayList<Boolean> paramsBin) {
         this.paramsBin = paramsBin;
+    }
+
+    public void setParamBin(int ind, Boolean paramBin) {
+        this.paramsBin.set(ind, paramBin);
+        if (!paramsLimitsBin.get(ind)[1]) paramBin = false;
+        if (paramsLimitsBin.get(ind)[0]) paramBin = true;
+
     }
 
     public ArrayList<Boolean[]> getParamsLimitsBin() {

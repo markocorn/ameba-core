@@ -25,7 +25,7 @@ public class ParCombineAnd extends Reproduction implements ICrossNode {
         if (node1.getParamsBin().size() > 0 && node2.getParamsBin().size() > 0) {
             int ind1 = random.nextInt(node1.getParamsBin().size());
             int ind2 = random.nextInt(node2.getParamsBin().size());
-            node1.getParamsBin().set(ind1, operationType.crossover(node1.getParamsBin().get(ind1), node2.getParamsBin().get(ind2)));
+            node1.setParamBin(ind1, operationType.crossover(node1.getParamsBin().get(ind1), node2.getParamsBin().get(ind2)));
             return node1;
         }
         return null;

@@ -27,6 +27,7 @@ public class DelayDec extends NodeMem {
         super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
         this.initValue = initial;
         getParamsInt().add(par);
+        if (parLimits[0] < 1) parLimits[0] = 1;
         getParamsLimitsInt().add(parLimits);
 
         addCollectorTargetDec(new CollectorTargetDec(this));
