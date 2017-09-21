@@ -32,7 +32,8 @@ public class DelayBin extends NodeMem {
 
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
-        buffer = new boolean[par];
+        if (getParamsInt().get(0) < 1) setParamInt(0, 1);
+        buffer = new boolean[getParamsInt().get(0)];
         Arrays.fill(buffer, initValue);
         ind = 0;
         clearNode();
@@ -56,6 +57,7 @@ public class DelayBin extends NodeMem {
     public void clearNode() {
         rstNode();
         ind = 0;
+        if (getParamsInt().get(0) < 1) setParamInt(0, 1);
         buffer = new boolean[getParamsInt().get(0)];
         Arrays.fill(buffer, initValue);
         getCollectorsSourceBin().get(0).setSignal(initValue);

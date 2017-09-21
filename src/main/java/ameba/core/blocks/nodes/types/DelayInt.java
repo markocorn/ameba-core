@@ -32,7 +32,8 @@ public class DelayInt extends NodeMem {
 
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorSourceInt(new CollectorSourceInt(this));
-        buffer = new int[par];
+        if (getParamsInt().get(0) < 1) setParamInt(0, 1);
+        buffer = new int[getParamsInt().get(0)];
         Arrays.fill(buffer, initValue);
         ind = 0;
         clearNode();
@@ -56,6 +57,7 @@ public class DelayInt extends NodeMem {
     public void clearNode() {
         rstNode();
         ind = 0;
+        if (getParamsInt().get(0) < 1) setParamInt(0, 1);
         buffer = new int[getParamsInt().get(0)];
         Arrays.fill(buffer, initValue);
         getCollectorsSourceInt().get(0).setSignal(initValue);
