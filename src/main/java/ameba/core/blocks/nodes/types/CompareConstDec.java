@@ -7,7 +7,7 @@ import ameba.core.blocks.nodes.Node;
 public class CompareConstDec extends Node {
 
     public CompareConstDec(Double par1, Double[] par1Limits, Integer par2) throws Exception {
-        super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+        super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, 1, 1, 0);
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceBin(new CollectorSourceBin(this));
         //AddDec compare against parameter

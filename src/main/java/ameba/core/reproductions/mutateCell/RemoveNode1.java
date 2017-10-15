@@ -36,8 +36,9 @@ public class RemoveNode1 extends Reproduction implements IMutateCell {
     @Override
     public Cell mutate(Cell cell) throws Exception {
         //Node to be removed
+        ArrayList<Node> nodes = cell.getInnerNodesFullUnlocked();
         if (cell.getInnerNodes().size() > 0) {
-            Node node = cell.getInnerNodes().get(random.nextInt(cell.getInnerNodes().size()));
+            Node node = nodes.get(random.nextInt(nodes.size()));
             ArrayList<CollectorSource> ss = new ArrayList<>();
             for (CollectorTarget t : node.getCollectorsTargetConnected()) {
                 ss.add(t.getEdges().get(0).getSource());

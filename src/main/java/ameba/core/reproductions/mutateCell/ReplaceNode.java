@@ -33,7 +33,7 @@ public class ReplaceNode extends Reproduction implements IMutateCell {
 
     @Override
     public Cell mutate(Cell cell) throws Exception {
-        Node nodeOld = cellFactory.getNodeRndInner(cell);
+        Node nodeOld = cellFactory.getNodeRndInnerFullUnlocked(cell);
         Node nodeNew = nodeFactory.genNodeRnd();
 
         cell.getNodes().set(cell.getNodes().indexOf(nodeOld), nodeNew);

@@ -21,7 +21,7 @@ public class IntegralBin extends NodeMem {
 
 
     public IntegralBin(boolean initial, Boolean par, Boolean[] parLimits) throws Exception {
-        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, 0, 0, 1);
         this.initValue = initial;
         signalOld = initial;
 

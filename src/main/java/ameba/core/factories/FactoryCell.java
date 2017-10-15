@@ -409,9 +409,16 @@ public class FactoryCell {
      * @param cell
      * @return
      */
-    public Node getNodeRndInner(Cell cell) {
-        if (cell.getNodes().size() > 0) {
-            return cell.getInnerNodes().get(rndGen.nextInt(cell.getInnerNodes().size()));
+    public Node getNodeRndInnerUnlocked(Cell cell) {
+        if (cell.getInnerNodesUnlocked().size() > 0) {
+            return cell.getInnerNodesUnlocked().get(rndGen.nextInt(cell.getInnerNodesUnlocked().size()));
+        }
+        return null;
+    }
+
+    public Node getNodeRndInnerFullUnlocked(Cell cell) {
+        if (cell.getInnerNodesFullUnlocked().size() > 0) {
+            return cell.getInnerNodesFullUnlocked().get(rndGen.nextInt(cell.getInnerNodesFullUnlocked().size()));
         }
         return null;
     }
@@ -431,6 +438,7 @@ public class FactoryCell {
         //Set nodes and store collectors for edges
         for (int i = 0; i < node.get("cell").get("nodes").size(); i++) {
             Node newNode = nodeFactory.genNode(node.get("cell").get("nodes").get(i).get("type").asText());
+            newNode.setLock(node.get("cell").get("nodes").get(i).get("lock").asBoolean());
             nodeIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("id").asInt(), newNode);
             int[] count = new int[]{0, 0, 0};
             for (int j = 0; j < node.get("cell").get("nodes").get(i).get("sourceCol").size(); j++) {
@@ -482,6 +490,16 @@ public class FactoryCell {
             for (int j = 0; j < node.get("cell").get("nodes").get(i).get("paramsBin").size(); j++) {
                 newNode.setParamBin(j, node.get("cell").get("nodes").get(i).get("paramsBin").get(j).asBoolean());
             }
+            //Set lock parameters of the node
+            for (int j = 0; j < node.get("cell").get("nodes").get(i).get("lockDec").size(); j++) {
+                newNode.setLockDec(j, node.get("cell").get("nodes").get(i).get("lockDec").get(j).asBoolean());
+            }
+            for (int j = 0; j < node.get("cell").get("nodes").get(i).get("lockInt").size(); j++) {
+                newNode.setLockInt(j, node.get("cell").get("nodes").get(i).get("lockInt").get(j).asBoolean());
+            }
+            for (int j = 0; j < node.get("cell").get("nodes").get(i).get("lockBin").size(); j++) {
+                newNode.setLockBin(j, node.get("cell").get("nodes").get(i).get("lockBin").get(j).asBoolean());
+            }
             cell.addNode(newNode);
         }
 
@@ -510,6 +528,10 @@ public class FactoryCell {
                 }
                 break;
             }
+            //Add lock parameters of the edge
+            edge.setLockSource(node.get("cell").get("edges").get(i).get("lockSource").asBoolean());
+            edge.setLockTarget(node.get("cell").get("edges").get(i).get("lockTarget").asBoolean());
+            edge.setLockWeight(node.get("cell").get("edges").get(i).get("lockWeight").asBoolean());
             cell.addEdge(edge);
         }
         return cell;

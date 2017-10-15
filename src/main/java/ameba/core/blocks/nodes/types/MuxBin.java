@@ -12,7 +12,7 @@ public class MuxBin extends Node {
 
 
     public MuxBin(int minInpCollectors, int maxInpCollectors, Boolean par, Boolean[] parLimits) throws Exception {
-        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, 0, 0, 1);
 
         addCollectorTargetInt(new CollectorTargetInt(this));
         for (int i = 0; i < maxInpCollectors - 1; i++) {

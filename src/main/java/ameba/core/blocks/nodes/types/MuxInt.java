@@ -11,7 +11,7 @@ public class MuxInt extends Node {
 
 
     public MuxInt(int minInpCollectors, int maxInpCollectors, Integer par, Integer[] parLimits) throws Exception {
-        super(new int[]{0, 0}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
+        super(new int[]{0, 0}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, 0, 1, 0);
         addCollectorTargetInt(new CollectorTargetInt(this));
         for (int i = 0; i < maxInpCollectors - 1; i++) {
             addCollectorTargetInt(new CollectorTargetInt(this));

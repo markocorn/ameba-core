@@ -25,6 +25,9 @@ public class ParOperation {
         if (par < getParOperationSettings().getValueLimitDec()[0]) {
             par = getParOperationSettings().getValueLimitDec()[0];
         }
+        if (Double.isNaN(par)) {
+            par = getParOperationSettings().getValueLimitDec()[1];
+        }
         return par;
     }
 

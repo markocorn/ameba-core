@@ -22,7 +22,7 @@ public class DerivativeBin extends NodeMem {
     private boolean signalOld;
 
     public DerivativeBin(boolean initial, Boolean par, Boolean[] parLimits) throws Exception {
-        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, 0, 0, 1);
         this.initValue = initial;
         signalOld = initial;
         addCollectorTargetBin(new CollectorTargetBin(this));

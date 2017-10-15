@@ -1,9 +1,12 @@
 package ameba.core.reproductions.mutateCell;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.collectors.CollectorTargetBin;
-import ameba.core.blocks.collectors.CollectorTargetDec;
-import ameba.core.blocks.collectors.CollectorTargetInt;
+import ameba.core.blocks.collectors.CollectorSourceBin;
+import ameba.core.blocks.collectors.CollectorSourceDec;
+import ameba.core.blocks.collectors.CollectorSourceInt;
+import ameba.core.blocks.edges.EdgeBin;
+import ameba.core.blocks.edges.EdgeDec;
+import ameba.core.blocks.edges.EdgeInt;
 import ameba.core.reproductions.Reproduction;
 
 import java.util.ArrayList;
@@ -24,13 +27,13 @@ public class SwitchEdgesSources extends Reproduction implements IMutateCell {
     @Override
     public Cell mutate(Cell cell) throws Exception {
         ArrayList<String> opts = new ArrayList<>();
-        if (cell.getEdgesDec().size() > 1) {
+        if (cell.getEdgesUnlockedSourceDec().size() > 1) {
             opts.add("Dec");
         }
-        if (cell.getEdgesInt().size() > 1) {
+        if (cell.getEdgesUnlockedSourceInt().size() > 1) {
             opts.add("Int");
         }
-        if (cell.getEdgesBin().size() > 1) {
+        if (cell.getEdgesUnlockedSourceBin().size() > 1) {
             opts.add("Bin");
         }
         if (opts.size() == 0) {
@@ -39,34 +42,55 @@ public class SwitchEdgesSources extends Reproduction implements IMutateCell {
             String opt = opts.get(random.nextInt(opts.size()));
             switch (opt) {
                 case "Dec": {
-                    Collections.shuffle(cell.getEdgesDec());
-                    CollectorTargetDec collectorOut = cell.getEdgesDec().get(0).getTargetDec();
-                    cell.getEdgesDec().get(0).getTarget().getEdges().set(cell.getEdgesDec().get(0).getTarget().getEdges().indexOf(cell.getEdgesDec().get(0)), cell.getEdgesDec().get(1));
-                    cell.getEdgesDec().get(1).getTarget().getEdges().set(cell.getEdgesDec().get(1).getTarget().getEdges().indexOf(cell.getEdgesDec().get(1)), cell.getEdgesDec().get(0));
-                    cell.getEdgesDec().get(0).setTarget(cell.getEdgesDec().get(1).getTarget());
-                    cell.getEdgesDec().get(1).setTarget(collectorOut);
+                    ArrayList<EdgeDec> edgeDecs = cell.getEdgesUnlockedSourceDec();
+                    Collections.shuffle(edgeDecs);
+                    EdgeDec e1 = edgeDecs.get(0);
+                    EdgeDec e2 = edgeDecs.get(1);
+
+                    CollectorSourceDec s1 = e1.getSourceDec();
+                    CollectorSourceDec s2 = e2.getSourceDec();
+
+                    e1.setSource(s2);
+                    e2.setSource(s1);
+
+                    s1.getEdges().set(s1.getEdges().indexOf(e1), e2);
+                    s2.getEdges().set(s2.getEdges().indexOf(e2), e1);
                 }
                 break;
                 case "Int": {
-                    Collections.shuffle(cell.getEdgesInt());
-                    CollectorTargetInt collectorOut = cell.getEdgesInt().get(0).getTargetInt();
-                    cell.getEdgesInt().get(0).getTarget().getEdges().set(cell.getEdgesInt().get(0).getTarget().getEdges().indexOf(cell.getEdgesInt().get(0)), cell.getEdgesInt().get(1));
-                    cell.getEdgesInt().get(1).getTarget().getEdges().set(cell.getEdgesInt().get(1).getTarget().getEdges().indexOf(cell.getEdgesInt().get(1)), cell.getEdgesInt().get(0));
-                    cell.getEdgesInt().get(0).setTarget(cell.getEdgesInt().get(1).getTarget());
-                    cell.getEdgesInt().get(1).setTarget(collectorOut);
+                    ArrayList<EdgeInt> edgeInts = cell.getEdgesUnlockedSourceInt();
+                    Collections.shuffle(edgeInts);
+                    EdgeInt e1 = edgeInts.get(0);
+                    EdgeInt e2 = edgeInts.get(0);
+
+                    CollectorSourceInt s1 = e1.getSourceInt();
+                    CollectorSourceInt s2 = e2.getSourceInt();
+
+                    e1.setSource(s2);
+                    e2.setSource(s1);
+
+                    s1.getEdges().set(s1.getEdges().indexOf(e1), e2);
+                    s2.getEdges().set(s2.getEdges().indexOf(e2), e1);
                 }
                 break;
                 case "Bin": {
-                    Collections.shuffle(cell.getEdgesBin());
-                    CollectorTargetBin collectorOut = cell.getEdgesBin().get(0).getTargetBin();
-                    cell.getEdgesBin().get(0).getTarget().getEdges().set(cell.getEdgesBin().get(0).getTarget().getEdges().indexOf(cell.getEdgesBin().get(0)), cell.getEdgesBin().get(1));
-                    cell.getEdgesBin().get(1).getTarget().getEdges().set(cell.getEdgesBin().get(1).getTarget().getEdges().indexOf(cell.getEdgesBin().get(1)), cell.getEdgesBin().get(0));
-                    cell.getEdgesBin().get(0).setTarget(cell.getEdgesBin().get(1).getTarget());
-                    cell.getEdgesBin().get(1).setTarget(collectorOut);
+                    ArrayList<EdgeBin> edgeBins = cell.getEdgesUnlockedSourceBin();
+                    Collections.shuffle(edgeBins);
+                    EdgeBin e1 = edgeBins.get(0);
+                    EdgeBin e2 = edgeBins.get(0);
+
+                    CollectorSourceBin s1 = e1.getSourceBin();
+                    CollectorSourceBin s2 = e2.getSourceBin();
+
+                    e1.setSource(s2);
+                    e2.setSource(s1);
+
+                    s1.getEdges().set(s1.getEdges().indexOf(e1), e2);
+                    s2.getEdges().set(s2.getEdges().indexOf(e2), e1);
                 }
                 break;
             }
-            return cell;
         }
+        return cell;
     }
 }

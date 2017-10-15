@@ -7,7 +7,7 @@ import ameba.core.blocks.nodes.NodeMem;
 public class ConstantDec extends NodeMem {
 
     public ConstantDec(Double par, Double[] parLimits) throws Exception {
-        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, 0, 0, 0);
         addCollectorSourceDec(new CollectorSourceDec(this));
         getParamsDec().add(par);
         getParamsLimitsDec().add(parLimits);

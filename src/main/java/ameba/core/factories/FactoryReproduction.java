@@ -94,45 +94,54 @@ public class FactoryReproduction {
     public Cell repCell(Cell parent1, Cell parent2) throws Exception {
         Cell child = parent1.clone();
         repGroup = bagReproductions.get(random.nextInt(bagReproductions.size()));
+        repGroup = "mutateCell";
         switch (repGroup) {
-            case "mutateEdges": {
+            case "mutateEdge": {
                 rep = bagMutateEdge.get(random.nextInt(bagMutateEdge.size()));
-                if (child.getEdges(mutateEdges.get(rep).getEdgeType()).size() > 0) {
-                    Edge edge = child.getEdges(mutateEdges.get(rep).getEdgeType()).get(random.nextInt(child.getEdges(mutateEdges.get(rep).getEdgeType()).size()));
+                ArrayList<? extends Edge> edges = child.getEdgesUnlockedWeight(mutateEdges.get(rep).getEdgeType());
+                if (edges.size() > 0) {
+                    Edge edge = edges.get(random.nextInt(edges.size()));
                     mutateEdges.get(rep).mutate(edge);
                 } else
-                    throw new Exception("Can't find edge of type: " + mutateEdges.get(rep).getEdgeType().toString() + " skipping this reproduction");
+                    throw new Exception("Can't find unlocked edge of type: " + mutateEdges.get(rep).getEdgeType().toString() + " skipping this reproduction");
             }
             break;
             case "crossEdge": {
                 rep = bagCrossEdge.get(random.nextInt(bagCrossEdge.size()));
-                if (child.getEdges(crossEdges.get(rep).getEdgeType()).size() > 1) {
-                    Edge edge1 = child.getEdges(crossEdges.get(rep).getEdgeType()).get(random.nextInt(child.getEdges(crossEdges.get(rep).getEdgeType()).size()));
-                    Edge edge2 = child.getEdges(crossEdges.get(rep).getEdgeType(), edge1).get(random.nextInt(child.getEdges(crossEdges.get(rep).getEdgeType(), edge1).size()));
+                ArrayList<? extends Edge> edges = child.getEdgesUnlockedWeight(crossEdges.get(rep).getEdgeType());
+                if (edges.size() > 1) {
+                    Edge edge1 = edges.get(random.nextInt(edges.size()));
+                    Edge edge2 = edges.get(random.nextInt(edges.size()));
                     crossEdges.get(rep).cross(edge1, edge2);
                 }
             }
             break;
             case "mutateNode": {
                 rep = bagMutateNode.get(random.nextInt(bagMutateNode.size()));
-                if (child.getInnerNodesParType(mutateNodes.get(rep).getType()).size() > 0) {
-                    Node node = child.getInnerNodesParType(mutateNodes.get(rep).getType()).get(random.nextInt(child.getInnerNodesParType(mutateNodes.get(rep).getType()).size()));
+                ArrayList<Node> nodes = child.getInnerNodesParTypeUnlocked(mutateNodes.get(rep).getType());
+                if (nodes.size() > 0) {
+                    Node node = nodes.get(random.nextInt(nodes.size()));
                     mutateNodes.get(rep).mutate(node);
                 }
             }
             break;
             case "crossNode": {
                 rep = bagCrossNode.get(random.nextInt(bagCrossNode.size()));
-                if (child.getInnerNodesParType(crossNodes.get(rep).getType()).size() > 1) {
-                    Node node1 = child.getInnerNodesParType(crossNodes.get(rep).getType()).get(random.nextInt(child.getInnerNodesParType(crossNodes.get(rep).getType()).size()));
-                    Node node2 = child.getInnerNodesParType(crossNodes.get(rep).getType(), node1).get(random.nextInt(child.getInnerNodesParType(crossNodes.get(rep).getType(), node1).size()));
+                ArrayList<Node> nodes = child.getInnerNodesParTypeUnlocked(crossNodes.get(rep).getType());
+                if (nodes.size() > 1) {
+                    Node node1 = nodes.get(random.nextInt(nodes.size()));
+                    Node node2 = nodes.get(random.nextInt(nodes.size()));
                     crossNodes.get(rep).cross(node1, node2);
                 }
             }
             break;
             case "mutateCell":
                 rep = bagMutateCell.get(random.nextInt(bagMutateCell.size()));
-                mutateCells.get(rep).mutate(child);
+                if (child.hasLockedNodes()) {
+                    ArrayList<String> bag = (ArrayList) bagMutateCell.clone();
+                    bag.remove(Collections.singleton("randCell"));
+                }
+                mutateCells.get("switchEdgesTargets").mutate(child);
                 break;
             case "crossCell":
                 rep = bagCrossCell.get(random.nextInt(bagCrossCell.size()));
@@ -167,7 +176,7 @@ public class FactoryReproduction {
     }
 
     private void loadEdgeMutations(JsonNode node) throws IOException {
-        bagReproductions.addAll(Collections.nCopies(node.get(0).get("mutateEdge").get("probability").asInt(), "mutateEdges"));
+        bagReproductions.addAll(Collections.nCopies(node.get(0).get("mutateEdge").get("probability").asInt(), "mutateEdge"));
 
         String name = "weightAddValueDec";
         WeightAddValueDec weightAddValueDec = new WeightAddValueDec(new AddValueDec(ParOperationSettings.create(node.get(0).get("mutateEdge").get(name).toString())));

@@ -21,7 +21,7 @@ public class IntegralInt extends NodeMem {
 
 
     public IntegralInt(int initial, Integer par, Integer[] parLimits) throws Exception {
-        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
+        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, 0, 1, 0);
         this.initValue = initial;
         signalOld = initial;
 

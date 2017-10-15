@@ -11,7 +11,7 @@ import ameba.core.blocks.nodes.Node;
 public class SwitchDec extends Node {
 
     public SwitchDec() throws Exception {
-        super(new int[]{2, 2}, new int[]{0, 0}, new int[]{1, 1}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
+        super(new int[]{2, 2}, new int[]{0, 0}, new int[]{1, 1}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, 0, 0, 0);
 
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorTargetDec(new CollectorTargetDec(this));

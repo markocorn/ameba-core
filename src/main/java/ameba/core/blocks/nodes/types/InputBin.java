@@ -9,7 +9,7 @@ public class InputBin extends NodeMem implements INodeInputBin {
      * Construct InputDec object.
      */
     public InputBin() throws Exception {
-        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, 0, 0, 0);
         addCollectorSourceBin(new CollectorSourceBin(this));
     }
 

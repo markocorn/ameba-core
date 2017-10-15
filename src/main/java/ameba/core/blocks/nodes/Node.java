@@ -7,6 +7,7 @@ import com.rits.cloning.Cloner;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Base node class.
@@ -47,8 +48,14 @@ public class Node implements Cloneable, Serializable {
     private ArrayList<Boolean> paramsBin;
     private ArrayList<Boolean[]> paramsLimitsBin;
 
+    private boolean[] lockDec;
+    private boolean[] lockInt;
+    private boolean[] lockBin;
 
-    public Node(int[] inpColLimitDec, int[] inpColLimitInt, int[] inpColLimitBin, int[] outColLimitDec, int[] outColLimitInt, int[] outColLimitBin) {
+    private boolean lock;
+
+
+    public Node(int[] inpColLimitDec, int[] inpColLimitInt, int[] inpColLimitBin, int[] outColLimitDec, int[] outColLimitInt, int[] outColLimitBin, int paramsDec, int paramsInt, int paramsBin) {
         this.collectorTargetLimitsDec = inpColLimitDec;
         this.collectorTargetLimitsInt = inpColLimitInt;
         this.collectorTargetLimitsBin = inpColLimitBin;
@@ -70,12 +77,23 @@ public class Node implements Cloneable, Serializable {
         collectorsTargetConInt = new ArrayList<>();
         collectorsTargetConBin = new ArrayList<>();
 
-        paramsDec = new ArrayList<>();
-        paramsLimitsDec = new ArrayList<>();
-        paramsInt = new ArrayList<>();
-        paramsLimitsInt = new ArrayList<>();
-        paramsBin = new ArrayList<>();
-        paramsLimitsBin = new ArrayList<>();
+        this.paramsDec = new ArrayList<>(paramsDec);
+        this.paramsLimitsDec = new ArrayList<>(paramsDec);
+        this.paramsInt = new ArrayList<>(paramsInt);
+        this.paramsLimitsInt = new ArrayList<>(paramsInt);
+        this.paramsBin = new ArrayList<>(paramsBin);
+        this.paramsLimitsBin = new ArrayList<>(paramsBin);
+
+        lockDec = new boolean[paramsDec];
+        Arrays.fill(lockDec, false);
+
+        lockInt = new boolean[paramsInt];
+        Arrays.fill(lockInt, false);
+
+        lockBin = new boolean[paramsBin];
+        Arrays.fill(lockBin, false);
+
+        lock = false;
 
         signalReady = false;
         signalClcDone = false;
@@ -475,6 +493,29 @@ public class Node implements Cloneable, Serializable {
         return paramsDec;
     }
 
+    public ArrayList<Double> getParamsUnlockedDec() {
+        ArrayList<Double> pars = new ArrayList<>();
+        for (int i = 0; i < paramsDec.size(); i++) {
+            if (!lockDec[i]) {
+                pars.add(paramsDec.get(i));
+            }
+        }
+        return pars;
+    }
+
+    public void setParamUnlockedDec(int ind, Double paramDec) {
+        ArrayList<Double> unlocked = new ArrayList<>();
+        for (int i = 0; i < paramsDec.size(); i++) {
+            if (!lockDec[i]) {
+                unlocked.add(paramsDec.get(i));
+            }
+        }
+        unlocked.set(ind, paramDec);
+        if (paramDec < paramsLimitsDec.get(ind)[0]) paramDec = paramsLimitsDec.get(ind)[0];
+        if (paramDec > paramsLimitsDec.get(ind)[1]) paramDec = paramsLimitsDec.get(ind)[1];
+        this.paramsDec.set(ind, paramDec);
+    }
+
     public void setParamsDec(ArrayList<Double> paramsDec) {
         this.paramsDec = paramsDec;
     }
@@ -497,8 +538,31 @@ public class Node implements Cloneable, Serializable {
         return paramsInt;
     }
 
+    public ArrayList<Integer> getParamsUnlockedInt() {
+        ArrayList<Integer> pars = new ArrayList<>();
+        for (int i = 0; i < paramsInt.size(); i++) {
+            if (!lockInt[i]) {
+                pars.add(paramsInt.get(i));
+            }
+        }
+        return pars;
+    }
+
     public void setParamsInt(ArrayList<Integer> paramsInt) {
         this.paramsInt = paramsInt;
+    }
+
+    public void setParamUnlockedInt(int ind, Integer paramInt) {
+        ArrayList<Integer> unlocked = new ArrayList<>();
+        for (int i = 0; i < paramsInt.size(); i++) {
+            if (!lockInt[i]) {
+                unlocked.add(paramsInt.get(i));
+            }
+        }
+        unlocked.set(ind, paramInt);
+        if (paramInt < paramsLimitsInt.get(ind)[0]) paramInt = paramsLimitsInt.get(ind)[0];
+        if (paramInt > paramsLimitsInt.get(ind)[1]) paramInt = paramsLimitsInt.get(ind)[1];
+        this.paramsInt.set(ind, paramInt);
     }
 
     public void setParamInt(int ind, Integer paramInt) {
@@ -519,15 +583,37 @@ public class Node implements Cloneable, Serializable {
         return paramsBin;
     }
 
+    public ArrayList<Boolean> getParamsUnlockedBin() {
+        ArrayList<Boolean> pars = new ArrayList<>();
+        for (int i = 0; i < paramsBin.size(); i++) {
+            if (!lockBin[i]) {
+                pars.add(paramsBin.get(i));
+            }
+        }
+        return pars;
+    }
+
     public void setParamsBin(ArrayList<Boolean> paramsBin) {
         this.paramsBin = paramsBin;
     }
 
-    public void setParamBin(int ind, Boolean paramBin) {
-        this.paramsBin.set(ind, paramBin);
+    public void setParamUnlockedBin(int ind, Boolean paramBin) {
+        ArrayList<Boolean> unlocked = new ArrayList<>();
+        for (int i = 0; i < paramsBin.size(); i++) {
+            if (!lockBin[i]) {
+                unlocked.add(paramsBin.get(i));
+            }
+        }
+        unlocked.set(ind, paramBin);
         if (!paramsLimitsBin.get(ind)[1]) paramBin = false;
         if (paramsLimitsBin.get(ind)[0]) paramBin = true;
+        this.paramsBin.set(ind, paramBin);
+    }
 
+    public void setParamBin(int ind, Boolean paramBin) {
+        if (!paramsLimitsBin.get(ind)[1]) paramBin = false;
+        if (paramsLimitsBin.get(ind)[0]) paramBin = true;
+        this.paramsBin.set(ind, paramBin);
     }
 
     public ArrayList<Boolean[]> getParamsLimitsBin() {
@@ -606,6 +692,99 @@ public class Node implements Cloneable, Serializable {
         if (hasParInt()) types.add(Cell.Signal.INTEGER);
         if (hasParBin()) types.add(Cell.Signal.BOOLEAN);
         return types;
+    }
+
+    public boolean[] getLockDec() {
+        return lockDec;
+    }
+
+    public void setLockDec(int ind, boolean lockDec) {
+        this.lockDec[ind] = lockDec;
+    }
+
+    public boolean[] getLockInt() {
+        return lockInt;
+    }
+
+    public void setLockInt(int ind, boolean lockInt) {
+        this.lockInt[ind] = lockInt;
+    }
+
+    public boolean[] getLockBin() {
+        return lockBin;
+    }
+
+    public void setLockBin(int ind, boolean lockBin) {
+        this.lockBin[ind] = lockBin;
+    }
+
+    public boolean hasParamsUnlocked(Cell.Signal type) {
+        switch (type) {
+            case DECIMAL:
+                return hasParamsDecUnlocked();
+            case INTEGER:
+                return hasParamsIntUnlocked();
+            case BOOLEAN:
+                return hasParamsBinUnlocked();
+        }
+        return false;
+    }
+
+    public boolean hasParamsDecUnlocked() {
+        for (int i = 0; i < lockDec.length; i++) {
+            if (!lockDec[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasParamsIntUnlocked() {
+        for (int i = 0; i < lockInt.length; i++) {
+            if (!lockInt[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasParamsBinUnlocked() {
+        for (int i = 0; i < lockBin.length; i++) {
+            if (!lockBin[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isLock() {
+        return lock;
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
+    }
+
+    public boolean hasLockedEdgesSource() {
+        for (Collector collector : collectorSources) {
+            for (Edge edge : collector.getEdges()) {
+                if (edge.isLockSource()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean hasLockedEdgesTarget() {
+        for (Collector collector : collectorsTarget) {
+            for (Edge edge : collector.getEdges()) {
+                if (edge.isLockTarget()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
 

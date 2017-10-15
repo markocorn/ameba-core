@@ -16,12 +16,17 @@ public class Edge implements Cloneable, Serializable {
      */
     private CollectorTarget target;
 
+    private boolean lockSource = false;
+
+    private boolean lockTarget = false;
+
+    private boolean lockWeight = false;
+
     private boolean signalTransmitted;
 
     public CollectorSource getSource() {
         return source;
     }
-
 
     public void setSource(CollectorSource source) {
         this.source = source;
@@ -68,5 +73,29 @@ public class Edge implements Cloneable, Serializable {
 
     public Cell.Signal getType() {
         return null;
+    }
+
+    public boolean isLockSource() {
+        return lockSource;
+    }
+
+    public void setLockSource(boolean lockSource) {
+        this.lockSource = lockSource;
+    }
+
+    public boolean isLockTarget() {
+        return lockTarget;
+    }
+
+    public void setLockTarget(boolean lockTarget) {
+        this.lockTarget = lockTarget;
+    }
+
+    public boolean isLockWeight() {
+        return lockWeight;
+    }
+
+    public void setLockWeight(boolean lockWeight) {
+        this.lockWeight = lockWeight;
     }
 }

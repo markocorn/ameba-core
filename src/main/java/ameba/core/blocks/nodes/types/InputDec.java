@@ -9,7 +9,7 @@ public class InputDec extends NodeMem implements INodeInputDec {
      * Construct InputDec object.
      */
     public InputDec() throws Exception {
-        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, 0, 0, 0);
         addCollectorSourceDec(new CollectorSourceDec(this));
     }
 

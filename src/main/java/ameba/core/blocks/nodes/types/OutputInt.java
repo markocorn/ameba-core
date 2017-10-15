@@ -18,7 +18,7 @@ public class OutputInt extends Node implements INodeOutputInt {
     int value;
 
     public OutputInt() throws Exception {
-        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0});
+        super(new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, 0, 0, 0);
         addCollectorTargetInt(new CollectorTargetInt(this));
         value = 0;
     }

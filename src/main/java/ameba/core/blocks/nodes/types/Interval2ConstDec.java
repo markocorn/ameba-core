@@ -10,7 +10,7 @@ import ameba.core.blocks.nodes.Node;
 public class Interval2ConstDec extends Node {
 
     public Interval2ConstDec(Double par1, Double[] par1Limits, Double par2, Double[] par2Limits) throws Exception {
-        super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+        super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, 2, 0, 0);
 
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceBin(new CollectorSourceBin(this));

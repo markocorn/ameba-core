@@ -18,7 +18,7 @@ public class OutputBin extends Node implements INodeOutputBin {
     boolean value;
 
     public OutputBin() throws Exception {
-        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0});
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, 0, 0, 0);
         addCollectorTargetBin(new CollectorTargetBin(this));
         value = false;
     }

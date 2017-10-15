@@ -8,7 +8,7 @@ import ameba.core.blocks.nodes.Node;
 public class AddInt extends Node {
 
     public AddInt(int minInpCollectors, int maxInpCollectors) throws Exception {
-        super(new int[]{0, 0}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
+        super(new int[]{0, 0}, new int[]{minInpCollectors, maxInpCollectors}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, 0, 0, 0);
         for (int i = 0; i < maxInpCollectors; i++) {
             addCollectorTargetInt(new CollectorTargetInt(this));
         }

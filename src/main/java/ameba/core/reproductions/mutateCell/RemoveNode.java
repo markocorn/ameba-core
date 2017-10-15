@@ -8,6 +8,7 @@ import ameba.core.blocks.nodes.Node;
 import ameba.core.factories.FactoryCell;
 import ameba.core.reproductions.Reproduction;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -33,8 +34,9 @@ public class RemoveNode extends Reproduction implements IMutateCell {
     @Override
     public Cell mutate(Cell cell) throws Exception {
         //Node to be removed
-        if (cell.getInnerNodes().size() > 0) {
-            Node node = cell.getInnerNodes().get(random.nextInt(cell.getInnerNodes().size()));
+        ArrayList<Node> nodes = cell.getInnerNodesFullUnlocked();
+        if (nodes.size() > 0) {
+            Node node = nodes.get(random.nextInt(nodes.size()));
             for (CollectorTarget t : node.getCollectorsTargetConnected()) {
                 cell.removeEdge(t.getEdges().get(0));
             }

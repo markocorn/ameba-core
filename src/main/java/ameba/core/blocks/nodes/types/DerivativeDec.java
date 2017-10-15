@@ -22,7 +22,7 @@ public class DerivativeDec extends NodeMem {
     private double signalOld;
 
     public DerivativeDec(double initial, Double par, Double[] parLimits) throws Exception {
-        super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0});
+        super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, 1, 0, 0);
         this.initValue = initial;
         signalOld = initial;
         addCollectorTargetDec(new CollectorTargetDec(this));

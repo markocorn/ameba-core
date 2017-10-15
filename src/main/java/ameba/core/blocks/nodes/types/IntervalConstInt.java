@@ -10,7 +10,7 @@ import ameba.core.blocks.nodes.Node;
 public class IntervalConstInt extends Node {
 
     public IntervalConstInt(int par, Integer[] parLimits) throws Exception {
-        super(new int[]{0, 0}, new int[]{2, 2}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+        super(new int[]{0, 0}, new int[]{2, 2}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, 0, 1, 0);
 
         addCollectorTargetInt(new CollectorTargetInt(this));
         addCollectorTargetInt(new CollectorTargetInt(this));

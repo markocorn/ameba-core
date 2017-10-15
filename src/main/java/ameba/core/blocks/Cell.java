@@ -122,6 +122,38 @@ public class Cell implements Serializable {
         return edges;
     }
 
+    public ArrayList<Edge> getEdgesUnlockedWeight() {
+        ArrayList<Edge> out = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (!edge.isLockWeight()) {
+                out.add(edge);
+            }
+        }
+        return out;
+    }
+
+    public ArrayList<Edge> getEdgesUnlockedSource() {
+        ArrayList<Edge> out = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (!edge.isLockSource()) {
+                out.add(edge);
+            }
+        }
+        return out;
+    }
+
+    public ArrayList<Edge> getEdgesUnlockedTarget() {
+        ArrayList<Edge> out = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (!edge.isLockTarget()) {
+                out.add(edge);
+            }
+        }
+        return out;
+    }
+
+
+
     /**
      * Set cell's conectivity.
      *
@@ -141,15 +173,60 @@ public class Cell implements Serializable {
         return edge1;
     }
 
-    public ArrayList<EdgeDec> getEdgesDec(Edge edge) {
-        ArrayList<EdgeDec> edges1 = new ArrayList<>();
-        for (Edge edge1 : edges) {
-            if (edge1 instanceof EdgeDec && !edge1.equals(edge)) {
-                edges1.add((EdgeDec) edge1);
+    public ArrayList<EdgeDec> getEdgesUnlockedSourceDec() {
+        ArrayList<EdgeDec> edge1 = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (edge instanceof EdgeDec && !edge.isLockSource()) {
+                edge1.add((EdgeDec) edge);
             }
         }
+        return edge1;
+    }
+
+    public ArrayList<EdgeDec> getEdgesUnlockedTargetDec() {
+        ArrayList<EdgeDec> edge1 = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (edge instanceof EdgeDec && !edge.isLockTarget()) {
+                edge1.add((EdgeDec) edge);
+            }
+        }
+        return edge1;
+    }
+
+    public ArrayList<EdgeDec> getEdgesUnlockedWeightDec() {
+        ArrayList<EdgeDec> edge1 = new ArrayList<>();
+        for (Edge edge : getEdgesUnlockedWeight()) {
+            if (edge instanceof EdgeDec) {
+                edge1.add((EdgeDec) edge);
+            }
+        }
+        return edge1;
+    }
+
+    public ArrayList<EdgeDec> getEdgesDec(Edge edge) {
+        ArrayList<EdgeDec> edges1 = getEdgesDec();
+        edges1.remove(edge);
         return edges1;
     }
+
+    public ArrayList<EdgeDec> getEdgesUnlockedSourceDec(Edge edge) {
+        ArrayList<EdgeDec> edges1 = getEdgesUnlockedSourceDec();
+        edges1.remove(edge);
+        return edges1;
+    }
+
+    public ArrayList<EdgeDec> getEdgesUnlockedTargetDec(Edge edge) {
+        ArrayList<EdgeDec> edges1 = getEdgesUnlockedTargetDec();
+        edges1.remove(edge);
+        return edges1;
+    }
+
+    public ArrayList<EdgeDec> getEdgesUnlockedWeightDec(Edge edge) {
+        ArrayList<EdgeDec> edges1 = getEdgesUnlockedWeightDec();
+        edges1.remove(edge);
+        return edges1;
+    }
+
 
     public ArrayList<EdgeInt> getEdgesInt() {
         ArrayList<EdgeInt> edges1 = new ArrayList<>();
@@ -161,13 +238,57 @@ public class Cell implements Serializable {
         return edges1;
     }
 
-    public ArrayList<EdgeInt> getEdgesInt(Edge edge) {
+    public ArrayList<EdgeInt> getEdgesUnlockedSourceInt() {
         ArrayList<EdgeInt> edges1 = new ArrayList<>();
-        for (Edge edge1 : edges) {
-            if (edge1 instanceof EdgeInt && !edge1.equals(edge)) {
-                edges1.add((EdgeInt) edge1);
+        for (Edge edge : edges) {
+            if (edge instanceof EdgeInt && !edge.isLockSource()) {
+                edges1.add((EdgeInt) edge);
             }
         }
+        return edges1;
+    }
+
+    public ArrayList<EdgeInt> getEdgesUnlockedTargetInt() {
+        ArrayList<EdgeInt> edges1 = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (edge instanceof EdgeInt && !edge.isLockTarget()) {
+                edges1.add((EdgeInt) edge);
+            }
+        }
+        return edges1;
+    }
+
+    public ArrayList<EdgeInt> getEdgesUnlockedWeightInt() {
+        ArrayList<EdgeInt> edges1 = new ArrayList<>();
+        for (Edge edge : getEdgesUnlockedWeight()) {
+            if (edge instanceof EdgeInt) {
+                edges1.add((EdgeInt) edge);
+            }
+        }
+        return edges1;
+    }
+
+    public ArrayList<EdgeInt> getEdgesInt(Edge edge) {
+        ArrayList<EdgeInt> edges1 = getEdgesInt();
+        edges1.remove(edge);
+        return edges1;
+    }
+
+    public ArrayList<EdgeInt> getEdgesUnlockedSourceInt(Edge edge) {
+        ArrayList<EdgeInt> edges1 = getEdgesUnlockedSourceInt();
+        edges1.remove(edge);
+        return edges1;
+    }
+
+    public ArrayList<EdgeInt> getEdgesUnlockedTargetInt(Edge edge) {
+        ArrayList<EdgeInt> edges1 = getEdgesUnlockedTargetInt();
+        edges1.remove(edge);
+        return edges1;
+    }
+
+    public ArrayList<EdgeInt> getEdgesUnlockedWeightInt(Edge edge) {
+        ArrayList<EdgeInt> edges1 = getEdgesUnlockedWeightInt();
+        edges1.remove(edge);
         return edges1;
     }
 
@@ -181,13 +302,57 @@ public class Cell implements Serializable {
         return edge1;
     }
 
-    public ArrayList<EdgeBin> getEdgesBin(Edge edge) {
-        ArrayList<EdgeBin> edges1 = new ArrayList<>();
-        for (Edge edge1 : edges) {
-            if (edge1 instanceof EdgeBin && !edge1.equals(edge)) {
-                edges1.add((EdgeBin) edge1);
+    public ArrayList<EdgeBin> getEdgesUnlockedSourceBin() {
+        ArrayList<EdgeBin> edge1 = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (edge instanceof EdgeBin && !edge.isLockSource()) {
+                edge1.add((EdgeBin) edge);
             }
         }
+        return edge1;
+    }
+
+    public ArrayList<EdgeBin> getEdgesUnlockedTargetBin() {
+        ArrayList<EdgeBin> edge1 = new ArrayList<>();
+        for (Edge edge : edges) {
+            if (edge instanceof EdgeBin && !edge.isLockTarget()) {
+                edge1.add((EdgeBin) edge);
+            }
+        }
+        return edge1;
+    }
+
+    public ArrayList<EdgeBin> getEdgesUnlockedWeightBin() {
+        ArrayList<EdgeBin> edge1 = new ArrayList<>();
+        for (Edge edge : getEdgesUnlockedWeight()) {
+            if (edge instanceof EdgeBin) {
+                edge1.add((EdgeBin) edge);
+            }
+        }
+        return edge1;
+    }
+
+    public ArrayList<EdgeBin> getEdgesBin(Edge edge) {
+        ArrayList<EdgeBin> edges1 = getEdgesBin();
+        edges1.remove(edge);
+        return edges1;
+    }
+
+    public ArrayList<EdgeBin> getEdgesUnlockedSourceBin(Edge edge) {
+        ArrayList<EdgeBin> edges1 = getEdgesUnlockedSourceBin();
+        edges1.remove(edge);
+        return edges1;
+    }
+
+    public ArrayList<EdgeBin> getEdgesUnlockedTargetBin(Edge edge) {
+        ArrayList<EdgeBin> edges1 = getEdgesUnlockedTargetBin();
+        edges1.remove(edge);
+        return edges1;
+    }
+
+    public ArrayList<EdgeBin> getEdgesUnlockedWeightBin(Edge edge) {
+        ArrayList<EdgeBin> edges1 = getEdgesUnlockedWeightBin();
+        edges1.remove(edge);
         return edges1;
     }
 
@@ -204,6 +369,20 @@ public class Cell implements Serializable {
         }
     }
 
+    public ArrayList<? extends Edge> getEdgesUnlockedWeight(Signal type) {
+        switch (type) {
+            case DECIMAL:
+                return getEdgesUnlockedWeightDec();
+            case INTEGER:
+                return getEdgesUnlockedWeightInt();
+            case BOOLEAN:
+                return getEdgesUnlockedWeightBin();
+            default:
+                return new ArrayList<>();
+        }
+    }
+
+
     public ArrayList<? extends Edge> getEdges(Signal type, Edge edge) {
         switch (type) {
             case DECIMAL:
@@ -212,6 +391,19 @@ public class Cell implements Serializable {
                 return getEdgesInt(edge);
             case BOOLEAN:
                 return getEdgesBin(edge);
+            default:
+                return new ArrayList<>();
+        }
+    }
+
+    public ArrayList<? extends Edge> getEdgesUnlockedWeight(Signal type, Edge edge) {
+        switch (type) {
+            case DECIMAL:
+                return getEdgesUnlockedWeightDec(edge);
+            case INTEGER:
+                return getEdgesUnlockedWeightInt(edge);
+            case BOOLEAN:
+                return getEdgesUnlockedWeightBin(edge);
             default:
                 return new ArrayList<>();
         }
@@ -263,6 +455,29 @@ public class Cell implements Serializable {
         return nodes1;
     }
 
+    public ArrayList<Node> getInnerNodesUnlocked() {
+        ArrayList<Node> nodes1 = new ArrayList<>();
+        for (Node node : nodes) {
+            if (!(node instanceof InputDec || node instanceof InputInt || node instanceof InputBin || node instanceof OutputDec || node instanceof OutputInt || node instanceof OutputBin) && !node.isLock()) {
+                nodes1.add(node);
+            }
+        }
+        return nodes1;
+    }
+
+    public ArrayList<Node> getInnerNodesFullUnlocked() {
+        ArrayList<Node> nodes1 = new ArrayList<>();
+        for (Node node : nodes) {
+            if (!(node instanceof InputDec || node instanceof InputInt || node instanceof InputBin || node instanceof OutputDec || node instanceof OutputInt || node instanceof OutputBin)
+                    && !node.isLock()
+                    && !node.hasLockedEdgesSource()
+                    && !node.hasLockedEdgesTarget()) {
+                nodes1.add(node);
+            }
+        }
+        return nodes1;
+    }
+
     public ArrayList<Node> getInnerNodesParType(Signal type) {
         ArrayList<Node> nodes1 = new ArrayList<>();
         for (Node node : nodes) {
@@ -273,6 +488,17 @@ public class Cell implements Serializable {
         return nodes1;
     }
 
+    public ArrayList<Node> getInnerNodesParTypeUnlocked(Signal type) {
+        ArrayList<Node> nodes1 = new ArrayList<>();
+        for (Node node : nodes) {
+            if (!(node instanceof InputDec || node instanceof InputInt || node instanceof InputBin || node instanceof OutputDec || node instanceof OutputInt || node instanceof OutputBin) && node.getParTypes().contains(type) && node.hasParamsUnlocked(type)) {
+                nodes1.add(node);
+            }
+        }
+        return nodes1;
+    }
+
+
     public ArrayList<Node> getInnerNodesParType(Signal type, Node nodeNot) {
         ArrayList<Node> nodes1 = new ArrayList<>();
         for (Node node : nodes) {
@@ -281,6 +507,25 @@ public class Cell implements Serializable {
             }
         }
         return nodes1;
+    }
+
+    public ArrayList<Node> getInnerNodesParTypeUnlocked(Signal type, Node nodeNot) {
+        ArrayList<Node> nodes1 = new ArrayList<>();
+        for (Node node : nodes) {
+            if (!(node instanceof InputDec || node instanceof InputInt || node instanceof InputBin || node instanceof OutputDec || node instanceof OutputInt || node instanceof OutputBin) && node.getParTypes().contains(type) && !node.equals(nodeNot) && node.hasParamsUnlocked(type)) {
+                nodes1.add(node);
+            }
+        }
+        return nodes1;
+    }
+
+    public boolean hasLockedNodes() {
+        for (Node node : nodes) {
+            if (node.isLock()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -751,6 +996,7 @@ public class Cell implements Serializable {
         for (int i = 0; i < getNodes().size(); i++) {
             ObjectNode node = mapper.createObjectNode();
             node.put("id", ind);
+            node.put("lock", getNodes().get(i).isLock());
             ind++;
             node.put("type", getNodes().get(i).getClass().getSimpleName());
             ArrayNode inpColDec = node.putArray("sourceCol");
@@ -769,14 +1015,27 @@ public class Cell implements Serializable {
             for (int j = 0; j < getNodes().get(i).getParamsDec().size(); j++) {
                 paramsDec.add(getNodes().get(i).getParamsDec().get(j));
             }
+            ArrayNode lockDec = node.putArray("lockDec");
+            for (int j = 0; j < getNodes().get(i).getLockDec().length; j++) {
+                lockDec.add(getNodes().get(i).getLockDec()[j]);
+            }
             ArrayNode paramsInt = node.putArray("paramsInt");
             for (int j = 0; j < getNodes().get(i).getParamsInt().size(); j++) {
                 paramsInt.add(getNodes().get(i).getParamsInt().get(j));
+            }
+            ArrayNode lockInt = node.putArray("lockInt");
+            for (int j = 0; j < getNodes().get(i).getLockInt().length; j++) {
+                lockInt.add(getNodes().get(i).getLockInt()[j]);
             }
             ArrayNode paramsBin = node.putArray("paramsBin");
             for (int j = 0; j < getNodes().get(i).getParamsBin().size(); j++) {
                 paramsBin.add(getNodes().get(i).getParamsBin().get(j));
             }
+            ArrayNode lockBin = node.putArray("lockBin");
+            for (int j = 0; j < getNodes().get(i).getLockBin().length; j++) {
+                lockBin.add(getNodes().get(i).getLockBin()[j]);
+            }
+
             nodes.add(node);
         }
 
@@ -789,7 +1048,10 @@ public class Cell implements Serializable {
                             .put("type", getEdges().get(i).getType().toString())
                             .put("weight", ((EdgeDec) getEdges().get(i)).getWeight())
                             .put("sourceCol", sourceId.get(getEdges().get(i).getSource()))
-                            .put("targetCol", targetId.get(getEdges().get(i).getTarget()));
+                            .put("targetCol", targetId.get(getEdges().get(i).getTarget()))
+                            .put("lockTarget", getEdges().get(i).isLockTarget())
+                            .put("lockSource", getEdges().get(i).isLockSource())
+                            .put("lockWeight", getEdges().get(i).isLockWeight());
                 }
                 break;
                 case INTEGER: {
@@ -797,7 +1059,10 @@ public class Cell implements Serializable {
                             .put("type", getEdges().get(i).getType().toString())
                             .put("weight", ((EdgeInt) getEdges().get(i)).getWeight())
                             .put("sourceCol", sourceId.get(getEdges().get(i).getSource()))
-                            .put("targetCol", targetId.get(getEdges().get(i).getTarget()));
+                            .put("targetCol", targetId.get(getEdges().get(i).getTarget()))
+                            .put("lockTarget", getEdges().get(i).isLockTarget())
+                            .put("lockSource", getEdges().get(i).isLockSource())
+                            .put("lockWeight", getEdges().get(i).isLockWeight());
                 }
                 break;
                 case BOOLEAN: {
@@ -805,7 +1070,10 @@ public class Cell implements Serializable {
                             .put("type", getEdges().get(i).getType().toString())
                             .put("weight", ((EdgeBin) getEdges().get(i)).getWeight())
                             .put("sourceCol", sourceId.get(getEdges().get(i).getSource()))
-                            .put("targetCol", targetId.get(getEdges().get(i).getTarget()));
+                            .put("targetCol", targetId.get(getEdges().get(i).getTarget()))
+                            .put("lockTarget", getEdges().get(i).isLockTarget())
+                            .put("lockSource", getEdges().get(i).isLockSource())
+                            .put("lockWeight", getEdges().get(i).isLockWeight());
                 }
                 break;
             }

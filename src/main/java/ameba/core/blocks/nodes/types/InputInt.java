@@ -9,7 +9,7 @@ public class InputInt extends NodeMem implements INodeInputInt {
      * Construct InputDec object.
      */
     public InputInt() throws Exception {
-        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0});
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, 0, 0, 0);
         addCollectorSourceInt(new CollectorSourceInt(this));
     }
 

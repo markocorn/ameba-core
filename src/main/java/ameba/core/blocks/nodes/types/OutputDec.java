@@ -18,7 +18,7 @@ public class OutputDec extends Node implements INodeOutputDec {
     double value;
 
     public OutputDec() throws Exception {
-        super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0});
+        super(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, 0, 0, 0);
         addCollectorTargetDec(new CollectorTargetDec(this));
         value = 0.0;
     }

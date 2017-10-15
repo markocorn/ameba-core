@@ -10,7 +10,7 @@ import ameba.core.blocks.nodes.Node;
 public class Switch2ConstBin extends Node {
 
     public Switch2ConstBin(Boolean par1, Boolean[] par1Limits, Boolean par2, Boolean[] par2Limits) throws Exception {
-        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1});
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, 0, 0, 2);
 
         addCollectorTargetBin(new CollectorTargetBin(this));
         addCollectorSourceBin(new CollectorSourceBin(this));

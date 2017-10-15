@@ -46,7 +46,8 @@ public class TransferNodes extends Reproduction implements ICrossCell {
     @Override
     public Cell cross(Cell cell1, Cell cell2) throws Exception {
         //Remove group of nodes with edges from cell1
-        ArrayList<ArrayList<Node>> group = cell1.getGroup(cell1.getInnerNodes().get(random.nextInt(cell1.getInnerNodes().size())), random.nextInt(nodesLimitRemove[1] - nodesLimitRemove[0]) + nodesLimitRemove[0]);
+        ArrayList<Node> nodes1 = cell1.getInnerNodesFullUnlocked();
+        ArrayList<ArrayList<Node>> group = cell1.getGroup(nodes1.get(random.nextInt(nodes1.size())), random.nextInt(nodesLimitRemove[1] - nodesLimitRemove[0]) + nodesLimitRemove[0]);
         HashMap<String, ArrayList<Edge>> borderEdges = cell1.getGroupEdgesBorder(group);
         HashMap<String, ArrayList<Edge>> innerEdges = cell1.getGroupEdgesInner(group);
         //Remove inner edges
