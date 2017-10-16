@@ -94,7 +94,6 @@ public class FactoryReproduction {
     public Cell repCell(Cell parent1, Cell parent2) throws Exception {
         Cell child = parent1.clone();
         repGroup = bagReproductions.get(random.nextInt(bagReproductions.size()));
-        repGroup = "mutateCell";
         switch (repGroup) {
             case "mutateEdge": {
                 rep = bagMutateEdge.get(random.nextInt(bagMutateEdge.size()));
