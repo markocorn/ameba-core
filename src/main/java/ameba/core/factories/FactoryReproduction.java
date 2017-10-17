@@ -140,7 +140,7 @@ public class FactoryReproduction {
                     ArrayList<String> bag = (ArrayList) bagMutateCell.clone();
                     bag.remove(Collections.singleton("randCell"));
                 }
-                mutateCells.get("switchEdgesTargets").mutate(child);
+                mutateCells.get(rep).mutate(child);
                 break;
             case "crossCell":
                 rep = bagCrossCell.get(random.nextInt(bagCrossCell.size()));
