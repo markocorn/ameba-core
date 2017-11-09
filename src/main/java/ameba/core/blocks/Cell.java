@@ -153,7 +153,6 @@ public class Cell implements Serializable {
     }
 
 
-
     /**
      * Set cell's conectivity.
      *
@@ -667,23 +666,22 @@ public class Cell implements Serializable {
      * Execute calculation process of data transition trough nodes and connectivity of the cell.
      */
     private void clcCell() {
-        int n = isCellClcDone();
-        int m = 0;
-        while (!(n == 0 || m == n)) {
-            m = n;
+        int n = 0;
+        while (n < edges.size()) {
+            n = isCellClcDone();
             for (Node node : nodes) {
                 node.processNode();
             }
-            n = isCellClcDone();
+            if (n == isCellClcDone()) break;
         }
         rstCell();
     }
 
     private int isCellClcDone() {
-        //n number of edges that has not transited but they have conditions
+        //n number of edges that has transmitted + not transited but they have conditions
         int n = 0;
         for (Edge edge : getEdges()) {
-            if (!edge.isSignalTransmitted() && edge.getSource().isSignalReady()) {
+            if (edge.isSignalTransmitted() || edge.getSource().isSignalReady()) {
                 n++;
             }
         }
