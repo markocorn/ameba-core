@@ -1,3 +1,11 @@
+import ameba.core.blocks.Cell;
+import ameba.core.blocks.edges.Edge;
+import ameba.core.blocks.edges.EdgeDec;
+import ameba.core.blocks.nodes.Node;
+import ameba.core.blocks.nodes.types.AddDec;
+import ameba.core.blocks.nodes.types.DelayDec;
+import ameba.core.blocks.nodes.types.InputDec;
+import ameba.core.blocks.nodes.types.OutputDec;
 import ameba.core.factories.FactoryCell;
 
 /**
@@ -175,57 +183,58 @@ public class Main {
 //            cell.addEdge(edge13);
 //            cell.addEdge(edge14);
 //
-//            Cell cell = new Cell(100);
-//            Node node1 = new InputDec();
-//            Node node2 = new InputDec();
-//            Node node3 = new OutputDec();
-//            Node node4 = new OutputDec();
-//            Node node5 = new AddDec(2, 10);
-//            Node node6 = new AddDec(2, 10);
-//            Node node7 = new DelayDec(0.0,1,new Integer[]{0,5});
-//
-//            Edge edge1 = new EdgeDec(node1.getCollectorsSourceDec().get(0), node5.getCollectorsTargetDec().get(0), 1.0);
-//            Edge edge2 = new EdgeDec(node5.getCollectorsSourceDec().get(0), node3.getCollectorsTargetDec().get(0), 1.0);
-//            Edge edge3 = new EdgeDec(node2.getCollectorsSourceDec().get(0), node6.getCollectorsTargetDec().get(0), 1.0);
-//            Edge edge4 = new EdgeDec(node6.getCollectorsSourceDec().get(0), node4.getCollectorsTargetDec().get(0), 1.0);
-//
-//            Edge edge5 = new EdgeDec(node5.getCollectorsSourceDec().get(0), node7.getCollectorsTargetDec().get(0), 1.0);
-//            Edge edge6 = new EdgeDec(node7.getCollectorsSourceDec().get(0), node5.getCollectorsTargetDec().get(1), 1.0);
-////            Edge edge7 = new EdgeDec(node7.getCollectorsSourceDec().get(0), node5.getCollectorsTargetDec().get(1), 1.0);
-//
-//
-//
-//            cell.addNode(node1);
-//            cell.addNode(node2);
-//            cell.addNode(node3);
-//            cell.addNode(node4);
-//            cell.addNode(node5);
-//            cell.addNode(node6);
-//            cell.addNode(node7);
-//
-//
-//            cell.addEdge(edge1);
-//            cell.addEdge(edge2);
-//            cell.addEdge(edge3);
-//            cell.addEdge(edge4);
-//            cell.addEdge(edge5);
-//            cell.addEdge(edge6);
-//
-//
-//            cell.clearCell();
-//            cell.checkCellPrint();
-//
-////            System.out.println(cell.toJsonString());
-//
-//            //Simulate cell
-//            double[][] inpDec = new double[][]{{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}};
-//
-//            for (int i = 0; i < inpDec.length; i++) {
-//                cell.importSignals(inpDec[i]);
-//                cell.runEvent();
-//                System.out.println(String.valueOf(cell.getExportedValuesDec()[0])+" : " +String.valueOf(cell.getExportedValuesDec()[1]));
-//            }
+            Cell cell = new Cell(100);
+            Node node1 = new InputDec();
+            Node node2 = new InputDec();
+            Node node3 = new OutputDec();
+            Node node4 = new OutputDec();
+            Node node5 = new AddDec(2, 10);
+            Node node6 = new AddDec(2, 10);
+            Node node7 = new DelayDec(0.0, 1, new Integer[]{0, 5});
+            Node node8 = new DelayDec(0.0, 1, new Integer[]{0, 5});
 
+            Edge edge1 = new EdgeDec(node1.getCollectorsSourceDec().get(0), node5.getCollectorsTargetDec().get(0), 1.0);
+            Edge edge2 = new EdgeDec(node5.getCollectorsSourceDec().get(0), node3.getCollectorsTargetDec().get(0), 1.0);
+            Edge edge3 = new EdgeDec(node2.getCollectorsSourceDec().get(0), node6.getCollectorsTargetDec().get(0), 1.0);
+            Edge edge4 = new EdgeDec(node6.getCollectorsSourceDec().get(0), node4.getCollectorsTargetDec().get(0), 1.0);
+
+            Edge edge5 = new EdgeDec(node5.getCollectorsSourceDec().get(0), node7.getCollectorsTargetDec().get(0), 1.0);
+            Edge edge6 = new EdgeDec(node7.getCollectorsSourceDec().get(0), node5.getCollectorsTargetDec().get(1), 1.0);
+            Edge edge7 = new EdgeDec(node6.getCollectorsSourceDec().get(0), node8.getCollectorsTargetDec().get(0), 1.0);
+
+
+            cell.addNode(node1);
+            cell.addNode(node2);
+            cell.addNode(node3);
+            cell.addNode(node4);
+            cell.addNode(node5);
+            cell.addNode(node6);
+            cell.addNode(node7);
+            cell.addNode(node8);
+
+
+            cell.addEdge(edge1);
+            cell.addEdge(edge2);
+            cell.addEdge(edge3);
+            cell.addEdge(edge4);
+            cell.addEdge(edge5);
+            cell.addEdge(edge6);
+            cell.addEdge(edge7);
+
+
+            cell.clearCell();
+            cell.checkCellPrint();
+
+//            System.out.println(cell.toJsonString());
+
+            //Simulate cell
+            double[][] inpDec = new double[][]{{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}};
+
+            for (int i = 0; i < inpDec.length; i++) {
+                cell.importSignals(inpDec[i]);
+                cell.runEvent();
+                System.out.println(String.valueOf(cell.getExportedValuesDec()[0]) + " : " + String.valueOf(cell.getExportedValuesDec()[1]));
+            }
 
 
         } catch (Exception e) {

@@ -496,6 +496,9 @@
         "randCell": {
           "probability": 100
         },
+        "removeEdge": {
+          "probability": 100
+        },
         "removeNode": {
           "probability": 100
         },
