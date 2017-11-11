@@ -359,47 +359,56 @@ public class Node implements Cloneable, Serializable {
 
     public ArrayList<CollectorTargetDec> getCollectorsTargetToConnectDec() {
         ArrayList<CollectorTargetDec> collectors = new ArrayList<>();
-        int min = 0;
+        ArrayList<CollectorTargetDec> collectorsFree = new ArrayList<>();
+
         for (CollectorTargetDec collector : collectorsTargetDec) {
-            min++;
             if (collector.getEdges().size() == 0) {
+                collectorsFree.add(collector);
+            } else {
                 collectors.add(collector);
             }
-            if (min >= getCollectorTargetLimitsDec()[0]) {
-                break;
-            }
         }
-        return collectors;
+        int n = getCollectorTargetLimitsDec()[0] - collectors.size();
+        if (n > 0 && collectorsFree.size() >= n) {
+            return new ArrayList<CollectorTargetDec>(collectorsFree.subList(0, n));
+        }
+        return new ArrayList<>();
     }
 
     public ArrayList<CollectorTargetInt> getCollectorsTargetToConnectInt() {
         ArrayList<CollectorTargetInt> collectors = new ArrayList<>();
-        int min = 0;
+        ArrayList<CollectorTargetInt> collectorsFree = new ArrayList<>();
+
         for (CollectorTargetInt collector : collectorsTargetInt) {
-            min++;
             if (collector.getEdges().size() == 0) {
+                collectorsFree.add(collector);
+            } else {
                 collectors.add(collector);
             }
-            if (min >= getCollectorTargetLimitsInt()[0]) {
-                break;
-            }
         }
-        return collectors;
+        int n = getCollectorTargetLimitsInt()[0] - collectors.size();
+        if (n > 0 && collectorsFree.size() >= n) {
+            return new ArrayList<CollectorTargetInt>(collectorsFree.subList(0, n));
+        }
+        return new ArrayList<>();
     }
 
     public ArrayList<CollectorTargetBin> getCollectorsTargetToConnectBin() {
         ArrayList<CollectorTargetBin> collectors = new ArrayList<>();
-        int min = 0;
+        ArrayList<CollectorTargetBin> collectorsFree = new ArrayList<>();
+
         for (CollectorTargetBin collector : collectorsTargetBin) {
-            min++;
             if (collector.getEdges().size() == 0) {
+                collectorsFree.add(collector);
+            } else {
                 collectors.add(collector);
             }
-            if (min >= getCollectorTargetLimitsBin()[0]) {
-                break;
-            }
         }
-        return collectors;
+        int n = getCollectorTargetLimitsBin()[0] - collectors.size();
+        if (n > 0 && collectorsFree.size() >= n) {
+            return new ArrayList<CollectorTargetBin>(collectorsFree.subList(0, n));
+        }
+        return new ArrayList<>();
     }
 
     public ArrayList<CollectorTarget> getCollectorsTarget() {

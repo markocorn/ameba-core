@@ -163,6 +163,12 @@ public class FactoryReproduction {
         return rep;
     }
 
+    public Cell repMutateCell(Cell parent1, Cell parent2, String reproduction) throws Exception {
+        Cell child = parent1.clone();
+        mutateCells.get(reproduction).mutate(child);
+        return child;
+    }
+
     public void loadSettings(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(json);
@@ -471,6 +477,30 @@ public class FactoryReproduction {
         reproductions.add(randCell);
         bagMutateCell.addAll(Collections.nCopies(randCell.getProbability(), name));
 
+        name = "removeEdge";
+        RemoveEdge removeEdge = new RemoveEdge(factoryNode, factoryCell, node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, removeEdge);
+        reproductions.add(removeEdge);
+        bagMutateCell.addAll(Collections.nCopies(removeEdge.getProbability(), name));
+
+        name = "addEdge";
+        AddEdge addEdge = new AddEdge(factoryNode, factoryCell, factoryEdge, node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, addEdge);
+        reproductions.add(addEdge);
+        bagMutateCell.addAll(Collections.nCopies(addEdge.getProbability(), name));
+
+        name = "moveSourceEdge";
+        MoveSourceEdge moveSourceEdge = new MoveSourceEdge(factoryNode, factoryCell, node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, moveSourceEdge);
+        reproductions.add(moveSourceEdge);
+        bagMutateCell.addAll(Collections.nCopies(moveSourceEdge.getProbability(), name));
+
+        name = "moveTargetEdge";
+        MoveTargetEdge moveTargetEdge = new MoveTargetEdge(factoryNode, factoryCell, node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, moveTargetEdge);
+        reproductions.add(moveTargetEdge);
+        bagMutateCell.addAll(Collections.nCopies(moveTargetEdge.getProbability(), name));
+
         name = "removeNode";
         RemoveNode removeNode = new RemoveNode(factoryCell, node.get(0).get("mutateCell").get(name).get("probability").asInt());
         mutateCells.put(name, removeNode);
@@ -530,5 +560,6 @@ public class FactoryReproduction {
         reproductions.add(transferNodes);
         bagCrossCell.addAll(Collections.nCopies(transferNodes.getProbability(), name));
     }
+
 }
 

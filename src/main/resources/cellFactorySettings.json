@@ -1,8 +1,8 @@
 {
   "cellFactorySettings": {
     "nodeInitial": [
-      5,
-      10
+      10,
+      20
     ],
     "nodeInpDec": 1,
     "nodeInpInt": 1,

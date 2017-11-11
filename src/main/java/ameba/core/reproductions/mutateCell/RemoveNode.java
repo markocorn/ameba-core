@@ -47,7 +47,7 @@ public class RemoveNode extends Reproduction implements IMutateCell {
                         e.setSource(s1);
                         s1.addEdge(e);
                     } else {
-                        throw new Exception("Cant remove cell no substitute source collector found of type:" + s.getType().toString());
+                        throw new Exception("Can't remove cell no substitute source collector found of type:" + s.getType().toString());
                     }
                 }
             }

@@ -477,6 +477,18 @@
       },
       "mutateCell": {
         "probability": 100,
+        "removeEdge": {
+          "probability": 100
+        },
+        "addEdge": {
+          "probability": 100
+        },
+        "moveSourceEdge": {
+          "probability": 100
+        },
+        "moveTargetEdge": {
+          "probability": 100
+        },
         "addNode1": {
           "probability": 100
         },
@@ -494,9 +506,6 @@
           ]
         },
         "randCell": {
-          "probability": 100
-        },
-        "removeEdge": {
           "probability": 100
         },
         "removeNode": {

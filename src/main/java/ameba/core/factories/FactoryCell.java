@@ -231,11 +231,32 @@ public class FactoryCell {
      * @return
      * @throws Exception
      */
-    public CollectorSource getCollectorTargetRnd(Cell.Signal type, Cell cell) throws Exception {
+    public CollectorSource getCollectorSourceRnd(Cell.Signal type, Cell cell) throws Exception {
         ArrayList<CollectorSource> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorSource collector : node.getCollectorsSourceDec()) {
+            for (CollectorSource collector : node.getCollectorsSource()) {
                 if (collector.getType().equals(type)) {
+                    collectors.add(collector);
+                }
+            }
+        }
+        if (collectors.size() > 0) {
+            return collectors.get(rndGen.nextInt(collectors.size()));
+        } else return null;
+    }
+
+    /**
+     * Get random input collector of proper type and without edge.
+     *
+     * @param cell Cell to ISelect node from.
+     * @return Selected node.
+     * @Param node Node that can't be selected.
+     */
+    public CollectorTarget getCollectorTargetRnd(Cell.Signal type, Cell cell) throws Exception {
+        ArrayList<CollectorTarget> collectors = new ArrayList<>();
+        for (Node node : cell.getNodes()) {
+            for (CollectorTarget collector : node.getCollectorsTargetDec()) {
+                if (collector.getType().equals(type) && collector.getEdges().size() == 0) {
                     collectors.add(collector);
                 }
             }
@@ -326,27 +347,6 @@ public class FactoryCell {
 
 
     /**
-     * Get random input collector of proper type and without edge.
-     *
-     * @param cell Cell to ISelect node from.
-     * @return Selected node.
-     * @Param node Node that can't be selected.
-     */
-    public CollectorTarget getCollectorInpRnd(Cell.Signal type, Cell cell) throws Exception {
-        ArrayList<CollectorTarget> collectors = new ArrayList<>();
-        for (Node node : cell.getNodes()) {
-            for (CollectorTarget collector : node.getCollectorsTargetDec()) {
-                if (collector.getType().equals(type) && collector.getEdges().size() == 0) {
-                    collectors.add(collector);
-                }
-            }
-        }
-        if (collectors.size() > 0) {
-            return collectors.get(rndGen.nextInt(collectors.size()));
-        } else return null;
-    }
-
-    /**
      * Get random input connector that is free and nodes minimum constrain of connected input connectors is meet.
      *
      * @param cell
@@ -366,9 +366,19 @@ public class FactoryCell {
         } else return null;
     }
 
+    public CollectorTarget getCollectorTargetToConnectRndNoNode(Cell cell, Cell.Signal type, Node node) {
+        ArrayList<CollectorTarget> list = getCollectorTargetToConnectNoNode(cell, type, node);
+        if (list.size() > 0) {
+            return list.get(rndGen.nextInt(list.size()));
+        } else return null;
+    }
+
     public ArrayList<CollectorTarget> getCollectorTargetToConnect(Cell cell) {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
+            if (node instanceof AddDec) {
+                int t = 0;
+            }
             collectors.addAll(node.getCollectorsTargetToConnect());
         }
         return collectors;
@@ -381,6 +391,40 @@ public class FactoryCell {
         }
         return collectors;
     }
+
+    public ArrayList<CollectorTarget> getCollectorTargetToConnectNoNode(Cell cell, Cell.Signal type, Node node) {
+        ArrayList<CollectorTarget> collectors = new ArrayList<>();
+        for (Node node1 : cell.getNodes()) {
+            if (!node1.equals(node)) {
+                collectors.addAll(node.getCollectorsTargetToConnect(type));
+            }
+        }
+        return collectors;
+    }
+
+    public ArrayList<Edge> getEdgesCanBeRemoved(Cell cell) {
+        ArrayList<Edge> list = new ArrayList<>();
+        for (Edge e : cell.getEdges()) {
+            if (!e.isLockTarget() && !e.isLockSource() &&
+                    e.getTarget().getNodeAttached().getCollectorsTargetConnected(e.getType()).size() > e.getTarget().getNodeAttached().getCollectorTargetLimit(e.getType())[0]) {
+                list.add(e);
+            }
+        }
+        return list;
+    }
+
+    public ArrayList<CollectorTarget> getCollectorsTargetNotConnected(Cell cell) {
+        ArrayList<CollectorTarget> list = new ArrayList<>();
+        for (Node node : cell.getNodes()) {
+            for (CollectorTarget t : node.getCollectorsTarget()) {
+                if (t.getEdges().size() < 1) {
+                    list.add(t);
+                }
+            }
+        }
+        return list;
+    }
+
 
     /**
      * Get random input connector from node's where only one free input connector from node is taken into pool to be randomly selected.
