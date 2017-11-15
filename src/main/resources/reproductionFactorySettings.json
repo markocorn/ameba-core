@@ -498,6 +498,9 @@
         "addNode3": {
           "probability": 100
         },
+        "addNode4": {
+          "probability": 100
+        },
         "addNodesGroup": {
           "probability": 100,
           "nodesLimit": [
@@ -512,6 +515,9 @@
           "probability": 100
         },
         "removeNode1": {
+          "probability": 100
+        },
+        "removeNode2": {
           "probability": 100
         },
         "removeNodesGroup": {

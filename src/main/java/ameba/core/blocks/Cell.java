@@ -600,7 +600,7 @@ public class Cell implements Serializable {
         for (Collector collector : node.getCollectorsTarget()) {
             collector.clearEdges();
         }
-        for (Collector collector : node.getCollectorsSourceDec()) {
+        for (Collector collector : node.getCollectorsSource()) {
             collector.clearEdges();
         }
         //Remove node from the cell

@@ -411,6 +411,44 @@ public class Node implements Cloneable, Serializable {
         return new ArrayList<>();
     }
 
+    public ArrayList<? extends CollectorTarget> getCollectorsTargetFree() {
+        ArrayList<CollectorTarget> list = new ArrayList<>();
+        list.addAll(getCollectorsTargetFreeDec());
+        list.addAll(getCollectorsTargetFreeInt());
+        list.addAll(getCollectorsTargetFreeBin());
+        return list;
+    }
+
+    public ArrayList<CollectorTargetDec> getCollectorsTargetFreeDec() {
+        ArrayList<CollectorTargetDec> collectorsFree = new ArrayList<>();
+        for (CollectorTargetDec collector : collectorsTargetDec) {
+            if (collector.getEdges().size() == 0) {
+                collectorsFree.add(collector);
+            }
+        }
+        return collectorsFree;
+    }
+
+    public ArrayList<CollectorTargetInt> getCollectorsTargetFreeInt() {
+        ArrayList<CollectorTargetInt> collectorsFree = new ArrayList<>();
+        for (CollectorTargetInt collector : collectorsTargetInt) {
+            if (collector.getEdges().size() == 0) {
+                collectorsFree.add(collector);
+            }
+        }
+        return collectorsFree;
+    }
+
+    public ArrayList<CollectorTargetBin> getCollectorsTargetFreeBin() {
+        ArrayList<CollectorTargetBin> collectorsFree = new ArrayList<>();
+        for (CollectorTargetBin collector : collectorsTargetBin) {
+            if (collector.getEdges().size() == 0) {
+                collectorsFree.add(collector);
+            }
+        }
+        return collectorsFree;
+    }
+
     public ArrayList<CollectorTarget> getCollectorsTarget() {
         return collectorsTarget;
     }

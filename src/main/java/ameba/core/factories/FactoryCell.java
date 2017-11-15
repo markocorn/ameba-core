@@ -376,10 +376,23 @@ public class FactoryCell {
     public ArrayList<CollectorTarget> getCollectorTargetToConnect(Cell cell) {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            if (node instanceof AddDec) {
-                int t = 0;
-            }
             collectors.addAll(node.getCollectorsTargetToConnect());
+        }
+        return collectors;
+    }
+
+    public CollectorTarget getCollectorTargetFreeRnd(Cell cell) {
+        ArrayList<CollectorTarget> list = getCollectorsTargetFree(cell);
+        if (list.size() > 0) {
+            return list.get(rndGen.nextInt(list.size()));
+        }
+        return null;
+    }
+
+    public ArrayList<CollectorTarget> getCollectorsTargetFree(Cell cell) {
+        ArrayList<CollectorTarget> collectors = new ArrayList<>();
+        for (Node node : cell.getNodes()) {
+            collectors.addAll(node.getCollectorsTargetFree());
         }
         return collectors;
     }

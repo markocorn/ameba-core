@@ -463,6 +463,12 @@ public class FactoryReproduction {
         reproductions.add(addNode3);
         bagMutateCell.addAll(Collections.nCopies(addNode3.getProbability(), name));
 
+        name = "addNode4";
+        AddNode4 addNode4 = new AddNode4(factoryNode, factoryCell, factoryEdge, node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, addNode4);
+        reproductions.add(addNode4);
+        bagMutateCell.addAll(Collections.nCopies(addNode4.getProbability(), name));
+
         name = "addNodesGroup";
         AddNodesGroup addNodesGroup = new AddNodesGroup(factoryNode, factoryCell, factoryEdge,
                 new int[]{node.get(0).get("mutateCell").get(name).get("nodesLimit").get(0).asInt(), node.get(0).get("mutateCell").get(name).get("nodesLimit").get(1).asInt()},
@@ -512,6 +518,12 @@ public class FactoryReproduction {
         mutateCells.put(name, removeNode1);
         reproductions.add(removeNode1);
         bagMutateCell.addAll(Collections.nCopies(removeNode1.getProbability(), name));
+
+        name = "removeNode2";
+        RemoveNode2 removeNode2 = new RemoveNode2(factoryCell, node.get(0).get("mutateCell").get(name).get("probability").asInt());
+        mutateCells.put(name, removeNode2);
+        reproductions.add(removeNode2);
+        bagMutateCell.addAll(Collections.nCopies(removeNode2.getProbability(), name));
 
         name = "removeNodesGroup";
         RemoveNodesGroup removeNodesGroup = new RemoveNodesGroup(factoryCell,
