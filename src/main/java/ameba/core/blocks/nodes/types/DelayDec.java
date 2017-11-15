@@ -12,14 +12,14 @@ import ameba.core.blocks.collectors.CollectorSourceDec;
 import ameba.core.blocks.collectors.CollectorTargetDec;
 import ameba.core.blocks.nodes.NodeMem;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * @author Marko
  */
 public class DelayDec extends NodeMem {
-    private int ind;
-    private double[] buffer;
+    private ArrayList<Double> buffer;
     //Initial value
     private double initValue;
 
@@ -33,33 +33,23 @@ public class DelayDec extends NodeMem {
         addCollectorTargetDec(new CollectorTargetDec(this));
         addCollectorSourceDec(new CollectorSourceDec(this));
         if (getParamsInt().get(0) < 1) setParamInt(0, 1);
-        buffer = new double[getParamsInt().get(0)];
-        Arrays.fill(buffer, initValue);
-        ind = 0;
+        buffer = new ArrayList<>(Collections.nCopies(getParamsInt().get(0) - 1, initValue));
         clearNode();
     }
 
     //Calculate output value
     @Override
     public void clcNode() {
-        buffer[ind] = getCollectorsTargetDec().get(0).getSignal();
-        ind++;
-        if (ind >= buffer.length) ind = 0;
-        if (ind >= buffer.length - 1) {
-            getCollectorsSourceDec().get(0).setSignal(buffer[0]);
-        } else {
-            getCollectorsSourceDec().get(0).setSignal(buffer[ind + 1]);
-        }
-
+        buffer.add(getCollectorsTargetDec().get(0).getSignal());
+        getCollectorsSourceDec().get(0).setSignal(buffer.get(0));
+        buffer.remove(0);
     }
 
     @Override
     public void clearNode() {
         rstNode();
-        ind = 0;
         if (getParamsInt().get(0) < 1) setParamInt(0, 1);
-        buffer = new double[getParamsInt().get(0)];
-        Arrays.fill(buffer, initValue);
+        buffer = new ArrayList<>(Collections.nCopies(getParamsInt().get(0) - 1, initValue));
         getCollectorsSourceDec().get(0).setSignal(initValue);
     }
 }
