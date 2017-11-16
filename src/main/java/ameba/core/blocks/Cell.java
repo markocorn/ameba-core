@@ -758,7 +758,9 @@ public class Cell implements Serializable {
 
     public Cell clone() {
         Cloner cloner = new Cloner();
+        clearCell();
         return cloner.deepClone(this);
+
     }
 
     public ArrayList<ArrayList<Node>> getGroup(Node nodeStart, int maxNum) throws Exception {
