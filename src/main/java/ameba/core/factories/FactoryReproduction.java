@@ -93,6 +93,7 @@ public class FactoryReproduction {
 
     public Cell repCell(Cell parent1, Cell parent2) throws Exception {
         Cell child = parent1.clone();
+        Cell p = parent2.clone();
         repGroup = bagReproductions.get(random.nextInt(bagReproductions.size()));
         switch (repGroup) {
             case "mutateEdge": {
@@ -144,7 +145,7 @@ public class FactoryReproduction {
                 break;
             case "crossCell":
                 rep = bagCrossCell.get(random.nextInt(bagCrossCell.size()));
-                crossCells.get(rep).cross(child, parent2.clone());
+                crossCells.get(rep).cross(child, p.clone());
                 break;
         }
         child.lastRep = rep;

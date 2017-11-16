@@ -218,6 +218,7 @@ public class Main {
 
             ArrayList<Cell> cells = factoryCell.getCellsJsonFromFile("/home/marko/IdeaProjects/ameba-core/src/test/best2x2_1.json");
             Cell cell = cells.get(0);
+            cell.getNodes().get(5).setParamInt(0, 3);
 
             cell.clearCell();
             cell.checkCellPrint();
