@@ -7,11 +7,13 @@ import ameba.core.blocks.collectors.CollectorTargetDec;
 public class EdgeDec extends Edge {
 
     private double weight;
+    private Double[] limitsWeight;
 
-    public EdgeDec(CollectorSourceDec source, CollectorTargetDec target, double weight) {
+    public EdgeDec(CollectorSourceDec source, CollectorTargetDec target, double weight, Double[] limitsWeight) {
         setSource(source);
         setTarget(target);
         this.weight = weight;
+        this.limitsWeight = limitsWeight;
     }
 
     public CollectorSourceDec getSourceDec() {
@@ -38,6 +40,8 @@ public class EdgeDec extends Edge {
 
     public void setWeight(double weight) {
         this.weight = weight;
+        if (weight < limitsWeight[0]) this.weight = limitsWeight[0];
+        if (weight > limitsWeight[1]) this.weight = limitsWeight[1];
     }
 
 }

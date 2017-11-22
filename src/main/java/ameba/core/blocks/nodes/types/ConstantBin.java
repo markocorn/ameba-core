@@ -7,7 +7,7 @@ import ameba.core.blocks.nodes.NodeMem;
 public class ConstantBin extends NodeMem {
 
     public ConstantBin(Boolean par, Boolean[] parLimits) throws Exception {
-        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, 0, 0, 0);
+        super(new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{0, 0}, new int[]{1, 1}, 0, 0, 1);
         addCollectorSourceBin(new CollectorSourceBin(this));
         getParamsBin().add(par);
         getParamsLimitsBin().add(parLimits);
@@ -18,6 +18,12 @@ public class ConstantBin extends NodeMem {
      */
     @Override
     public void clcNode() {
+        getCollectorsSourceBin().get(0).setSignal(getParamsBin().get(0));
+    }
+
+    @Override
+    public void clearNode() {
+        super.clearNode();
         getCollectorsSourceBin().get(0).setSignal(getParamsBin().get(0));
     }
 }

@@ -3,9 +3,6 @@ package ameba.core.factories;
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.*;
 import ameba.core.blocks.edges.Edge;
-import ameba.core.blocks.edges.EdgeBin;
-import ameba.core.blocks.edges.EdgeDec;
-import ameba.core.blocks.edges.EdgeInt;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -564,21 +561,21 @@ public class FactoryCell {
             Edge edge = null;
             switch (node.get("cell").get("edges").get(i).get("type").asText()) {
                 case "DECIMAL": {
-                    edge = new EdgeDec(
+                    edge = edgeFactory.genEdgeDec(
                             (CollectorSourceDec) sourceIntegerHashMap.get(node.get("cell").get("edges").get(i).get("sourceCol").asInt()),
                             (CollectorTargetDec) targetIntegerHashMap.get(node.get("cell").get("edges").get(i).get("targetCol").asInt()),
                             node.get("cell").get("edges").get(i).get("weight").asDouble());
                 }
                 break;
                 case "INTEGER": {
-                    edge = new EdgeInt(
+                    edge = edgeFactory.genEdgeInt(
                             (CollectorSourceInt) sourceIntegerHashMap.get(node.get("cell").get("edges").get(i).get("sourceCol").asInt()),
                             (CollectorTargetInt) targetIntegerHashMap.get(node.get("cell").get("edges").get(i).get("targetCol").asInt()),
                             node.get("cell").get("edges").get(i).get("weight").asInt());
                 }
                 break;
                 case "BOOLEAN": {
-                    edge = new EdgeBin(
+                    edge = edgeFactory.genEdgeBin(
                             (CollectorSourceBin) sourceIntegerHashMap.get(node.get("cell").get("edges").get(i).get("sourceCol").asInt()),
                             (CollectorTargetBin) targetIntegerHashMap.get(node.get("cell").get("edges").get(i).get("targetCol").asInt()),
                             node.get("cell").get("edges").get(i).get("weight").asBoolean());

@@ -53,15 +53,27 @@ public class FactoryEdge {
      * @return Edge with randomly generated weight.
      */
     public EdgeDec genEdgeDec(CollectorSourceDec source, CollectorTargetDec target) {
-        return new EdgeDec(source, target, genDouble());
+        return new EdgeDec(source, target, genDouble(), factoryEdgeSettings.getWeighLimitsDec());
     }
 
     public EdgeInt genEdgeInt(CollectorSourceInt source, CollectorTargetInt target) {
-        return new EdgeInt(source, target, genInt());
+        return new EdgeInt(source, target, genInt(), factoryEdgeSettings.getWeighLimitsInt());
     }
 
     public EdgeBin genEdgeBin(CollectorSourceBin source, CollectorTargetBin target) {
-        return new EdgeBin(source, target, genBool());
+        return new EdgeBin(source, target, genBool(), factoryEdgeSettings.getWeighLimitsBin());
+    }
+
+    public EdgeDec genEdgeDec(CollectorSourceDec source, CollectorTargetDec target, double weight) {
+        return new EdgeDec(source, target, weight, factoryEdgeSettings.getWeighLimitsDec());
+    }
+
+    public EdgeInt genEdgeInt(CollectorSourceInt source, CollectorTargetInt target, int weight) {
+        return new EdgeInt(source, target, weight, factoryEdgeSettings.getWeighLimitsInt());
+    }
+
+    public EdgeBin genEdgeBin(CollectorSourceBin source, CollectorTargetBin target, boolean weight) {
+        return new EdgeBin(source, target, weight, factoryEdgeSettings.getWeighLimitsBin());
     }
 
     public Edge genEdge(Cell.Signal type, CollectorSource source, CollectorTarget target) {
@@ -75,6 +87,7 @@ public class FactoryEdge {
         }
         return null;
     }
+
 
     /**
      * @return decimal number within the specified initial interval.

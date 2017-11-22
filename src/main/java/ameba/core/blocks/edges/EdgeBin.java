@@ -7,12 +7,14 @@ import ameba.core.blocks.collectors.CollectorTargetBin;
 public class EdgeBin extends Edge {
 
     private boolean weight;
+    private Boolean[] limitsWeight;
 
 
-    public EdgeBin(CollectorSourceBin source, CollectorTargetBin target, boolean weight) {
+    public EdgeBin(CollectorSourceBin source, CollectorTargetBin target, boolean weight, Boolean[] limitsWeight) {
         setSource(source);
         setTarget(target);
         this.weight = weight;
+        this.limitsWeight = limitsWeight;
     }
 
     public CollectorSourceBin getSourceBin() {
@@ -34,6 +36,12 @@ public class EdgeBin extends Edge {
 
     public void setWeight(boolean weight) {
         this.weight = weight;
+        if (limitsWeight[0]) {
+            this.weight = true;
+        }
+        if (!limitsWeight[1]) {
+            this.weight = false;
+        }
     }
 
     @Override

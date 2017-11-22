@@ -683,6 +683,15 @@ public class Node implements Cloneable, Serializable {
 
     public void clearNode() {
         rstNode();
+        for (CollectorSourceBin c : getCollectorsSourceBin()) {
+            c.setSignal(false);
+        }
+        for (CollectorSourceInt c : getCollectorsSourceInt()) {
+            c.setSignal(0);
+        }
+        for (CollectorSourceDec c : getCollectorsSourceDec()) {
+            c.setSignal(0.0);
+        }
     }
 
     public void rstNode() {
