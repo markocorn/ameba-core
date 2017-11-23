@@ -120,8 +120,8 @@ public class Main {
 ////                System.out.println(((EdgeInt)cell.getEdges().get(4)).getWeight());
 ////                System.out.println(((EdgeBin)cell.getEdges().get(5)).getWeight());
 //            }
-            //* Multivariable PI controller
-            //*/
+//            * Multivariable PI controller
+//            */
 //            Cell cell = new Cell(100);
 //            Node node1 = new InputDec();
 //            Node node2 = new InputDec();
@@ -177,7 +177,7 @@ public class Main {
 //            cell.addEdge(edge12);
 //            cell.addEdge(edge13);
 //            cell.addEdge(edge14);
-//
+////
 //
 //            Node node1 = new InputDec();
 //            Node node2 = new InputDec();

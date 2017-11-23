@@ -683,6 +683,9 @@ public class Node implements Cloneable, Serializable {
 
     public void clearNode() {
         rstNode();
+    }
+
+    public void clearCollectors() {
         for (CollectorSourceBin c : getCollectorsSourceBin()) {
             c.setSignal(false);
         }
@@ -724,7 +727,10 @@ public class Node implements Cloneable, Serializable {
 
     public Node clone() {
         Cloner cloner = new Cloner();
-        return cloner.deepClone(this);
+        Node node = cloner.deepClone(this);
+        node.clearNode();
+        node.clearCollectors();
+        return node;
     }
 
     public boolean hasParDec() {
