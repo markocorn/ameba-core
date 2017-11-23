@@ -968,7 +968,18 @@ public class Cell implements Serializable {
                     out.add("Nodes: " + node.toString() + " target collector Bin: " + t.toString() + "not connected.");
                 }
             }
+//            Check for target collectors -> edge -> target collector -> attached nodes
+            for (CollectorTarget t : node.getCollectorsTargetConnected()) {
+                for (Edge e : t.getEdges()) {
+                    if (e.getTarget().getNodeAttached() != node) {
+                        out.add("Attached node " + node.toString() + "of Target collector: " + t.toString() + " does not match attached node of edges target collector");
+                    }
+                }
+
+            }
         }
+
+
         return out;
     }
 

@@ -125,9 +125,6 @@ public class FactoryCell {
         while (true) {
             CollectorTarget collectorTarget = getCollectorTargetToConnectRnd(cell, type);
             if (collectorTarget == null) {
-                if (cell.checkCell().size() > 0) {
-                    int t = 0;
-                }
                 break;
             }
             CollectorSource collectorSource = getCollectorSourceRndNoNode(collectorTarget.getType(), cell, collectorTarget.getNodeAttached());

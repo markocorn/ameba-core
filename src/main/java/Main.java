@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 /**
  * Created by marko on 4/10/17.
+ * To deploy
+ * mvn clean compile deploy -DskipTests
  */
 public class Main {
     public static void main(String[] args) {
