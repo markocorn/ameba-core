@@ -757,7 +757,9 @@ public class Cell implements Serializable {
     }
 
     public Cell clone() {
-        return (Cell) SerializationUtils.clone(this);
+        Cell c = (Cell) SerializationUtils.clone(this);
+        c.clearCell();
+        return c;
 
     }
 
