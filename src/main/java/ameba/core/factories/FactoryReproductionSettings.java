@@ -5,11 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Created by marko on 3/7/17.
  */
-public class FactoryReproductionSettings {
+public class FactoryReproductionSettings implements Serializable {
 
     public static FactoryReproductionSettings create(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();

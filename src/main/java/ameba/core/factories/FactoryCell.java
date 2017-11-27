@@ -7,15 +7,16 @@ import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rits.cloning.Cloner;
+import org.apache.commons.lang.SerializationUtils;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by marko on 10/20/16.
  */
-public class FactoryCell {
+public class FactoryCell implements Serializable {
     private FactoryCellSettings cellFactorySettings;
     private Random rndGen;
     private FactoryNode nodeFactory;
@@ -475,8 +476,7 @@ public class FactoryCell {
     }
 
     public FactoryCell clone() {
-        Cloner cloner = new Cloner();
-        return cloner.deepClone(this);
+        return (FactoryCell) SerializationUtils.clone(this);
     }
 
     public Cell getCellJson(String json) throws Exception {

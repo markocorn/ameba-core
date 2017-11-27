@@ -3,7 +3,7 @@ package ameba.core.blocks.nodes;
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.*;
 import ameba.core.blocks.edges.Edge;
-import com.rits.cloning.Cloner;
+import org.apache.commons.lang.SerializationUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 /**
  * Base node class.
  */
-public class Node implements Cloneable, Serializable {
+public class Node implements Serializable {
     /**
      * List of input collectors of the node.
      */
@@ -726,11 +726,7 @@ public class Node implements Cloneable, Serializable {
     }
 
     public Node clone() {
-        Cloner cloner = new Cloner();
-        Node node = cloner.deepClone(this);
-        node.clearNode();
-        node.clearCollectors();
-        return node;
+        return (Node) SerializationUtils.clone(this);
     }
 
     public boolean hasParDec() {

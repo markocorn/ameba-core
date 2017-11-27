@@ -3,6 +3,7 @@ package ameba.core.blocks.collectors;
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
+import org.apache.commons.lang.SerializationUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -114,5 +115,9 @@ public class Collector implements Serializable {
      */
     public Cell.Signal getType() {
         return null;
+    }
+
+    public Collector clone() {
+        return (Collector) SerializationUtils.clone(this);
     }
 }

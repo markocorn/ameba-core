@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.rits.cloning.Cloner;
+import org.apache.commons.lang.SerializationUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -757,9 +757,7 @@ public class Cell implements Serializable {
     }
 
     public Cell clone() {
-        Cloner cloner = new Cloner();
-        clearCell();
-        return cloner.deepClone(this);
+        return (Cell) SerializationUtils.clone(this);
 
     }
 

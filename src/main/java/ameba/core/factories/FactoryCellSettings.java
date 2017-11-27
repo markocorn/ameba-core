@@ -5,11 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Created by marko on 12/5/16.
  */
-public class FactoryCellSettings {
+public class FactoryCellSettings implements Serializable {
     /**
      * IntervalDec that limits random number of nodes generated at cell building process.
      */

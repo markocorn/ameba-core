@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ import java.util.Random;
 /**
  * Created by marko on 3/7/17.
  */
-public class FactoryReproduction {
+public class FactoryReproduction implements Serializable {
     ArrayList<Reproduction> reproductions;
     HashMap<String, IMutateEdge> mutateEdges;
     HashMap<String, IMutateNode> mutateNodes;

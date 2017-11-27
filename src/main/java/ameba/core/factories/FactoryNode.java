@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -14,7 +15,7 @@ import java.util.Random;
 /**
  * Created by marko on 10/20/16.
  */
-public class FactoryNode {
+public class FactoryNode implements Serializable {
     /**
      * List of nodes nodeSettingsHashMap
      */

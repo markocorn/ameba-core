@@ -11,12 +11,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Random;
 
 /**
  * Created by marko on 10/20/16.
  */
-public class FactoryEdge {
+public class FactoryEdge implements Serializable {
     /**
      * Settings for the edge factory.
      */

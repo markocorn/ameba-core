@@ -3,10 +3,11 @@ package ameba.core.blocks.edges;
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.collectors.CollectorSource;
 import ameba.core.blocks.collectors.CollectorTarget;
+import org.apache.commons.lang.SerializationUtils;
 
 import java.io.Serializable;
 
-public class Edge implements Cloneable, Serializable {
+public class Edge implements Serializable {
     /**
      * Source collector of the edge.
      */
@@ -97,5 +98,9 @@ public class Edge implements Cloneable, Serializable {
 
     public void setLockWeight(boolean lockWeight) {
         this.lockWeight = lockWeight;
+    }
+
+    public Edge clone() {
+        return (Edge) SerializationUtils.clone(this);
     }
 }

@@ -5,11 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Created by marko on 12/5/16.
  */
-public class FactoryEdgeSettings {
+public class FactoryEdgeSettings implements Serializable {
     /**
      * IntervalDec of values for the weight initial value during rndGen generation.
      */
