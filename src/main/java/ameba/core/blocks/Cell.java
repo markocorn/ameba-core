@@ -53,6 +53,8 @@ public class Cell implements Serializable {
 
     private int maxNodes;
 
+    private String id = "";
+
     /**
      *
      */
@@ -95,7 +97,16 @@ public class Cell implements Serializable {
         return null;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     /**
+
      * Get cell's nodes
      *
      * @return

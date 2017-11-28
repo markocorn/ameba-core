@@ -5,6 +5,7 @@ import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.SerializationUtils;
 
 import java.io.File;
 import java.io.Serializable;
@@ -84,6 +85,10 @@ public class FactoryNode implements Serializable {
             this.nodeSettingsHashMap.put(settings.getType(), settings);
         }
 
+    }
+
+    public FactoryNode clone() {
+        return (FactoryNode) SerializationUtils.clone(this);
     }
 
     public void loadSettings(String json) throws Exception {

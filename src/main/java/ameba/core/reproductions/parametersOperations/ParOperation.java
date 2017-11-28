@@ -1,9 +1,11 @@
 package ameba.core.reproductions.parametersOperations;
 
+import java.io.Serializable;
+
 /**
  * Created by marko on 3/10/17.
  */
-public class ParOperation {
+public class ParOperation implements Serializable {
     ParOperationSettings parOperationSettings;
 
     public ParOperation(ParOperationSettings parOperationSettings) {

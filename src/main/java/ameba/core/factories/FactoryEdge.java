@@ -8,6 +8,7 @@ import ameba.core.blocks.edges.EdgeDec;
 import ameba.core.blocks.edges.EdgeInt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.SerializationUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,5 +111,9 @@ public class FactoryEdge implements Serializable {
             return false;
         }
         return rndGen.nextBoolean();
+    }
+
+    public FactoryEdge clone() {
+        return (FactoryEdge) SerializationUtils.clone(this);
     }
 }

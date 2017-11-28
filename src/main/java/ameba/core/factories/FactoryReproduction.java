@@ -17,6 +17,7 @@ import ameba.core.reproductions.parametersOperations.genParCrossover.*;
 import ameba.core.reproductions.parametersOperations.genParMutation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.SerializationUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,6 +91,10 @@ public class FactoryReproduction implements Serializable {
         FactoryReproduction factoryNode = new FactoryReproduction(FactoryEdge.build(filePathEdge), FactoryNode.build(filePathNode), FactoryCell.build(filePathCell, filePathNode, filePathEdge));
         factoryNode.loadSettings(jsonSettings.get("reproductionFactorySettings").toString());
         return factoryNode;
+    }
+
+    public FactoryReproduction clone() {
+        return (FactoryReproduction) SerializationUtils.clone(this);
     }
 
     public Cell repCell(Cell parent1, Cell parent2) throws Exception {

@@ -7,10 +7,8 @@ import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.SerializationUtils;
 
-import java.io.File;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -476,7 +474,20 @@ public class FactoryCell implements Serializable {
     }
 
     public FactoryCell clone() {
-        return (FactoryCell) SerializationUtils.clone(this);
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            return (FactoryCell) ois.readObject();
+        } catch (IOException e) {
+            return null;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Cell getCellJson(String json) throws Exception {
