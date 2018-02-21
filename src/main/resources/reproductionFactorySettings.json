@@ -557,6 +557,13 @@
             5
           ]
         }
+      },
+      "multipleReproductions": {
+        "probability": 100,
+        "limits": [
+          2,
+          10
+        ]
       }
     }
   ]

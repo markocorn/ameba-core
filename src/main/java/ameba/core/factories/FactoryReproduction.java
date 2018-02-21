@@ -3,6 +3,7 @@ package ameba.core.factories;
 import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
+import ameba.core.reproductions.MultipleReproductions;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.crossCell.AddNodes;
 import ameba.core.reproductions.crossCell.ICrossCell;
@@ -38,6 +39,7 @@ public class FactoryReproduction implements Serializable {
     HashMap<String, ICrossEdge> crossEdges;
     HashMap<String, ICrossNode> crossNodes;
     HashMap<String, ICrossCell> crossCells;
+    MultipleReproductions multipleReproductions;
 
     ArrayList<String> bagReproductions;
     ArrayList<String> bagMutateEdge;
@@ -67,6 +69,7 @@ public class FactoryReproduction implements Serializable {
         crossEdges = new HashMap<>();
         crossNodes = new HashMap<>();
         crossCells = new HashMap<>();
+
 
         this.bagReproductions = new ArrayList<>();
         this.bagMutateEdge = new ArrayList<>();
@@ -153,6 +156,18 @@ public class FactoryReproduction implements Serializable {
                 rep = bagCrossCell.get(random.nextInt(bagCrossCell.size()));
                 crossCells.get(rep).cross(child, p.clone());
                 break;
+            case "multipleReproductions":
+                int n = random.nextInt(multipleReproductions.getLimits()[1] - multipleReproductions.getLimits()[0]) + multipleReproductions.getLimits()[0];
+
+                for (int i = 0; i < n; i++) {
+                    String rep = bagReproductions.get(random.nextInt(bagReproductions.size()));
+                    while (rep.equals("multipleReproductions")) {
+                        rep = bagReproductions.get(random.nextInt(bagReproductions.size()));
+                    }
+                    parent1 = child.clone();
+                    child = repCell(parent1, parent2);
+                }
+                break;
         }
         child.lastRep = rep;
         if (child.checkCell().size() > 0) {
@@ -184,6 +199,7 @@ public class FactoryReproduction implements Serializable {
         loadNodeCross(node);
         loadCellMutations(node);
         loadCellCross(node);
+        loadMultipleReproductions(node);
     }
 
     private void loadEdgeMutations(JsonNode node) throws IOException {
@@ -577,6 +593,15 @@ public class FactoryReproduction implements Serializable {
         crossCells.put(name, transferNodes);
         reproductions.add(transferNodes);
         bagCrossCell.addAll(Collections.nCopies(transferNodes.getProbability(), name));
+    }
+
+    private void loadMultipleReproductions(JsonNode node) {
+        bagReproductions.addAll(Collections.nCopies(node.get(0).get("multipleReproductions").get("probability").asInt(), "multipleReproductions"));
+
+        multipleReproductions = new MultipleReproductions(
+                node.get(0).get("multipleReproductions").get("probability").asInt(),
+                new int[]{node.get(0).get("multipleReproductions").get("limits").get(0).asInt(), node.get(0).get("multipleReproductions").get("limits").get(1).asInt()});
+        reproductions.add(multipleReproductions);
     }
 
 }
