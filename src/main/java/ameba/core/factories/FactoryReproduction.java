@@ -165,7 +165,9 @@ public class FactoryReproduction implements Serializable {
                         rep = bagReproductions.get(random.nextInt(bagReproductions.size()));
                     }
                     parent1 = child.clone();
+                    String r = child.lastRep;
                     child = repCell(parent1, parent2);
+                    child.lastRep += "_" + rep;
                 }
                 break;
         }
