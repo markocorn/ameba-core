@@ -337,6 +337,12 @@ public class FactoryReproduction implements Serializable {
         reproductions.add(weightCombineAddDec);
         bagCrossEdge.addAll(Collections.nCopies(weightCombineAddDec.getProbability(), name));
 
+        name = "weightCombineAvgDec";
+        WeightCombineAvgDec weightCombineAvgDec = new WeightCombineAvgDec(new CombineAvgDec(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
+        crossEdges.put(name, weightCombineAvgDec);
+        reproductions.add(weightCombineAvgDec);
+        bagCrossEdge.addAll(Collections.nCopies(weightCombineAvgDec.getProbability(), name));
+
         name = "weightCopyValueDec";
         WeightCombineAddInt weightCombineAddInt = new WeightCombineAddInt(new CombineAddInt(ParOperationSettings.create(node.get(0).get("crossEdge").get(name).toString())));
         crossEdges.put(name, weightCombineAddInt);
@@ -464,6 +470,12 @@ public class FactoryReproduction implements Serializable {
         crossNodes.put(name, parCombineAddDec);
         reproductions.add(parCombineAddDec);
         bagCrossNode.addAll(Collections.nCopies(parCombineAddDec.getProbability(), name));
+
+        name = "parCombineAvgDec";
+        ParCombineAvgDec parCombineAvgDec = new ParCombineAvgDec(new CombineAvgDec(ParOperationSettings.create(node.get(0).get("crossNode").get(name).toString())));
+        crossNodes.put(name, parCombineAvgDec);
+        reproductions.add(parCombineAvgDec);
+        bagCrossNode.addAll(Collections.nCopies(parCombineAvgDec.getProbability(), name));
 
         name = "parCombineAddInt";
         ParCombineAddInt parCombineAddInt = new ParCombineAddInt(new CombineAddInt(ParOperationSettings.create(node.get(0).get("crossNode").get(name).toString())));

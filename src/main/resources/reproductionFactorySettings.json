@@ -116,6 +116,18 @@
             1000.0
           ]
         },
+        "probability": 100,
+        "weightCombineAvgDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
         "weightCombineDiv": {
           "probability": 100,
           "changeLimitDec": [
@@ -343,6 +355,17 @@
       "crossNode": {
         "probability": 100,
         "parCombineAddDec": {
+          "probability": 100,
+          "changeLimitDec": [
+            -0.01,
+            0.01
+          ],
+          "valueLimitDec": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "parCombineAvgDec": {
           "probability": 100,
           "changeLimitDec": [
             -0.01,
