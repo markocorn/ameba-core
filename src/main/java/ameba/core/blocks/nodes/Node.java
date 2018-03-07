@@ -12,7 +12,7 @@ import java.util.Arrays;
 /**
  * Base node class.
  */
-public class Node implements Serializable {
+strictfp public class Node implements Serializable {
     /**
      * List of input collectors of the node.
      */

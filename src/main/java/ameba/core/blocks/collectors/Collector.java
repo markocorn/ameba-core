@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * <br>
  * as target which means that it will collect signal data from connected edge and transmit it to the node as the node's input signal.
  */
-public class Collector implements Serializable {
+strictfp public class Collector implements Serializable {
     /**
      * List of connected edges
      * <br>

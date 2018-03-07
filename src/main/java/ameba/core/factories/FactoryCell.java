@@ -709,4 +709,206 @@ public class FactoryCell implements Serializable {
 
         return cell;
     }
+
+    public Cell genPerceptronLin(int inpNum, int[] layers, boolean lockNodes, boolean lockEdges, boolean lockParNodes, boolean lockParEdges) {
+        Cell cell = new Cell(2000);
+        ArrayList<ArrayList<NeuronLin>> net = new ArrayList<>();
+        ArrayList<InputDec> inp = new ArrayList<>();
+        ArrayList<OutputDec> out = new ArrayList<>();
+
+        int outLayer = layers.length - 1;
+        int outNum = layers[outLayer];
+
+        try {
+            for (int i = 0; i < inpNum; i++) {
+                InputDec i1 = new InputDec();
+                cell.addNode(i1);
+                inp.add(i1);
+            }
+            for (int i = 0; i < outNum; i++) {
+                OutputDec i1 = new OutputDec();
+                cell.addNode(i1);
+                out.add(i1);
+            }
+            //Neurons
+            for (int i = 0; i < layers.length; i++) {
+                ArrayList<NeuronLin> n = new ArrayList<>();
+                for (int j = 0; j < layers[i]; j++) {
+                    NeuronLin m = (NeuronLin) nodeFactory.genNode("NeuronLin");
+                    n.add(m);
+                    cell.addNode(m);
+                }
+                net.add(n);
+            }
+            //Edges inputs
+            for (int i = 0; i < inp.size(); i++) {
+                for (int j = 0; j < layers[0]; j++) {
+                    Edge e = edgeFactory.genEdge(
+                            Cell.Signal.DECIMAL,
+                            inp.get(i).getCollectorsSource().get(0),
+                            net.get(0).get(j).getCollectorsTarget().get(i));
+                    cell.addEdge(e);
+                }
+            }
+            //Edges outputs
+            for (int i = 0; i < outNum; i++) {
+                Edge e = edgeFactory.genEdge(
+                        Cell.Signal.DECIMAL,
+                        net.get(outLayer).get(i).getCollectorsSource().get(0),
+                        out.get(i).getCollectorsTarget().get(0));
+                cell.addEdge(e);
+            }
+            //Edges Layers
+            for (int i = 0; i < net.size() - 1; i++) {
+                for (int j = 0; j < net.get(i).size(); j++) {
+                    for (int k = 0; k < net.get(i + 1).size(); k++) {
+                        Edge e = edgeFactory.genEdge(
+                                Cell.Signal.DECIMAL,
+                                net.get(i).get(j).getCollectorsSource().get(0),
+                                net.get(i + 1).get(k).getCollectorsTarget().get(j));
+                        cell.addEdge(e);
+                    }
+                }
+            }
+
+            for (Node node : cell.getInnerNodes()) {
+                if (lockParNodes) {
+                    node.setLockDec(0, true);
+                }
+                if (lockNodes) {
+                    node.setLock(true);
+                }
+            }
+
+            for (Edge edge : cell.getEdges()) {
+                if (lockParEdges) {
+                    edge.setLockWeight(true);
+                }
+                if (lockEdges) {
+                    edge.setLockSource(true);
+                    edge.setLockTarget(true);
+                }
+            }
+
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        cell.checkCellPrint();
+
+        return cell;
+    }
+
+    public Cell genRecNN(int inpNum, int[] layers, boolean lockNodes, boolean lockEdges, boolean lockParNodes, boolean lockParEdges) {
+        Cell cell = new Cell(2000);
+        ArrayList<ArrayList<NeuronLin>> net = new ArrayList<>();
+        ArrayList<ArrayList<DelayDec>> netD = new ArrayList<>();
+        ArrayList<InputDec> inp = new ArrayList<>();
+        ArrayList<OutputDec> out = new ArrayList<>();
+
+        int outLayer = layers.length - 1;
+        int outNum = layers[outLayer];
+
+        try {
+            for (int i = 0; i < inpNum; i++) {
+                InputDec i1 = new InputDec();
+                cell.addNode(i1);
+                inp.add(i1);
+            }
+            for (int i = 0; i < outNum; i++) {
+                OutputDec i1 = new OutputDec();
+                cell.addNode(i1);
+                out.add(i1);
+            }
+
+            //Neurons & Delays
+            for (int i = 0; i < layers.length; i++) {
+                ArrayList<NeuronLin> n = new ArrayList<>();
+                ArrayList<DelayDec> d = new ArrayList<>();
+                for (int j = 0; j < layers[i]; j++) {
+                    NeuronLin m = (NeuronLin) nodeFactory.genNode("NeuronLin");
+                    n.add(m);
+                    cell.addNode(m);
+                    DelayDec e = (DelayDec) nodeFactory.genNode("DelayDec");
+                    d.add(e);
+                    cell.addNode(e);
+                }
+                net.add(n);
+                netD.add(d);
+            }
+
+            //Edges inputs
+            for (int i = 0; i < inp.size(); i++) {
+                for (int j = 0; j < layers[0]; j++) {
+                    Edge e = edgeFactory.genEdge(
+                            Cell.Signal.DECIMAL,
+                            inp.get(i).getCollectorsSource().get(0),
+                            net.get(0).get(j).getCollectorsTarget().get(i));
+                    cell.addEdge(e);
+                }
+            }
+            //Edges outputs
+            for (int i = 0; i < outNum; i++) {
+                Edge e = edgeFactory.genEdge(
+                        Cell.Signal.DECIMAL,
+                        net.get(outLayer).get(i).getCollectorsSource().get(0),
+                        out.get(i).getCollectorsTarget().get(0));
+                cell.addEdge(e);
+            }
+
+            //Edges Layers
+            for (int i = 0; i < net.size() - 1; i++) {
+                for (int j = 0; j < net.get(i).size(); j++) {
+                    for (int k = 0; k < net.get(i + 1).size(); k++) {
+                        Edge e = edgeFactory.genEdge(
+                                Cell.Signal.DECIMAL,
+                                net.get(i).get(j).getCollectorsSource().get(0),
+                                net.get(i + 1).get(k).getCollectorsTarget().get(j));
+                        cell.addEdge(e);
+                    }
+                }
+            }
+
+            for (Node node : cell.getInnerNodes()) {
+                if (lockParNodes) {
+                    node.setLockDec(0, true);
+                }
+                if (lockNodes) {
+                    node.setLock(true);
+                }
+            }
+
+            for (Edge edge : cell.getEdges()) {
+                if (lockParEdges) {
+                    edge.setLockWeight(true);
+                }
+                if (lockEdges) {
+                    edge.setLockSource(true);
+                    edge.setLockTarget(true);
+                }
+            }
+
+            for (int i = 0; i < 0; i++) {
+                DelayDec n = (DelayDec) nodeFactory.genNode("DelayDec");
+                cell.addNode(n);
+
+
+                connectsMinFreeInputs(cell, Cell.Signal.DECIMAL);
+
+                Edge edge = edgeFactory.genEdge(
+                        Cell.Signal.DECIMAL,
+                        n.getCollectorsSource().get(0),
+                        getCollectorTargetFreeRnd(cell));
+
+                cell.addEdge(edge);
+
+
+            }
+
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        cell.checkCellPrint();
+
+        return cell;
+    }
 }

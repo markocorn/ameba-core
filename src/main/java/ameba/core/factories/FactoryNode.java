@@ -246,6 +246,13 @@ public class FactoryNode implements Serializable {
                             nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
                             nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1]);
                     break;
+                case "NeuronLin":
+                    node = new NeuronLin(
+                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
+                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1],
+                            genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
+                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
+                    break;
                 case "AddInt":
                     node = new AddInt(
                             nodeSettingsHashMap.get(nodeType).getInpColLimitInt()[0],
@@ -268,7 +275,9 @@ public class FactoryNode implements Serializable {
                     break;
                 case "CompareDec":
                     node = new CompareDec(
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]));
+                            genRndSignalInt(
+                                    nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0],
+                                    nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]));
                     break;
                 case "CompareInt":
                     node = new CompareInt(

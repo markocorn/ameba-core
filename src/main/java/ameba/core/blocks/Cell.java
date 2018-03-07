@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class Cell implements Serializable {
+strictfp public class Cell implements Serializable {
     public String lastRep = "";
     double[] exportsDec;
     int[] exportsInt;

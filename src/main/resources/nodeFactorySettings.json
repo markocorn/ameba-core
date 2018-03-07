@@ -786,6 +786,26 @@
         50
       ],
       "probability": 100
+    },
+    {
+      "type": "NeuronLin",
+      "inpColLimitDec": [
+        1,
+        50
+      ],
+      "probability": 100,
+      "parametersLimitsDec": [
+        [
+          -10.0,
+          10.0
+        ]
+      ],
+      "parametersInitLimitsDec": [
+        [
+          -0.001,
+          0.001
+        ]
+      ]
     }
   ]
 }
