@@ -1,8 +1,6 @@
 package ameba.core.reproductions.crossEdge;
 
-import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
-import ameba.core.blocks.edges.EdgeDec;
 import ameba.core.reproductions.Reproduction;
 import ameba.core.reproductions.parametersOperations.genParCrossover.CombineDiv;
 
@@ -19,12 +17,7 @@ public class WeightCombineDiv extends Reproduction implements ICrossEdge {
 
     @Override
     public Edge cross(Edge edge1, Edge edge2) {
-        ((EdgeDec) edge1).setWeight(operationType.crossover(((EdgeDec) edge1).getWeight(), ((EdgeDec) edge2).getWeight()));
+        edge1.setWeight(operationType.crossover(edge1.getWeight(), edge2.getWeight()));
         return null;
-    }
-
-    @Override
-    public Cell.Signal getEdgeType() {
-        return Cell.Signal.DECIMAL;
     }
 }

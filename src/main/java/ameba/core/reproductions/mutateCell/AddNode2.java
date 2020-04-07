@@ -18,11 +18,11 @@ public class AddNode2 extends Reproduction implements IMutateCell {
     FactoryCell cellFactory;
     Random random;
 
-    public AddNode2(FactoryNode nodeFactory, FactoryCell cellFactory, int probability) {
+    public AddNode2(FactoryNode nodeFactory, FactoryCell cellFactory, int probability, long seed) {
         super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -30,10 +30,10 @@ public class AddNode2 extends Reproduction implements IMutateCell {
         //Select random edge
         Edge edge = cell.getEdges().get(random.nextInt(cell.getEdges().size()));
         //Generate node with same type of output collector as edge type
-        Node nodeNew = nodeFactory.genNodeRndCollectorTargetType(edge.getType());
+        Node nodeNew = nodeFactory.genNodeRndCollectorTarget();
         if (nodeNew == null)
             throw new Exception("Can't generate node with " + edge.getType().toString() + " type of input collector");
-        CollectorTarget collectorInp = nodeNew.getCollectorsTargetToConnect(edge.getType()).get(random.nextInt(nodeNew.getCollectorsTargetToConnect(edge.getType()).size()));
+        CollectorTarget collectorInp = nodeNew.getCollectorsTargetToConnect().get(random.nextInt(nodeNew.getCollectorsTargetToConnect().size()));
         //Add edge to new collector
         collectorInp.addEdge(edge);
         //Remove edge from old collector

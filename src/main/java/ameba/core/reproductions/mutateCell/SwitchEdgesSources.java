@@ -1,12 +1,8 @@
 package ameba.core.reproductions.mutateCell;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.collectors.CollectorSourceBin;
-import ameba.core.blocks.collectors.CollectorSourceDec;
-import ameba.core.blocks.collectors.CollectorSourceInt;
-import ameba.core.blocks.edges.EdgeBin;
-import ameba.core.blocks.edges.EdgeDec;
-import ameba.core.blocks.edges.EdgeInt;
+import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.edges.Edge;
 import ameba.core.reproductions.Reproduction;
 
 import java.util.ArrayList;
@@ -19,77 +15,29 @@ import java.util.Random;
 public class SwitchEdgesSources extends Reproduction implements IMutateCell {
     Random random;
 
-    public SwitchEdgesSources(int probability) {
+    public SwitchEdgesSources(int probability, long seed) {
         super(probability);
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
     public Cell mutate(Cell cell) throws Exception {
-        ArrayList<String> opts = new ArrayList<>();
-        if (cell.getEdgesUnlockedSourceDec().size() > 1) {
-            opts.add("Dec");
-        }
-        if (cell.getEdgesUnlockedSourceInt().size() > 1) {
-            opts.add("Int");
-        }
-        if (cell.getEdgesUnlockedSourceBin().size() > 1) {
-            opts.add("Bin");
-        }
-        if (opts.size() == 0) {
-            throw new Exception("Not enough edges of same type.");
+        if (cell.getEdgesUnlockedSource().size() > 1) {
+            ArrayList<Edge> edgeDecs = cell.getEdgesUnlockedSource();
+            Collections.shuffle(edgeDecs);
+            Edge e1 = edgeDecs.get(0);
+            Edge e2 = edgeDecs.get(1);
+
+            CollectorSource s1 = e1.getSource();
+            CollectorSource s2 = e2.getSource();
+
+            e1.setSource(s2);
+            e2.setSource(s1);
+
+            s1.getEdges().set(s1.getEdges().indexOf(e1), e2);
+            s2.getEdges().set(s2.getEdges().indexOf(e2), e1);
         } else {
-            String opt = opts.get(random.nextInt(opts.size()));
-            switch (opt) {
-                case "Dec": {
-                    ArrayList<EdgeDec> edgeDecs = cell.getEdgesUnlockedSourceDec();
-                    Collections.shuffle(edgeDecs);
-                    EdgeDec e1 = edgeDecs.get(0);
-                    EdgeDec e2 = edgeDecs.get(1);
-
-                    CollectorSourceDec s1 = e1.getSourceDec();
-                    CollectorSourceDec s2 = e2.getSourceDec();
-
-                    e1.setSource(s2);
-                    e2.setSource(s1);
-
-                    s1.getEdges().set(s1.getEdges().indexOf(e1), e2);
-                    s2.getEdges().set(s2.getEdges().indexOf(e2), e1);
-                }
-                break;
-                case "Int": {
-                    ArrayList<EdgeInt> edgeInts = cell.getEdgesUnlockedSourceInt();
-                    Collections.shuffle(edgeInts);
-                    EdgeInt e1 = edgeInts.get(0);
-                    EdgeInt e2 = edgeInts.get(0);
-
-                    CollectorSourceInt s1 = e1.getSourceInt();
-                    CollectorSourceInt s2 = e2.getSourceInt();
-
-                    e1.setSource(s2);
-                    e2.setSource(s1);
-
-                    s1.getEdges().set(s1.getEdges().indexOf(e1), e2);
-                    s2.getEdges().set(s2.getEdges().indexOf(e2), e1);
-                }
-                break;
-                case "Bin": {
-                    ArrayList<EdgeBin> edgeBins = cell.getEdgesUnlockedSourceBin();
-                    Collections.shuffle(edgeBins);
-                    EdgeBin e1 = edgeBins.get(0);
-                    EdgeBin e2 = edgeBins.get(0);
-
-                    CollectorSourceBin s1 = e1.getSourceBin();
-                    CollectorSourceBin s2 = e2.getSourceBin();
-
-                    e1.setSource(s2);
-                    e2.setSource(s1);
-
-                    s1.getEdges().set(s1.getEdges().indexOf(e1), e2);
-                    s2.getEdges().set(s2.getEdges().indexOf(e2), e1);
-                }
-                break;
-            }
+            throw new Exception("Not enough edges of same type.");
         }
         return cell;
     }

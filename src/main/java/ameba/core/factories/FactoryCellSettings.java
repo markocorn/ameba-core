@@ -18,15 +18,11 @@ public class FactoryCellSettings implements Serializable {
     /**
      * Number of input types of nodes.
      */
-    private Integer nodeInpDec;
-    private Integer nodeInpInt;
-    private Integer nodeInpBin;
+    private Integer nodeInp;
     /**
      * Number of output types of nodes.
      */
-    private Integer nodeOutDec;
-    private Integer nodeOutInt;
-    private Integer nodeOutBin;
+    private Integer nodeOut;
     /**
      * Maximum number of nodes.
      */
@@ -38,14 +34,10 @@ public class FactoryCellSettings implements Serializable {
     public FactoryCellSettings() {
     }
 
-    public FactoryCellSettings(Integer[] nodeInitial, Integer nodeInpDec, Integer nodeInpInt, Integer nodeInpBin, Integer nodeOutDec, Integer nodeOutInt, Integer nodeOutBin, int nodeMax) {
+    public FactoryCellSettings(Integer[] nodeInitial, Integer nodeInp, Integer nodeOut, int nodeMax) {
         this.nodeInitial = nodeInitial;
-        this.nodeInpDec = nodeInpDec;
-        this.nodeInpInt = nodeInpInt;
-        this.nodeInpBin = nodeInpBin;
-        this.nodeOutDec = nodeOutDec;
-        this.nodeOutInt = nodeOutInt;
-        this.nodeOutBin = nodeOutBin;
+        this.nodeInp = nodeInp;
+        this.nodeOut = nodeOut;
         this.nodeMax = nodeMax;
     }
 
@@ -58,12 +50,8 @@ public class FactoryCellSettings implements Serializable {
         ObjectMapper mapper = new ObjectMapper();
         FactoryCellSettings settings = mapper.readValue(json, FactoryCellSettings.class);
         this.nodeInitial = getNodeInitial();
-        this.nodeInpDec = settings.getNodeInpDec();
-        this.nodeInpInt = settings.getNodeInpInt();
-        this.nodeInpBin = settings.getNodeInpBin();
-        this.nodeOutDec = settings.getNodeOutDec();
-        this.nodeOutInt = settings.getNodeOutInt();
-        this.nodeOutBin = settings.getNodeOutBin();
+        this.nodeInp = settings.getNodeInp();
+        this.nodeOut = settings.getNodeOut();
         this.nodeMax = settings.getNodeMax();
     }
 
@@ -81,52 +69,20 @@ public class FactoryCellSettings implements Serializable {
         this.nodeInitial = nodeInitial;
     }
 
-    public Integer getNodeInpDec() {
-        return nodeInpDec;
+    public Integer getNodeInp() {
+        return nodeInp;
     }
 
-    public void setNodeInpDec(Integer nodeInpDec) {
-        this.nodeInpDec = nodeInpDec;
+    public void setNodeInp(Integer nodeInpDec) {
+        this.nodeInp = nodeInpDec;
     }
 
-    public Integer getNodeInpInt() {
-        return nodeInpInt;
+    public Integer getNodeOut() {
+        return nodeOut;
     }
 
-    public void setNodeInpInt(Integer nodeInpInt) {
-        this.nodeInpInt = nodeInpInt;
-    }
-
-    public Integer getNodeInpBin() {
-        return nodeInpBin;
-    }
-
-    public void setNodeInpBin(Integer nodeInpBin) {
-        this.nodeInpBin = nodeInpBin;
-    }
-
-    public Integer getNodeOutDec() {
-        return nodeOutDec;
-    }
-
-    public void setNodeOutDec(Integer nodeOutDec) {
-        this.nodeOutDec = nodeOutDec;
-    }
-
-    public Integer getNodeOutInt() {
-        return nodeOutInt;
-    }
-
-    public void setNodeOutInt(Integer nodeOutInt) {
-        this.nodeOutInt = nodeOutInt;
-    }
-
-    public Integer getNodeOutBin() {
-        return nodeOutBin;
-    }
-
-    public void setNodeOutBin(Integer nodeOutBin) {
-        this.nodeOutBin = nodeOutBin;
+    public void setNodeOut(Integer nodeOutDec) {
+        this.nodeOut = nodeOutDec;
     }
 
     public int getNodeMax() {

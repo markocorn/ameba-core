@@ -14,10 +14,10 @@ public class ParAddValueInt extends Reproduction implements IMutateNode {
     AddValueInt operationType;
     Random random;
 
-    public ParAddValueInt(AddValueInt operationType) {
+    public ParAddValueInt(AddValueInt operationType, long seed) {
         super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ParAddValueInt extends Reproduction implements IMutateNode {
     }
 
     @Override
-    public Cell.Signal getType() {
-        return Cell.Signal.INTEGER;
+    public Cell.ParType getType() {
+        return Cell.ParType.INTEGER;
     }
 }

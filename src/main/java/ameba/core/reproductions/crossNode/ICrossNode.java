@@ -9,5 +9,5 @@ import ameba.core.blocks.nodes.Node;
 public interface ICrossNode {
     Node cross(Node node1, Node node2) throws Exception;
 
-    Cell.Signal getType();
+    Cell.ParType getType();
 }

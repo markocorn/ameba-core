@@ -1,6 +1,5 @@
 package ameba.core.blocks.collectors;
 
-import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import org.apache.commons.lang.SerializationUtils;
@@ -85,18 +84,19 @@ strictfp public class Collector implements Serializable {
     }
 
     /**
-     * Dummy method that is overridden by implementation class.
+     * Method for adding edge.
      * <br>
-     * To add and edge to the collector the limitations of the node type must be meet. Limitations are specified for each node separately.
+     * Only EdgeDec type of edge can be added.
      *
-     * @param edge
-     * @throws Exception if edge can't be added.Violation of limitations.
+     * @param edge to be added.
+     * @throws Exception if edge is not of EdgeDec type.
      */
     public void addEdge(Edge edge) throws Exception {
+
     }
 
     /**
-     * Dummy method that is overridden by implementation class.
+     * Blind method that is overridden by implementation class.
      * <br>
      * Collector checks if the signal is ready for the transmission to the edge or to the node which depends on the collator implementation.
      *
@@ -107,14 +107,19 @@ strictfp public class Collector implements Serializable {
     }
 
     /**
-     * Dummy method that is overridden by implementation class.
-     * <br>
-     * Collectors signal that flows trough it can be of different data type which depends of the collector implementation.
+     * Get signal of the collector.
      *
-     * @return type of the Signal.
+     * @return
      */
-    public Cell.Signal getType() {
-        return null;
+    public double getSignal() {
+        return 0.0;
+    }
+
+    /**
+     * @param signal
+     */
+    public void setSignal(double signal) {
+
     }
 
     public Collector clone() {

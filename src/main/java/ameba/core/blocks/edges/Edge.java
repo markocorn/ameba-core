@@ -7,7 +7,7 @@ import org.apache.commons.lang.SerializationUtils;
 
 import java.io.Serializable;
 
-strictfp public class Edge implements Serializable {
+public class Edge implements Serializable {
     /**
      * Source collector of the edge.
      */
@@ -24,6 +24,32 @@ strictfp public class Edge implements Serializable {
     private boolean lockWeight = false;
 
     private boolean signalTransmitted;
+
+    private double weight;
+    private Double[] limitsWeight;
+
+    public Edge(CollectorSource source, CollectorTarget target, double weight, Double[] limitsWeight) {
+        setSource(source);
+        setTarget(target);
+        this.weight = weight;
+        this.limitsWeight = limitsWeight;
+    }
+
+
+    public double getSignal() {
+        setSignalTransmitted(true);
+        return source.getSignal() * weight;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+        if (weight < limitsWeight[0]) this.weight = limitsWeight[0];
+        if (weight > limitsWeight[1]) this.weight = limitsWeight[1];
+    }
 
     public CollectorSource getSource() {
         return source;
@@ -72,7 +98,7 @@ strictfp public class Edge implements Serializable {
         signalTransmitted = false;
     }
 
-    public Cell.Signal getType() {
+    public Cell.ParType getType() {
         return null;
     }
 

@@ -11,9 +11,9 @@ import java.util.Random;
 public class RandValueDec extends ParOperation implements IOperationDec {
     private Random random;
 
-    public RandValueDec(ParOperationSettings parOperationSettings) {
+    public RandValueDec(ParOperationSettings parOperationSettings, long seed) {
         super(parOperationSettings);
-        this.random = new Random();
+        this.random = new Random(seed);
     }
 
     @Override

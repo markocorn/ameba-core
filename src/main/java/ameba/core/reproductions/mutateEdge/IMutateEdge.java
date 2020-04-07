@@ -1,6 +1,5 @@
 package ameba.core.reproductions.mutateEdge;
 
-import ameba.core.blocks.Cell;
 import ameba.core.blocks.edges.Edge;
 
 /**
@@ -8,6 +7,4 @@ import ameba.core.blocks.edges.Edge;
  */
 public interface IMutateEdge {
     Edge mutate(Edge edge) throws Exception;
-
-    Cell.Signal getEdgeType();
 }

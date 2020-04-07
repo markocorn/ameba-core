@@ -1,7 +1,8 @@
 package ameba.core.factories;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.collectors.*;
+import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorTarget;
 import ameba.core.blocks.edges.Edge;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
@@ -21,23 +22,23 @@ public class FactoryCell implements Serializable {
     private FactoryEdge edgeFactory;
 
 
-    public FactoryCell(FactoryCellSettings cellFactorySettings, FactoryNode nodeFactory, FactoryEdge edgeFactory) {
+    public FactoryCell(FactoryCellSettings cellFactorySettings, FactoryNode nodeFactory, FactoryEdge edgeFactory, long seed) {
         this.cellFactorySettings = cellFactorySettings;
         this.nodeFactory = nodeFactory;
         this.edgeFactory = edgeFactory;
-        rndGen = new Random();
+        rndGen = new Random(seed);
     }
 
-    public static FactoryCell build() throws Exception {
+    public static FactoryCell build(long seed) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(FactoryCell.class.getClassLoader().getResourceAsStream("cellFactorySettings.json"));
-        return new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), FactoryNode.build(), FactoryEdge.build());
+        JsonNode jsonSettings = mapper.readTree(FactoryCell.class.getClassLoader().getResourceAsStream("core/cellFactorySettings.json"));
+        return new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), FactoryNode.build(seed), FactoryEdge.build(seed), seed);
     }
 
-    public static FactoryCell build(String filePathCell, String filePathNode, String filePathEdge) throws Exception {
+    public static FactoryCell build(String filePathCell, String filePathNode, String filePathEdge, long seed) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonSettings = mapper.readTree(new File(filePathCell));
-        return new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), FactoryNode.build(filePathNode), FactoryEdge.build(filePathEdge));
+        return new FactoryCell(mapper.readValue(jsonSettings.get("cellFactorySettings").toString(), FactoryCellSettings.class), FactoryNode.build(filePathNode, seed), FactoryEdge.build(filePathEdge, seed), seed);
     }
 
     public FactoryCellSettings getCellFactorySettings() {
@@ -67,25 +68,13 @@ public class FactoryCell implements Serializable {
      */
     public Cell genCellRnd() throws Exception {
         Cell cell = new Cell(cellFactorySettings.getNodeMax());
-        //AddDec input nodes
-        for (int i = 0; i < cellFactorySettings.getNodeInpDec(); i++) {
-            cell.addNode(new InputDec());
+        //Add input nodes
+        for (int i = 0; i < cellFactorySettings.getNodeInp(); i++) {
+            cell.addNode(new Input());
         }
-        for (int i = 0; i < cellFactorySettings.getNodeInpInt(); i++) {
-            cell.addNode(new InputInt());
-        }
-        for (int i = 0; i < cellFactorySettings.getNodeInpBin(); i++) {
-            cell.addNode(new InputBin());
-        }
-        //AddDec output nodes
-        for (int i = 0; i < cellFactorySettings.getNodeOutDec(); i++) {
-            cell.addNode(new OutputDec());
-        }
-        for (int i = 0; i < cellFactorySettings.getNodeOutInt(); i++) {
-            cell.addNode(new OutputInt());
-        }
-        for (int i = 0; i < cellFactorySettings.getNodeOutBin(); i++) {
-            cell.addNode(new OutputBin());
+        //Add output nodes
+        for (int i = 0; i < cellFactorySettings.getNodeOut(); i++) {
+            cell.addNode(new Output());
         }
         //Determine initial number of nodes
         int numNodes = genNmbNodesInitial();
@@ -98,16 +87,14 @@ public class FactoryCell implements Serializable {
                 // if there is no collector fine one on the source side of nodes
                 CollectorSource collectorSource = getCollectorSourceRnd(cell);
                 if (collectorSource == null) throw new Exception("Can't generate cell with no initial nodes");
-                node = nodeFactory.genNodeRndCollectorSourceType(collectorSource.getType());
+                node = nodeFactory.genNodeRndCollectorSource();
             } else {
-                node = nodeFactory.genNodeRndCollectorSourceType(collectorTarget.getType());
+                node = nodeFactory.genNodeRndCollectorSource();
             }
             if (node == null) throw new Exception("Not possible to generate nodes");
             cell.addNode(node);
         }
-        connectsMinFreeInputs(cell, Cell.Signal.DECIMAL);
-        connectsMinFreeInputs(cell, Cell.Signal.INTEGER);
-        connectsMinFreeInputs(cell, Cell.Signal.BOOLEAN);
+        connectsMinFreeInputs(cell);
         if (cell.checkCell().size() > 0) {
             throw new Exception("Cell not properly generated. Cell Factory");
         }
@@ -115,51 +102,26 @@ public class FactoryCell implements Serializable {
     }
 
     public void connectsMinFreeInputs(Cell cell) throws Exception {
-        connectsMinFreeInputs(cell, Cell.Signal.DECIMAL);
-        connectsMinFreeInputs(cell, Cell.Signal.INTEGER);
-        connectsMinFreeInputs(cell, Cell.Signal.BOOLEAN);
-    }
-
-    public void connectsMinFreeInputs(Cell cell, Cell.Signal type) throws Exception {
         while (true) {
-            CollectorTarget collectorTarget = getCollectorTargetToConnectRnd(cell, type);
+            CollectorTarget collectorTarget = getCollectorTargetToConnectRnd(cell);
             if (collectorTarget == null) {
                 break;
             }
-            CollectorSource collectorSource = getCollectorSourceRndNoNode(collectorTarget.getType(), cell, collectorTarget.getNodeAttached());
+            CollectorSource collectorSource = getCollectorSourceRndNoNode(cell, collectorTarget.getNodeAttached());
             if (collectorSource != null) {
-                cell.addEdge(edgeFactory.genEdge(collectorTarget.getType(), collectorSource, collectorTarget));
+                cell.addEdge(edgeFactory.genEdge(collectorSource, collectorTarget));
             } else {
-                switch (collectorTarget.getType()) {
-                    case DECIMAL:
-                        if (nodeFactory.nodeSettingsHashMap.get("ConstantDec").getProbability() > 0) {
-                            cell.addNode(nodeFactory.genNode("ConstantDec"));
-                        } else
-                            throw new Exception("Cell can't be properly connected. Must allow the generation of ConstantDec nodes.");
-                        break;
-                    case INTEGER:
-                        if (nodeFactory.nodeSettingsHashMap.get("ConstantInt").getProbability() > 0) {
-                            cell.addNode(nodeFactory.genNode("ConstantInt"));
-                        } else
-                            throw new Exception("Cell can't be properly connected. Must allow the generation of ConstantInt nodes.");
-                        break;
-                    case BOOLEAN:
-                        if (nodeFactory.nodeSettingsHashMap.get("ConstantBin").getProbability() > 0) {
-                            cell.addNode(nodeFactory.genNode("ConstantBin"));
-                        } else
-                            throw new Exception("Cell can't be properly connected. Must allow the generation of ConstantBin nodes.");
-                        break;
-                }
+                if (nodeFactory.nodeSettingsHashMap.get("Constant").getProbability() > 0) {
+                    cell.addNode(nodeFactory.genNode("Constant"));
+                } else
+                    throw new Exception("Cell can't be properly connected. Must allow the generation of Constant nodes.");
             }
         }
     }
 
-    public void reconnectEdges(Cell.Signal type, Cell cell, HashMap<String, ArrayList<Edge>> borderEdges) throws Exception {
+    public void reconnectEdges(Cell cell, HashMap<String, ArrayList<Edge>> borderEdges) throws Exception {
         String ind = "";
-        if (type.equals(Cell.Signal.DECIMAL)) ind = "Dec";
-        if (type.equals(Cell.Signal.INTEGER)) ind = "Int";
-        if (type.equals(Cell.Signal.BOOLEAN)) ind = "Bin";
-        ArrayList<Edge> oldEdges = (ArrayList<Edge>) cell.getEdges(type);
+        ArrayList<Edge> oldEdges = (ArrayList<Edge>) cell.getEdges();
         int diff = borderEdges.get("edgesInp" + ind).size() - oldEdges.size();
         int same = Math.min(borderEdges.get("edgesInp" + ind).size(), oldEdges.size());
         Collections.shuffle(oldEdges);
@@ -202,40 +164,16 @@ public class FactoryCell implements Serializable {
                 cell.removeEdge(remains.get(i));
             }
         }
-        connectsMinFreeInputs(cell, type);
+        connectsMinFreeInputs(cell);
     }
 
-    public CollectorSource getCollectorSourceRnd(Cell.Signal type, ArrayList<CollectorSource> collectorOuts) {
+    public CollectorSource getCollectorSourceRnd(ArrayList<CollectorSource> collectorOuts) {
         ArrayList<CollectorSource> outs = new ArrayList<>();
         for (CollectorSource collectorOut : collectorOuts) {
-            if (collectorOut.equals(type)) {
-                outs.add(collectorOut);
-            }
+            outs.add(collectorOut);
         }
         if (outs.size() > 0) return outs.get(rndGen.nextInt(outs.size()));
         return null;
-    }
-
-    /**
-     * Get random output collector from cell.
-     *
-     * @param type
-     * @param cell
-     * @return
-     * @throws Exception
-     */
-    public CollectorSource getCollectorSourceRnd(Cell.Signal type, Cell cell) throws Exception {
-        ArrayList<CollectorSource> collectors = new ArrayList<>();
-        for (Node node : cell.getNodes()) {
-            for (CollectorSource collector : node.getCollectorsSource()) {
-                if (collector.getType().equals(type)) {
-                    collectors.add(collector);
-                }
-            }
-        }
-        if (collectors.size() > 0) {
-            return collectors.get(rndGen.nextInt(collectors.size()));
-        } else return null;
     }
 
     /**
@@ -245,11 +183,11 @@ public class FactoryCell implements Serializable {
      * @return Selected node.
      * @Param node Node that can't be selected.
      */
-    public CollectorTarget getCollectorTargetRnd(Cell.Signal type, Cell cell) throws Exception {
+    public CollectorTarget getCollectorTargetRnd(Cell cell) throws Exception {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            for (CollectorTarget collector : node.getCollectorsTargetDec()) {
-                if (collector.getType().equals(type) && collector.getEdges().size() == 0) {
+            for (CollectorTarget collector : node.getCollectorsTarget()) {
+                if (collector.getEdges().size() == 0) {
                     collectors.add(collector);
                 }
             }
@@ -272,11 +210,11 @@ public class FactoryCell implements Serializable {
         }
     }
 
-    public CollectorSource getCollectorSourceRndNoNode(Cell.Signal type, Cell cell, Node node) throws Exception {
+    public CollectorSource getCollectorSourceRndNoNode(Cell cell, Node node) throws Exception {
         ArrayList<CollectorSource> collectors = new ArrayList<>();
         for (Node node1 : cell.getNodes()) {
             for (CollectorSource collector : node1.getCollectorsSource()) {
-                if (collector.getType().equals(type) && !node1.equals(node)) {
+                if (!node1.equals(node)) {
                     collectors.add(collector);
                 }
             }
@@ -289,49 +227,7 @@ public class FactoryCell implements Serializable {
     public CollectorSource getCollectorSourceRnd(Cell cell) throws Exception {
         ArrayList<CollectorSource> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
-            collectors.addAll(node.getCollectorsSourceDec());
-        }
-        for (Node node : cell.getNodes()) {
-            collectors.addAll(node.getCollectorsSourceInt());
-        }
-        for (Node node : cell.getNodes()) {
-            collectors.addAll(node.getCollectorsSourceBin());
-        }
-        if (collectors.size() > 0) {
-            return collectors.get(rndGen.nextInt(collectors.size()));
-        } else return null;
-    }
-
-    public CollectorSourceDec getCollectorSourceRndDec(Cell cell) throws Exception {
-        ArrayList<CollectorSourceDec> collectors = new ArrayList<>();
-        for (Node node : cell.getNodes()) {
-            for (CollectorSourceDec collector : node.getCollectorsSourceDec()) {
-                collectors.add(collector);
-            }
-        }
-        if (collectors.size() > 0) {
-            return collectors.get(rndGen.nextInt(collectors.size()));
-        } else return null;
-    }
-
-    public CollectorSourceInt getCollectorSourceRndInt(Cell cell) throws Exception {
-        ArrayList<CollectorSourceInt> collectors = new ArrayList<>();
-        for (Node node : cell.getNodes()) {
-            for (CollectorSourceInt collector : node.getCollectorsSourceInt()) {
-                collectors.add(collector);
-            }
-        }
-        if (collectors.size() > 0) {
-            return collectors.get(rndGen.nextInt(collectors.size()));
-        } else return null;
-    }
-
-    public CollectorSourceBin getCollectorSourceRndBin(Cell cell) throws Exception {
-        ArrayList<CollectorSourceBin> collectors = new ArrayList<>();
-        for (Node node : cell.getNodes()) {
-            for (CollectorSourceBin collector : node.getCollectorsSourceBin()) {
-                collectors.add(collector);
-            }
+            collectors.addAll(node.getCollectorsSource());
         }
         if (collectors.size() > 0) {
             return collectors.get(rndGen.nextInt(collectors.size()));
@@ -353,14 +249,8 @@ public class FactoryCell implements Serializable {
         } else return null;
     }
 
-    public CollectorTarget getCollectorTargetToConnectRnd(Cell cell, Cell.Signal type) {
-        if (getCollectorTargetToConnect(cell, type).size() > 0) {
-            return getCollectorTargetToConnect(cell, type).get(rndGen.nextInt(getCollectorTargetToConnect(cell, type).size()));
-        } else return null;
-    }
-
-    public CollectorTarget getCollectorTargetToConnectRndNoNode(Cell cell, Cell.Signal type, Node node) {
-        ArrayList<CollectorTarget> list = getCollectorTargetToConnectNoNode(cell, type, node);
+    public CollectorTarget getCollectorTargetToConnectRndNoNode(Cell cell, Node node) {
+        ArrayList<CollectorTarget> list = getCollectorTargetToConnectNoNode(cell, node);
         if (list.size() > 0) {
             return list.get(rndGen.nextInt(list.size()));
         } else return null;
@@ -390,19 +280,11 @@ public class FactoryCell implements Serializable {
         return collectors;
     }
 
-    public ArrayList<CollectorTarget> getCollectorTargetToConnect(Cell cell, Cell.Signal type) {
-        ArrayList<CollectorTarget> collectors = new ArrayList<>();
-        for (Node node : cell.getNodes()) {
-            collectors.addAll(node.getCollectorsTargetToConnect(type));
-        }
-        return collectors;
-    }
-
-    public ArrayList<CollectorTarget> getCollectorTargetToConnectNoNode(Cell cell, Cell.Signal type, Node node) {
+    public ArrayList<CollectorTarget> getCollectorTargetToConnectNoNode(Cell cell, Node node) {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node1 : cell.getNodes()) {
             if (!node1.equals(node)) {
-                collectors.addAll(node.getCollectorsTargetToConnect(type));
+                collectors.addAll(node.getCollectorsTargetToConnect());
             }
         }
         return collectors;
@@ -411,11 +293,12 @@ public class FactoryCell implements Serializable {
     public ArrayList<Edge> getEdgesCanBeRemoved(Cell cell) {
         ArrayList<Edge> list = new ArrayList<>();
         for (Edge e : cell.getEdges()) {
-            if (!e.isLockTarget() && !e.isLockSource() &&
-                    e.getTarget().getNodeAttached().getCollectorsTargetConnected(e.getType()).size() > e.getTarget().getNodeAttached().getCollectorTargetLimit(e.getType())[0]) {
+            if (!e.isLockTarget() && !e.isLockSource() && e.getTarget().getNodeAttached().clcCollectorsTargetConnected().size() > e.getTarget().getNodeAttached().getCollectorTargetLimit()[0]) {
                 list.add(e);
             }
         }
+
+        int t = 0;
         return list;
     }
 
@@ -432,19 +315,11 @@ public class FactoryCell implements Serializable {
     }
 
 
-    /**
-     * Get random input connector from node's where only one free input connector from node is taken into pool to be randomly selected.
-     *
-     * @param type
-     * @param cell
-     * @return
-     * @throws Exception
-     */
-    public CollectorTarget getCollectorInpOneRnd(Cell.Signal type, Cell cell) throws Exception {
+    public CollectorTarget getCollectorInpOneRnd(Cell cell) throws Exception {
         ArrayList<CollectorTarget> collectors = new ArrayList<>();
         for (Node node : cell.getNodes()) {
             for (CollectorTarget collector : node.getCollectorsTarget()) {
-                if (collector.getType().equals(type) && collector.getEdges().size() == 0) {
+                if (collector.getEdges().size() == 0) {
                     collectors.add(collector);
                     break;
                 }
@@ -504,43 +379,13 @@ public class FactoryCell implements Serializable {
             nodeIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("id").asInt(), newNode);
             int[] count = new int[]{0, 0, 0};
             for (int j = 0; j < node.get("cell").get("nodes").get(i).get("sourceCol").size(); j++) {
-                switch (node.get("cell").get("nodes").get(i).get("sourceCol").get(j).get("type").asText()) {
-                    case "DECIMAL": {
-                        sourceIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("sourceCol").get(j).get("id").asInt(), newNode.getCollectorsSourceDec().get(count[0]));
-                        count[0]++;
-                    }
-                    break;
-                    case "INTEGER": {
-                        sourceIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("sourceCol").get(j).get("id").asInt(), newNode.getCollectorsSourceInt().get(count[1]));
-                        count[1]++;
-                    }
-                    break;
-                    case "BOOLEAN": {
-                        sourceIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("sourceCol").get(j).get("id").asInt(), newNode.getCollectorsSourceBin().get(count[2]));
-                        count[2]++;
-                    }
-                    break;
-                }
+                sourceIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("sourceCol").get(j).get("id").asInt(), newNode.getCollectorsSource().get(count[0]));
+                count[0]++;
             }
             count = new int[]{0, 0, 0};
             for (int j = 0; j < node.get("cell").get("nodes").get(i).get("targetCol").size(); j++) {
-                switch (node.get("cell").get("nodes").get(i).get("targetCol").get(j).get("type").asText()) {
-                    case "DECIMAL": {
-                        targetIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("targetCol").get(j).get("id").asInt(), newNode.getCollectorsTargetDec().get(count[0]));
-                        count[0]++;
-                    }
-                    break;
-                    case "INTEGER": {
-                        targetIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("targetCol").get(j).get("id").asInt(), newNode.getCollectorsTargetInt().get(count[1]));
-                        count[1]++;
-                    }
-                    break;
-                    case "BOOLEAN": {
-                        targetIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("targetCol").get(j).get("id").asInt(), newNode.getCollectorsTargetBin().get(count[2]));
-                        count[2]++;
-                    }
-                    break;
-                }
+                targetIntegerHashMap.put(node.get("cell").get("nodes").get(i).get("targetCol").get(j).get("id").asInt(), newNode.getCollectorsTarget().get(count[0]));
+                count[0]++;
             }
             //Set parameters of the node
             for (int j = 0; j < node.get("cell").get("nodes").get(i).get("paramsDec").size(); j++) {
@@ -567,29 +412,11 @@ public class FactoryCell implements Serializable {
 
         for (int i = 0; i < node.get("cell").get("edges").size(); i++) {
             Edge edge = null;
-            switch (node.get("cell").get("edges").get(i).get("type").asText()) {
-                case "DECIMAL": {
-                    edge = edgeFactory.genEdgeDec(
-                            (CollectorSourceDec) sourceIntegerHashMap.get(node.get("cell").get("edges").get(i).get("sourceCol").asInt()),
-                            (CollectorTargetDec) targetIntegerHashMap.get(node.get("cell").get("edges").get(i).get("targetCol").asInt()),
-                            node.get("cell").get("edges").get(i).get("weight").asDouble());
-                }
-                break;
-                case "INTEGER": {
-                    edge = edgeFactory.genEdgeInt(
-                            (CollectorSourceInt) sourceIntegerHashMap.get(node.get("cell").get("edges").get(i).get("sourceCol").asInt()),
-                            (CollectorTargetInt) targetIntegerHashMap.get(node.get("cell").get("edges").get(i).get("targetCol").asInt()),
-                            node.get("cell").get("edges").get(i).get("weight").asInt());
-                }
-                break;
-                case "BOOLEAN": {
-                    edge = edgeFactory.genEdgeBin(
-                            (CollectorSourceBin) sourceIntegerHashMap.get(node.get("cell").get("edges").get(i).get("sourceCol").asInt()),
-                            (CollectorTargetBin) targetIntegerHashMap.get(node.get("cell").get("edges").get(i).get("targetCol").asInt()),
-                            node.get("cell").get("edges").get(i).get("weight").asBoolean());
-                }
-                break;
-            }
+            edge = edgeFactory.genEdge(
+                    (CollectorSource) sourceIntegerHashMap.get(node.get("cell").get("edges").get(i).get("sourceCol").asInt()),
+                    (CollectorTarget) targetIntegerHashMap.get(node.get("cell").get("edges").get(i).get("targetCol").asInt()),
+                    node.get("cell").get("edges").get(i).get("weight").asDouble());
+
             //Add lock parameters of the edge
             edge.setLockSource(node.get("cell").get("edges").get(i).get("lockSource").asBoolean());
             edge.setLockTarget(node.get("cell").get("edges").get(i).get("lockTarget").asBoolean());
@@ -625,20 +452,20 @@ public class FactoryCell implements Serializable {
     public Cell genPerceptron(int inpNum, int[] layers, boolean lockNodes, boolean lockEdges, boolean lockParNodes, boolean lockParEdges) {
         Cell cell = new Cell(2000);
         ArrayList<ArrayList<NeuronStep>> net = new ArrayList<>();
-        ArrayList<InputDec> inp = new ArrayList<>();
-        ArrayList<OutputDec> out = new ArrayList<>();
+        ArrayList<Input> inp = new ArrayList<>();
+        ArrayList<Output> out = new ArrayList<>();
 
         int outLayer = layers.length - 1;
         int outNum = layers[outLayer];
 
         try {
             for (int i = 0; i < inpNum; i++) {
-                InputDec i1 = new InputDec();
+                Input i1 = new Input();
                 cell.addNode(i1);
                 inp.add(i1);
             }
             for (int i = 0; i < outNum; i++) {
-                OutputDec i1 = new OutputDec();
+                Output i1 = new Output();
                 cell.addNode(i1);
                 out.add(i1);
             }
@@ -656,7 +483,6 @@ public class FactoryCell implements Serializable {
             for (int i = 0; i < inp.size(); i++) {
                 for (int j = 0; j < layers[0]; j++) {
                     Edge e = edgeFactory.genEdge(
-                            Cell.Signal.DECIMAL,
                             inp.get(i).getCollectorsSource().get(0),
                             net.get(0).get(j).getCollectorsTarget().get(i));
                     cell.addEdge(e);
@@ -665,7 +491,6 @@ public class FactoryCell implements Serializable {
             //Edges outputs
             for (int i = 0; i < outNum; i++) {
                 Edge e = edgeFactory.genEdge(
-                        Cell.Signal.DECIMAL,
                         net.get(outLayer).get(i).getCollectorsSource().get(0),
                         out.get(i).getCollectorsTarget().get(0));
                 cell.addEdge(e);
@@ -675,7 +500,6 @@ public class FactoryCell implements Serializable {
                 for (int j = 0; j < net.get(i).size(); j++) {
                     for (int k = 0; k < net.get(i + 1).size(); k++) {
                         Edge e = edgeFactory.genEdge(
-                                Cell.Signal.DECIMAL,
                                 net.get(i).get(j).getCollectorsSource().get(0),
                                 net.get(i + 1).get(k).getCollectorsTarget().get(j));
                         cell.addEdge(e);
@@ -713,20 +537,20 @@ public class FactoryCell implements Serializable {
     public Cell genPerceptronLin(int inpNum, int[] layers, boolean lockNodes, boolean lockEdges, boolean lockParNodes, boolean lockParEdges) {
         Cell cell = new Cell(2000);
         ArrayList<ArrayList<NeuronLin>> net = new ArrayList<>();
-        ArrayList<InputDec> inp = new ArrayList<>();
-        ArrayList<OutputDec> out = new ArrayList<>();
+        ArrayList<Input> inp = new ArrayList<>();
+        ArrayList<Output> out = new ArrayList<>();
 
         int outLayer = layers.length - 1;
         int outNum = layers[outLayer];
 
         try {
             for (int i = 0; i < inpNum; i++) {
-                InputDec i1 = new InputDec();
+                Input i1 = new Input();
                 cell.addNode(i1);
                 inp.add(i1);
             }
             for (int i = 0; i < outNum; i++) {
-                OutputDec i1 = new OutputDec();
+                Output i1 = new Output();
                 cell.addNode(i1);
                 out.add(i1);
             }
@@ -744,7 +568,6 @@ public class FactoryCell implements Serializable {
             for (int i = 0; i < inp.size(); i++) {
                 for (int j = 0; j < layers[0]; j++) {
                     Edge e = edgeFactory.genEdge(
-                            Cell.Signal.DECIMAL,
                             inp.get(i).getCollectorsSource().get(0),
                             net.get(0).get(j).getCollectorsTarget().get(i));
                     cell.addEdge(e);
@@ -753,7 +576,6 @@ public class FactoryCell implements Serializable {
             //Edges outputs
             for (int i = 0; i < outNum; i++) {
                 Edge e = edgeFactory.genEdge(
-                        Cell.Signal.DECIMAL,
                         net.get(outLayer).get(i).getCollectorsSource().get(0),
                         out.get(i).getCollectorsTarget().get(0));
                 cell.addEdge(e);
@@ -763,7 +585,6 @@ public class FactoryCell implements Serializable {
                 for (int j = 0; j < net.get(i).size(); j++) {
                     for (int k = 0; k < net.get(i + 1).size(); k++) {
                         Edge e = edgeFactory.genEdge(
-                                Cell.Signal.DECIMAL,
                                 net.get(i).get(j).getCollectorsSource().get(0),
                                 net.get(i + 1).get(k).getCollectorsTarget().get(j));
                         cell.addEdge(e);
@@ -789,6 +610,7 @@ public class FactoryCell implements Serializable {
                     edge.setLockTarget(true);
                 }
             }
+            cell.clearCell();
 
         } catch (Exception e1) {
             e1.printStackTrace();
@@ -801,34 +623,34 @@ public class FactoryCell implements Serializable {
     public Cell genRecNN(int inpNum, int[] layers, boolean lockNodes, boolean lockEdges, boolean lockParNodes, boolean lockParEdges) {
         Cell cell = new Cell(2000);
         ArrayList<ArrayList<NeuronLin>> net = new ArrayList<>();
-        ArrayList<ArrayList<DelayDec>> netD = new ArrayList<>();
-        ArrayList<InputDec> inp = new ArrayList<>();
-        ArrayList<OutputDec> out = new ArrayList<>();
+        ArrayList<ArrayList<Delay>> netD = new ArrayList<>();
+        ArrayList<Input> inp = new ArrayList<>();
+        ArrayList<Output> out = new ArrayList<>();
 
         int outLayer = layers.length - 1;
         int outNum = layers[outLayer];
 
         try {
             for (int i = 0; i < inpNum; i++) {
-                InputDec i1 = new InputDec();
+                Input i1 = new Input();
                 cell.addNode(i1);
                 inp.add(i1);
             }
             for (int i = 0; i < outNum; i++) {
-                OutputDec i1 = new OutputDec();
+                Output i1 = new Output();
                 cell.addNode(i1);
                 out.add(i1);
             }
 
-            //Neurons & Delays
+            //Neurons
             for (int i = 0; i < layers.length; i++) {
                 ArrayList<NeuronLin> n = new ArrayList<>();
-                ArrayList<DelayDec> d = new ArrayList<>();
+                ArrayList<Delay> d = new ArrayList<>();
                 for (int j = 0; j < layers[i]; j++) {
                     NeuronLin m = (NeuronLin) nodeFactory.genNode("NeuronLin");
                     n.add(m);
                     cell.addNode(m);
-                    DelayDec e = (DelayDec) nodeFactory.genNode("DelayDec");
+                    Delay e = (Delay) nodeFactory.genNode("Delay");
                     d.add(e);
                     cell.addNode(e);
                 }
@@ -836,11 +658,21 @@ public class FactoryCell implements Serializable {
                 netD.add(d);
             }
 
+            //Delays
+            for (int i = 0; i < layers.length; i++) {
+                ArrayList<Delay> d = new ArrayList<>();
+                for (int j = 0; j < out.size(); j++) {
+                    Delay e = (Delay) nodeFactory.genNode("Delay");
+                    d.add(e);
+                    cell.addNode(e);
+                }
+                netD.add(d);
+            }
+
             //Edges inputs
             for (int i = 0; i < inp.size(); i++) {
                 for (int j = 0; j < layers[0]; j++) {
                     Edge e = edgeFactory.genEdge(
-                            Cell.Signal.DECIMAL,
                             inp.get(i).getCollectorsSource().get(0),
                             net.get(0).get(j).getCollectorsTarget().get(i));
                     cell.addEdge(e);
@@ -849,7 +681,6 @@ public class FactoryCell implements Serializable {
             //Edges outputs
             for (int i = 0; i < outNum; i++) {
                 Edge e = edgeFactory.genEdge(
-                        Cell.Signal.DECIMAL,
                         net.get(outLayer).get(i).getCollectorsSource().get(0),
                         out.get(i).getCollectorsTarget().get(0));
                 cell.addEdge(e);
@@ -860,7 +691,6 @@ public class FactoryCell implements Serializable {
                 for (int j = 0; j < net.get(i).size(); j++) {
                     for (int k = 0; k < net.get(i + 1).size(); k++) {
                         Edge e = edgeFactory.genEdge(
-                                Cell.Signal.DECIMAL,
                                 net.get(i).get(j).getCollectorsSource().get(0),
                                 net.get(i + 1).get(k).getCollectorsTarget().get(j));
                         cell.addEdge(e);
@@ -888,14 +718,13 @@ public class FactoryCell implements Serializable {
             }
 
             for (int i = 0; i < 0; i++) {
-                DelayDec n = (DelayDec) nodeFactory.genNode("DelayDec");
+                Delay n = (Delay) nodeFactory.genNode("Delay");
                 cell.addNode(n);
 
 
-                connectsMinFreeInputs(cell, Cell.Signal.DECIMAL);
+                connectsMinFreeInputs(cell);
 
                 Edge edge = edgeFactory.genEdge(
-                        Cell.Signal.DECIMAL,
                         n.getCollectorsSource().get(0),
                         getCollectorTargetFreeRnd(cell));
 

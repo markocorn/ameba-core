@@ -14,11 +14,11 @@ public class RemoveEdge extends Reproduction implements IMutateCell {
     FactoryCell cellFactory;
     Random random;
 
-    public RemoveEdge(FactoryNode nodeFactory, FactoryCell cellFactory, int probability) {
+    public RemoveEdge(FactoryNode nodeFactory, FactoryCell cellFactory, int probability, long seed) {
         super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override

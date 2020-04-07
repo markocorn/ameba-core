@@ -18,12 +18,12 @@ public class AddEdge extends Reproduction implements IMutateCell {
     FactoryEdge edgeFactory;
     Random random;
 
-    public AddEdge(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int probability) {
+    public AddEdge(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int probability, long seed) {
         super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
         this.edgeFactory = edgeFactory;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -36,13 +36,13 @@ public class AddEdge extends Reproduction implements IMutateCell {
         CollectorTarget t = list.get(random.nextInt(list.size()));
 
         //Select random free source that matches target by type
-        CollectorSource s = cellFactory.getCollectorSourceRnd(t.getType(), cell);
+        CollectorSource s = cellFactory.getCollectorSourceRnd(cell);
         if (s == null) {
-            cellFactory.getCollectorSourceRnd(t.getType(), cell);
+            cellFactory.getCollectorSourceRnd(cell);
             throw new Exception("There is no free source collector");
 
         }
-        Edge e = edgeFactory.genEdge(t.getType(), s, t);
+        Edge e = edgeFactory.genEdge(s, t);
         cell.addEdge(e);
 
         return cell;

@@ -14,10 +14,10 @@ public class ParCombineAvgDec extends Reproduction implements ICrossNode {
     CombineAvgDec operationType;
     Random random;
 
-    public ParCombineAvgDec(CombineAvgDec operationType) {
+    public ParCombineAvgDec(CombineAvgDec operationType, long seed) {
         super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ParCombineAvgDec extends Reproduction implements ICrossNode {
     }
 
     @Override
-    public Cell.Signal getType() {
-        return Cell.Signal.DECIMAL;
+    public Cell.ParType getType() {
+        return Cell.ParType.DECIMAL;
     }
 }

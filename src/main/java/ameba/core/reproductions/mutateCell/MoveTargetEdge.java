@@ -14,11 +14,11 @@ public class MoveTargetEdge extends Reproduction implements IMutateCell {
     FactoryCell cellFactory;
     Random random;
 
-    public MoveTargetEdge(FactoryNode nodeFactory, FactoryCell cellFactory, int probability) {
+    public MoveTargetEdge(FactoryNode nodeFactory, FactoryCell cellFactory, int probability, long seed) {
         super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -26,9 +26,9 @@ public class MoveTargetEdge extends Reproduction implements IMutateCell {
         //Select random edge
         Edge edge = cell.getEdgesUnlockedTarget().get(random.nextInt(cell.getEdgesUnlockedTarget().size()));
         //Find new target to reconnect
-        CollectorTarget t = cellFactory.getCollectorTargetToConnectRndNoNode(cell, edge.getType(), edge.getSource().getNodeAttached());
+        CollectorTarget t = cellFactory.getCollectorTargetToConnectRndNoNode(cell, edge.getSource().getNodeAttached());
         if (t == null) {
-            throw new Exception("There is no other target collector of type " + edge.getTarget().getType().toString() + " to move to.");
+            throw new Exception("There is no other target collector to move to.");
         }
         //Add edge to new collector
         t.addEdge(edge);

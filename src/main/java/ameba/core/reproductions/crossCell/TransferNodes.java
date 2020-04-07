@@ -31,16 +31,15 @@ public class TransferNodes extends Reproduction implements ICrossCell {
      * @param nodeFactory
      * @param cellFactory
      * @param edgeFactory
-
      */
-    public TransferNodes(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int[] nodesLimitRemove, int[] nodesLimitAdd, int probability) {
+    public TransferNodes(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int[] nodesLimitRemove, int[] nodesLimitAdd, int probability, long seed) {
         super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
         this.edgeFactory = edgeFactory;
         this.nodesLimitRemove = nodesLimitRemove;
         this.nodesLimitAdd = nodesLimitAdd;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -49,15 +48,9 @@ public class TransferNodes extends Reproduction implements ICrossCell {
         ArrayList<Node> nodes1 = cell1.getInnerNodesFullUnlocked();
         ArrayList<ArrayList<Node>> group = cell1.getGroup(nodes1.get(random.nextInt(nodes1.size())), random.nextInt(nodesLimitRemove[1] - nodesLimitRemove[0]) + nodesLimitRemove[0]);
         HashMap<String, ArrayList<Edge>> borderEdges = cell1.getGroupEdgesBorder(group);
-        HashMap<String, ArrayList<Edge>> innerEdges = cell1.getGroupEdgesInner(group);
+        ArrayList<Edge> innerEdges = cell1.getGroupEdgesInner(group);
         //Remove inner edges
-        for (Edge edge : innerEdges.get("edgesDec")) {
-            cell1.removeEdge(edge);
-        }
-        for (Edge edge : innerEdges.get("edgesInt")) {
-            cell1.removeEdge(edge);
-        }
-        for (Edge edge : innerEdges.get("edgesBin")) {
+        for (Edge edge : innerEdges) {
             cell1.removeEdge(edge);
         }
         //Remove nodes
@@ -70,7 +63,7 @@ public class TransferNodes extends Reproduction implements ICrossCell {
         //Add group of nodes and edges from cell2 to cell 1
         ArrayList<ArrayList<Node>> group2 = cell2.getGroup(cell2.getInnerNodes().get(random.nextInt(cell2.getInnerNodes().size())), random.nextInt(nodesLimitAdd[1] - nodesLimitAdd[0]) + nodesLimitAdd[0]);
         HashMap<String, ArrayList<Edge>> borderEdges2 = cell2.getGroupEdgesBorder(group2);
-        HashMap<String, ArrayList<Edge>> innerEdges2 = cell2.getGroupEdgesInner(group2);
+        ArrayList<Edge> innerEdges2 = cell2.getGroupEdgesInner(group2);
         //Add new nodes to cell 1
         for (ArrayList<Node> nodes : group2) {
             for (Node node : nodes) {
@@ -78,28 +71,14 @@ public class TransferNodes extends Reproduction implements ICrossCell {
             }
         }
         //Add inner edges
-        for (Edge edge : innerEdges2.get("edgesDec")) {
+        for (Edge edge : innerEdges2) {
             cell1.addEdgeNotSafe(edge);
         }
-        for (Edge edge : innerEdges2.get("edgesInt")) {
-            cell1.addEdgeNotSafe(edge);
-        }
-        for (Edge edge : innerEdges2.get("edgesBin")) {
-            cell1.addEdgeNotSafe(edge);
-        }
-
         //Reconnect edges
-        reconnectEdgesInp(cell1, borderEdges.get("edgesInpDec"), borderEdges2.get("edgesInpDec"));
-        reconnectEdgesInp(cell1, borderEdges.get("edgesInpInt"), borderEdges2.get("edgesInpInt"));
-        reconnectEdgesInp(cell1, borderEdges.get("edgesInpBin"), borderEdges2.get("edgesInpBin"));
+        reconnectEdgesInp(cell1, borderEdges.get("edgesInp"), borderEdges2.get("edgesInp"));
+        reconnectEdgesOut(cell1, borderEdges.get("edgesOut"), borderEdges2.get("edgesOut"));
 
-        reconnectEdgesOut(cell1, borderEdges.get("edgesOutDec"), borderEdges2.get("edgesOutDec"));
-        reconnectEdgesOut(cell1, borderEdges.get("edgesOutInt"), borderEdges2.get("edgesOutInt"));
-        reconnectEdgesOut(cell1, borderEdges.get("edgesOutBin"), borderEdges2.get("edgesOutBin"));
-
-        cellFactory.connectsMinFreeInputs(cell1, Cell.Signal.DECIMAL);
-        cellFactory.connectsMinFreeInputs(cell1, Cell.Signal.INTEGER);
-        cellFactory.connectsMinFreeInputs(cell1, Cell.Signal.BOOLEAN);
+        cellFactory.connectsMinFreeInputs(cell1);
 
         return cell1;
     }

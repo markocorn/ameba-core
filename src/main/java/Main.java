@@ -1,7 +1,6 @@
 import ameba.core.blocks.Cell;
 import ameba.core.factories.FactoryCell;
-
-import java.util.ArrayList;
+import ameba.core.factories.FactoryReproduction;
 
 /**
  * Created by marko on 4/10/17.
@@ -11,19 +10,20 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
         try {
-            FactoryCell factoryCell = FactoryCell.build();
-//            FactoryReproduction factoryReproduction = FactoryReproduction.build();
-//            for (int i = 0; i < 1000; i++) {
-//                Cell cell = factoryCell.genCellRnd();
-//                System.out.print(cell.getNodes().size() + " ");
-//                Cell cell1 = factoryReproduction.repCell(cell, factoryCell.genCellRnd());
-//                System.out.println(cell1.getNodes().size() + " " + cell1.lastRep);
-//
-//            }
-//            for (int i = 0; i < 1000; i++) {
-//                factoryCell.getCellJson(factoryCell.genCellRnd().toJsonString());
-//                System.out.println(factoryCell.genCellRnd().toJsonString());
-//            }
+            long seed = 536829642;
+            FactoryCell factoryCell = FactoryCell.build(seed);
+            FactoryReproduction factoryReproduction = FactoryReproduction.build(seed);
+            for (int i = 0; i < 1000; i++) {
+                Cell cell = factoryCell.genCellRnd();
+                System.out.print(cell.getNodes().size() + " ");
+                Cell cell1 = factoryReproduction.repCell(cell, factoryCell.genCellRnd());
+                System.out.println(cell1.getNodes().size() + " " + cell1.lastRep);
+
+            }
+            for (int i = 0; i < 1000; i++) {
+                factoryCell.getCellJson(factoryCell.genCellRnd().toJsonString());
+                System.out.println(factoryCell.genCellRnd().toJsonString());
+            }
 
 //            Cell cell = new Cell(100);
 //            Node inp1 = new InputDec();
@@ -33,7 +33,7 @@ public class Main {
 //            Node out2 = new OutputInt();
 //            Node out3 = new OutputBin();
 //            Node node1 = new NeuronStep(2, 10);
-//            Node node2 = new IntegralDec(0.0, 1.0, new Double[]{-10.0, 10.0});
+//            Node node2 = new Integral(0.0, 1.0, new Double[]{-10.0, 10.0});
 //            Edge edge1 = new EdgeDec(inp1.getCollectorsSourceDec().get(0), node1.getCollectorsTargetDec().get(0), 1.0);
 //            Edge edge2 = new EdgeDec(node1.getCollectorsSourceDec().get(0), out1.getCollectorsTargetDec().get(0), 1.0);
 //            Edge edge3 = new EdgeDec(node1.getCollectorsSourceDec().get(0), node2.getCollectorsTargetDec().get(0), 1.0);
@@ -68,7 +68,7 @@ public class Main {
 //            Node out1 = new OutputDec();
 //            Node out2 = new OutputDec();
 //            Node node1 = new NeuronStep(2, 10);
-//            Node node2 = new IntegralDec(0.0, 1.0, new Double[]{-10.0, 10.0});
+//            Node node2 = new Integral(0.0, 1.0, new Double[]{-10.0, 10.0});
 //            Edge edge1 = new EdgeDec(inp1.getCollectorsSourceDec().get(0), node1.getCollectorsTargetDec().get(0), 1.0);
 //            Edge edge2 = new EdgeDec(node1.getCollectorsSourceDec().get(0), out1.getCollectorsTargetDec().get(0), 1.0);
 //            Edge edge3 = new EdgeDec(node1.getCollectorsSourceDec().get(0), node2.getCollectorsTargetDec().get(0), 1.0);
@@ -105,7 +105,7 @@ public class Main {
 //            for (int i = 0; i < inpDec.length; i++) {
 //                cell.importSignals(inpDec[i], inpInt[i], inpBin[i]);
 //                cell.runEvent();
-//                System.out.println(cell.getExportedValuesDec()[0] + " : " + cell.getExportedValuesInt()[0] + " : " + cell.getExportedValuesBin()[0]);
+//                System.out.println(cell.getExportedValues()[0] + " : " + cell.getExportedValuesInt()[0] + " : " + cell.getExportedValuesBin()[0]);
 //            }
 //            edge1.setLockWeight(true);
 //            edge5.setLockWeight(true);
@@ -129,12 +129,12 @@ public class Main {
 //            Node node2 = new InputDec();
 //            Node node3 = new OutputDec();
 //            Node node4 = new OutputDec();
-//            Node node5 = new AddDec(2, 10);
-//            Node node6 = new AddDec(2, 10);
-//            Node node7 = new IntegralDec(0.0,1.0,new Double[]{-10.0, 10.0});
-//            Node node8 = new IntegralDec(0.0,1.0,new Double[]{-10.0, 10.0});
-//            Node node9 = new IntegralDec(0.0,1.0,new Double[]{-10.0, 10.0});
-//            Node node10 = new IntegralDec(0.0,1.0,new Double[]{-10.0, 10.0});
+//            Node node5 = new Add(2, 10);
+//            Node node6 = new Add(2, 10);
+//            Node node7 = new Integral(0.0,1.0,new Double[]{-10.0, 10.0});
+//            Node node8 = new Integral(0.0,1.0,new Double[]{-10.0, 10.0});
+//            Node node9 = new Integral(0.0,1.0,new Double[]{-10.0, 10.0});
+//            Node node10 = new Integral(0.0,1.0,new Double[]{-10.0, 10.0});
 //
 //            Edge edge1 = new EdgeDec(node1.getCollectorsSourceDec().get(0), node5.getCollectorsTargetDec().get(0), 1.0);
 //            Edge edge2 = new EdgeDec(node1.getCollectorsSourceDec().get(0), node7.getCollectorsTargetDec().get(0), 1.0);
@@ -185,10 +185,10 @@ public class Main {
 //            Node node2 = new InputDec();
 //            Node node3 = new OutputDec();
 //            Node node4 = new OutputDec();
-//            Node node5 = new AddDec(2, 10);
-//            Node node6 = new AddDec(2, 10);
-//            Node node7 = new DelayDec(0.0, 1, new Integer[]{0, 5});
-//            Node node8 = new DelayDec(0.0, 1, new Integer[]{0, 5});
+//            Node node5 = new Add(2, 10);
+//            Node node6 = new Add(2, 10);
+//            Node node7 = new Delay(0.0, 1, new Integer[]{0, 5});
+//            Node node8 = new Delay(0.0, 1, new Integer[]{0, 5});
 //
 //            Edge edge1 = new EdgeDec(node1.getCollectorsSourceDec().get(0), node5.getCollectorsTargetDec().get(0), 1.0);
 //            Edge edge2 = new EdgeDec(node5.getCollectorsSourceDec().get(0), node3.getCollectorsTargetDec().get(0), 1.0);
@@ -218,23 +218,23 @@ public class Main {
 //            cell.addEdge(edge6);
 //            cell.addEdge(edge7);
 
-            ArrayList<Cell> cells = factoryCell.getCellsJsonFromFile("/home/marko/IdeaProjects/ameba-core/src/test/best2x2_1.json");
-            Cell cell = cells.get(0);
-            cell.getNodes().get(5).setParamInt(0, 3);
-
-            cell.clearCell();
-            cell.checkCellPrint();
-
-//            System.out.println(cell.toJsonString());
-
-            //Simulate cell
-            double[][] inpDec = new double[][]{{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}};
-
-            for (int i = 0; i < inpDec.length; i++) {
-                cell.importSignals(inpDec[i]);
-                cell.runEvent();
-                System.out.println(String.valueOf(cell.getExportedValuesDec()[0]) + " : " + String.valueOf(cell.getExportedValuesDec()[1]));
-            }
+//            ArrayList<Cell> cells = factoryCell.getCellsJsonFromFile("/home/marko/IdeaProjects/ameba-core/src/test/best2x2_1.json");
+//            Cell cell = cells.get(0);
+//            cell.getNodes().get(5).setParamInt(0, 3);
+//
+//            cell.clearCell();
+//            cell.checkCellPrint();
+//
+////            System.out.println(cell.toJsonString());
+//
+//            //Simulate cell
+//            double[][] inpDec = new double[][]{{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}};
+//
+//            for (int i = 0; i < inpDec.length; i++) {
+//                cell.importSignals(inpDec[i]);
+//                cell.runEvent();
+//                System.out.println(String.valueOf(cell.getExportedValues()[0]) + " : " + String.valueOf(cell.getExportedValues()[1]));
+//            }
 
 
         } catch (Exception e) {

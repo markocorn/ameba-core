@@ -11,9 +11,9 @@ import java.util.Random;
 public class RandValueInt extends ParOperation implements IOperationInt {
     private Random random;
 
-    public RandValueInt(ParOperationSettings parOperationSettings) {
+    public RandValueInt(ParOperationSettings parOperationSettings, long seed) {
         super(parOperationSettings);
-        this.random = new Random();
+        this.random = new Random(seed);
     }
 
     @Override

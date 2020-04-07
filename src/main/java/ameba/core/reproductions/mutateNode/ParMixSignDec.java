@@ -14,10 +14,10 @@ public class ParMixSignDec extends Reproduction implements IMutateNode {
     MixSignDec operationType;
     Random random;
 
-    public ParMixSignDec(MixSignDec operationType) {
+    public ParMixSignDec(MixSignDec operationType, long seed) {
         super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ParMixSignDec extends Reproduction implements IMutateNode {
     }
 
     @Override
-    public Cell.Signal getType() {
-        return Cell.Signal.DECIMAL;
+    public Cell.ParType getType() {
+        return Cell.ParType.DECIMAL;
     }
 }

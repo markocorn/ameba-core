@@ -14,10 +14,10 @@ public class ParCopyValueDec extends Reproduction implements ICrossNode {
     CopyValueDec operationType;
     Random random;
 
-    public ParCopyValueDec(CopyValueDec operationType) {
+    public ParCopyValueDec(CopyValueDec operationType, long seed) {
         super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ParCopyValueDec extends Reproduction implements ICrossNode {
     }
 
     @Override
-    public Cell.Signal getType() {
-        return Cell.Signal.DECIMAL;
+    public Cell.ParType getType() {
+        return Cell.ParType.DECIMAL;
     }
 }

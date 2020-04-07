@@ -17,6 +17,17 @@ public class CollectorTarget extends Collector {
         super(node);
     }
 
+    @Override
+    public void addEdge(Edge edge) throws Exception {
+        getEdges().clear();
+        getEdges().add(edge);
+    }
+
+    @Override
+    public double getSignal() {
+        return getEdges().get(0).getSignal();
+    }
+
     /**
      * Override parent method of checking if signal is ready.
      * <br>

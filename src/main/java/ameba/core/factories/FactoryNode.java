@@ -1,6 +1,5 @@
 package ameba.core.factories;
 
-import ameba.core.blocks.Cell;
 import ameba.core.blocks.nodes.Node;
 import ameba.core.blocks.nodes.types.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,31 +23,19 @@ public class FactoryNode implements Serializable {
     /**
      * General
      */
-    Random rndGen = new Random();
+    Random rndGen;
 
     ArrayList<String> bag = new ArrayList<>();
-    ArrayList<String> bagInpColDec = new ArrayList<>();
-    ArrayList<String> bagInpColInt = new ArrayList<>();
-    ArrayList<String> bagInpColBin = new ArrayList<>();
-    ArrayList<String> bagOutColDec = new ArrayList<>();
-    ArrayList<String> bagOutColInt = new ArrayList<>();
-    ArrayList<String> bagOutColBin = new ArrayList<>();
-
-    ArrayList<String> bagColBinBin = new ArrayList<>();
-    ArrayList<String> bagColBinDec = new ArrayList<>();
-    ArrayList<String> bagColBinInt = new ArrayList<>();
-    ArrayList<String> bagColIntBin = new ArrayList<>();
-    ArrayList<String> bagColIntDec = new ArrayList<>();
-    ArrayList<String> bagColIntInt = new ArrayList<>();
-    ArrayList<String> bagColDecBin = new ArrayList<>();
-    ArrayList<String> bagColDecDec = new ArrayList<>();
-    ArrayList<String> bagColDecInt = new ArrayList<>();
+    ArrayList<String> bagTargetCol = new ArrayList<>();
+    ;
+    ArrayList<String> bagSourceCol = new ArrayList<>();
 
 
     /**
      * Default constructor.
      */
-    public FactoryNode() {
+    public FactoryNode(long seed) {
+        rndGen = new Random(seed);
         nodeSettingsHashMap = new HashMap<>();
     }
 
@@ -57,22 +44,23 @@ public class FactoryNode implements Serializable {
      *
      * @param nodeFactorySettingsHashMap Map of node's nodeSettingsHashMap.
      */
-    public FactoryNode(HashMap<String, FactoryNodeSettings> nodeFactorySettingsHashMap) {
+    public FactoryNode(HashMap<String, FactoryNodeSettings> nodeFactorySettingsHashMap, long seed) {
+        rndGen = new Random(seed);
         nodeSettingsHashMap = nodeFactorySettingsHashMap;
     }
 
-    public static FactoryNode build() throws Exception {
+    public static FactoryNode build(long seed) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonSettings = mapper.readTree(FactoryNode.class.getClassLoader().getResourceAsStream("nodeFactorySettings.json"));
-        FactoryNode factoryNode = new FactoryNode();
+        JsonNode jsonSettings = mapper.readTree(FactoryNode.class.getClassLoader().getResourceAsStream("core/nodeFactorySettings.json"));
+        FactoryNode factoryNode = new FactoryNode(seed);
         factoryNode.loadSettings(jsonSettings.get("nodeFactorySettings").toString());
         return factoryNode;
     }
 
-    public static FactoryNode build(String filePath) throws Exception {
+    public static FactoryNode build(String filePath, long seed) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonSettings = mapper.readTree(new File(filePath));
-        FactoryNode factoryNode = new FactoryNode();
+        FactoryNode factoryNode = new FactoryNode(seed);
         factoryNode.loadSettings(jsonSettings.get("nodeFactorySettings").toString());
         return factoryNode;
     }
@@ -98,22 +86,8 @@ public class FactoryNode implements Serializable {
             addNodeSettings(FactoryNodeSettings.create(node.get(i).toString()));
         }
         bag.clear();
-        bagInpColDec.clear();
-        bagInpColInt.clear();
-        bagInpColBin.clear();
-        bagOutColDec.clear();
-        bagOutColInt.clear();
-        bagOutColBin.clear();
-
-        bagColBinBin.clear();
-        bagColBinDec.clear();
-        bagColBinInt.clear();
-        bagColIntBin.clear();
-        bagColIntDec.clear();
-        bagColIntInt.clear();
-        bagColDecBin.clear();
-        bagColDecDec.clear();
-        bagColDecInt.clear();
+        bagTargetCol.clear();
+        bagSourceCol.clear();
 
         for (FactoryNodeSettings settings : nodeSettingsHashMap.values()) {
             if (settings.getProbability() > 0) {
@@ -122,75 +96,16 @@ public class FactoryNode implements Serializable {
                 }
                 Node node1 = genNode(settings.getType());
 
-                if (node1.getCollectorsTargetBin().size() > 0 && node1.getCollectorsSourceBin().size() > 0) {
+                if (node1.getCollectorsTarget().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
-                        bagColBinBin.add(settings.getType());
+                        bagTargetCol.add(settings.getType());
                     }
                 }
-                if (node1.getCollectorsTargetBin().size() > 0 && node1.getCollectorsSourceDec().size() > 0) {
+                if (node1.getCollectorsSource().size() > 0 && node1.getCollectorsTarget().size() > 0) {
                     for (int i = 0; i < settings.getProbability(); i++) {
-                        bagColBinDec.add(settings.getType());
+                        bagSourceCol.add(settings.getType());
                     }
                 }
-                if (node1.getCollectorsTargetBin().size() > 0 && node1.getCollectorsSourceInt().size() > 0) {
-                    for (int i = 0; i < settings.getProbability(); i++) {
-                        bagColBinInt.add(settings.getType());
-                    }
-                }
-                if (node1.getCollectorsTargetInt().size() > 0 && node1.getCollectorsSourceBin().size() > 0) {
-                    for (int i = 0; i < settings.getProbability(); i++) {
-                        bagColIntBin.add(settings.getType());
-                    }
-                }
-                if (node1.getCollectorsTargetInt().size() > 0 && node1.getCollectorsSourceDec().size() > 0) {
-                    for (int i = 0; i < settings.getProbability(); i++) {
-                        bagColIntDec.add(settings.getType());
-                    }
-                }
-                if (node1.getCollectorsTargetInt().size() > 0 && node1.getCollectorsSourceInt().size() > 0) {
-                    for (int i = 0; i < settings.getProbability(); i++) {
-                        bagColIntInt.add(settings.getType());
-                    }
-                }
-                if (node1.getCollectorsTargetDec().size() > 0 && node1.getCollectorsSourceBin().size() > 0) {
-                    for (int i = 0; i < settings.getProbability(); i++) {
-                        bagColDecBin.add(settings.getType());
-                    }
-                }
-                if (node1.getCollectorsTargetDec().size() > 0 && node1.getCollectorsSourceDec().size() > 0) {
-                    for (int i = 0; i < settings.getProbability(); i++) {
-                        bagColDecDec.add(settings.getType());
-                    }
-                }
-                if (node1.getCollectorsTargetDec().size() > 0 && node1.getCollectorsSourceInt().size() > 0) {
-                    for (int i = 0; i < settings.getProbability(); i++) {
-                        bagColDecInt.add(settings.getType());
-                    }
-                }
-
-                bagInpColDec.addAll(bagColDecBin);
-                bagInpColDec.addAll(bagColDecInt);
-                bagInpColDec.addAll(bagColDecDec);
-
-                bagInpColInt.addAll(bagColIntBin);
-                bagInpColInt.addAll(bagColIntInt);
-                bagInpColInt.addAll(bagColIntDec);
-
-                bagInpColBin.addAll(bagColBinBin);
-                bagInpColBin.addAll(bagColBinInt);
-                bagInpColBin.addAll(bagColBinDec);
-
-                bagOutColDec.addAll(bagColBinDec);
-                bagOutColDec.addAll(bagColIntDec);
-                bagOutColDec.addAll(bagColDecDec);
-
-                bagOutColInt.addAll(bagColBinInt);
-                bagOutColInt.addAll(bagColIntInt);
-                bagOutColInt.addAll(bagColDecInt);
-
-                bagOutColBin.addAll(bagColBinBin);
-                bagOutColBin.addAll(bagColIntBin);
-                bagOutColBin.addAll(bagColDecBin);
             }
         }
     }
@@ -213,340 +128,95 @@ public class FactoryNode implements Serializable {
         Node node = null;
         if (nodeSettingsHashMap.containsKey(nodeType)) {
             switch (nodeType) {
-                case "InputDec":
-                    node = new InputDec();
+                case "Input":
+                    node = new Input();
                     break;
-
-                case "InputInt":
-                    node = new InputInt();
+                case "Output":
+                    node = new Output();
                     break;
-
-                case "InputBin":
-                    node = new InputBin();
-                    break;
-
-                case "OutputDec":
-                    node = new OutputDec();
-                    break;
-
-                case "OutputInt":
-                    node = new OutputInt();
-                    break;
-
-                case "OutputBin":
-                    node = new OutputBin();
-                    break;
-                case "AddDec":
-                    node = new AddDec(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1]);
+                case "Add":
+                    node = new Add(
+                            nodeSettingsHashMap.get(nodeType).getCollectorsTargetLimit()[0],
+                            nodeSettingsHashMap.get(nodeType).getCollectorsTargetLimit()[1]);
                     break;
                 case "NeuronStep":
                     node = new NeuronStep(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1]);
+                            nodeSettingsHashMap.get(nodeType).getCollectorsTargetLimit()[0],
+                            nodeSettingsHashMap.get(nodeType).getCollectorsTargetLimit()[1]);
                     break;
                 case "NeuronLin":
                     node = new NeuronLin(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1],
+                            nodeSettingsHashMap.get(nodeType).getCollectorsTargetLimit()[0],
+                            nodeSettingsHashMap.get(nodeType).getCollectorsTargetLimit()[1],
                             genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
                             new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
-                case "AddInt":
-                    node = new AddInt(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitInt()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitInt()[1]);
-                    break;
-                case "AndBin":
-                    node = new AndBin(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitBin()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitBin()[1]);
-                    break;
-                case "OrBin":
-                    node = new OrBin(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitBin()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitBin()[1]);
-                    break;
-                case "XorBin":
-                    node = new XorBin(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitBin()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitBin()[1]);
-                    break;
-                case "CompareDec":
-                    node = new CompareDec(
-                            genRndSignalInt(
-                                    nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0],
-                                    nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]));
-                    break;
-                case "CompareInt":
-                    node = new CompareInt(
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]));
-                    break;
-                case "CompareConstDec":
-                    node = new CompareConstDec(
-                            genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
-                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]},
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]));
-                    break;
-                case "CompareConstInt":
-                    node = new CompareConstInt(
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[1][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[1][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[1][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[1][1]},
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]));
-                    break;
-                case "ConstantDec":
-                    node = new ConstantDec(
+                case "Constant":
+                    node = new Constant(
                             genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
                             new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
-                case "ConstantInt":
-                    node = new ConstantInt(
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]});
-                    break;
-                case "ConstantBin":
-                    node = new ConstantBin(
-                            genRndSignalBin(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][1]),
-                            new Boolean[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][1]});
-                    break;
-                case "DelayDec":
-                    node = new DelayDec(
+                case "Delay":
+                    node = new Delay(
                             nodeSettingsHashMap.get(nodeType).getInitialValueDec(),
                             genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
                             new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]});
                     break;
-                case "DelayInt":
-                    node = new DelayInt(
-                            nodeSettingsHashMap.get(nodeType).getInitialValueInt(),
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]});
-                    break;
-                case "DelayBin":
-                    node = new DelayBin(
-                            nodeSettingsHashMap.get(nodeType).getInitialValueBin(),
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]});
-                    break;
-                case "DerivativeDec":
-                    node = new DerivativeDec(
+                case "Derivative":
+                    node = new Derivative(
                             nodeSettingsHashMap.get(nodeType).getInitialValueDec(),
                             genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
                             new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
-                case "DerivativeInt":
-                    node = new DerivativeInt(
-                            nodeSettingsHashMap.get(nodeType).getInitialValueInt(),
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]});
-                    break;
-                case "DerivativeBin":
-                    node = new DerivativeBin(
-                            nodeSettingsHashMap.get(nodeType).getInitialValueBin(),
-                            genRndSignalBin(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][1]),
-                            new Boolean[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][1]});
-                    break;
-                case "FilterLPDec":
-                    node = new FilterLPDec(
+                case "FilterLP":
+                    node = new FilterLP(
                             nodeSettingsHashMap.get(nodeType).getInitialValueDec(),
                             genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
                             new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
-                case "FilterHPDec":
-                    node = new FilterHPDec(
+                case "FilterHP":
+                    node = new FilterHP(
                             nodeSettingsHashMap.get(nodeType).getInitialValueDec(),
                             genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
                             new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
                 case "Divide":
                     node = new Divide(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1]);
+                            nodeSettingsHashMap.get(nodeType).getCollectorsTargetLimit()[0],
+                            nodeSettingsHashMap.get(nodeType).getCollectorsTargetLimit()[1]);
                     break;
-                case "ExponentBaseDec":
-                    node = new ExponentBaseDec(
+                case "ExponentBase":
+                    node = new ExponentBase(
                             genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
                             new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
-                case "ExponentIndexDec":
-                    node = new ExponentIndexDec(
+                case "ExponentIndex":
+                    node = new ExponentIndex(
                             genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
                             new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
                     break;
-                case "MultiplyDec":
-                    node = new MultiplyDec(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1]);
+                case "Multiply":
+                    node = new Multiply(
+                            nodeSettingsHashMap.get(nodeType).getCollectorsTargetLimit()[0],
+                            nodeSettingsHashMap.get(nodeType).getCollectorsTargetLimit()[1]);
                     break;
-                case "MultiplyInt":
-                    node = new MultiplyInt(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitInt()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitInt()[1]);
-                    break;
-                case "MuxDec":
-                    node = new MuxDec(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitDec()[1],
-                            genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
-                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
-                    break;
-                case "MuxInt":
-                    node = new MuxInt(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitInt()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitInt()[1],
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]});
-                    break;
-                case "MuxBin":
-                    node = new MuxBin(
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitBin()[0],
-                            nodeSettingsHashMap.get(nodeType).getInpColLimitBin()[1],
-                            genRndSignalBin(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][1]),
-                            new Boolean[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][1]});
-                    break;
-                case "DMuxDec":
-                    node = new DMuxDec(
-                            nodeSettingsHashMap.get(nodeType).getOutColLimitDec()[0],
-                            nodeSettingsHashMap.get(nodeType).getOutColLimitDec()[1],
-                            genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
-                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
-                    break;
-                case "DMuxInt":
-                    node = new DMuxInt(
-                            nodeSettingsHashMap.get(nodeType).getOutColLimitInt()[0],
-                            nodeSettingsHashMap.get(nodeType).getOutColLimitInt()[1],
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]});
-                    break;
-                case "DMuxBin":
-                    node = new DMuxBin(
-                            nodeSettingsHashMap.get(nodeType).getOutColLimitBin()[0],
-                            nodeSettingsHashMap.get(nodeType).getOutColLimitBin()[1],
-                            genRndSignalBin(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][1]),
-                            new Boolean[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][1]});
-                    break;
-                case "IntegralDec":
-                    node = new IntegralDec(
+                case "Integral":
+                    node = new Integral(
                             nodeSettingsHashMap.get(nodeType).getInitialValueDec(),
                             genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
                             new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
-                    break;
-                case "IntegralInt":
-                    node = new IntegralInt(
-                            nodeSettingsHashMap.get(nodeType).getInitialValueInt(),
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]});
-                    break;
-                case "IntegralBin":
-                    node = new IntegralBin(
-                            nodeSettingsHashMap.get(nodeType).getInitialValueBin(),
-                            genRndSignalBin(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][1]),
-                            new Boolean[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][1]});
-                    break;
-                case "IntervalDec":
-                    node = new IntervalDec();
-                    break;
-                case "IntervalInt":
-                    node = new IntervalInt();
-                    break;
-                case "IntervalConstDec":
-                    node = new IntervalConstDec(
-                            genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
-                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
-                    break;
-                case "IntervalConstInt":
-                    node = new IntervalConstInt(
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]});
-                    break;
-                case "Interval2ConstDec":
-                    node = new Interval2ConstDec(
-                            genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
-                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]},
-                            genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[1][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[1][1]),
-                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[1][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[1][1]});
-                    break;
-                case "Interval2ConstInt":
-                    node = new Interval2ConstInt(
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]},
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[1][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[1][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[1][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[1][1]});
-                    break;
-                case "SwitchDec":
-                    node = new SwitchDec();
-                    break;
-                case "SwitchInt":
-                    node = new SwitchInt();
-                    break;
-                case "SwitchBin":
-                    node = new SwitchBin();
-                    break;
-                case "SwitchConstDec":
-                    node = new SwitchConstDec(
-                            genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
-                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]});
-                    break;
-                case "SwitchConstInt":
-                    node = new SwitchConstInt(
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]});
-                    break;
-                case "SwitchConstBin":
-                    node = new SwitchConstBin(
-                            genRndSignalBin(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][1]),
-                            new Boolean[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][1]});
-                    break;
-                case "Switch2ConstDec":
-                    node = new Switch2ConstDec(
-                            genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[0][1]),
-                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[0][1]},
-                            genRndSignalDec(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[1][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsDec()[1][1]),
-                            new Double[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[1][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsDec()[1][1]});
-                    break;
-                case "Switch2ConstInt":
-                    node = new Switch2ConstInt(
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[0][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[0][1]},
-                            genRndSignalInt(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[1][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsInt()[1][1]),
-                            new Integer[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[1][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsInt()[1][1]});
-                    break;
-                case "Switch2ConstBin":
-                    node = new Switch2ConstBin(
-                            genRndSignalBin(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][1]),
-                            new Boolean[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[0][1]},
-                            genRndSignalBin(nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][0], nodeSettingsHashMap.get(nodeType).getParametersInitLimitsBin()[0][1]),
-                            new Boolean[]{nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[1][0], nodeSettingsHashMap.get(nodeType).getParametersLimitsBin()[1][1]});
                     break;
             }
         }
         return node;
     }
 
-    public boolean isConstantNodeAvailable(Cell.Signal type) {
-        switch (type) {
-            case DECIMAL:
-                return nodeSettingsHashMap.get("ConstantDec").getProbability() > 0;
-            case INTEGER:
-                return nodeSettingsHashMap.get("ConstantInt").getProbability() > 0;
-            case BOOLEAN:
-                return nodeSettingsHashMap.get("ConstantBin").getProbability() > 0;
-            default:
-                return false;
-        }
+    public boolean isConstantNodeAvailable() {
+        return nodeSettingsHashMap.get("Constant").getProbability() > 0;
     }
 
-    public Node genConstantNode(Cell.Signal type) throws Exception {
-        switch (type) {
-            case DECIMAL:
-                return genNode("ConstantDec");
-            case INTEGER:
-                return genNode("ConstantInt");
-            case BOOLEAN:
-                return genNode("ConstantBin");
-            default:
-                return null;
-        }
+    public Node genConstantNode() throws Exception {
+        return genNode("Constant");
     }
 
     /**
@@ -558,63 +228,12 @@ public class FactoryNode implements Serializable {
         return genNode(bag.get(rndGen.nextInt(bag.size())));
     }
 
-    public Node genNodeRndCollectorTargetType(Cell.Signal type) throws Exception {
-        if (type.equals(Cell.Signal.DECIMAL) && bagInpColDec.size() > 0) {
-            return genNode(bagInpColDec.get(rndGen.nextInt(bagInpColDec.size())));
-        }
-        if (type.equals(Cell.Signal.INTEGER) && bagInpColInt.size() > 0) {
-            return genNode(bagInpColInt.get(rndGen.nextInt(bagInpColInt.size())));
-        }
-        if (type.equals(Cell.Signal.BOOLEAN) && bagInpColBin.size() > 0) {
-            return genNode(bagInpColBin.get(rndGen.nextInt(bagInpColBin.size())));
-        }
-        return null;
+    public Node genNodeRndCollectorTarget() throws Exception {
+        return genNode(bagTargetCol.get(rndGen.nextInt(bagTargetCol.size())));
     }
 
-    public Node genNodeRndCollectorSourceType(Cell.Signal type) throws Exception {
-        if (type.equals(Cell.Signal.DECIMAL) && bagOutColDec.size() > 0) {
-            return genNode(bagOutColDec.get(rndGen.nextInt(bagOutColDec.size())));
-        }
-        if (type.equals(Cell.Signal.INTEGER) && bagOutColInt.size() > 0) {
-            return genNode(bagOutColInt.get(rndGen.nextInt(bagOutColInt.size())));
-        }
-        if (type.equals(Cell.Signal.BOOLEAN) && bagOutColBin.size() > 0) {
-            return genNode(bagOutColBin.get(rndGen.nextInt(bagOutColBin.size())));
-        }
-        return null;
-    }
-
-    public Node genNodeRndCollectorsType(Cell.Signal typeInp, Cell.Signal typeOut) throws Exception {
-        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.BOOLEAN) && bagColBinBin.size() > 0) {
-            return genNode(bagColBinBin.get(rndGen.nextInt(bagColBinBin.size())));
-        }
-        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.INTEGER) && bagColBinInt.size() > 0) {
-            return genNode(bagColBinInt.get(rndGen.nextInt(bagColBinInt.size())));
-        }
-        if (typeInp.equals(Cell.Signal.BOOLEAN) && typeOut.equals(Cell.Signal.DECIMAL) && bagColBinDec.size() > 0) {
-            return genNode(bagColBinDec.get(rndGen.nextInt(bagColBinDec.size())));
-        }
-
-        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.BOOLEAN) && bagColIntBin.size() > 0) {
-            return genNode(bagColIntBin.get(rndGen.nextInt(bagColIntBin.size())));
-        }
-        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.INTEGER) && bagColIntInt.size() > 0) {
-            return genNode(bagColIntInt.get(rndGen.nextInt(bagColIntInt.size())));
-        }
-        if (typeInp.equals(Cell.Signal.INTEGER) && typeOut.equals(Cell.Signal.DECIMAL) && bagColIntDec.size() > 0) {
-            return genNode(bagColIntDec.get(rndGen.nextInt(bagColIntDec.size())));
-        }
-
-        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.BOOLEAN) && bagColDecBin.size() > 0) {
-            return genNode(bagColDecBin.get(rndGen.nextInt(bagColDecBin.size())));
-        }
-        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.INTEGER) && bagColDecInt.size() > 0) {
-            return genNode(bagColDecInt.get(rndGen.nextInt(bagColDecInt.size())));
-        }
-        if (typeInp.equals(Cell.Signal.DECIMAL) && typeOut.equals(Cell.Signal.DECIMAL) && bagColDecDec.size() > 0) {
-            return genNode(bagColDecDec.get(rndGen.nextInt(bagColDecDec.size())));
-        }
-        return null;
+    public Node genNodeRndCollectorSource() throws Exception {
+        return genNode(bagSourceCol.get(rndGen.nextInt(bagSourceCol.size())));
     }
 
     public double genRndSignalDec(double min, double max) throws Exception {
@@ -645,123 +264,19 @@ public class FactoryNode implements Serializable {
         this.bag = bag;
     }
 
-    public ArrayList<String> getBagInpColDec() {
-        return bagInpColDec;
+    public ArrayList<String> getBagTargetCol() {
+        return bagTargetCol;
     }
 
-    public void setBagInpColDec(ArrayList<String> bagInpColDec) {
-        this.bagInpColDec = bagInpColDec;
+    public void setBagTargetCol(ArrayList<String> bagTargetCol) {
+        this.bagTargetCol = bagTargetCol;
     }
 
-    public ArrayList<String> getBagInpColInt() {
-        return bagInpColInt;
+    public ArrayList<String> getBagSourceCol() {
+        return bagSourceCol;
     }
 
-    public void setBagInpColInt(ArrayList<String> bagInpColInt) {
-        this.bagInpColInt = bagInpColInt;
-    }
-
-    public ArrayList<String> getBagInpColBin() {
-        return bagInpColBin;
-    }
-
-    public void setBagInpColBin(ArrayList<String> bagInpColBin) {
-        this.bagInpColBin = bagInpColBin;
-    }
-
-    public ArrayList<String> getBagOutColDec() {
-        return bagOutColDec;
-    }
-
-    public void setBagOutColDec(ArrayList<String> bagOutColDec) {
-        this.bagOutColDec = bagOutColDec;
-    }
-
-    public ArrayList<String> getBagOutColInt() {
-        return bagOutColInt;
-    }
-
-    public void setBagOutColInt(ArrayList<String> bagOutColInt) {
-        this.bagOutColInt = bagOutColInt;
-    }
-
-    public ArrayList<String> getBagOutColBin() {
-        return bagOutColBin;
-    }
-
-    public void setBagOutColBin(ArrayList<String> bagOutColBin) {
-        this.bagOutColBin = bagOutColBin;
-    }
-
-    public ArrayList<String> getBagColBinBin() {
-        return bagColBinBin;
-    }
-
-    public void setBagColBinBin(ArrayList<String> bagColBinBin) {
-        this.bagColBinBin = bagColBinBin;
-    }
-
-    public ArrayList<String> getBagColBinDec() {
-        return bagColBinDec;
-    }
-
-    public void setBagColBinDec(ArrayList<String> bagColBinDec) {
-        this.bagColBinDec = bagColBinDec;
-    }
-
-    public ArrayList<String> getBagColBinInt() {
-        return bagColBinInt;
-    }
-
-    public void setBagColBinInt(ArrayList<String> bagColBinInt) {
-        this.bagColBinInt = bagColBinInt;
-    }
-
-    public ArrayList<String> getBagColIntBin() {
-        return bagColIntBin;
-    }
-
-    public void setBagColIntBin(ArrayList<String> bagColIntBin) {
-        this.bagColIntBin = bagColIntBin;
-    }
-
-    public ArrayList<String> getBagColIntDec() {
-        return bagColIntDec;
-    }
-
-    public void setBagColIntDec(ArrayList<String> bagColIntDec) {
-        this.bagColIntDec = bagColIntDec;
-    }
-
-    public ArrayList<String> getBagColIntInt() {
-        return bagColIntInt;
-    }
-
-    public void setBagColIntInt(ArrayList<String> bagColIntInt) {
-        this.bagColIntInt = bagColIntInt;
-    }
-
-    public ArrayList<String> getBagColDecBin() {
-        return bagColDecBin;
-    }
-
-    public void setBagColDecBin(ArrayList<String> bagColDecBin) {
-        this.bagColDecBin = bagColDecBin;
-    }
-
-    public ArrayList<String> getBagColDecDec() {
-        return bagColDecDec;
-    }
-
-    public void setBagColDecDec(ArrayList<String> bagColDecDec) {
-        this.bagColDecDec = bagColDecDec;
-    }
-
-    public ArrayList<String> getBagColDecInt() {
-        return bagColDecInt;
-    }
-
-    public void setBagColDecInt(ArrayList<String> bagColDecInt) {
-        this.bagColDecInt = bagColDecInt;
+    public void setBagSourceCol(ArrayList<String> bagSourceCol) {
+        this.bagSourceCol = bagSourceCol;
     }
 }

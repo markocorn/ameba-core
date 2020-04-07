@@ -11,9 +11,9 @@ import java.util.Random;
 public class RandValueBin extends ParOperation implements IOperationBin {
     private Random random;
 
-    public RandValueBin(ParOperationSettings parOperationSettings) {
+    public RandValueBin(ParOperationSettings parOperationSettings, long seed) {
         super(parOperationSettings);
-        this.random = new Random();
+        this.random = new Random(seed);
     }
 
     @Override

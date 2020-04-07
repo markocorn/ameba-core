@@ -14,10 +14,10 @@ public class ParCombineAddInt extends Reproduction implements ICrossNode {
     CombineAddInt operationType;
     Random random;
 
-    public ParCombineAddInt(CombineAddInt operationType) {
+    public ParCombineAddInt(CombineAddInt operationType, long seed) {
         super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ParCombineAddInt extends Reproduction implements ICrossNode {
     }
 
     @Override
-    public Cell.Signal getType() {
-        return Cell.Signal.INTEGER;
+    public Cell.ParType getType() {
+        return Cell.ParType.INTEGER;
     }
 }

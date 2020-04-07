@@ -14,10 +14,10 @@ public class ParCombineDiv extends Reproduction implements ICrossNode {
     CombineDiv operationType;
     Random random;
 
-    public ParCombineDiv(CombineDiv operationType) {
+    public ParCombineDiv(CombineDiv operationType, long seed) {
         super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ParCombineDiv extends Reproduction implements ICrossNode {
     }
 
     @Override
-    public Cell.Signal getType() {
-        return Cell.Signal.DECIMAL;
+    public Cell.ParType getType() {
+        return Cell.ParType.DECIMAL;
     }
 }

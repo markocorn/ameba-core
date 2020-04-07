@@ -19,11 +19,11 @@ public class RemoveNodesGroup extends Reproduction implements IMutateCell {
     Random random;
     int[] nodesLimit;
 
-    public RemoveNodesGroup(FactoryCell cellFactory, int[] nodesLimit, int probability) {
+    public RemoveNodesGroup(FactoryCell cellFactory, int[] nodesLimit, int probability, long seed) {
         super(probability);
         this.cellFactory = cellFactory;
         this.nodesLimit = nodesLimit;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class RemoveNodesGroup extends Reproduction implements IMutateCell {
         if (nodesR.size() < 2) throw new Exception("Number of inner unlocked nodes must be grater than one");
         ArrayList<ArrayList<Node>> group = cell.getGroup(nodesR.get(random.nextInt(nodesR.size())), random.nextInt(nodesLimit[1] - nodesLimit[0]) + nodesLimit[0]);
         HashMap<String, ArrayList<Edge>> borderEdges = cell.getGroupEdgesBorder(group);
-        HashMap<String, ArrayList<Edge>> innerEdges = cell.getGroupEdgesInner(group);
+        ArrayList<Edge> innerEdges = cell.getGroupEdgesInner(group);
 
         //Remove nodes
         for (ArrayList<Node> nodes : group) {
@@ -41,40 +41,27 @@ public class RemoveNodesGroup extends Reproduction implements IMutateCell {
             }
         }
         //Remove inner edges
-        for (Edge edge : innerEdges.get("edgesDec")) {
-            cell.removeEdge(edge);
-        }
-        for (Edge edge : innerEdges.get("edgesInt")) {
-            cell.removeEdge(edge);
-        }
-        for (Edge edge : innerEdges.get("edgesBin")) {
+        for (Edge edge : innerEdges) {
             cell.removeEdge(edge);
         }
 
         //Reconnect edges
-        reconnectEdges(Double.class, cell, borderEdges);
-        reconnectEdges(Integer.class, cell, borderEdges);
-        reconnectEdges(Boolean.class, cell, borderEdges);
+        reconnectEdges(cell, borderEdges);
 
         cellFactory.connectsMinFreeInputs(cell);
 
         return cell;
     }
 
-    private void reconnectEdges(Class type, Cell cell, HashMap<String, ArrayList<Edge>> borderEdges) throws Exception {
-        String ind = "";
-        if (type.isAssignableFrom(Double.class)) ind = "Dec";
-        if (type.isAssignableFrom(Integer.class)) ind = "Int";
-        if (type.isAssignableFrom(Boolean.class)) ind = "Bin";
-        if (ind.equals("")) throw new Exception("Cant reconnect edges of unknown type: " + type.getSimpleName());
-        int diff = borderEdges.get("edgesInp" + ind).size() - borderEdges.get("edgesOut" + ind).size();
-        int same = Math.min(borderEdges.get("edgesInp" + ind).size(), borderEdges.get("edgesOut" + ind).size());
-        Collections.shuffle(borderEdges.get("edgesInp" + ind));
-        Collections.shuffle(borderEdges.get("edgesOut" + ind));
+    private void reconnectEdges(Cell cell, HashMap<String, ArrayList<Edge>> borderEdges) throws Exception {
+        int diff = borderEdges.get("edgesInp").size() - borderEdges.get("edgesOut").size();
+        int same = Math.min(borderEdges.get("edgesInp").size(), borderEdges.get("edgesOut").size());
+        Collections.shuffle(borderEdges.get("edgesInp"));
+        Collections.shuffle(borderEdges.get("edgesOut"));
         for (int i = 0; i < same; i++) {
             //Change source node of the edge
-            Edge edge1 = borderEdges.get("edgesInp" + ind).get(i);
-            Edge edge2 = borderEdges.get("edgesOut" + ind).get(i);
+            Edge edge1 = borderEdges.get("edgesInp").get(i);
+            Edge edge2 = borderEdges.get("edgesOut").get(i);
             //Set new source for edge 2
             edge2.setSource(edge1.getSource());
             //Remove old edge from collector
@@ -86,7 +73,7 @@ public class RemoveNodesGroup extends Reproduction implements IMutateCell {
         }
         if (diff > 0) {
             for (int i = same; i < same + diff; i++) {
-                Edge edge = borderEdges.get("edgesInp" + ind).get(i);
+                Edge edge = borderEdges.get("edgesInp").get(i);
                 //Remove old edge from collector
                 edge.getSource().removeEdge(edge);
                 //Remove old edge from cell
@@ -94,7 +81,7 @@ public class RemoveNodesGroup extends Reproduction implements IMutateCell {
             }
         } else {
             for (int i = same; i < same - diff; i++) {
-                Edge edge = borderEdges.get("edgesOut" + ind).get(i);
+                Edge edge = borderEdges.get("edgesOut").get(i);
                 //Remove edge from target collector later it will be randomly reconnected in the cell
                 edge.getTarget().removeEdge(edge);
                 cell.removeEdge(edge);

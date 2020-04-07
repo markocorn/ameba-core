@@ -22,22 +22,19 @@ public class AddNodesGroup extends Reproduction implements IMutateCell {
     Random random;
     int[] nodesLimits;
 
-    public AddNodesGroup(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int[] nodesLimits, int probability) {
+    public AddNodesGroup(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int[] nodesLimits, int probability, long seed) {
         super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory.clone();
         this.edgeFactory = edgeFactory;
-        random = new Random();
+        random = new Random(seed);
         this.nodesLimits = nodesLimits;
         this.cellFactory.getCellFactorySettings().setNodeInitial(new Integer[]{nodesLimits[1] * 10, nodesLimits[1] * 10});
 
-        this.cellFactory.getCellFactorySettings().setNodeInpDec(1);
-        this.cellFactory.getCellFactorySettings().setNodeInpInt(1);
-        this.cellFactory.getCellFactorySettings().setNodeInpBin(1);
+        this.cellFactory.getCellFactorySettings().setNodeInp(1);
 
-        this.cellFactory.getCellFactorySettings().setNodeOutDec(1);
-        this.cellFactory.getCellFactorySettings().setNodeOutInt(1);
-        this.cellFactory.getCellFactorySettings().setNodeOutBin(1);
+        this.cellFactory.getCellFactorySettings().setNodeOut(1);
+        ;
     }
 
     @Override
@@ -45,7 +42,7 @@ public class AddNodesGroup extends Reproduction implements IMutateCell {
         Cell cellBase = cellFactory.genCellRnd();
         ArrayList<ArrayList<Node>> group = cellBase.getGroup(cellBase.getInnerNodes().get(random.nextInt(cellBase.getInnerNodes().size())), random.nextInt(nodesLimits[1] - nodesLimits[0]) + nodesLimits[1]);
         HashMap<String, ArrayList<Edge>> borderEdges = cellBase.getGroupEdgesBorder(group);
-        HashMap<String, ArrayList<Edge>> innerEdges = cellBase.getGroupEdgesInner(group);
+        ArrayList<Edge> innerEdges = cellBase.getGroupEdgesInner(group);
         //Add new nodes
         for (ArrayList<Node> nodes : group) {
             for (Node node : nodes) {
@@ -53,21 +50,12 @@ public class AddNodesGroup extends Reproduction implements IMutateCell {
             }
         }
         //Add inner edges
-        for (Edge edge : innerEdges.get("edgesDec")) {
-            cell.addEdgeNotSafe(edge);
-        }
-        for (Edge edge : innerEdges.get("edgesInt")) {
-            cell.addEdgeNotSafe(edge);
-        }
-        for (Edge edge : innerEdges.get("edgesBin")) {
+        for (Edge edge : innerEdges) {
             cell.addEdgeNotSafe(edge);
         }
 
         //Reconnect border edges
-        cellFactory.reconnectEdges(Cell.Signal.DECIMAL, cell, borderEdges);
-        cellFactory.reconnectEdges(Cell.Signal.INTEGER, cell, borderEdges);
-        cellFactory.reconnectEdges(Cell.Signal.BOOLEAN, cell, borderEdges);
-
+        cellFactory.reconnectEdges(cell, borderEdges);
         return cell;
     }
 }

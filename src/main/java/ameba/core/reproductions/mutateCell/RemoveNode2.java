@@ -18,10 +18,10 @@ public class RemoveNode2 extends Reproduction implements IMutateCell {
     FactoryCell cellFactory;
     Random random;
 
-    public RemoveNode2(FactoryCell cellFactory, int probability) {
+    public RemoveNode2(FactoryCell cellFactory, int probability, long seed) {
         super(probability);
         this.cellFactory = cellFactory;
-        random = new Random();
+        random = new Random(seed);
     }
 
     /**
@@ -56,9 +56,8 @@ public class RemoveNode2 extends Reproduction implements IMutateCell {
 
         cell.removeNode(n);
 
-        cellFactory.connectsMinFreeInputs(cell, Cell.Signal.DECIMAL);
-        cellFactory.connectsMinFreeInputs(cell, Cell.Signal.INTEGER);
-        cellFactory.connectsMinFreeInputs(cell, Cell.Signal.BOOLEAN);
+        cellFactory.connectsMinFreeInputs(cell);
+
 
         return cell;
     }

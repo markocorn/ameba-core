@@ -18,10 +18,10 @@ public class RemoveNode1 extends Reproduction implements IMutateCell {
     FactoryCell cellFactory;
     Random random;
 
-    public RemoveNode1(FactoryCell cellFactory, int probability) {
+    public RemoveNode1(FactoryCell cellFactory, int probability, long seed) {
         super(probability);
         this.cellFactory = cellFactory;
-        random = new Random();
+        random = new Random(seed);
     }
 
     /**
@@ -47,11 +47,11 @@ public class RemoveNode1 extends Reproduction implements IMutateCell {
             for (CollectorSource s : node.getCollectorsSourceConnected()) {
                 ArrayList<Edge> forRemoval = new ArrayList<>();
                 for (Edge e : s.getEdges()) {
-                    CollectorSource s1 = cellFactory.getCollectorSourceRnd(e.getType(), ss);
+                    CollectorSource s1 = cellFactory.getCollectorSourceRnd(ss);
                     if (s1 != null) {
                         ss.remove(s1);
                     } else {
-                        s1 = cellFactory.getCollectorSourceRndNoNode(e.getSource().getType(), cell, node);
+                        s1 = cellFactory.getCollectorSourceRndNoNode(cell, node);
                     }
                     if (s1 != null) {
                         e.setSource(s1);
@@ -63,9 +63,7 @@ public class RemoveNode1 extends Reproduction implements IMutateCell {
                 cell.removeEdge(forRemoval);
             }
             cell.removeNode(node);
-            cellFactory.connectsMinFreeInputs(cell, Cell.Signal.DECIMAL);
-            cellFactory.connectsMinFreeInputs(cell, Cell.Signal.INTEGER);
-            cellFactory.connectsMinFreeInputs(cell, Cell.Signal.BOOLEAN);
+            cellFactory.connectsMinFreeInputs(cell);
         } else throw new Exception("Number of inner nodes is zero");
         return cell;
     }

@@ -5,8 +5,8 @@ package ameba.core.blocks.nodes;
  */
 public class NodeMem extends Node {
 
-    public NodeMem(int[] inpColLimitDec, int[] inpColLimitInt, int[] inpColLimitBin, int[] outColLimitDec, int[] outColLimitInt, int[] outColLimitBin, int paramsDec, int paramsInt, int paramsBin) {
-        super(inpColLimitDec, inpColLimitInt, inpColLimitBin, outColLimitDec, outColLimitInt, outColLimitBin, paramsDec, paramsInt, paramsBin);
+    public NodeMem(int[] inpColLimit, int[] outColLimit, int paramsDec, int paramsInt, int paramsBin) {
+        super(inpColLimit, outColLimit, paramsDec, paramsInt, paramsBin);
     }
 
     @Override

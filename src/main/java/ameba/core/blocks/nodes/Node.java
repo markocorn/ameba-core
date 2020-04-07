@@ -1,7 +1,9 @@
 package ameba.core.blocks.nodes;
 
 import ameba.core.blocks.Cell;
-import ameba.core.blocks.collectors.*;
+import ameba.core.blocks.collectors.Collector;
+import ameba.core.blocks.collectors.CollectorSource;
+import ameba.core.blocks.collectors.CollectorTarget;
 import ameba.core.blocks.edges.Edge;
 import org.apache.commons.lang.SerializationUtils;
 
@@ -17,26 +19,13 @@ strictfp public class Node implements Serializable {
      * List of input collectors of the node.
      */
     private ArrayList<CollectorTarget> collectorsTarget;
-    private ArrayList<CollectorSource> collectorSources;
-    private ArrayList<CollectorTargetDec> collectorsTargetDec;
-    private ArrayList<CollectorTargetInt> collectorsTargetInt;
-    private ArrayList<CollectorTargetBin> collectorsTargetBin;
-    private ArrayList<CollectorSourceDec> collectorsSourceDec;
-    private ArrayList<CollectorSourceInt> collectorsSourceInt;
-    private ArrayList<CollectorSourceBin> collectorsSourceBin;
+    private ArrayList<CollectorSource> collectorsSource;
 
     private ArrayList<CollectorTarget> collectorsTargetCon;
-    private ArrayList<CollectorTargetDec> collectorsTargetConDec;
-    private ArrayList<CollectorTargetInt> collectorsTargetConInt;
-    private ArrayList<CollectorTargetBin> collectorsTargetConBin;
 
-    private int[] collectorTargetLimitsDec;
-    private int[] collectorTargetLimitsInt;
-    private int[] collectorTargetLimitsBin;
+    private int[] collectorTargetLimits;
 
-    private int[] collectorSourceLimitsDec;
-    private int[] collectorSourceLimitsInt;
-    private int[] collectorSourceLimitsBin;
+    private int[] collectorSourceLimits;
 
     private boolean signalReady;
     private boolean signalClcDone;
@@ -55,27 +44,15 @@ strictfp public class Node implements Serializable {
     private boolean lock;
 
 
-    public Node(int[] inpColLimitDec, int[] inpColLimitInt, int[] inpColLimitBin, int[] outColLimitDec, int[] outColLimitInt, int[] outColLimitBin, int paramsDec, int paramsInt, int paramsBin) {
-        this.collectorTargetLimitsDec = inpColLimitDec;
-        this.collectorTargetLimitsInt = inpColLimitInt;
-        this.collectorTargetLimitsBin = inpColLimitBin;
-        this.collectorSourceLimitsDec = outColLimitDec;
-        this.collectorSourceLimitsInt = outColLimitInt;
-        this.collectorSourceLimitsBin = outColLimitBin;
+    public Node(int[] inpColLimit, int[] outColLimit, int paramsDec, int paramsInt, int paramsBin) {
+        this.collectorTargetLimits = inpColLimit;
+        this.collectorSourceLimits = outColLimit;
 
         collectorsTarget = new ArrayList<>();
-        collectorSources = new ArrayList<>();
-        collectorsTargetDec = new ArrayList<>();
-        collectorsTargetInt = new ArrayList<>();
-        collectorsTargetBin = new ArrayList<>();
-        collectorsSourceDec = new ArrayList<>();
-        collectorsSourceInt = new ArrayList<>();
-        collectorsSourceBin = new ArrayList<>();
+        collectorsSource = new ArrayList<>();
+
 
         collectorsTargetCon = new ArrayList<>();
-        collectorsTargetConDec = new ArrayList<>();
-        collectorsTargetConInt = new ArrayList<>();
-        collectorsTargetConBin = new ArrayList<>();
 
         this.paramsDec = new ArrayList<>(paramsDec);
         this.paramsLimitsDec = new ArrayList<>(paramsDec);
@@ -100,53 +77,14 @@ strictfp public class Node implements Serializable {
     }
 
 
-    public int[] getCollectorTargetLimit(Cell.Signal type) {
-        switch (type) {
-            case DECIMAL:
-                return getCollectorTargetLimitsDec();
-            case INTEGER:
-                return getCollectorTargetLimitsInt();
-            case BOOLEAN:
-                return getCollectorTargetLimitsBin();
-        }
-        return null;
+    public int[] getCollectorTargetLimit() {
+        return collectorTargetLimits;
     }
 
-    public int[] getCollectorSourceLimit(Cell.Signal type) {
-        switch (type) {
-            case DECIMAL:
-                return getCollectorSourceLimitsDec();
-            case INTEGER:
-                return getCollectorSourceLimitsInt();
-            case BOOLEAN:
-                return getCollectorSourceLimitsBin();
-        }
-        return null;
+    public int[] getCollectorSourceLimit() {
+        return collectorSourceLimits;
     }
 
-    public int[] getCollectorTargetLimitsDec() {
-        return collectorTargetLimitsDec;
-    }
-
-    public int[] getCollectorTargetLimitsInt() {
-        return collectorTargetLimitsInt;
-    }
-
-    public int[] getCollectorTargetLimitsBin() {
-        return collectorTargetLimitsBin;
-    }
-
-    public int[] getCollectorSourceLimitsDec() {
-        return collectorSourceLimitsDec;
-    }
-
-    public int[] getCollectorSourceLimitsInt() {
-        return collectorSourceLimitsInt;
-    }
-
-    public int[] getCollectorSourceLimitsBin() {
-        return collectorSourceLimitsBin;
-    }
 
     /**
      * Check if node's flag to indicate that node has prepared it's output signal is set.
@@ -168,280 +106,61 @@ strictfp public class Node implements Serializable {
     }
 
 
-    public void addCollectorTargetDec(CollectorTargetDec collector) throws Exception {
-        if (collectorsTargetDec.size() < collectorTargetLimitsDec[1]) {
-            collectorsTargetDec.add(collector);
+    public void addCollectorTarget(CollectorTarget collector) throws Exception {
+        if (collectorsTarget.size() < collectorTargetLimits[1]) {
             collectorsTarget.add(collector);
         } else
             throw new Exception("Collector can't be added. Maximum input collectors limitation of node: " + this.getClass().getSimpleName());
     }
 
-    public void addCollectorTargetInt(CollectorTargetInt collector) throws Exception {
-        if (collectorsTargetInt.size() < collectorTargetLimitsInt[1]) {
-            collectorsTargetInt.add(collector);
-            collectorsTarget.add(collector);
-        } else
-            throw new Exception("Collector can't be added. Maximum input collectors limitation of node: " + this.getClass().getSimpleName());
-    }
-
-    public void addCollectorTargetBin(CollectorTargetBin collector) throws Exception {
-        if (collectorsTargetBin.size() < collectorTargetLimitsBin[1]) {
-            collectorsTargetBin.add(collector);
-            collectorsTarget.add(collector);
-        } else
-            throw new Exception("Collector can't be added. Maximum input collectors limitation of node: " + this.getClass().getSimpleName());
-    }
-
-    public void addCollectorSourceDec(CollectorSourceDec collector) throws Exception {
-        if (collectorsSourceDec.size() < collectorSourceLimitsDec[1]) {
-            collectorsSourceDec.add(collector);
-            collectorSources.add(collector);
+    public void addCollectorSource(CollectorSource collector) throws Exception {
+        if (collectorsSource.size() < collectorSourceLimits[1]) {
+            collectorsSource.add(collector);
         } else
             throw new Exception("Collector can't be added. Maximum output collectors limitation of node: " + this.getClass().getSimpleName());
     }
 
-    public void addCollectorSourceInt(CollectorSourceInt collector) throws Exception {
-        if (collectorsSourceInt.size() < collectorSourceLimitsInt[1]) {
-            collectorsSourceInt.add(collector);
-            collectorSources.add(collector);
-        } else
-            throw new Exception("Collector can't be added. Maximum output collectors limitation of node: " + this.getClass().getSimpleName());
-    }
-
-    public void addCollectorSourceBin(CollectorSourceBin collector) throws Exception {
-        if (collectorsSourceBin.size() < collectorSourceLimitsBin[1]) {
-            collectorsSourceBin.add(collector);
-            collectorSources.add(collector);
-        } else
-            throw new Exception("Collector can't be added. Maximum output collectors limitation of node: " + this.getClass().getSimpleName());
-    }
-
-    public ArrayList<CollectorTarget> getCollectorsTargetConnected() {
-        ArrayList<CollectorTarget> collectorInps = new ArrayList<>();
-        collectorInps.addAll(getCollectorsTargetConnectedDec());
-        collectorInps.addAll(getCollectorsTargetConnectedInt());
-        collectorInps.addAll(getCollectorsTargetConnectedBin());
-        return collectorInps;
-    }
-
-    public ArrayList<? extends CollectorTarget> getCollectorsTargetConnected(Cell.Signal type) {
-        switch (type) {
-            case DECIMAL:
-                return getCollectorsTargetConnectedDec();
-            case INTEGER:
-                return getCollectorsTargetConnectedInt();
-            case BOOLEAN:
-                return getCollectorsTargetConnectedBin();
-        }
-        return new ArrayList<>();
-    }
-
-    public ArrayList<CollectorTargetDec> getCollectorsTargetConnectedDec() {
-        collectorsTargetConDec.clear();
-        for (CollectorTargetDec c : collectorsTargetDec) {
-            if (c.getEdges().size() > 0) {
-                collectorsTargetConDec.add(c);
-            }
-        }
-        return collectorsTargetConDec;
-    }
-
-    public ArrayList<CollectorTargetInt> getCollectorsTargetConnectedInt() {
-        collectorsTargetConInt.clear();
-        for (CollectorTargetInt collectorInp : collectorsTargetInt) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorsTargetConInt.add(collectorInp);
-            }
-        }
-        return collectorsTargetConInt;
-    }
-
-    public ArrayList<CollectorTargetBin> getCollectorsTargetConnectedBin() {
-        collectorsTargetConBin.clear();
-        for (CollectorTargetBin collectorInp : collectorsTargetBin) {
-            if (collectorInp.getEdges().size() > 0) {
-                collectorsTargetConBin.add(collectorInp);
-            }
-        }
-        return collectorsTargetConBin;
-    }
 
     public void simOptimization() {
         //Performance optimization
+        clcCollectorsTargetConnected();
+    }
+
+    public ArrayList<CollectorTarget> clcCollectorsTargetConnected() {
         collectorsTargetCon.clear();
-        collectorsTargetCon.addAll(getCollectorsTargetConnected());
-    }
-
-    //Optimisation calls
-    public ArrayList<CollectorTargetDec> getCollectorsTargetConnectedDecSim() {
-        return collectorsTargetConDec;
-    }
-
-    public ArrayList<CollectorTargetInt> getCollectorsTargetConnectedIntSim() {
-        return collectorsTargetConInt;
-    }
-
-    public ArrayList<CollectorTargetBin> getCollectorsTargetConnectedBinSim() {
-        return collectorsTargetConBin;
-    }
-
-    public ArrayList<CollectorSource> getCollectorsSourceConnected() {
-        ArrayList<CollectorSource> collectorOuts = new ArrayList<>();
-        collectorOuts.addAll(getCollectorsSourceConnectedDec());
-        collectorOuts.addAll(getCollectorsSourceConnectedInt());
-        collectorOuts.addAll(getCollectorsSourceConnectedBin());
-
-        return collectorOuts;
-    }
-
-    public ArrayList<? extends CollectorSource> getCollectorsSourceConnected(Cell.Signal type) {
-        switch (type) {
-            case DECIMAL:
-                return getCollectorsSourceConnectedDec();
-            case INTEGER:
-                return getCollectorsSourceConnectedInt();
-            case BOOLEAN:
-                return getCollectorsSourceConnectedBin();
-        }
-        return new ArrayList<>();
-    }
-
-    public ArrayList<CollectorSourceDec> getCollectorsSourceConnectedDec() {
-        ArrayList<CollectorSourceDec> collectors = new ArrayList<>();
-        for (CollectorSourceDec collector : collectorsSourceDec) {
-            if (collector.getEdges().size() > 0) {
-                collectors.add(collector);
+        for (CollectorTarget c : collectorsTarget) {
+            if (c.getEdges().size() > 0) {
+                collectorsTargetCon.add(c);
             }
         }
-        return collectors;
+        return collectorsTargetCon;
     }
 
-    public ArrayList<CollectorSourceInt> getCollectorsSourceConnectedInt() {
-        ArrayList<CollectorSourceInt> collectors = new ArrayList<>();
-        for (CollectorSourceInt collector : collectorsSourceInt) {
-            if (collector.getEdges().size() > 0) {
-                collectors.add(collector);
-            }
-        }
-        return collectors;
+    public ArrayList<CollectorTarget> getCollectorsTargetConnected() {
+        return collectorsTargetCon;
     }
 
-    public ArrayList<CollectorSourceBin> getCollectorsSourceConnectedBin() {
-        ArrayList<CollectorSourceBin> collectors = new ArrayList<>();
-        for (CollectorSourceBin collector : collectorsSourceBin) {
-            if (collector.getEdges().size() > 0) {
-                collectors.add(collector);
-            }
-        }
-        return collectors;
-    }
+    public ArrayList<CollectorTarget> getCollectorsTargetToConnect() {
+        ArrayList<CollectorTarget> collectors = new ArrayList<>();
+        ArrayList<CollectorTarget> collectorsFree = new ArrayList<>();
 
-    public ArrayList<? extends CollectorTarget> getCollectorsTargetToConnect() {
-        ArrayList<CollectorTarget> list = new ArrayList<>();
-        list.addAll(getCollectorsTargetToConnectDec());
-        list.addAll(getCollectorsTargetToConnectInt());
-        list.addAll(getCollectorsTargetToConnectBin());
-        return list;
-    }
-
-    public ArrayList<? extends CollectorTarget> getCollectorsTargetToConnect(Cell.Signal type) {
-        if (type == Cell.Signal.DECIMAL) {
-            return getCollectorsTargetToConnectDec();
-        }
-        if (type == Cell.Signal.INTEGER) {
-            return getCollectorsTargetToConnectInt();
-        }
-        if (type == Cell.Signal.BOOLEAN) {
-            return getCollectorsTargetToConnectBin();
-        }
-        return new ArrayList<>();
-    }
-
-    public ArrayList<CollectorTargetDec> getCollectorsTargetToConnectDec() {
-        ArrayList<CollectorTargetDec> collectors = new ArrayList<>();
-        ArrayList<CollectorTargetDec> collectorsFree = new ArrayList<>();
-
-        for (CollectorTargetDec collector : collectorsTargetDec) {
+        for (CollectorTarget collector : collectorsTarget) {
             if (collector.getEdges().size() == 0) {
                 collectorsFree.add(collector);
             } else {
                 collectors.add(collector);
             }
         }
-        int n = getCollectorTargetLimitsDec()[0] - collectors.size();
+        int n = getCollectorTargetLimit()[0] - collectors.size();
         if (n > 0 && collectorsFree.size() >= n) {
-            return new ArrayList<CollectorTargetDec>(collectorsFree.subList(0, n));
+            return new ArrayList<CollectorTarget>(collectorsFree.subList(0, n));
         }
         return new ArrayList<>();
     }
 
-    public ArrayList<CollectorTargetInt> getCollectorsTargetToConnectInt() {
-        ArrayList<CollectorTargetInt> collectors = new ArrayList<>();
-        ArrayList<CollectorTargetInt> collectorsFree = new ArrayList<>();
-
-        for (CollectorTargetInt collector : collectorsTargetInt) {
-            if (collector.getEdges().size() == 0) {
-                collectorsFree.add(collector);
-            } else {
-                collectors.add(collector);
-            }
-        }
-        int n = getCollectorTargetLimitsInt()[0] - collectors.size();
-        if (n > 0 && collectorsFree.size() >= n) {
-            return new ArrayList<CollectorTargetInt>(collectorsFree.subList(0, n));
-        }
-        return new ArrayList<>();
-    }
-
-    public ArrayList<CollectorTargetBin> getCollectorsTargetToConnectBin() {
-        ArrayList<CollectorTargetBin> collectors = new ArrayList<>();
-        ArrayList<CollectorTargetBin> collectorsFree = new ArrayList<>();
-
-        for (CollectorTargetBin collector : collectorsTargetBin) {
-            if (collector.getEdges().size() == 0) {
-                collectorsFree.add(collector);
-            } else {
-                collectors.add(collector);
-            }
-        }
-        int n = getCollectorTargetLimitsBin()[0] - collectors.size();
-        if (n > 0 && collectorsFree.size() >= n) {
-            return new ArrayList<CollectorTargetBin>(collectorsFree.subList(0, n));
-        }
-        return new ArrayList<>();
-    }
-
-    public ArrayList<? extends CollectorTarget> getCollectorsTargetFree() {
-        ArrayList<CollectorTarget> list = new ArrayList<>();
-        list.addAll(getCollectorsTargetFreeDec());
-        list.addAll(getCollectorsTargetFreeInt());
-        list.addAll(getCollectorsTargetFreeBin());
-        return list;
-    }
-
-    public ArrayList<CollectorTargetDec> getCollectorsTargetFreeDec() {
-        ArrayList<CollectorTargetDec> collectorsFree = new ArrayList<>();
-        for (CollectorTargetDec collector : collectorsTargetDec) {
-            if (collector.getEdges().size() == 0) {
-                collectorsFree.add(collector);
-            }
-        }
-        return collectorsFree;
-    }
-
-    public ArrayList<CollectorTargetInt> getCollectorsTargetFreeInt() {
-        ArrayList<CollectorTargetInt> collectorsFree = new ArrayList<>();
-        for (CollectorTargetInt collector : collectorsTargetInt) {
-            if (collector.getEdges().size() == 0) {
-                collectorsFree.add(collector);
-            }
-        }
-        return collectorsFree;
-    }
-
-    public ArrayList<CollectorTargetBin> getCollectorsTargetFreeBin() {
-        ArrayList<CollectorTargetBin> collectorsFree = new ArrayList<>();
-        for (CollectorTargetBin collector : collectorsTargetBin) {
+    public ArrayList<CollectorTarget> getCollectorsTargetFree() {
+        ArrayList<CollectorTarget> collectorsFree = new ArrayList<>();
+        for (CollectorTarget collector : collectorsTarget) {
             if (collector.getEdges().size() == 0) {
                 collectorsFree.add(collector);
             }
@@ -457,78 +176,27 @@ strictfp public class Node implements Serializable {
         this.collectorsTarget = collectorsTarget;
     }
 
-    public ArrayList<? extends CollectorTarget> getCollectorsTarget(Cell.Signal type) {
-        if (type == Cell.Signal.BOOLEAN) return collectorsTargetBin;
-        if (type == Cell.Signal.INTEGER) return collectorsTargetInt;
-        if (type == Cell.Signal.DECIMAL) return collectorsTargetDec;
-        return new ArrayList<>();
-    }
 
     public ArrayList<CollectorSource> getCollectorsSource() {
-        return collectorSources;
+        return collectorsSource;
     }
 
     public void setCollectorSources(ArrayList<CollectorSource> collectorSources) {
-        this.collectorSources = collectorSources;
+        this.collectorsSource = collectorSources;
     }
 
-    public ArrayList<? extends CollectorSource> getCollectorsSource(Cell.Signal type) {
-        if (type == Cell.Signal.BOOLEAN) return collectorsSourceBin;
-        if (type == Cell.Signal.INTEGER) return collectorsSourceInt;
-        if (type == Cell.Signal.DECIMAL) return collectorsSourceDec;
-        return new ArrayList<>();
-    }
-
-    public ArrayList<CollectorTargetDec> getCollectorsTargetDec() {
-        return collectorsTargetDec;
-    }
-
-    public void setCollectorsTargetDec(ArrayList<CollectorTargetDec> collectorsTargetDec) {
-        this.collectorsTargetDec = collectorsTargetDec;
-    }
-
-    public ArrayList<CollectorTargetInt> getCollectorsTargetInt() {
-        return collectorsTargetInt;
-    }
-
-    public void setCollectorsTargetInt(ArrayList<CollectorTargetInt> collectorsTargetInt) {
-        this.collectorsTargetInt = collectorsTargetInt;
-    }
-
-    public ArrayList<CollectorTargetBin> getCollectorsTargetBin() {
-        return collectorsTargetBin;
-    }
-
-    public void setCollectorsTargetBin(ArrayList<CollectorTargetBin> collectorsTargetBin) {
-        this.collectorsTargetBin = collectorsTargetBin;
-    }
-
-    public ArrayList<CollectorSourceDec> getCollectorsSourceDec() {
-        return collectorsSourceDec;
-    }
-
-    public void setCollectorsSourceDec(ArrayList<CollectorSourceDec> collectorsSourceDec) {
-        this.collectorsSourceDec = collectorsSourceDec;
-    }
-
-    public ArrayList<CollectorSourceInt> getCollectorsSourceInt() {
-        return collectorsSourceInt;
-    }
-
-    public void setCollectorsSourceInt(ArrayList<CollectorSourceInt> collectorsSourceInt) {
-        this.collectorsSourceInt = collectorsSourceInt;
-    }
-
-    public ArrayList<CollectorSourceBin> getCollectorsSourceBin() {
-        return collectorsSourceBin;
-    }
-
-    public void setCollectorsSourceBin(ArrayList<CollectorSourceBin> collectorsSourceBin) {
-        this.collectorsSourceBin = collectorsSourceBin;
+    public ArrayList<CollectorSource> getCollectorsSourceConnected() {
+        ArrayList<CollectorSource> collectors = new ArrayList<>();
+        for (CollectorSource collector : collectorsSource) {
+            if (collector.getEdges().size() > 0) {
+                collectors.add(collector);
+            }
+        }
+        return collectors;
     }
 
     public boolean isSourceConnected() {
-        for (CollectorSource collector : collectorSources) {
+        for (CollectorSource collector : collectorsSource) {
             if (collector.getEdges().size() > 0) {
                 return true;
             }
@@ -683,16 +351,11 @@ strictfp public class Node implements Serializable {
 
     public void clearNode() {
         rstNode();
+        clcCollectorsTargetConnected();
     }
 
     public void clearCollectors() {
-        for (CollectorSourceBin c : getCollectorsSourceBin()) {
-            c.setSignal(false);
-        }
-        for (CollectorSourceInt c : getCollectorsSourceInt()) {
-            c.setSignal(0);
-        }
-        for (CollectorSourceDec c : getCollectorsSourceDec()) {
+        for (CollectorSource c : getCollectorsSource()) {
             c.setSignal(0.0);
         }
     }
@@ -744,11 +407,11 @@ strictfp public class Node implements Serializable {
         return false;
     }
 
-    public ArrayList<Cell.Signal> getParTypes() {
-        ArrayList<Cell.Signal> types = new ArrayList<>();
-        if (hasParDec()) types.add(Cell.Signal.DECIMAL);
-        if (hasParInt()) types.add(Cell.Signal.INTEGER);
-        if (hasParBin()) types.add(Cell.Signal.BOOLEAN);
+    public ArrayList<Cell.ParType> getParTypes() {
+        ArrayList<Cell.ParType> types = new ArrayList<>();
+        if (hasParDec()) types.add(Cell.ParType.DECIMAL);
+        if (hasParInt()) types.add(Cell.ParType.INTEGER);
+        if (hasParBin()) types.add(Cell.ParType.BOOLEAN);
         return types;
     }
 
@@ -776,7 +439,7 @@ strictfp public class Node implements Serializable {
         this.lockBin[ind] = lockBin;
     }
 
-    public boolean hasParamsUnlocked(Cell.Signal type) {
+    public boolean hasParamsUnlocked(Cell.ParType type) {
         switch (type) {
             case DECIMAL:
                 return hasParamsDecUnlocked();
@@ -824,7 +487,7 @@ strictfp public class Node implements Serializable {
     }
 
     public boolean hasLockedEdgesSource() {
-        for (Collector collector : collectorSources) {
+        for (Collector collector : collectorsSource) {
             for (Edge edge : collector.getEdges()) {
                 if (edge.isLockSource()) {
                     return true;

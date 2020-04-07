@@ -14,10 +14,10 @@ public class ParAddValueDec extends Reproduction implements IMutateNode {
     AddValueDec operationType;
     Random random;
 
-    public ParAddValueDec(AddValueDec operationType) {
+    public ParAddValueDec(AddValueDec operationType, long seed) {
         super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ParAddValueDec extends Reproduction implements IMutateNode {
     }
 
     @Override
-    public Cell.Signal getType() {
-        return Cell.Signal.DECIMAL;
+    public Cell.ParType getType() {
+        return Cell.ParType.DECIMAL;
     }
 }

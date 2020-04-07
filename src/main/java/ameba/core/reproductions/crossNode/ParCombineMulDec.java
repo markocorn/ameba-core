@@ -14,10 +14,10 @@ public class ParCombineMulDec extends Reproduction implements ICrossNode {
     CombineMulDec operationType;
     Random random;
 
-    public ParCombineMulDec(CombineMulDec operationType) {
+    public ParCombineMulDec(CombineMulDec operationType, long seed) {
         super(operationType.getParOperationSettings().getProbability());
         this.operationType = operationType;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ParCombineMulDec extends Reproduction implements ICrossNode {
     }
 
     @Override
-    public Cell.Signal getType() {
-        return Cell.Signal.DECIMAL;
+    public Cell.ParType getType() {
+        return Cell.ParType.DECIMAL;
     }
 }

@@ -20,13 +20,9 @@ public class FactoryNodeSettings implements Serializable {
     /**
      * Maximum number of input connection of the node
      */
-    private Integer[] inpColLimitDec;
-    private Integer[] inpColLimitInt;
-    private Integer[] inpColLimitBin;
+    private Integer[] collectorsTargetLimit;
 
-    private Integer[] outColLimitDec;
-    private Integer[] outColLimitInt;
-    private Integer[] outColLimitBin;
+    private Integer[] collectorsSourceLimit;
 
     /**
      * Node availability for the cell generation.
@@ -45,37 +41,34 @@ public class FactoryNodeSettings implements Serializable {
      * Parameters constrains
      */
     private Double[][] parametersLimitsDec;
+
     private Integer[][] parametersLimitsInt;
+
     private Boolean[][] parametersLimitsBin;
+
 
     /**
      * Parameters initial generations constrains
      */
     private Double[][] parametersInitLimitsDec;
+
     private Integer[][] parametersInitLimitsInt;
+
     private Boolean[][] parametersInitLimitsBin;
 
     public FactoryNodeSettings() {
     }
 
-    public FactoryNodeSettings(String type, Integer[] inpColLimitDec, Integer[] inpColLimitInt, Integer[] inpColLimitBin, Integer[] outColLimitDec, Integer[] outColLimitInt, Integer[] outColLimitBin, Integer probability, Double initialValueDec, Integer initialValueInt, Boolean initialValueBin, Double[][] parametersLimitsDec, Integer[][] parametersLimitsInt, Boolean[][] parametersLimitsBin, Double[][] parametersInitLimitsDec, Integer[][] parametersInitLimitsInt, Boolean[][] parametersInitLimitsBin) {
+    public FactoryNodeSettings(String type, Integer[] inpColLimitDec, Integer[] outColLimitDec, Integer probability, Double initialValueDec, Integer initialValueInt, Boolean initialValueBin, Double[][] parametersLimitsDec, Double[][] parametersInitLimitsDec) {
         this.type = type;
-        this.inpColLimitDec = inpColLimitDec;
-        this.inpColLimitInt = inpColLimitInt;
-        this.inpColLimitBin = inpColLimitBin;
-        this.outColLimitDec = outColLimitDec;
-        this.outColLimitInt = outColLimitInt;
-        this.outColLimitBin = outColLimitBin;
+        this.collectorsTargetLimit = inpColLimitDec;
+        this.collectorsSourceLimit = outColLimitDec;
         this.probability = probability;
         this.initialValueDec = initialValueDec;
         this.initialValueInt = initialValueInt;
         this.initialValueBin = initialValueBin;
         this.parametersLimitsDec = parametersLimitsDec;
-        this.parametersLimitsInt = parametersLimitsInt;
-        this.parametersLimitsBin = parametersLimitsBin;
         this.parametersInitLimitsDec = parametersInitLimitsDec;
-        this.parametersInitLimitsInt = parametersInitLimitsInt;
-        this.parametersInitLimitsBin = parametersInitLimitsBin;
     }
 
 
@@ -88,22 +81,14 @@ public class FactoryNodeSettings implements Serializable {
         ObjectMapper mapper = new ObjectMapper();
         FactoryNodeSettings settings = mapper.readValue(json, FactoryNodeSettings.class);
         this.type = settings.getType();
-        this.inpColLimitDec = settings.getInpColLimitDec();
-        this.inpColLimitInt = settings.getInpColLimitInt();
-        this.inpColLimitBin = settings.getInpColLimitBin();
-        this.outColLimitDec = settings.getOutColLimitDec();
-        this.outColLimitInt = settings.getOutColLimitInt();
-        this.outColLimitBin = settings.getOutColLimitBin();
+        this.collectorsTargetLimit = settings.getCollectorsTargetLimit();
+        this.collectorsSourceLimit = settings.getOutColLimitDec();
         this.probability = settings.getProbability();
         this.initialValueDec = settings.getInitialValueDec();
         this.initialValueInt = settings.getInitialValueInt();
         this.initialValueBin = settings.getInitialValueBin();
         this.parametersLimitsDec = settings.getParametersLimitsDec();
-        this.parametersLimitsInt = settings.getParametersLimitsInt();
-        this.parametersLimitsBin = settings.getParametersLimitsBin();
         this.parametersInitLimitsDec = settings.getParametersInitLimitsDec();
-        this.parametersInitLimitsInt = settings.getParametersInitLimitsInt();
-        this.parametersInitLimitsBin = settings.getParametersInitLimitsBin();
     }
 
     @JsonIgnore
@@ -120,28 +105,12 @@ public class FactoryNodeSettings implements Serializable {
         this.type = type;
     }
 
-    public Integer[] getInpColLimitDec() {
-        return inpColLimitDec;
+    public Integer[] getCollectorsTargetLimit() {
+        return collectorsTargetLimit;
     }
 
-    public void setInpColLimitDec(Integer[] inpColLimitDec) {
-        this.inpColLimitDec = inpColLimitDec;
-    }
-
-    public Integer[] getInpColLimitInt() {
-        return inpColLimitInt;
-    }
-
-    public void setInpColLimitInt(Integer[] inpColLimitInt) {
-        this.inpColLimitInt = inpColLimitInt;
-    }
-
-    public Integer[] getInpColLimitBin() {
-        return inpColLimitBin;
-    }
-
-    public void setInpColLimitBin(Integer[] inpColLimitBin) {
-        this.inpColLimitBin = inpColLimitBin;
+    public void setCollectorsTargetLimit(Integer[] collectorsTargetLimit) {
+        this.collectorsTargetLimit = collectorsTargetLimit;
     }
 
     public Double getInitialValueDec() {
@@ -176,22 +145,6 @@ public class FactoryNodeSettings implements Serializable {
         this.parametersLimitsDec = parametersLimitsDec;
     }
 
-    public Integer[][] getParametersLimitsInt() {
-        return parametersLimitsInt;
-    }
-
-    public void setParametersLimitsInt(Integer[][] parametersLimitsInt) {
-        this.parametersLimitsInt = parametersLimitsInt;
-    }
-
-    public Boolean[][] getParametersLimitsBin() {
-        return parametersLimitsBin;
-    }
-
-    public void setParametersLimitsBin(Boolean[][] parametersLimitsBin) {
-        this.parametersLimitsBin = parametersLimitsBin;
-    }
-
     public Integer getProbability() {
         return probability;
     }
@@ -201,27 +154,11 @@ public class FactoryNodeSettings implements Serializable {
     }
 
     public Integer[] getOutColLimitDec() {
-        return outColLimitDec;
+        return collectorsSourceLimit;
     }
 
     public void setOutColLimitDec(Integer[] outColLimitDec) {
-        this.outColLimitDec = outColLimitDec;
-    }
-
-    public Integer[] getOutColLimitInt() {
-        return outColLimitInt;
-    }
-
-    public void setOutColLimitInt(Integer[] outColLimitInt) {
-        this.outColLimitInt = outColLimitInt;
-    }
-
-    public Integer[] getOutColLimitBin() {
-        return outColLimitBin;
-    }
-
-    public void setOutColLimitBin(Integer[] outColLimitBin) {
-        this.outColLimitBin = outColLimitBin;
+        this.collectorsSourceLimit = outColLimitDec;
     }
 
     public Double[][] getParametersInitLimitsDec() {
@@ -246,5 +183,29 @@ public class FactoryNodeSettings implements Serializable {
 
     public void setParametersInitLimitsBin(Boolean[][] parametersInitLimitsBin) {
         this.parametersInitLimitsBin = parametersInitLimitsBin;
+    }
+
+    public Integer[] getCollectorsSourceLimit() {
+        return collectorsSourceLimit;
+    }
+
+    public void setCollectorsSourceLimit(Integer[] collectorsSourceLimit) {
+        this.collectorsSourceLimit = collectorsSourceLimit;
+    }
+
+    public Integer[][] getParametersLimitsInt() {
+        return parametersLimitsInt;
+    }
+
+    public void setParametersLimitsInt(Integer[][] parametersLimitsInt) {
+        this.parametersLimitsInt = parametersLimitsInt;
+    }
+
+    public Boolean[][] getParametersLimitsBin() {
+        return parametersLimitsBin;
+    }
+
+    public void setParametersLimitsBin(Boolean[][] parametersLimitsBin) {
+        this.parametersLimitsBin = parametersLimitsBin;
     }
 }

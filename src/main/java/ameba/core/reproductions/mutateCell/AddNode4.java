@@ -21,12 +21,12 @@ public class AddNode4 extends Reproduction implements IMutateCell {
     FactoryEdge edgeFactory;
     Random random;
 
-    public AddNode4(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int probability) {
+    public AddNode4(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int probability, long seed) {
         super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
         this.edgeFactory = edgeFactory;
-        random = new Random();
+        random = new Random(seed);
     }
 
     /**
@@ -43,11 +43,11 @@ public class AddNode4 extends Reproduction implements IMutateCell {
         //Connect target collectors of node
         for (CollectorTarget t : n.getCollectorsTargetToConnect()) {
             //Select random source
-            CollectorSource s = cellFactory.getCollectorSourceRnd(t.getType(), cell);
+            CollectorSource s = cellFactory.getCollectorSourceRnd(cell);
             if (s == null) {
                 throw new Exception("No random source present in cell");
             }
-            Edge e = edgeFactory.genEdge(s.getType(), s, t);
+            Edge e = edgeFactory.genEdge(s, t);
             cell.addEdge(e);
         }
         //Connect one source collector to target collector of some node in cell
@@ -55,11 +55,11 @@ public class AddNode4 extends Reproduction implements IMutateCell {
         if (t == null) {
             throw new Exception("No free random target present in cell");
         }
-        CollectorSource s = cellFactory.getCollectorSourceRnd(t.getType(), cell);
+        CollectorSource s = cellFactory.getCollectorSourceRnd(cell);
         if (s == null) {
             throw new Exception("No free random source present in cell");
         }
-        Edge e = edgeFactory.genEdge(s.getType(), s, t);
+        Edge e = edgeFactory.genEdge(s, t);
         cell.addEdge(e);
 
         return cell;

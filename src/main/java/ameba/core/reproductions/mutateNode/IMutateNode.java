@@ -9,5 +9,5 @@ import ameba.core.blocks.nodes.Node;
 public interface IMutateNode {
     Node mutate(Node node) throws Exception;
 
-    Cell.Signal getType();
+    Cell.ParType getType();
 }

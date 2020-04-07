@@ -29,20 +29,20 @@ public class AddNodes extends Reproduction implements ICrossCell {
      * @param cellFactory
      * @param edgeFactory
      */
-    public AddNodes(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int[] nodesLimit, int probability) {
+    public AddNodes(FactoryNode nodeFactory, FactoryCell cellFactory, FactoryEdge edgeFactory, int[] nodesLimit, int probability, long seed) {
         super(probability);
         this.nodeFactory = nodeFactory;
         this.cellFactory = cellFactory;
         this.edgeFactory = edgeFactory;
         this.nodesLimit = nodesLimit;
-        random = new Random();
+        random = new Random(seed);
     }
 
     @Override
     public Cell cross(Cell cell1, Cell cell2) throws Exception {
         ArrayList<ArrayList<Node>> group = cell2.getGroup(cell2.getInnerNodes().get(random.nextInt(cell2.getInnerNodes().size())), random.nextInt(nodesLimit[1] - nodesLimit[0]) + nodesLimit[0]);
         HashMap<String, ArrayList<Edge>> borderEdges = cell2.getGroupEdgesBorder(group);
-        HashMap<String, ArrayList<Edge>> innerEdges = cell2.getGroupEdgesInner(group);
+        ArrayList<Edge> innerEdges = cell2.getGroupEdgesInner(group);
         //Add new nodes
         for (ArrayList<Node> nodes : group) {
             for (Node node : nodes) {
@@ -50,20 +50,12 @@ public class AddNodes extends Reproduction implements ICrossCell {
             }
         }
         //Add inner edges
-        for (Edge edge : innerEdges.get("edgesDec")) {
-            cell1.addEdgeNotSafe(edge);
-        }
-        for (Edge edge : innerEdges.get("edgesInt")) {
-            cell1.addEdgeNotSafe(edge);
-        }
-        for (Edge edge : innerEdges.get("edgesBin")) {
+        for (Edge edge : innerEdges) {
             cell1.addEdgeNotSafe(edge);
         }
 
         //Reconnect border edges
-        cellFactory.reconnectEdges(Cell.Signal.DECIMAL, cell1, borderEdges);
-        cellFactory.reconnectEdges(Cell.Signal.INTEGER, cell1, borderEdges);
-        cellFactory.reconnectEdges(Cell.Signal.BOOLEAN, cell1, borderEdges);
+        cellFactory.reconnectEdges(cell1, borderEdges);
 
         return cell1;
     }

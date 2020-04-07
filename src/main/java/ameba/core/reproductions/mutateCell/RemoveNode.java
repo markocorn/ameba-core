@@ -18,10 +18,10 @@ public class RemoveNode extends Reproduction implements IMutateCell {
     FactoryCell cellFactory;
     Random random;
 
-    public RemoveNode(FactoryCell cellFactory, int probability) {
+    public RemoveNode(FactoryCell cellFactory, int probability, long seed) {
         super(probability);
         this.cellFactory = cellFactory;
-        random = new Random();
+        random = new Random(seed);
     }
 
     /**
@@ -42,12 +42,12 @@ public class RemoveNode extends Reproduction implements IMutateCell {
             }
             for (CollectorSource s : node.getCollectorsSource()) {
                 for (Edge e : s.getEdges()) {
-                    CollectorSource s1 = cellFactory.getCollectorSourceRndNoNode(e.getSource().getType(), cell, node);
+                    CollectorSource s1 = cellFactory.getCollectorSourceRndNoNode(cell, node);
                     if (s1 != null) {
                         e.setSource(s1);
                         s1.addEdge(e);
                     } else {
-                        throw new Exception("Can't remove cell no substitute source collector found of type:" + s.getType().toString());
+                        throw new Exception("Can't remove cell no substitute source collector found");
                     }
                 }
             }

@@ -15,14 +15,10 @@ public class FactoryEdgeSettings implements Serializable {
      * IntervalDec of values for the weight initial value during rndGen generation.
      */
     private Double[] weightInitialDec;
-    private Integer[] weightInitialInt;
-    private Boolean[] weightInitialBin;
     /**
      * IntervalDec of limit values for the
      */
     private Double[] weighLimitsDec;
-    private Integer[] weighLimitsInt;
-    private Boolean[] weighLimitsBin;
 
     /**
      * Default constructor.
@@ -32,11 +28,7 @@ public class FactoryEdgeSettings implements Serializable {
 
     public FactoryEdgeSettings(Double[] weightInitialDec, Integer[] weightInitialInt, Boolean[] weightInitialBin, Double[] weighLimitsDec, Integer[] weighLimitsInt, Boolean[] weighLimitsBin) {
         this.weightInitialDec = weightInitialDec;
-        this.weightInitialInt = weightInitialInt;
-        this.weightInitialBin = weightInitialBin;
         this.weighLimitsDec = weighLimitsDec;
-        this.weighLimitsInt = weighLimitsInt;
-        this.weighLimitsBin = weighLimitsBin;
     }
 
     public static FactoryEdgeSettings create(String json) throws IOException {
@@ -48,11 +40,7 @@ public class FactoryEdgeSettings implements Serializable {
         ObjectMapper mapper = new ObjectMapper();
         FactoryEdgeSettings settings = mapper.readValue(json, FactoryEdgeSettings.class);
         this.weightInitialDec = settings.getWeightInitialDec();
-        this.weightInitialInt = settings.getWeightInitialInt();
-        this.weightInitialBin = settings.getWeightInitialBin();
         this.weighLimitsDec = settings.getWeighLimitsDec();
-        this.weighLimitsInt = settings.getWeighLimitsInt();
-        this.weighLimitsBin = settings.getWeighLimitsBin();
     }
 
     @JsonIgnore
@@ -69,43 +57,11 @@ public class FactoryEdgeSettings implements Serializable {
         this.weightInitialDec = weightInitialDec;
     }
 
-    public Integer[] getWeightInitialInt() {
-        return weightInitialInt;
-    }
-
-    public void setWeightInitialInt(Integer[] weightInitialInt) {
-        this.weightInitialInt = weightInitialInt;
-    }
-
-    public Boolean[] getWeightInitialBin() {
-        return weightInitialBin;
-    }
-
-    public void setWeightInitialBin(Boolean[] weightInitialBin) {
-        this.weightInitialBin = weightInitialBin;
-    }
-
     public Double[] getWeighLimitsDec() {
         return weighLimitsDec;
     }
 
     public void setWeighLimitsDec(Double[] weighLimitsDec) {
         this.weighLimitsDec = weighLimitsDec;
-    }
-
-    public Integer[] getWeighLimitsInt() {
-        return weighLimitsInt;
-    }
-
-    public void setWeighLimitsInt(Integer[] weighLimitsInt) {
-        this.weighLimitsInt = weighLimitsInt;
-    }
-
-    public Boolean[] getWeighLimitsBin() {
-        return weighLimitsBin;
-    }
-
-    public void setWeighLimitsBin(Boolean[] weighLimitsBin) {
-        this.weighLimitsBin = weighLimitsBin;
     }
 }
