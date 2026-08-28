@@ -1,0 +1,20 @@
+{
+  "attributes": {},
+  "edges": [
+    {"attributes": {}, "id": "e1", "source": "x", "target": "product"},
+    {"attributes": {}, "id": "e2", "source": "two", "target": "product"},
+    {"attributes": {}, "id": "e3", "source": "product", "target": "sum"},
+    {"attributes": {}, "id": "e4", "source": "one", "target": "sum"},
+    {"attributes": {}, "id": "e5", "source": "sum", "target": "y"}
+  ],
+  "nodes": [
+    {"attributes": {"value": 1.0}, "id": "one", "kind": "constant"},
+    {"attributes": {}, "id": "product", "kind": "multiply"},
+    {"attributes": {}, "id": "sum", "kind": "add"},
+    {"attributes": {"value": 2.0}, "id": "two", "kind": "constant"},
+    {"attributes": {"index": 0}, "id": "x", "kind": "input"},
+    {"attributes": {"index": 0}, "id": "y", "kind": "output"}
+  ],
+  "schema": "ameba.graph",
+  "version": 1
+}

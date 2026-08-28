@@ -1,0 +1,31 @@
+schema_version = 1
+seed = 42
+generations = 100
+simulation_workers = 1
+
+[evolution]
+population_size = 20
+elite_size = 1
+tournament_size = 3
+mutation_rate = 1.0
+crossover_rate = 0.5
+# The total population is split evenly. Set island_count > 1 to evolve
+# independent sub-populations; these defaults preserve single-population runs.
+island_count = 1
+migration_interval = 0
+migration_size = 0
+
+[signal]
+weight_min = -2.0
+weight_max = 2.0
+evolvable_kinds = [
+  # arithmetic
+  "add", "multiply", "negate", "reciprocal",
+  # nonlinear
+  "sin", "tanh", "square", "sqrt", "abs", "exp", "log",
+  # memory
+  "delay", "integral", "derivative", "filter_lp", "filter_hp",
+  # sources
+  "constant",
+]
+

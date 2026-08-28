@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.1/vis.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.1/vis-network.min.css" rel="stylesheet">
+</head>
+<body>
+
+
+<h1>Ameba toolkit</h1>
+<div class="row" style="padding-left: 20px">
+    <div class="card-group">
+        <div class="card">
+            <div class="card-block" style="padding: 10px">
+                <h4 class="card-title">Settings</h4>
+                <input id="inputLoadCells" onchange="loadCells()" type="file">
+                <h4 class="card-title">Display options</h4>
+                <div class="checkbox">
+                    <label><input checked="checked" id="checkBoxTypes" type="checkbox" value="">Show types</label>
+                </div>
+                <div class="checkbox">
+                    <label><input checked="checked" id="checkBoxEdgesWeight" type="checkbox" value="">Show edges weight</label>
+                </div>
+                <div class="checkbox">
+                    <label><input id="checkBoxIds" type="checkbox" value="">Show id's</label>
+                </div>
+                <div class="checkbox">
+                    <label><input id="checkBoxPar" type="checkbox" value="">Show parameters</label>
+                </div>
+                <table class="table table-bordered table-hover" id="tableCells">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nodes number</th>
+                        <th>Edges number</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tableBodyCells">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="divCell" style="width: 800px;height: 600px;border:1px solid gray"></div>
+    </div>
+
+
+</div>
+
+
+<script crossorigin="anonymous"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script crossorigin="anonymous"
+        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script crossorigin="anonymous"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.1/vis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.1/vis-network.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.1/tinycolor.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#tableCells").on("click", "tr td", function (row, $el, field) {
+            var r = $(this).parent().index();
+            drawCell(cells[r].cell);
+        });
+        //Find settings file
+
+    });
+
+    nodesDef = ["Input", "Output",
+        "Add", "ExponentBase", "ExponentIndex", "Constant", "Delay", "Derivative",
+        "FilterLP", "FilterHP", "Divide", "Integral",
+        "Multiply", "NeuronStep"];
+
+    colors = Array();
+    for (var i = 0; i < nodesDef.length; i++) {
+        var c = tinycolor("hsl(" + 360 / nodesDef.length * i + ", 80%, 65%)");
+        c.toHex();
+        colors[nodesDef[i]] = '#' + c.toHex();
+    }
+
+
+    function loadCells() {
+        var x = document.getElementById("inputLoadCells");
+        var reader = new FileReader();
+        reader.readAsText(x.files[0], "UTF-8");
+        reader.onload = function (event) {
+            cells = JSON.parse(event.target.result);
+            var table = document.getElementById("tableCells");
+            var tableBody = document.getElementById("tableBodyCells");
+            for (var i = 0; i < cells.length; i++) {
+                var tr = document.createElement('TR');
+                tableBody.appendChild(tr);
+
+                var td = document.createElement('TD');
+                td.appendChild(document.createTextNode(i));
+                tr.appendChild(td);
+
+                td = document.createElement('TD');
+                td.appendChild(document.createTextNode(cells[i].cell.nodes.length));
+                tr.appendChild(td);
+
+                td = document.createElement('TD');
+                td.appendChild(document.createTextNode(cells[i].cell.edges.length));
+                tr.appendChild(td);
+            }
+        };
+    }
+
+    function drawCell(cell) {
+        var nodes = Array();
+        var w = document.getElementById('divCell').offsetWidth;
+        var h = document.getElementById('divCell').offsetHeight;
+        var numInp = countInputs(cell);
+        var numOut = countOutputs(cell);
+
+        var ind = 1;
+        var ind2 = 1;
+        for (i = 0; i < cell.nodes.length; i++) {
+            var label = '';
+            if (document.getElementById('checkBoxTypes').checked) {
+                label += cell.nodes[i].type;
+            }
+            if (document.getElementById('checkBoxIds').checked) {
+                label += '\nid:' + cell.nodes[i].id;
+            }
+            if (document.getElementById('checkBoxPar').checked) {
+                if (cell.nodes[i].paramsDec.length > 0) {
+                    label += '\nDec:' + Number(cell.nodes[i].paramsDec).toFixed(4);
+                }
+                if (cell.nodes[i].paramsInt.length > 0) {
+                    label += '\nInt:' + Number(cell.nodes[i].paramsInt).toFixed(4);
+                }
+                if (cell.nodes[i].paramsBin.length > 0) {
+                    label += '\nBin:' + Number(cell.nodes[i].paramsBin).toFixed(4);
+                }
+            }
+            switch (cell.nodes[i].type) {
+                case 'Input': {
+                    nodes.push({
+                        id: cell.nodes[i].id,
+                        label: label,
+                        x: -w / 2, y: -h + h / numInp * ind,
+                        fixed: true,
+                        physics: false
+                    });
+                    ind++;
+                    break;
+                }
+                case 'Output': {
+                    nodes.push({
+                        id: cell.nodes[i].id,
+                        label: label,
+                        x: +w / 2, y: -h + h / numInp * ind2,
+                        fixed: true,
+                        physics: false
+                    });
+                    ind2++;
+                    break;
+                }
+                default : {
+                    nodes.push({id: cell.nodes[i].id, label: label});
+                }
+            }
+            if (typeof colors !== 'undefined') {
+                nodes[i].color = colors[cell.nodes[i].type];
+            }
+        }
+
+        var edges = Array();
+
+        for (var i = 0; i < cell.edges.length; i++) {
+            label = '';
+            if (document.getElementById('checkBoxEdgesWeight').checked) {
+                edges.push({
+                    from: findNodeId(cell.edges[i].sourceCol, cell),
+                    to: findNodeId(cell.edges[i].targetCol, cell),
+                    label: Number(cell.edges[i].weight).toFixed(4),
+                    arrows: 'to'
+                });
+            } else {
+                edges.push({
+                    from: findNodeId(cell.edges[i].sourceCol, cell),
+                    to: findNodeId(cell.edges[i].targetCol, cell),
+                    arrows: 'to'
+                });
+            }
+            edges[i].color = '#3c92e0';
+        }
+
+        var container = document.getElementById('divCell');
+        var data = {
+            nodes: new vis.DataSet(nodes),
+            edges: new vis.DataSet(edges)
+        };
+        var options = {
+            layout: {
+                randomSeed: true,
+//                improvedLayout: true,
+            }
+        };
+        var network = new vis.Network(container, data, options);
+
+    }
+
+    function findNodeId(id, cell) {
+        for (var i = 0; i < cell.nodes.length; i++) {
+            for (var j = 0; j < cell.nodes[i].sourceCol.length; j++) {
+                if (id === cell.nodes[i].sourceCol[j].id) {
+                    return cell.nodes[i].id;
+                }
+            }
+            for (var j = 0; j < cell.nodes[i].targetCol.length; j++) {
+                if (id === cell.nodes[i].targetCol[j].id) {
+                    return cell.nodes[i].id;
+                }
+            }
+        }
+    }
+
+    function countInputs(cell) {
+        var inputs = 0;
+        for (var i = 0; i < cell.nodes.length; i++) {
+            if (cell.nodes[i].type === 'Input') {
+                inputs++;
+            }
+        }
+        return inputs;
+    }
+
+    function countOutputs(cell) {
+        var Outputs = 0;
+        for (var i = 0; i < cell.nodes.length; i++) {
+            if (cell.nodes[i].type === 'Output') {
+                Outputs++;
+            }
+        }
+        return Outputs;
+    }
+
+
+</script>
+</body>
+</html>

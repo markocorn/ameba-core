@@ -1,0 +1,48 @@
+schema_version = 1
+seed = 42
+generations = 100
+simulation_workers = 1
+
+[evolution]
+population_size = 24
+elite_size = 1
+tournament_size = 3
+mutation_rate = 1.0
+crossover_rate = 0.5
+island_count = 4
+migration_interval = 10
+migration_size = 1
+
+[signal]
+weight_min = -2.0
+weight_max = 2.0
+evolvable_kinds = [
+  "add", "multiply", "negate", "reciprocal",
+  "sin", "tanh", "square", "sqrt", "abs", "exp", "log",
+  "delay", "integral", "derivative", "filter_lp", "filter_hp",
+  "constant",
+]
+
+[[islands]]
+name = "simple/static"
+evolvable_kinds = ["add", "negate", "constant"]
+
+[[islands]]
+name = "delay-heavy"
+evolvable_kinds = ["delay", "add", "multiply", "constant"]
+
+[[islands]]
+name = "nonlinear"
+evolvable_kinds = [
+  "sin", "tanh", "square", "sqrt", "abs", "exp", "log",
+  "add", "multiply", "constant",
+]
+
+[[islands]]
+name = "unrestricted"
+evolvable_kinds = [
+  "add", "multiply", "negate", "reciprocal",
+  "sin", "tanh", "square", "sqrt", "abs", "exp", "log",
+  "delay", "integral", "derivative", "filter_lp", "filter_hp",
+  "constant",
+]

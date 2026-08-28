@@ -1,0 +1,19 @@
+{
+  "evolutionSettings": {
+    "loadInitialPopulation": false,
+    "initialPopulationPathFile": "",
+    "savePopulation": true,
+    "savePopulationPathFile": "bestCells.json",
+    "savePopulationPeriod": 100,
+    "savePopulationSize": 1,
+    "evolutionExitType": 0,
+    "maxGenerations": 10000,
+    "fitnessChange": 100,
+    "dataPathFile": "",
+    "loadModel": false,
+    "modelFile": "",
+    "saveModelOutputs": false,
+    "saveModelOutputsPathFile": "results.json",
+    "saveModelOutputsPeriod": 10
+  }
+}
