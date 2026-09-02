@@ -12,20 +12,59 @@ from .crossover import CrossoverError
 from .model import Graph, GraphError
 from .mutation import MutationError
 from .protocols import Evaluator, GraphCrossover, GraphMutation, GraphPolicy
-from .refinement import ParameterRefiner
+from .refinement import ParameterRefiner, Refinement
+from .evaluation import OscillatingParsimony
 
-_WORKER_EVALUATOR: Evaluator | None = None
-
-
-def _initialize_evaluation_worker(evaluator: Evaluator) -> None:
-    global _WORKER_EVALUATOR
-    _WORKER_EVALUATOR = evaluator
+_WORKER_EVALUATORS: tuple[Evaluator, ...] = ()
+_WORKER_REFINER: ParameterRefiner | None = None
+_WORKER_POLICIES: tuple[GraphPolicy, ...] = ()
 
 
-def _evaluate_in_worker(graph: Graph) -> float:
-    if _WORKER_EVALUATOR is None:
+def _initialize_evaluation_worker(
+    evaluators: tuple[Evaluator, ...],
+    refiner: ParameterRefiner | None,
+    policies: tuple[GraphPolicy, ...],
+) -> None:
+    global _WORKER_EVALUATORS, _WORKER_REFINER, _WORKER_POLICIES
+    _WORKER_EVALUATORS = evaluators
+    _WORKER_REFINER = refiner
+    _WORKER_POLICIES = policies
+
+
+def _evaluate_in_worker(job: tuple[Graph, int]) -> float:
+    if not _WORKER_EVALUATORS:
         raise RuntimeError("Parallel evaluation worker was not initialized")
-    return float(_WORKER_EVALUATOR.evaluate(graph))
+    graph, evaluator_index = job
+    return float(_WORKER_EVALUATORS[evaluator_index].evaluate(graph))
+
+
+def _refine_in_worker(job: tuple[Graph, int, int]) -> Refinement | None:
+    if not _WORKER_EVALUATORS or _WORKER_REFINER is None:
+        raise RuntimeError("Parallel refinement worker was not initialized")
+    graph, policy_index, seed = job
+    try:
+        return _WORKER_REFINER.refine(
+            graph,
+            _WORKER_EVALUATORS[policy_index],
+            _WORKER_POLICIES[policy_index],
+            Random(seed),
+        )
+    except (GraphError, ValueError):
+        return None
+
+
+@dataclass(slots=True)
+class _Candidate:
+    graph: Graph
+    topology_age: int
+    policy_index: int
+    raw_score: float | None = None
+    refinement_seed: int | None = None
+    parent_signature: tuple[object, ...] | None = None
+    parent_age: int = 0
+    fallback: Individual | None = None
+    discard_on_refinement_error: bool = False
+    discarded: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -41,6 +80,7 @@ class EvolutionConfig:
     island_count: int = 1
     migration_interval: int = 0
     migration_size: int = 0
+    island_exchange: str = "migration"
 
     def __post_init__(self) -> None:
         if self.population_size < 1:
@@ -80,6 +120,8 @@ class EvolutionConfig:
             raise ValueError("migration requires at least two islands")
         if self.migration_size > island_size:
             raise ValueError("migration_size must fit within an island")
+        if self.island_exchange not in {"migration", "crossover"}:
+            raise ValueError("island_exchange must be 'migration' or 'crossover'")
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,6 +129,7 @@ class Individual:
     graph: Graph
     score: float
     topology_age: int = 0
+    raw_score: float | None = None
 
     def __post_init__(self) -> None:
         if self.topology_age < 0:
@@ -137,6 +180,8 @@ class EvolutionEngine:
         refiner: ParameterRefiner | None = None,
         simulation_workers: int = 1,
         island_policies: Sequence[GraphPolicy] | None = None,
+        island_evaluators: Sequence[Evaluator] | None = None,
+        fitness_shaper: OscillatingParsimony | None = None,
     ) -> None:
         if simulation_workers < 1:
             raise ValueError("simulation_workers must be positive")
@@ -148,14 +193,29 @@ class EvolutionEngine:
         self.rng = Random(seed)
         self.refiner = refiner
         self.simulation_workers = simulation_workers
+        self.fitness_shaper = fitness_shaper
+        self._evaluation_generation = 0
         if island_policies is None:
             self.island_policies = (policy,) * self.config.island_count
         else:
             self.island_policies = tuple(island_policies)
             if len(self.island_policies) != self.config.island_count:
                 raise ValueError("island_policies must contain one policy per island")
+        if island_evaluators is None:
+            self.island_evaluators = (evaluator,) * self.config.island_count
+        else:
+            self.island_evaluators = tuple(island_evaluators)
+            if len(self.island_evaluators) != self.config.island_count:
+                raise ValueError("island_evaluators must contain one evaluator per island")
         self._evaluation_executor: ProcessPoolExecutor | None = None
         self.selection = TournamentSelection(self.config.tournament_size)
+        self.last_exchange_stats: tuple[tuple[int, int], ...] = ()
+        if (
+            self.config.island_exchange == "crossover"
+            and self.config.migration_interval
+            and self.crossover is None
+        ):
+            raise ValueError("crossover island exchange requires a crossover operator")
 
     def __enter__(self) -> EvolutionEngine:
         return self
@@ -178,12 +238,32 @@ class EvolutionEngine:
                 f"Expected {self.config.population_size} initial graphs, received {len(graphs)}"
             )
         island_size = self._island_size
-        islands = []
+        island_graphs: list[list[Graph]] = []
         for index, start in enumerate(range(0, len(graphs), island_size)):
-            island_graphs = graphs[start : start + island_size]
-            for graph in island_graphs:
+            group = graphs[start : start + island_size]
+            for graph in group:
                 self.island_policies[index].validate(graph)
-            islands.append(self._evaluate(island_graphs))
+            island_graphs.append(group)
+        raw_scores = self._evaluate_graphs(
+            graphs,
+            [
+                island
+                for island in range(self.config.island_count)
+                for _ in range(island_size)
+            ],
+        )
+        islands = []
+        offset = 0
+        for island_index, group in enumerate(island_graphs):
+            entries = zip(group, raw_scores[offset : offset + len(group)])
+            islands.append(sorted(
+                (
+                    self._individual(graph, 0, raw_score, island_index)
+                    for graph, raw_score in entries
+                ),
+                key=lambda individual: individual.score,
+            ))
+            offset += len(group)
         islands = self._advance(islands, 0, generations)
         return self._result(islands, generations)
 
@@ -195,16 +275,35 @@ class EvolutionEngine:
         """
         if self.config.island_count != 1:
             raise ValueError("step() is only available for single-island configurations")
-        return self._step_island(population, self.island_policies[0])
+        self._evaluation_generation += 1
+        population = self._reshape(population, self._evaluation_generation, 0)
+        candidates = self._prepare_island(population, 0)
+        return self._finish_islands([candidates])[0]
 
-    def _step_island(
-        self, population: Sequence[Individual], policy: GraphPolicy
-    ) -> list[Individual]:
+    def advance(self, result: EvolutionResult, generations: int = 1) -> EvolutionResult:
+        """Advance a result while retaining its island layout and migration phase."""
+        if generations < 0:
+            raise ValueError("generations cannot be negative")
+        islands = result.islands or (result.population,)
+        expected_sizes = (self._island_size,) * self.config.island_count
+        if tuple(len(island) for island in islands) != expected_sizes:
+            raise ValueError("Result island layout does not match evolution configuration")
+        mutable = [list(island) for island in islands]
+        advanced = self._advance(mutable, result.generations, generations)
+        return self._result(advanced, result.generations + generations)
+
+    def _prepare_island(
+        self, population: Sequence[Individual], policy_index: int
+    ) -> list[_Candidate]:
         if len(population) != self._island_size:
             raise ValueError("Population size does not match evolution configuration")
+        policy = self.island_policies[policy_index]
         ranked = sorted(population, key=lambda individual: individual.score)
         next_entries = [
-            (individual.graph.copy(), individual.topology_age + 1)
+            _Candidate(
+                individual.graph.copy(), individual.topology_age + 1, policy_index,
+                individual.raw_score,
+            )
             for individual in ranked[: self.config.elite_size]
         ]
         elite_signatures = {
@@ -213,7 +312,10 @@ class EvolutionEngine:
         }
         protected = self._protected(ranked, elite_signatures)
         next_entries.extend(
-            (individual.graph.copy(), individual.topology_age + 1)
+            _Candidate(
+                individual.graph.copy(), individual.topology_age + 1, policy_index,
+                individual.raw_score,
+            )
             for individual in protected
         )
 
@@ -229,26 +331,40 @@ class EvolutionEngine:
                     child = self.rng.choice(self.mutations).mutate(child, policy, self.rng)
                 policy.validate(child)
                 if self.refiner is not None:
-                    # Judge the new shape on what it can do once tuned, not on
-                    # the parameters it happened to be born with.
-                    child = self.refiner.refine(
-                        child, self.evaluator, policy, self.rng
-                    ).graph
+                    next_entries.append(_Candidate(
+                        child,
+                        0,
+                        policy_index,
+                        refinement_seed=self.rng.getrandbits(64),
+                        parent_signature=parent_signature,
+                        parent_age=parent.topology_age,
+                        fallback=parent,
+                    ))
+                    continue
             except (MutationError, CrossoverError, GraphError, ValueError):
                 child = parent.graph.copy()
+                next_entries.append(_Candidate(
+                    child,
+                    parent.topology_age + 1,
+                    policy_index,
+                    parent.raw_score,
+                ))
+                continue
             child_age = (
                 parent.topology_age + 1
                 if _topology_signature(child) == parent_signature
                 else 0
             )
-            next_entries.append((child, child_age))
-        return self._evaluate_entries(next_entries)
+            next_entries.append(_Candidate(child, child_age, policy_index))
+        return next_entries
 
     def checkpoint(self, result: EvolutionResult) -> EvolutionCheckpoint:
         islands = result.islands or (result.population,)
         return EvolutionCheckpoint(
             tuple(
-                Individual(item.graph.copy(), item.score, item.topology_age)
+                Individual(
+                    item.graph.copy(), item.score, item.topology_age, item.raw_score
+                )
                 for island in islands
                 for item in island
             ),
@@ -268,7 +384,9 @@ class EvolutionEngine:
             raise ValueError("Checkpoint island layout does not match evolution configuration")
         self.rng.setstate(checkpoint.random_state)
         population = [
-            Individual(item.graph.copy(), float(item.score), item.topology_age)
+            Individual(
+                item.graph.copy(), float(item.score), item.topology_age, item.raw_score
+            )
             for item in checkpoint.population
         ]
         islands: list[list[Individual]] = []
@@ -293,16 +411,80 @@ class EvolutionEngine:
         generations: int,
     ) -> list[list[Individual]]:
         for current in range(generation + 1, generation + generations + 1):
+            self._evaluation_generation = current
             islands = [
-                self._step_island(island, self.island_policies[index])
+                self._reshape(island, current, index)
                 for index, island in enumerate(islands)
             ]
+            prepared = [
+                self._prepare_island(island, index)
+                for index, island in enumerate(islands)
+            ]
+            islands = self._finish_islands(prepared)
             if (
                 self.config.migration_interval
                 and current % self.config.migration_interval == 0
             ):
-                islands = self._migrate(islands)
+                islands = self._exchange_islands(islands)
         return islands
+
+    def _exchange_islands(
+        self, islands: Sequence[Sequence[Individual]]
+    ) -> list[list[Individual]]:
+        if self.config.island_exchange == "crossover":
+            return self._cross_islands(islands)
+        return self._migrate(islands)
+
+    def _cross_islands(
+        self, islands: Sequence[Sequence[Individual]]
+    ) -> list[list[Individual]]:
+        """Cross local elites with predecessor elites without moving either parent."""
+        assert self.crossover is not None
+        count = self.config.migration_size
+        prepared: list[list[_Candidate]] = []
+        stats: list[tuple[int, int]] = []
+        for index, island in enumerate(islands):
+            donor_island = islands[(index - 1) % len(islands)]
+            entries: list[_Candidate] = []
+            for local, donor in zip(island[:count], donor_island[:count]):
+                local_signature = _topology_signature(local.graph)
+                try:
+                    child = self.crossover.cross(
+                        local.graph, donor.graph, self.island_policies[index], self.rng
+                    )
+                    self.island_policies[index].validate(child)
+                except (CrossoverError, GraphError, ValueError):
+                    continue
+                age = (
+                    local.topology_age + 1
+                    if _topology_signature(child) == local_signature
+                    else 0
+                )
+                entries.append(_Candidate(
+                    child,
+                    age,
+                    index,
+                    refinement_seed=(
+                        self.rng.getrandbits(64) if self.refiner is not None else None
+                    ),
+                    parent_signature=local_signature,
+                    parent_age=local.topology_age,
+                    discard_on_refinement_error=True,
+                ))
+            prepared.append(entries)
+
+        children_by_island = self._finish_islands(prepared)
+        crossed: list[list[Individual]] = []
+        for index, (island, children) in enumerate(zip(islands, children_by_island)):
+            donor_island = islands[(index - 1) % len(islands)]
+            stats.append((min(count, len(island), len(donor_island)), len(children)))
+            residents = [
+                self._copy_individual(item)
+                for item in island[: len(island) - len(children)]
+            ]
+            crossed.append(sorted(residents + children, key=lambda item: item.score))
+        self.last_exchange_stats = tuple(stats)
+        return crossed
 
     def _migrate(self, islands: Sequence[Sequence[Individual]]) -> list[list[Individual]]:
         """Copy elites around a ring using a simultaneous migration snapshot."""
@@ -311,7 +493,8 @@ class EvolutionEngine:
             [self._copy_individual(item) for item in island[:count]]
             for island in islands
         ]
-        migrated: list[list[Individual]] = []
+        prepared: list[list[_Candidate]] = []
+        stats: list[tuple[int, int]] = []
         for index, island in enumerate(islands):
             incoming = migrants[(index - 1) % len(islands)]
             accepted = []
@@ -321,11 +504,27 @@ class EvolutionEngine:
                 except (GraphError, ValueError):
                     continue
                 accepted.append(migrant)
+            stats.append((len(incoming), len(accepted)))
             residents = [
                 self._copy_individual(item) for item in island[: len(island) - len(accepted)]
             ]
-            migrated.append(sorted(residents + accepted, key=lambda item: item.score))
-        return migrated
+            prepared.append([
+                *(
+                    _Candidate(
+                        resident.graph,
+                        resident.topology_age,
+                        index,
+                        resident.raw_score,
+                    )
+                    for resident in residents
+                ),
+                *(
+                    _Candidate(migrant.graph, migrant.topology_age, index)
+                    for migrant in accepted
+                ),
+            ])
+        self.last_exchange_stats = tuple(stats)
+        return self._finish_islands(prepared)
 
     def _result(
         self, islands: Sequence[Sequence[Individual]], generations: int
@@ -340,31 +539,141 @@ class EvolutionEngine:
     @staticmethod
     def _copy_individual(individual: Individual) -> Individual:
         return Individual(
-            individual.graph.copy(), individual.score, individual.topology_age
+            individual.graph.copy(), individual.score, individual.topology_age,
+            individual.raw_score,
         )
 
-    def _evaluate(self, graphs: Sequence[Graph]) -> list[Individual]:
-        return self._evaluate_entries([(graph, 0) for graph in graphs])
+    def _reshape(
+        self, population: Sequence[Individual], generation: int, evaluator_index: int
+    ) -> list[Individual]:
+        if self.fitness_shaper is None:
+            return list(population)
+        reshaped = []
+        for item in population:
+            raw = item.raw_score
+            if raw is None:
+                raw = float(self.island_evaluators[evaluator_index].evaluate(item.graph))
+            score = self.fitness_shaper.shape(item.graph, raw, generation)
+            reshaped.append(Individual(item.graph, score, item.topology_age, raw))
+        return sorted(reshaped, key=lambda item: item.score)
 
-    def _evaluate_entries(self, entries: Sequence[tuple[Graph, int]]) -> list[Individual]:
-        graphs = [graph for graph, _ in entries]
+    def _executor(self) -> ProcessPoolExecutor:
+        if self._evaluation_executor is None:
+            self._evaluation_executor = ProcessPoolExecutor(
+                max_workers=self.simulation_workers,
+                initializer=_initialize_evaluation_worker,
+                initargs=(self.island_evaluators, self.refiner, self.island_policies),
+            )
+        return self._evaluation_executor
+
+    def _evaluate_graphs(
+        self,
+        graphs: Sequence[Graph],
+        evaluator_indices: Sequence[int],
+    ) -> list[float]:
+        if len(graphs) != len(evaluator_indices):
+            raise ValueError("Each graph must have an evaluator index")
         if self.simulation_workers == 1:
-            scores = [float(self.evaluator.evaluate(graph)) for graph in graphs]
-        else:
-            if self._evaluation_executor is None:
-                self._evaluation_executor = ProcessPoolExecutor(
-                    max_workers=self.simulation_workers,
-                    initializer=_initialize_evaluation_worker,
-                    initargs=(self.evaluator,),
-                )
-            scores = list(self._evaluation_executor.map(_evaluate_in_worker, graphs))
+            return [
+                float(self.island_evaluators[index].evaluate(graph))
+                for graph, index in zip(graphs, evaluator_indices)
+            ]
+        return list(self._executor().map(
+            _evaluate_in_worker, zip(graphs, evaluator_indices)
+        ))
 
-        population = []
-        for (graph, topology_age), score in zip(entries, scores):
-            if math.isnan(score):
-                score = math.inf
-            population.append(Individual(graph, score, topology_age))
-        return sorted(population, key=lambda individual: individual.score)
+    def _refine_candidates(self, candidates: Sequence[_Candidate]) -> None:
+        pending = [item for item in candidates if item.refinement_seed is not None]
+        if not pending:
+            return
+        jobs = [
+            (item.graph, item.policy_index, item.refinement_seed)
+            for item in pending
+        ]
+        if self.simulation_workers == 1:
+            assert self.refiner is not None
+            results: Sequence[Refinement | None] = []
+            serial_results = []
+            for graph, policy_index, seed in jobs:
+                try:
+                    serial_results.append(self.refiner.refine(
+                        graph,
+                        self.island_evaluators[policy_index],
+                        self.island_policies[policy_index],
+                        Random(seed),
+                    ))
+                except (GraphError, ValueError):
+                    serial_results.append(None)
+            results = serial_results
+        else:
+            results = list(self._executor().map(_refine_in_worker, jobs))
+
+        for item, result in zip(pending, results):
+            if result is None:
+                if item.discard_on_refinement_error:
+                    item.discarded = True
+                    continue
+                assert item.fallback is not None
+                item.graph = item.fallback.graph.copy()
+                item.topology_age = item.fallback.topology_age + 1
+                item.raw_score = item.fallback.raw_score
+                continue
+            item.graph = result.graph
+            item.raw_score = result.score
+            item.topology_age = (
+                item.parent_age + 1
+                if _topology_signature(item.graph) == item.parent_signature
+                else 0
+            )
+
+    def _finish_islands(
+        self, prepared: Sequence[Sequence[_Candidate]]
+    ) -> list[list[Individual]]:
+        candidates = [item for island in prepared for item in island]
+        self._refine_candidates(candidates)
+        unevaluated = [
+            item for item in candidates
+            if not item.discarded and item.raw_score is None
+        ]
+        if unevaluated:
+            for item, raw_score in zip(
+                unevaluated,
+                self._evaluate_graphs(
+                    [item.graph for item in unevaluated],
+                    [item.policy_index for item in unevaluated],
+                ),
+            ):
+                item.raw_score = raw_score
+
+        islands: list[list[Individual]] = []
+        for group in prepared:
+            population = [
+                self._individual(
+                    item.graph, item.topology_age, item.raw_score, item.policy_index
+                )
+                for item in group
+                if not item.discarded
+            ]
+            islands.append(sorted(population, key=lambda individual: individual.score))
+        return islands
+
+    def _individual(
+        self,
+        graph: Graph,
+        topology_age: int,
+        raw_score: float | None,
+        evaluator_index: int,
+    ) -> Individual:
+        if raw_score is None:
+            raw_score = float(self.island_evaluators[evaluator_index].evaluate(graph))
+        if math.isnan(raw_score):
+            raw_score = math.inf
+        score = (
+            self.fitness_shaper.shape(graph, raw_score, self._evaluation_generation)
+            if self.fitness_shaper is not None
+            else raw_score
+        )
+        return Individual(graph, score, topology_age, raw_score)
 
     def _protected(
         self,

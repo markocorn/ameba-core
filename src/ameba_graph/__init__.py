@@ -1,6 +1,14 @@
 """Domain-neutral graph representation and evolution contracts."""
 
-from .evaluation import ParsimoniousEvaluator, live_nodes, prune
+from .archive import (
+    Archive,
+    ArchiveConfig,
+    ArchiveMember,
+    Insertion,
+    correlation_distance,
+    rank_transform,
+)
+from .evaluation import OscillatingParsimony, ParsimoniousEvaluator, live_nodes, prune
 from .model import Edge, Graph, GraphError, Node
 from .protocols import Evaluator, GraphCrossover, GraphMutation, GraphPolicy
 from .evolution import (
@@ -34,6 +42,13 @@ __all__ = [
     "Refinement",
     "RefinementConfig",
     "ParsimoniousEvaluator",
+    "OscillatingParsimony",
+    "Archive",
+    "ArchiveConfig",
+    "ArchiveMember",
+    "Insertion",
+    "correlation_distance",
+    "rank_transform",
     "live_nodes",
     "prune",
 ]

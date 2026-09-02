@@ -63,7 +63,9 @@ report. Worker processes require a normal script/module entry point; on Windows,
 do not launch multiprocessing experiments from code piped through standard input.
 
 Evolution can also split the total population into independent islands with
-periodic ring migration. For example:
+periodic ring exchange. Crossover exchange keeps both parents in their islands
+and inserts only a destination-valid hybrid child; direct migration remains
+available for experiments. For example:
 
 ```toml
 [evolution]
@@ -71,6 +73,7 @@ population_size = 24
 island_count = 4
 migration_interval = 10
 migration_size = 1
+island_exchange = "crossover"
 ```
 
 Each island gets six candidates in this example. Checkpoints retain island
@@ -129,6 +132,33 @@ To run one and see what it found:
 python scripts/benchmark_report.py
 python scripts/benchmark_report.py --benchmark narendra --generations 300
 python scripts/benchmark_report.py --graph reference --no-show
+```
+
+The benchmark runner also supports specialized islands directly. `--population`
+is the total population across all islands; `--restarts` remains a separate set
+of independent complete runs:
+
+```shell
+python scripts/benchmark_report.py --benchmark narendra --islands 4 \
+  --migration-interval 10 --migration-size 1 --population 16 \
+  --simulation-workers 10 --generations 1000 --no-show
+```
+
+Multi-island benchmark runs use diverse deterministic inputs by default: the
+requested primary input plus distinct random, sine, and step excitations. Each
+island score is normalized by that signal's memoryless floor, and the final
+winner is rescored across every signal. Pass `--island-signals shared` to use
+one input trajectory on every island.
+
+An optional complexity cycle lets structures expand under a low node penalty,
+then compresses them under a higher penalty. Raw simulation fitness is retained,
+so changing pressure does not rerun simulations and remains checkpoint-safe:
+
+```shell
+python scripts/benchmark_report.py --benchmark narendra --islands 4 \
+  --oscillating-penalty --expansion-generations 25 \
+  --compression-generations 25 --expansion-node-penalty 0 \
+  --node-penalty 0.002
 ```
 
 The script prints the scores, the evolved graph, and the model's difference

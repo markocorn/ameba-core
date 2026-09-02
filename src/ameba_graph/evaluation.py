@@ -16,6 +16,47 @@ from .protocols import Evaluator
 
 
 @dataclass(frozen=True, slots=True)
+class OscillatingParsimony:
+    """Alternate expansion and compression phases without rerunning simulation."""
+
+    expansion_generations: int = 25
+    compression_generations: int = 25
+    expansion_node_weight: float = 0.0
+    compression_node_weight: float = 1e-3
+    relative: bool = True
+
+    def __post_init__(self) -> None:
+        if self.expansion_generations < 1 or self.compression_generations < 1:
+            raise ValueError("Complexity phases must last at least one generation")
+        if self.expansion_node_weight < 0 or self.compression_node_weight < 0:
+            raise ValueError("Complexity weights cannot be negative")
+        if self.expansion_node_weight > self.compression_node_weight:
+            raise ValueError("Expansion weight cannot exceed compression weight")
+
+    def phase_at(self, generation: int) -> str:
+        return "expand" if self._offset(generation) < self.expansion_generations else "compress"
+
+    def node_weight_at(self, generation: int) -> float:
+        return (
+            self.expansion_node_weight
+            if self.phase_at(generation) == "expand"
+            else self.compression_node_weight
+        )
+
+    def shape(self, graph: Graph, score: float, generation: int) -> float:
+        if not isfinite(score):
+            return score
+        penalty = self.node_weight_at(generation) * len(graph.nodes)
+        return score + (penalty * abs(score) if self.relative else penalty)
+
+    def _offset(self, generation: int) -> int:
+        if generation < 0:
+            raise ValueError("generation cannot be negative")
+        period = self.expansion_generations + self.compression_generations
+        return generation % period
+
+
+@dataclass(frozen=True, slots=True)
 class ParsimoniousEvaluator:
     """Add a size penalty to another evaluator's score.
 

@@ -24,6 +24,7 @@ class ConfigAndCliTests(unittest.TestCase):
                     "island_count": 2,
                     "migration_interval": 5,
                     "migration_size": 1,
+                    "island_exchange": "crossover",
                 },
                 "signal": {
                     "weight_min": -1.0,
@@ -41,6 +42,7 @@ class ConfigAndCliTests(unittest.TestCase):
         self.assertEqual(3, config.simulation_workers)
         self.assertEqual(2, config.evolution.island_count)
         self.assertEqual(5, config.evolution.migration_interval)
+        self.assertEqual("crossover", config.evolution.island_exchange)
         self.assertEqual(("add", "delay"), config.signal.evolvable_kinds)
         self.assertEqual(("static", "dynamic"), tuple(i.name for i in config.islands))
         self.assertEqual(("delay", "add"), config.islands[1].evolvable_kinds)

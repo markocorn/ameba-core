@@ -6,7 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from math import isfinite
 
-from ameba_graph import Graph
+from ameba_graph import Graph, rank_transform
 
 from .simulator import SignalSimulationError, SignalSimulator
 
@@ -54,6 +54,7 @@ class SignalEvaluator:
         invalid_score: float = float("inf"),
         criterion: str = "ise",
         time_step: float = 1.0,
+        normalization: float = 1.0,
     ) -> None:
         if criterion not in CRITERIA:
             raise ValueError(
@@ -62,15 +63,36 @@ class SignalEvaluator:
             )
         if not isfinite(time_step) or time_step <= 0.0:
             raise ValueError("time_step must be positive")
+        if not isfinite(normalization) or normalization <= 0.0:
+            raise ValueError("normalization must be positive")
         self.dataset = dataset
         self.simulator = simulator or SignalSimulator()
         self.invalid_score = invalid_score
         self.criterion = criterion
         self.time_step = time_step
+        self.normalization = normalization
 
     def evaluate(self, graph: Graph) -> float:
+        return self.evaluate_detailed(graph, residuals=False)[0]
+
+    def evaluate_detailed(
+        self, graph: Graph, residuals: bool = True
+    ) -> tuple[float, tuple[float, ...] | None]:
+        """Score the graph, optionally keeping the per-step residuals.
+
+        The residuals are the raw ``model - target`` differences the criterion
+        is summed from, in step order. They are what a behavioural descriptor
+        is built out of, and the simulation computes them either way, so asking
+        for them costs one list instead of a second run. A candidate the
+        simulator rejects has no residuals at all, only the invalid score.
+
+        Normalization scales the score and deliberately leaves the residuals
+        alone: they describe the shape of a model's failure, which should not
+        depend on which trajectory it was measured against.
+        """
         contribution = CRITERIA[self.criterion]
         score = 0.0
+        collected: list[float] = []
         try:
             session = self.simulator.start(graph)
             for step, (inputs, expected) in enumerate(
@@ -78,12 +100,34 @@ class SignalEvaluator:
             ):
                 actual = session.step(inputs)
                 if len(actual) != len(expected):
-                    return self.invalid_score
+                    return self.invalid_score, None
                 time = step * self.time_step
-                score += sum(
-                    contribution(value - target, time)
-                    for value, target in zip(actual, expected)
-                )
+                for value, target in zip(actual, expected):
+                    error = value - target
+                    score += contribution(error, time)
+                    if residuals:
+                        collected.append(error)
         except SignalSimulationError:
-            return self.invalid_score
-        return score * self.time_step
+            return self.invalid_score, None
+        return (
+            score * self.time_step / self.normalization,
+            tuple(collected) if residuals else None,
+        )
+
+    def describe(self, graph: Graph) -> tuple[float, tuple[float, ...] | None]:
+        """Score the graph and describe *how* it fails, as a rank vector.
+
+        Ranking the residuals is what makes this a Spearman comparison once the
+        archive correlates two descriptors. Two models that differ only by a
+        gain produce the same ranking and so read as one idea, and a single
+        enormous residual -- routine on these plants -- moves a rank by one
+        place instead of dominating the correlation outright.
+
+        A model whose residuals are not all finite gets no descriptor: it
+        cannot be placed against the others, so the archive should reject it
+        rather than rank infinities.
+        """
+        score, residuals = self.evaluate_detailed(graph)
+        if residuals is None or not all(isfinite(value) for value in residuals):
+            return score, None
+        return score, rank_transform(residuals)

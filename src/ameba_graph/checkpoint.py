@@ -11,7 +11,7 @@ from .evolution import EvolutionCheckpoint, Individual
 from .serialization import SerializationError, graph_from_dict, graph_to_dict
 
 CHECKPOINT_SCHEMA = "ameba.evolution-checkpoint"
-CHECKPOINT_SCHEMA_VERSION = 2
+CHECKPOINT_SCHEMA_VERSION = 3
 
 
 def checkpoint_to_dict(checkpoint: EvolutionCheckpoint) -> dict[str, Any]:
@@ -24,6 +24,11 @@ def checkpoint_to_dict(checkpoint: EvolutionCheckpoint) -> dict[str, Any]:
         "population": [
             {
                 "score": _score_to_json(individual.score),
+                "raw_score": (
+                    _score_to_json(individual.raw_score)
+                    if individual.raw_score is not None
+                    else None
+                ),
                 "topology_age": individual.topology_age,
                 "graph": graph_to_dict(individual.graph),
             }
@@ -36,10 +41,10 @@ def checkpoint_from_dict(payload: Mapping[str, Any]) -> EvolutionCheckpoint:
     if payload.get("schema") != CHECKPOINT_SCHEMA:
         raise SerializationError(f"Expected schema {CHECKPOINT_SCHEMA!r}")
     version = payload.get("version")
-    if version not in (1, CHECKPOINT_SCHEMA_VERSION):
+    if version not in (1, 2, CHECKPOINT_SCHEMA_VERSION):
         raise SerializationError(
             f"Unsupported checkpoint version {version!r}; "
-            f"expected 1 or {CHECKPOINT_SCHEMA_VERSION}"
+            f"expected 1, 2, or {CHECKPOINT_SCHEMA_VERSION}"
         )
     generation = payload.get("generation")
     if not isinstance(generation, int) or isinstance(generation, bool) or generation < 0:
@@ -67,6 +72,11 @@ def checkpoint_from_dict(payload: Mapping[str, Any]) -> EvolutionCheckpoint:
                 graph_from_dict(graph_data),
                 _score_from_json(raw_item.get("score")),
                 topology_age,
+                (
+                    _score_from_json(raw_item.get("raw_score"))
+                    if version == 3 and raw_item.get("raw_score") is not None
+                    else None
+                ),
             )
         )
 
@@ -77,7 +87,7 @@ def checkpoint_from_dict(payload: Mapping[str, Any]) -> EvolutionCheckpoint:
         Random().setstate(state)
     except (TypeError, ValueError) as exc:
         raise SerializationError(f"Invalid random state: {exc}") from exc
-    raw_sizes = payload.get("island_sizes", []) if version == 2 else []
+    raw_sizes = payload.get("island_sizes", []) if version in (2, 3) else []
     if (
         not isinstance(raw_sizes, list)
         or any(not isinstance(size, int) or isinstance(size, bool) or size < 1 for size in raw_sizes)

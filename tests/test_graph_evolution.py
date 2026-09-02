@@ -9,6 +9,7 @@ from ameba_graph import (
     Graph,
     GraphGenerator,
     Node,
+    OscillatingParsimony,
 )
 from ameba_graph.crossover import UniformGraphCrossover
 from ameba_graph.mutation import AddEdge, AddNode, RemoveEdge, RemoveNode
@@ -38,6 +39,14 @@ class ArbitraryPolicy:
 class TargetSizeEvaluator:
     def evaluate(self, graph: Graph) -> float:
         return float(abs(len(graph.nodes) - 4) + abs(len(graph.edges) - 3))
+
+
+class PreferredSizeEvaluator:
+    def __init__(self, size: int) -> None:
+        self.size = size
+
+    def evaluate(self, graph: Graph) -> float:
+        return float(abs(len(graph.nodes) - self.size))
 
 
 class GraphEvolutionTests(unittest.TestCase):
@@ -259,6 +268,46 @@ class GraphEvolutionTests(unittest.TestCase):
         self.assertTrue(any(len(item.graph.nodes) <= 3 for item in result.islands[1]))
         self.assertEqual(min(item.score for item in result.population), result.best.score)
 
+    def test_cross_island_exchange_creates_children_without_moving_parents(self) -> None:
+        class MarkDonor:
+            def cross(self, left, right, policy, rng):
+                child = left.copy()
+                first = next(iter(child.nodes.values()))
+                first.attributes["donor_size"] = len(right.nodes)
+                return child
+
+        initial = [
+            Graph(nodes=[Node(f"n{i}", "red") for i in range(count)])
+            for count in (1, 2, 3, 10, 11, 12)
+        ]
+        result = EvolutionEngine(
+            TargetSizeEvaluator(), self.policy, [], crossover=MarkDonor(),
+            config=EvolutionConfig(
+                population_size=6, island_count=2, elite_size=1,
+                tournament_size=1, mutation_rate=0.0, crossover_rate=0.0,
+                migration_interval=1, migration_size=1,
+                island_exchange="crossover",
+            ),
+            seed=8,
+        ).run(initial, 1)
+
+        first_markers = [
+            node.attributes["donor_size"]
+            for item in result.islands[0]
+            for node in item.graph.nodes.values()
+            if "donor_size" in node.attributes
+        ]
+        second_markers = [
+            node.attributes["donor_size"]
+            for item in result.islands[1]
+            for node in item.graph.nodes.values()
+            if "donor_size" in node.attributes
+        ]
+        self.assertTrue(first_markers and min(first_markers) >= 10)
+        self.assertTrue(second_markers and max(second_markers) <= 3)
+        self.assertTrue(all(len(item.graph.nodes) <= 3 for item in result.islands[0]))
+        self.assertTrue(all(len(item.graph.nodes) >= 10 for item in result.islands[1]))
+
     def test_invalid_island_configuration_is_rejected(self) -> None:
         invalid = (
             {"island_count": 0},
@@ -318,6 +367,113 @@ class GraphEvolutionTests(unittest.TestCase):
             for item in result.islands[1]
             for node in item.graph.nodes.values()
         ))
+
+    def test_each_island_can_use_a_different_evaluator(self) -> None:
+        initial = [
+            Graph(nodes=[Node(f"n{i}", "red") for i in range(count)])
+            for count in (1, 2, 9, 10)
+        ]
+        config = EvolutionConfig(
+            population_size=4,
+            island_count=2,
+            elite_size=1,
+            tournament_size=1,
+            mutation_rate=0.0,
+            crossover_rate=0.0,
+            migration_interval=1,
+            migration_size=1,
+        )
+        evaluators = (PreferredSizeEvaluator(1), PreferredSizeEvaluator(10))
+        with EvolutionEngine(
+            TargetSizeEvaluator(),
+            self.policy,
+            [],
+            config=config,
+            seed=7,
+            simulation_workers=2,
+            island_evaluators=evaluators,
+        ) as engine:
+            result = engine.run(initial, 1)
+
+        for index, island in enumerate(result.islands):
+            self.assertEqual(
+                [evaluators[index].evaluate(item.graph) for item in island],
+                [item.raw_score for item in island],
+            )
+
+    def test_island_evaluator_count_must_match_islands(self) -> None:
+        with self.assertRaises(ValueError):
+            EvolutionEngine(
+                TargetSizeEvaluator(),
+                self.policy,
+                [],
+                config=EvolutionConfig(
+                    population_size=4, island_count=2, tournament_size=1
+                ),
+                island_evaluators=(TargetSizeEvaluator(),),
+            )
+
+    def test_result_level_advance_matches_an_uninterrupted_island_run(self) -> None:
+        initial = [
+            Graph(nodes=[Node(f"n{i}", "red") for i in range(count)])
+            for count in (1, 2, 3, 4, 5, 6)
+        ]
+        config = EvolutionConfig(
+            population_size=6,
+            island_count=2,
+            elite_size=1,
+            tournament_size=2,
+            migration_interval=2,
+            migration_size=1,
+        )
+
+        def engine() -> EvolutionEngine:
+            return EvolutionEngine(
+                TargetSizeEvaluator(), self.policy, [AddNode(), RemoveNode()],
+                config=config, seed=19,
+            )
+
+        uninterrupted = engine().run(initial, 4)
+        incremental_engine = engine()
+        incremental = incremental_engine.run(initial, 0)
+        for _ in range(4):
+            incremental = incremental_engine.advance(incremental)
+
+        self.assertEqual(
+            [graph_dumps(item.graph) for island in uninterrupted.islands for item in island],
+            [graph_dumps(item.graph) for island in incremental.islands for item in island],
+        )
+
+    def test_oscillating_pressure_rescores_parents_without_resimulation(self) -> None:
+        initial = [
+            Graph(nodes=[Node("small", "red")]),
+            Graph(nodes=[Node(f"n{i}", "red") for i in range(3)]),
+        ]
+        engine = EvolutionEngine(
+            TargetSizeEvaluator(), self.policy, [],
+            config=EvolutionConfig(
+                population_size=2, elite_size=2, tournament_size=1,
+                mutation_rate=0.0, crossover_rate=0.0,
+            ),
+            fitness_shaper=OscillatingParsimony(
+                expansion_generations=1,
+                compression_generations=1,
+                compression_node_weight=0.1,
+            ),
+        )
+        expanded = engine.run(initial, 0)
+        compressed = engine.advance(expanded)
+        expanded_again = engine.advance(compressed)
+
+        self.assertTrue(all(item.raw_score is not None for item in compressed.population))
+        self.assertNotEqual(
+            [item.score for item in expanded.population],
+            [item.score for item in compressed.population],
+        )
+        self.assertEqual(
+            [item.raw_score for item in expanded_again.population],
+            [item.score for item in expanded_again.population],
+        )
 
 
 if __name__ == "__main__":

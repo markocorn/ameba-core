@@ -39,6 +39,18 @@ class SignalPolicyTests(unittest.TestCase):
         self.assertEqual(len(example_graph().nodes) + 1, len(child.nodes))
         self.assertEqual(len(example_graph().edges) + 1, len(child.edges))
 
+    def test_niche_constraints_reject_foreign_or_missing_structure(self) -> None:
+        graph = example_graph()
+        requires_memory = SignalGraphPolicy(
+            required_kind_groups=({"delay", "integral"},)
+        )
+        with self.assertRaisesRegex(GraphError, "requires at least one"):
+            requires_memory.validate(graph)
+
+        forbids_multiply = SignalGraphPolicy(forbidden_kinds={"multiply"})
+        with self.assertRaisesRegex(GraphError, "forbidden"):
+            forbids_multiply.validate(graph)
+
     def test_generic_evolution_accepts_signal_domain_adapter(self) -> None:
         dataset = Dataset(
             inputs=((0.0,), (1.0,), (2.0,)),

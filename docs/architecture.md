@@ -58,9 +58,10 @@ the single seeded random generator, then collects worker scores in population
 order. Worker completion order therefore cannot change evolution or checkpoint
 replay. Evaluators used this way must be serializable by Python multiprocessing.
 
-This parallelizes final population simulation. Parameter refinement currently
-runs in the coordinator because it is an iterative hill climb whose next trial
-depends on the previous score.
+The process pool runs both final population simulation and whole-child parameter
+refinement. Trials inside one hill climb remain sequential, but independent
+children from every island refine concurrently. Final evaluations are also
+batched across islands so small islands do not leave most workers idle.
 
 ## Island evolution
 
@@ -85,6 +86,18 @@ the destination policy validates it; rejected migrants leave the destination's
 existing population intact. Signal profiles intentionally restrict local node
 creation rather than existing nodes, allowing migration to cross-pollinate the
 niches.
+
+An exchange round may instead perform cross-island mating. Each destination
+crosses a local elite with an elite from its ring predecessor. Neither parent
+moves; only a valid hybrid child competes for a destination slot. This avoids a
+strong generalist directly replacing a specialist while still transferring
+useful subgraphs and parameters between niches.
+
+Each island may also receive its own evaluator. This lets signal-identification
+islands train on different excitation trajectories. Migrants are rescored by the
+destination evaluator, and crossover children always use the destination
+signal. Benchmark scores are normalized by each trajectory's memoryless floor
+before islands are compared.
 
 ## Core rule
 

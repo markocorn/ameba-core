@@ -12,8 +12,10 @@ from __future__ import annotations
 
 import argparse
 import sys
-from math import isfinite
+from collections import Counter
+from math import isfinite, pi, sin
 from pathlib import Path
+from time import perf_counter
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
@@ -35,14 +37,16 @@ from ameba.benchmarks import (  # noqa: E402
 )
 from ameba.equations import format_equations, graph_to_equations  # noqa: E402
 from ameba.plotting import build_layout, draw_graph  # noqa: E402
-from ameba_graph import Graph, RefinementConfig  # noqa: E402
+from ameba_graph import Graph, OscillatingParsimony, RefinementConfig  # noqa: E402
 from ameba_signal import (  # noqa: E402
     CRITERIA,
     SignalEvaluator,
+    SignalGraphPolicy,
     SignalSimulationError,
     SignalSimulator,
 )
 from ameba_signal.stateful import CYCLE_BREAKER_KINDS, STATEFUL_KINDS  # noqa: E402
+from ameba_signal.operators import OPERATOR_GROUPS  # noqa: E402
 
 from random import Random  # noqa: E402
 
@@ -66,18 +70,36 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.restarts < 1:
         parser.error("--restarts must be positive")
+    if args.islands < 1:
+        parser.error("--islands must be positive")
+    if args.population % args.islands:
+        parser.error("--population must be divisible by --islands")
+    island_size = args.population // args.islands
+    if island_size < 3:
+        parser.error("each island needs at least three population members")
+    if args.migration_interval < 1:
+        parser.error("--migration-interval must be positive")
+    if not 1 <= args.migration_size <= island_size:
+        parser.error("--migration-size must fit within one island")
     if args.protect_topologies < 0:
         parser.error("--protect-topologies cannot be negative")
-    if args.protect_topologies and not 1 <= args.protected_slots <= args.population - 2:
+    if args.protect_topologies and not 1 <= args.protected_slots <= island_size - 2:
         parser.error("--protected-slots must fit beside the two benchmark elites")
     if not 0.0 <= args.protected_parent_rate <= 1.0:
         parser.error("--protected-parent-rate must be between zero and one")
     if args.simulation_workers < 1:
         parser.error("--simulation-workers must be positive")
+    if args.expansion_generations < 1 or args.compression_generations < 1:
+        parser.error("complexity phase lengths must be positive")
+    if args.node_penalty < 0 or args.expansion_node_penalty < 0:
+        parser.error("node penalties cannot be negative")
+    if args.expansion_node_penalty > args.node_penalty:
+        parser.error("--expansion-node-penalty cannot exceed --node-penalty")
     trajectory_of, reference_of, title = BENCHMARKS[args.benchmark]
 
-    trajectory = trajectory_of(_controls(args))
-    if not _bounded(trajectory):
+    island_runs = _island_runs(args, trajectory_of)
+    trajectory = island_runs[0][1]
+    if not all(_bounded(item) for _, item, _ in island_runs):
         print(
             f"\nThe {args.benchmark} plant diverges at amplitude {args.amplitude:g}.\n"
             "  It is only stable for bounded inputs; try a smaller --amplitude.\n"
@@ -86,6 +108,16 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 1
     dataset = identification_dataset(trajectory)
+    island_datasets = tuple(item for _, _, item in island_runs)
+    diverse_signals = args.island_signals == "diverse" and args.islands > 1
+    island_score_scales = (
+        tuple(
+            static_gain_floor(item, args.criterion, args.time_step)
+            for _, item, _ in island_runs
+        )
+        if diverse_signals
+        else None
+    )
     evaluator = SignalEvaluator(
         dataset, criterion=args.criterion, time_step=args.time_step
     )
@@ -96,12 +128,21 @@ def main(argv: list[str] | None = None) -> int:
 
     print(
         f"\n{title}  --  {args.steps} steps, {args.generations} generations, "
-        f"{args.input} input at amplitude {args.amplitude:g}, {args.criterion.upper()} fitness"
+        f"{('diverse island inputs' if args.island_signals == 'diverse' and args.islands > 1 else args.input + ' input')} "
+        f"at amplitude {args.amplitude:g}, {args.criterion.upper()} fitness"
     )
     refinement = _refinement(args)
+    schedule = _complexity_schedule(args)
+    print(f"  operators: {len(_operators(args))} ({args.operators})")
     print(
-        f"  operators: {len(_operators(args))} "
-        f"({args.operators});  node penalty {args.node_penalty:g}"
+        "  complexity pressure: "
+        + (
+            f"oscillating; expand {args.expansion_generations} gen @ "
+            f"{args.expansion_node_penalty:g}, compress "
+            f"{args.compression_generations} gen @ {args.node_penalty:g}"
+            if schedule is not None
+            else f"fixed node penalty {args.node_penalty:g}"
+        )
     )
     print(
         "  refinement: "
@@ -124,6 +165,30 @@ def main(argv: list[str] | None = None) -> int:
         )
     )
     print(f"  simulation workers: {args.simulation_workers}")
+    if diverse_signals:
+        print("  island fitness: normalized; 1.0 = each signal's memoryless floor")
+    print(
+        f"  islands: {args.islands} x {island_size}; {args.island_exchange}: "
+        + (
+            f"{args.migration_size} every {args.migration_interval} generations"
+            if args.islands > 1
+            else "off"
+        )
+    )
+    offspring_slots = island_size - 2 - protection_size
+    if args.islands > 1 and offspring_slots < 4:
+        print(
+            f"  WARNING: only {offspring_slots} new offspring slot(s) per island; "
+            f"use --population {args.islands * (2 + protection_size + 4)} or larger"
+        )
+    if args.islands > 1:
+        for index, ((name, policy), (signal, _, _)) in enumerate(
+            zip(_island_policies(args), island_runs), 1
+        ):
+            print(
+                f"    {index}. {name} | {signal}: "
+                f"{', '.join(policy.evolvable_kinds)}"
+            )
     print(
         f"  {args.steps} steps x dt {args.time_step:g} = {args.steps * args.time_step:g}"
         f" simulated time;  response range"
@@ -136,10 +201,12 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  initialization: {initialization}; restarts: {args.restarts}")
 
     result = None
+    best_item = None
     history: list[float] = []
     for restart in range(args.restarts):
         run_seed = args.seed + restart
         policy = benchmark_policy(_operators(args))
+        profiles = _island_policies(args)
         engine = benchmark_engine(
             dataset,
             policy=policy,
@@ -153,29 +220,53 @@ def main(argv: list[str] | None = None) -> int:
             topology_protection_size=protection_size,
             topology_parent_rate=protection_rate,
             simulation_workers=args.simulation_workers,
+            island_count=args.islands,
+            migration_interval=args.migration_interval if args.islands > 1 else 0,
+            migration_size=args.migration_size if args.islands > 1 else 0,
+            island_policies=tuple(profile for _, profile in profiles),
+            island_datasets=island_datasets,
+            island_score_scales=island_score_scales,
+            complexity_schedule=schedule,
+            island_exchange=args.island_exchange,
         )
         if initialization == "dynamic":
-            population = dynamic_population(
-                dataset,
-                policy,
-                args.population,
-                run_seed + 1_000,
-                args.initial_nodes_min,
-                args.initial_nodes_max,
-                args.initial_stateful,
-            )
+            population = []
+            for island, (_, island_policy) in enumerate(profiles):
+                island_dataset = island_datasets[island]
+                if set(island_policy.evolvable_kinds) & STATEFUL_KINDS:
+                    population.extend(dynamic_population(
+                        island_dataset,
+                        island_policy,
+                        island_size,
+                        run_seed + 1_000 + island,
+                        args.initial_nodes_min,
+                        args.initial_nodes_max,
+                        args.initial_stateful,
+                    ))
+                else:
+                    population.extend(seed.copy() for _ in range(island_size))
         else:
             population = [seed.copy() for _ in range(args.population)]
         if args.restarts > 1:
             print(f"\nRESTART {restart + 1}/{args.restarts} (seed {run_seed})")
         try:
-            candidate, candidate_history = _evolve(engine, population, args, floor)
+            candidate, candidate_history = _evolve(
+                engine, population, args, 1.0 if diverse_signals else floor
+            )
         finally:
             engine.close()
-        if result is None or candidate.best.score < result.best.score:
+        candidate_best = min(
+            candidate.population,
+            key=lambda item: _aggregate_score(item.graph, island_runs, args),
+        )
+        if result is None or _aggregate_score(
+            candidate_best.graph, island_runs, args
+        ) < _aggregate_score(best_item.graph, island_runs, args):  # type: ignore[union-attr]
             result, history = candidate, candidate_history
+            best_item = candidate_best
     assert result is not None
-    best = result.best.graph
+    assert best_item is not None
+    best = best_item.graph
 
     # The search optimises accuracy plus a size penalty, but the floor is a
     # pure accuracy figure, so the verdict must use the unpenalised error.
@@ -184,7 +275,12 @@ def main(argv: list[str] | None = None) -> int:
         "seed (y = u)": evaluator.evaluate(seed),
         "memoryless floor": floor,
         "evolved (accuracy)": true_error,
-        "evolved (with penalty)": result.best.score,
+        (
+            "evolved (local shaped ratio)"
+            if diverse_signals
+            else "evolved (with penalty)"
+        ): best_item.score,
+        "all-signal floor ratio": _aggregate_score(best, island_runs, args),
         "exact reference": evaluator.evaluate(reference),
     }
     signals = _signals(trajectory, best)
@@ -209,6 +305,48 @@ def _operators(args) -> tuple[str, ...]:
     return tuple(name.strip() for name in args.operators.split(",") if name.strip())
 
 
+def _island_policies(args) -> list[tuple[str, SignalGraphPolicy]]:
+    """Create deterministic signal-search niches, cycling for extra islands."""
+    allowed = tuple(_operators(args))
+    if args.islands == 1:
+        return [("unrestricted", benchmark_policy(allowed))]
+    templates = (
+        ("simple/static", ("add", "negate", "constant")),
+        (
+            "delay-heavy",
+            ("delay", "integral", "derivative", "filter_lp", "filter_hp", "add", "multiply", "constant"),
+        ),
+        (
+            "nonlinear",
+            ("sin", "tanh", "square", "sqrt", "abs", "exp", "log", "delay", "add", "multiply", "constant"),
+        ),
+        ("unrestricted", allowed),
+    )
+    profiles = []
+    nonlinear = frozenset(OPERATOR_GROUPS["nonlinear"])
+    stateful = frozenset(STATEFUL_KINDS)
+    for index in range(args.islands):
+        name, preferred = templates[index % len(templates)]
+        kinds = tuple(kind for kind in preferred if kind in allowed) or allowed
+        base = benchmark_policy(kinds)
+        niche = index % len(templates)
+        required = (
+            ()
+            if niche in (0, 3)
+            else ((stateful,) if niche == 1 else (stateful, nonlinear))
+        )
+        forbidden = stateful | nonlinear if niche == 0 else frozenset()
+        profiles.append((
+            name,
+            SignalGraphPolicy(
+                base.evolvable_kinds,
+                required_kind_groups=required,
+                forbidden_kinds=forbidden,
+            ),
+        ))
+    return profiles
+
+
 def _refinement(args) -> RefinementConfig | None:
     """Parameter search applied to each new topology, or None to skip it."""
     if not args.refine:
@@ -217,6 +355,17 @@ def _refinement(args) -> RefinementConfig | None:
         min_steps=args.refine_min,
         patience=args.refine_patience,
         max_steps=args.refine_max,
+    )
+
+
+def _complexity_schedule(args) -> OscillatingParsimony | None:
+    if not args.oscillating_penalty:
+        return None
+    return OscillatingParsimony(
+        expansion_generations=args.expansion_generations,
+        compression_generations=args.compression_generations,
+        expansion_node_weight=args.expansion_node_penalty,
+        compression_node_weight=args.node_penalty,
     )
 
 
@@ -233,40 +382,231 @@ def _controls(args) -> tuple[float, ...]:
     return training_controls(args.steps, Random(args.data_seed), args.amplitude)
 
 
+def _island_runs(args, trajectory_of) -> list[tuple[str, object, object]]:
+    """Build one deterministic training trajectory per island."""
+    primary = _controls(args)
+    controls: list[tuple[str, tuple[float, ...]]] = [(args.input, primary)]
+    for index in range(1, args.islands):
+        if args.island_signals == "shared":
+            controls.append((args.input, primary))
+        elif index % 3 == 1:
+            seed = args.data_seed + 104_729 * index
+            controls.append((
+                f"random seed {seed}",
+                training_controls(args.steps, Random(seed), args.amplitude),
+            ))
+        elif index % 3 == 2:
+            period = max(4, args.period // (index // 3 + 1))
+            phase = period // 4
+            controls.append((
+                f"sine period {period}, phase 1/4",
+                tuple(
+                    args.amplitude * sin(2.0 * pi * (step + phase) / period)
+                    for step in range(args.steps)
+                ),
+            ))
+        else:
+            hold = max(1, args.hold + index)
+            base = step_controls(args.steps + hold, hold, args.amplitude)
+            controls.append((
+                f"step hold {hold}, shifted",
+                tuple(base[hold // 2 : hold // 2 + args.steps]),
+            ))
+    return [
+        (label, trajectory := trajectory_of(values), identification_dataset(trajectory))
+        for label, values in controls
+    ]
+
+
+def _aggregate_score(graph: Graph, island_runs, args) -> float:
+    """Mean error relative to each signal's memoryless floor."""
+    ratios = []
+    for _, trajectory, dataset in island_runs:
+        error = SignalEvaluator(
+            dataset, criterion=args.criterion, time_step=args.time_step
+        ).evaluate(graph)
+        floor = static_gain_floor(trajectory, args.criterion, args.time_step)
+        ratios.append(error / max(abs(floor), 1e-12))
+    return sum(ratios) / len(ratios)
+
+
 def _evolve(engine, population: list[Graph], args, floor: float):
     """Run generation by generation so the fitness can be reported as it moves.
 
     ``run(population, 0)`` only evaluates, and every later generation is one
-    ``step``, so this consumes the random generator exactly as a single
+    result-level advance, so this consumes the random generator exactly as a single
     ``run(population, generations)`` call would and stays reproducible.
     """
-    from ameba_graph import EvolutionResult
-
     result = engine.run(population, 0)
-    population = list(result.population)
-    history = [population[0].score]
+    started = perf_counter()
+    history = [result.best.score]
+    names = [name for name, _ in _island_policies(args)]
 
     interval = args.progress or max(1, args.generations // 20)
-    print(f"{'gen':>6}  {'best fitness':>14}  {'mean':>12}  {'nodes':>5}")
-    _report(0, args.generations, population, interval)
+    raw_label = (
+        "raw ratio"
+        if args.island_signals == "diverse" and args.islands > 1
+        else "raw accuracy"
+    )
+    print(
+        f"{'gen':>6}  {'event':<9} {'fitness':>14} {raw_label:>14}  "
+        f"{'winner':<20} {'mean':>12} {'nodes':>5}"
+    )
+    if args.islands > 1:
+        print("        island change is measured since the prior report; negative is improvement")
+    schedule = _complexity_schedule(args)
+    previous = _report(
+        0, args.generations, result, interval, args, names, None, schedule,
+        engine, started,
+    )
     for generation in range(1, args.generations + 1):
-        population = engine.step(population)
-        history.append(min(item.score for item in population))
-        _report(generation, args.generations, population, interval)
+        result = engine.advance(result)
+        history.append(result.best.score)
+        previous = _report(
+            generation, args.generations, result, interval, args, names, previous,
+            schedule,
+            engine, started,
+        )
 
-    finished = EvolutionResult(tuple(population), args.generations)
-    print(f"  final fitness {finished.best.score:.10g}   (memoryless floor {floor:.6g})")
-    return finished, history
+    winner = _winning_island(result)
+    print(
+        f"  final fitness {result.best.score:.10g} from I{winner + 1} {names[winner]}"
+        f"   (memoryless floor {floor:.6g})"
+    )
+    return result, history
 
 
-def _report(generation: int, total: int, population, interval: int) -> None:
-    if generation % interval and generation != total:
-        return
-    best = min(item.score for item in population)
+def _report(
+    generation, total, result, interval, args, names, previous, schedule,
+    engine, started,
+):
+    detailed = generation % interval == 0 or generation == total
+    exchange = (
+        args.islands > 1
+        and generation > 0
+        and generation % args.migration_interval == 0
+    )
+    island_bests = tuple(island[0].score for island in result.islands)
+    raw_best = min(
+        result.population,
+        key=lambda item: item.raw_score if item.raw_score is not None else item.score,
+    )
+    raw_accuracy = raw_best.raw_score if raw_best.raw_score is not None else raw_best.score
+    if not detailed:
+        if exchange:
+            ring = " -> ".join(f"I{index + 1}" for index in range(args.islands)) + " -> I1"
+            winner = _winning_island(result)
+            print(
+                f"{generation:>6}  {_exchange_event(args):<9} {result.best.score:>14.6g} "
+                f"{raw_accuracy:>14.6g}  "
+                f"I{winner + 1} {names[winner]:<17} {'-':>12} {'-':>5}"
+                f"  ({args.migration_size} each: {ring}; {_pressure(schedule, generation)})",
+                flush=True,
+            )
+            _print_exchange_stats(engine)
+        return previous
+
+    population = result.population
     finite = [item.score for item in population if item.score < float("inf")]
     mean = sum(finite) / len(finite) if finite else float("inf")
-    nodes = min(population, key=lambda item: item.score).graph
-    print(f"{generation:>6}  {best:>14.6g}  {mean:>12.6g}  {len(nodes.nodes):>5}", flush=True)
+    winner = _winning_island(result)
+    event = "REPORT+X" if exchange else "REPORT"
+    print(
+        f"{generation:>6}  {event:<9} {result.best.score:>14.6g} "
+        f"{raw_accuracy:>14.6g}  "
+        f"I{winner + 1} {names[winner]:<17} {mean:>12.6g} "
+        f"{len(result.best.graph.nodes):>5}",
+        flush=True,
+    )
+    if schedule is not None:
+        print(f"        complexity pressure: {_pressure(schedule, generation)}", flush=True)
+    elapsed = perf_counter() - started
+    rate = generation / elapsed if generation and elapsed > 0 else 0.0
+    eta = (total - generation) / rate if rate > 0 else 0.0
+    print(
+        f"        runtime: {_duration(elapsed)} elapsed; {rate:.3f} gen/s; "
+        f"ETA {_duration(eta)}",
+        flush=True,
+    )
+    for index, island in enumerate(result.islands):
+        finite_scores = [item.score for item in island if item.score < float("inf")]
+        island_mean = (
+            sum(finite_scores) / len(finite_scores) if finite_scores else float("inf")
+        )
+        best = island[0]
+        raw_item = min(
+            island,
+            key=lambda item: item.raw_score if item.raw_score is not None else item.score,
+        )
+        raw = raw_item.raw_score if raw_item.raw_score is not None else raw_item.score
+        node_counts = [len(item.graph.nodes) for item in island]
+        stateful = sum(
+            node.kind in STATEFUL_KINDS for node in best.graph.nodes.values()
+        )
+        nonlinear = sum(
+            node.kind in OPERATOR_GROUPS["nonlinear"]
+            for node in best.graph.nodes.values()
+        )
+        topologies = len({_topology_profile(item.graph) for item in island})
+        change = "first" if previous is None else f"{island_bests[index] - previous[index]:+.3g}"
+        print(
+            f"        I{index + 1} {names[index]:<17} fit={best.score:<12.6g} "
+            f"raw={raw:<12.6g} "
+            f"change={change:>9} mean={island_mean:<12.6g} "
+            f"nodes={len(best.graph.nodes):<3} avg={sum(node_counts) / len(node_counts):.1f} "
+            f"range={min(node_counts)}..{max(node_counts)} memory={stateful:<2} "
+            f"nonlinear={nonlinear:<2} topologies={topologies}/{len(island)} "
+            f"finite={len(finite_scores)}/{len(island)}",
+            flush=True,
+        )
+    if exchange:
+        ring = " -> ".join(f"I{index + 1}" for index in range(args.islands)) + " -> I1"
+        print(
+            f"        {args.island_exchange}: {args.migration_size} pairing(s) around {ring}",
+            flush=True,
+        )
+        _print_exchange_stats(engine)
+    return island_bests
+
+
+def _winning_island(result) -> int:
+    return min(range(len(result.islands)), key=lambda index: result.islands[index][0].score)
+
+
+def _pressure(schedule, generation: int) -> str:
+    if schedule is None:
+        return "fixed"
+    return f"{schedule.phase_at(generation)} @ {schedule.node_weight_at(generation):g}"
+
+
+def _exchange_event(args) -> str:
+    return "CROSS" if args.island_exchange == "crossover" else "MIGRATE"
+
+
+def _print_exchange_stats(engine) -> None:
+    if not engine.last_exchange_stats:
+        return
+    values = "  ".join(
+        f"I{index + 1}={accepted}/{attempted}"
+        for index, (attempted, accepted) in enumerate(engine.last_exchange_stats)
+    )
+    print(f"        exchange children accepted: {values}", flush=True)
+
+
+def _topology_profile(graph: Graph) -> tuple[object, ...]:
+    kinds = Counter(node.kind for node in graph.nodes.values())
+    connections = Counter(
+        (graph.nodes[edge.source].kind, graph.nodes[edge.target].kind)
+        for edge in graph.edges.values()
+    )
+    return tuple(sorted(kinds.items())), tuple(sorted(connections.items()))
+
+
+def _duration(seconds: float) -> str:
+    seconds = max(0, int(seconds))
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours:d}:{minutes:02d}:{seconds:02d}"
 
 
 def _print_scores(
@@ -502,13 +842,48 @@ def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--benchmark", choices=sorted(BENCHMARKS), default="linear")
     parser.add_argument("--generations", type=int, default=150)
-    parser.add_argument("--population", type=int, default=16)
+    parser.add_argument(
+        "--population", type=int, default=16,
+        help="total candidates, divided evenly across islands",
+    )
     parser.add_argument("--seed", type=int, default=1, help="evolution random seed")
     parser.add_argument(
         "--restarts",
         type=int,
         default=1,
         help="independent runs; the report keeps the best result",
+    )
+    parser.add_argument(
+        "--islands",
+        type=int,
+        default=1,
+        help="specialized populations connected by ring migration",
+    )
+    parser.add_argument(
+        "--island-signals",
+        choices=("diverse", "shared"),
+        default="diverse",
+        help="train islands on distinct deterministic inputs or one shared input",
+    )
+    parser.add_argument(
+        "--island-exchange",
+        choices=("crossover", "migration"),
+        default="crossover",
+        help="cross parents between islands or copy migrants",
+    )
+    parser.add_argument(
+        "--migration-interval",
+        "--exchange-interval",
+        type=int,
+        default=10,
+        help="generations between island migrations",
+    )
+    parser.add_argument(
+        "--migration-size",
+        "--exchange-size",
+        type=int,
+        default=1,
+        help="best candidates sent by each island per migration",
     )
     parser.add_argument("--data-seed", type=int, default=7, help="control-sequence seed")
     parser.add_argument(
@@ -562,6 +937,23 @@ def _parser() -> argparse.ArgumentParser:
         type=float,
         default=DEFAULT_NODE_PENALTY,
         help="fitness added per node, to hold back structural bloat",
+    )
+    parser.add_argument(
+        "--oscillating-penalty",
+        action="store_true",
+        help="alternate low-pressure growth and high-pressure compression phases",
+    )
+    parser.add_argument(
+        "--expansion-generations", type=int, default=25,
+        help="generations in each low-complexity-pressure phase",
+    )
+    parser.add_argument(
+        "--compression-generations", type=int, default=25,
+        help="generations in each high-complexity-pressure phase",
+    )
+    parser.add_argument(
+        "--expansion-node-penalty", type=float, default=0.0,
+        help="relative node penalty during expansion phases",
     )
     parser.add_argument(
         "--refine",

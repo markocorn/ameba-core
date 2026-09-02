@@ -46,6 +46,16 @@ class SignalSession:
                 if node.kind in STATEFUL_KINDS:
                     self.states[node.id] = create_state(node.kind, node.attributes)
             self.order = self._execution_order()
+            self.incoming = {
+                node_id: tuple(sorted(
+                    self.graph.incoming(node_id), key=lambda edge: edge.id
+                ))
+                for node_id in self.graph.nodes
+            }
+            self.outputs = tuple(sorted(
+                (node for node in self.graph.nodes.values() if node.kind == "output"),
+                key=lambda node: int(node.attributes.get("index", 0)),
+            ))
         except (TypeError, ValueError) as exc:
             raise SignalSimulationError(f"Invalid stateful operator configuration: {exc}") from exc
 
@@ -103,20 +113,15 @@ class SignalSession:
             except (KeyError, TypeError, ValueError, OverflowError) as exc:
                 raise SignalSimulationError(f"Delay operator {node_id} failed: {exc}") from exc
 
-        outputs = sorted(
-            (node for node in self.graph.nodes.values() if node.kind == "output"),
-            key=lambda node: int(node.attributes.get("index", 0)),
-        )
-        if not outputs:
+        if not self.outputs:
             raise SignalSimulationError("Signal graph has no output nodes")
-        return [values[node.id] for node in outputs]
+        return [values[node.id] for node in self.outputs]
 
     def _arguments(self, node_id: str, values: Mapping[str, float]) -> list[float]:
-        incoming = sorted(self.graph.incoming(node_id), key=lambda edge: edge.id)
         try:
             return [
                 values[edge.source] * float(edge.attributes.get("weight", 1.0))
-                for edge in incoming
+                for edge in self.incoming[node_id]
             ]
         except KeyError as exc:
             raise SignalSimulationError(

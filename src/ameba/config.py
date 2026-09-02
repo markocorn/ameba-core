@@ -74,6 +74,9 @@ class AppConfig:
                 evo.get("migration_interval", 0), "migration_interval"
             ),
             migration_size=_integer(evo.get("migration_size", 0), "migration_size"),
+            island_exchange=_string(
+                evo.get("island_exchange", "migration"), "island_exchange"
+            ),
         )
 
         signal_data = _mapping(payload.get("signal", {}), "signal")
@@ -136,4 +139,10 @@ def _number(value: object, name: str) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValueError(f"{name} must be numeric")
     return float(value)
+
+
+def _string(value: object, name: str) -> str:
+    if not isinstance(value, str):
+        raise ValueError(f"{name} must be a string")
+    return value
 

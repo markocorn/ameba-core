@@ -3,7 +3,9 @@
 import math
 import unittest
 
-from ameba_graph import Edge, Graph, Node, ParsimoniousEvaluator, live_nodes, prune
+from ameba_graph import (
+    Edge, Graph, Node, OscillatingParsimony, ParsimoniousEvaluator, live_nodes, prune,
+)
 from ameba_signal import SignalSimulator
 
 
@@ -97,6 +99,33 @@ class ParsimoniousEvaluatorTests(unittest.TestCase):
         for kwargs in ({"node_weight": -0.1}, {"edge_weight": -0.1}):
             with self.assertRaises(ValueError):
                 ParsimoniousEvaluator(ConstantEvaluator(1.0), **kwargs)
+
+
+class OscillatingParsimonyTests(unittest.TestCase):
+    def test_expansion_and_compression_repeat_deterministically(self) -> None:
+        pressure = OscillatingParsimony(
+            expansion_generations=2,
+            compression_generations=3,
+            expansion_node_weight=0.0,
+            compression_node_weight=0.1,
+        )
+        self.assertEqual(
+            ["expand", "expand", "compress", "compress", "compress", "expand"],
+            [pressure.phase_at(generation) for generation in range(6)],
+        )
+        graph = chain(2)
+        self.assertEqual(2.0, pressure.shape(graph, 2.0, 0))
+        self.assertEqual(2.0 * (1.0 + 0.1 * len(graph.nodes)), pressure.shape(graph, 2.0, 2))
+
+    def test_invalid_phase_configuration_is_rejected(self) -> None:
+        for values in (
+            {"expansion_generations": 0},
+            {"compression_generations": 0},
+            {"expansion_node_weight": -0.1},
+            {"expansion_node_weight": 0.2, "compression_node_weight": 0.1},
+        ):
+            with self.assertRaises(ValueError, msg=str(values)):
+                OscillatingParsimony(**values)
 
 
 class PruningTests(unittest.TestCase):

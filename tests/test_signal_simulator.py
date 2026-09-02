@@ -16,6 +16,16 @@ class SignalSimulatorTests(unittest.TestCase):
         )
         self.assertEqual(0.0, SignalEvaluator(dataset).evaluate(example_graph()))
 
+    def test_evaluator_can_normalize_scores_for_comparable_islands(self) -> None:
+        dataset = Dataset(inputs=((1.0,),), outputs=((0.0,),))
+        raw = SignalEvaluator(dataset).evaluate(example_graph())
+        self.assertEqual(
+            raw / 2.0,
+            SignalEvaluator(dataset, normalization=2.0).evaluate(example_graph()),
+        )
+        with self.assertRaises(ValueError):
+            SignalEvaluator(dataset, normalization=0.0)
+
     def test_rejects_cycle_until_stateful_runtime_exists(self) -> None:
         graph = Graph(
             nodes=[Node("a", "add"), Node("b", "output")],

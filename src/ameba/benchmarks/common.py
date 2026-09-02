@@ -24,9 +24,10 @@ from ameba_graph import (
     GenerationConfig,
     Graph,
     GraphGenerator,
+    GraphMutation,
     Node,
     ParameterRefiner,
-    ParsimoniousEvaluator,
+    OscillatingParsimony,
     RefinementConfig,
     live_nodes,
 )
@@ -263,6 +264,43 @@ def benchmark_policy(
     return SignalGraphPolicy(evolvable_kinds=operators_in(*kinds), **kwargs)  # type: ignore[arg-type]
 
 
+def parameter_mutations() -> tuple[GraphMutation, ...]:
+    """Operations that retune a graph without changing its shape.
+
+    Kept separate from the structural set because an archive treats them as
+    local search rather than exploration: a retuned copy stays in its parent's
+    neighbourhood and competes only against it.
+    """
+    return (MutateNodeAttributes(), MutateEdgeAttributes())
+
+
+def structural_mutations() -> tuple[GraphMutation, ...]:
+    """Operations that change what a graph is, not merely how it is tuned."""
+    return (
+        SplitEdge(),
+        AddNode(),
+        AddEdge(),
+        RemoveEdge(),
+        MoveEdgeSource(),
+        MoveEdgeTarget(),
+        ReplaceNode(),
+        RemoveNodeBypass(),
+        RemoveNode(),
+    )
+
+
+def benchmark_crossover() -> CrossoverPortfolio:
+    """The crossover portfolio used by every benchmark search."""
+    return CrossoverPortfolio(
+        [
+            AlignedAttributeCrossover(),
+            InducedSubgraphInsertionCrossover(),
+            TypedSubgraphReplacementCrossover(),
+            UniformGraphCrossover(),
+        ]
+    )
+
+
 def benchmark_engine(
     dataset: Dataset,
     seed: int,
@@ -276,37 +314,32 @@ def benchmark_engine(
     topology_protection_size: int = 0,
     topology_parent_rate: float = 0.0,
     simulation_workers: int = 1,
+    island_count: int = 1,
+    migration_interval: int = 0,
+    migration_size: int = 0,
+    island_policies: Sequence[SignalGraphPolicy] | None = None,
+    island_datasets: Sequence[Dataset] | None = None,
+    island_score_scales: Sequence[float] | None = None,
+    complexity_schedule: OscillatingParsimony | None = None,
+    island_exchange: str = "migration",
 ) -> EvolutionEngine:
     """The full default operator portfolio, wired for benchmark runs."""
+    if island_score_scales is not None and (
+        island_datasets is None or len(island_score_scales) != len(island_datasets)
+    ):
+        raise ValueError("island_score_scales must match island_datasets")
     evaluator = SignalEvaluator(dataset, criterion=criterion, time_step=time_step)
+    fitness_shaper = complexity_schedule or OscillatingParsimony(
+        expansion_generations=1,
+        compression_generations=1,
+        expansion_node_weight=node_penalty,
+        compression_node_weight=node_penalty,
+    )
     return EvolutionEngine(
-        evaluator=ParsimoniousEvaluator(evaluator, node_weight=node_penalty),
+        evaluator=evaluator,
         policy=policy or benchmark_policy(),
-        mutations=[
-            MutationPortfolio(
-                [
-                    MutateNodeAttributes(),
-                    MutateEdgeAttributes(),
-                    SplitEdge(),
-                    AddNode(),
-                    AddEdge(),
-                    RemoveEdge(),
-                    MoveEdgeSource(),
-                    MoveEdgeTarget(),
-                    ReplaceNode(),
-                    RemoveNodeBypass(),
-                    RemoveNode(),
-                ]
-            )
-        ],
-        crossover=CrossoverPortfolio(
-            [
-                AlignedAttributeCrossover(),
-                InducedSubgraphInsertionCrossover(),
-                TypedSubgraphReplacementCrossover(),
-                UniformGraphCrossover(),
-            ]
-        ),
+        mutations=[MutationPortfolio(list(parameter_mutations() + structural_mutations()))],
+        crossover=benchmark_crossover(),
         config=EvolutionConfig(
             population_size=population_size,
             elite_size=2,
@@ -316,6 +349,10 @@ def benchmark_engine(
             topology_protection_generations=topology_protection_generations,
             topology_protection_size=topology_protection_size,
             topology_parent_rate=topology_parent_rate,
+            island_count=island_count,
+            migration_interval=migration_interval,
+            migration_size=migration_size,
+            island_exchange=island_exchange,
         ),
         seed=seed,
         refiner=(
@@ -326,4 +363,23 @@ def benchmark_engine(
             else None
         ),
         simulation_workers=simulation_workers,
+        island_policies=island_policies,
+        island_evaluators=(
+            tuple(
+                SignalEvaluator(
+                    item,
+                    criterion=criterion,
+                    time_step=time_step,
+                    normalization=(
+                        island_score_scales[index]
+                        if island_score_scales is not None
+                        else 1.0
+                    ),
+                )
+                for index, item in enumerate(island_datasets)
+            )
+            if island_datasets is not None
+            else None
+        ),
+        fitness_shaper=fitness_shaper,
     )

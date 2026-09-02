@@ -5,6 +5,7 @@ from random import Random
 
 from ameba_graph import Edge, Graph, Node, ParameterRefiner, RefinementConfig
 from ameba_graph.mutation import MutateEdgeAttributes, MutateNodeAttributes, MutationError
+from ameba_graph.serialization import graph_dumps
 from ameba_signal import SignalEvaluator
 from ameba.benchmarks import (
     benchmark_engine,
@@ -191,6 +192,23 @@ class EngineIntegrationTests(unittest.TestCase):
             return engine.run([seed_graph().copy() for _ in range(8)], 5).best.score
 
         self.assertEqual(run(), run())
+
+    def test_parallel_refinement_matches_serial_refinement_exactly(self) -> None:
+        def run(workers: int):
+            with benchmark_engine(
+                self.dataset,
+                seed=4,
+                population_size=8,
+                refine=self.budget,
+                simulation_workers=workers,
+            ) as engine:
+                return engine.run([seed_graph().copy() for _ in range(8)], 3)
+
+        serial, parallel = run(1), run(2)
+        self.assertEqual(
+            [(item.score, graph_dumps(item.graph)) for item in serial.population],
+            [(item.score, graph_dumps(item.graph)) for item in parallel.population],
+        )
 
     def test_refinement_is_off_unless_asked_for(self) -> None:
         self.assertIsNone(benchmark_engine(self.dataset, seed=0).refiner)

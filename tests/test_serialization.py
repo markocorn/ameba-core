@@ -2,7 +2,7 @@ import math
 import unittest
 
 from ameba.cli import example_graph
-from ameba_graph import EvolutionConfig, EvolutionEngine
+from ameba_graph import EvolutionConfig, EvolutionEngine, OscillatingParsimony
 from ameba_graph.checkpoint import checkpoint_dumps, checkpoint_loads
 from ameba_graph.crossover import UniformGraphCrossover
 from ameba_graph.mutation import SplitEdge
@@ -111,7 +111,12 @@ class SerializationTests(unittest.TestCase):
 
         def engine(seed: int) -> EvolutionEngine:
             return EvolutionEngine(
-                SignalEvaluator(dataset), policy, [SplitEdge()], config=config, seed=seed
+                SignalEvaluator(dataset), policy, [SplitEdge()], config=config, seed=seed,
+                fitness_shaper=OscillatingParsimony(
+                    expansion_generations=2,
+                    compression_generations=2,
+                    compression_node_weight=0.05,
+                ),
             )
 
         uninterrupted = engine(13).run(initial, 5)
@@ -123,6 +128,7 @@ class SerializationTests(unittest.TestCase):
         resumed = engine(999).resume(restored, 2)
 
         self.assertEqual((3, 3), restored.island_sizes)
+        self.assertTrue(all(item.raw_score is not None for item in restored.population))
         self.assertEqual(
             [graph_dumps(item.graph) for island in uninterrupted.islands for item in island],
             [graph_dumps(item.graph) for island in resumed.islands for item in island],

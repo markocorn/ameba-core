@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from copy import deepcopy
 from random import Random
-from typing import Hashable
+from typing import Collection, Hashable, Sequence
 
 from ameba_graph import Edge, Graph, GraphError, Node
 
@@ -66,6 +66,8 @@ class SignalGraphPolicy:
         self,
         evolvable_kinds: tuple[str, ...] = EVOLVABLE_OPERATORS,
         weight_range: tuple[float, float] = (-2.0, 2.0),
+        required_kind_groups: Sequence[Collection[str]] = (),
+        forbidden_kinds: Collection[str] = (),
     ) -> None:
         unknown = set(evolvable_kinds) - set(OPERATOR_ARITY)
         if unknown:
@@ -74,8 +76,19 @@ class SignalGraphPolicy:
             raise ValueError("At least one evolvable signal operator is required")
         if weight_range[0] > weight_range[1]:
             raise ValueError("Invalid edge weight range")
+        groups = tuple(frozenset(group) for group in required_kind_groups)
+        if any(not group for group in groups):
+            raise ValueError("Required node-kind groups cannot be empty")
+        constrained = set().union(*groups, forbidden_kinds) if groups else set(forbidden_kinds)
+        unknown_constraints = constrained - set(OPERATOR_ARITY)
+        if unknown_constraints:
+            raise ValueError(
+                f"Unknown constrained operator(s): {', '.join(sorted(unknown_constraints))}"
+            )
         self.evolvable_kinds = evolvable_kinds
         self.weight_range = weight_range
+        self.required_kind_groups = groups
+        self.forbidden_kinds = frozenset(forbidden_kinds)
 
     def create_node(self, rng: Random) -> Node:
         kind = rng.choice(self.evolvable_kinds)
@@ -154,6 +167,18 @@ class SignalGraphPolicy:
 
         if self._has_combinational_cycle(graph):
             raise GraphError("Every signal feedback loop must pass through a delay")
+
+        kinds = {node.kind for node in graph.nodes.values()}
+        forbidden = kinds & self.forbidden_kinds
+        if forbidden:
+            raise GraphError(
+                f"Graph contains forbidden node kind(s): {', '.join(sorted(forbidden))}"
+            )
+        for required in self.required_kind_groups:
+            if not kinds & required:
+                raise GraphError(
+                    "Graph requires at least one of: " + ", ".join(sorted(required))
+                )
 
     def mutate_node(self, node: Node, rng: Random) -> Node:
         specs = _NODE_PARAMETERS.get(node.kind, {})
