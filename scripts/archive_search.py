@@ -45,12 +45,20 @@ from ameba.benchmarks import (  # noqa: E402
     training_controls,
 )
 from ameba.equations import format_equations  # noqa: E402
-from ameba_graph import Archive, ArchiveConfig, Graph  # noqa: E402
+from ameba_graph import (  # noqa: E402
+    Archive,
+    ArchiveConfig,
+    GenerationConfig,
+    Graph,
+    GraphGenerationError,
+    neighbourhood_profile,
+    GraphGenerator,
+)
 from ameba_graph.crossover import CrossoverError  # noqa: E402
 from ameba_graph.model import GraphError  # noqa: E402
 from ameba_graph.mutation import MutationError  # noqa: E402
 from ameba_graph.serialization import graph_dumps  # noqa: E402
-from ameba_signal import SignalEvaluator  # noqa: E402
+from ameba_signal import Dataset, SignalEvaluator, interface_scaffold  # noqa: E402
 from ameba_signal.stateful import STATEFUL_KINDS  # noqa: E402
 
 BENCHMARKS = {
@@ -110,6 +118,7 @@ def main(argv: list[str] | None = None) -> int:
         size_tiebreak=args.size_tiebreak,
         local_competition=not args.no_local_competition,
         min_nodes=args.min_nodes,
+        structure_rule=args.structure_rule,
     )
 
     print(f"\n{title}  --  behavioural archive search")
@@ -184,12 +193,50 @@ def main(argv: list[str] | None = None) -> int:
 
 def _search(args, seed, config, dataset, policy, evaluator, floor,
             parameter_ops, structural_ops, crossover, executor) -> Archive:
-    """One complete independent run at ``seed``."""
+    """Spend this seed's whole batch budget, restarting a run that has died.
+
+    A stalled run does not recover: one was measured frozen on the memoryless
+    floor for eleven thousand consecutive batches. Left alone it spends the
+    budget proving that again. With ``--stall-patience`` the budget is instead
+    re-spent from a fresh initialization, and the best archive across attempts
+    is what the seed reports -- more attempts at the growth mode rather than a
+    longer wait on a dead one.
+    """
+    best: Archive | None = None
+    remaining = args.batches
+    attempt = 0
+    while remaining > 0:
+        archive, used = _attempt(
+            args, seed + attempt * 100_003, config, dataset, policy, evaluator,
+            floor, parameter_ops, structural_ops, crossover, executor, remaining,
+        )
+        if best is None or archive.best.score < best.best.score:
+            best = archive
+        remaining -= used
+        attempt += 1
+        if attempt > 1 or used < args.batches:
+            print(
+                f"    attempt {attempt}: {archive.best.score:.6g} after {used} "
+                f"batches; {remaining} left, best so far {best.best.score:.6g}"
+            )
+        if not args.stall_patience:
+            break
+    assert best is not None
+    return best
+
+
+def _attempt(args, seed, config, dataset, policy, evaluator, floor,
+             parameter_ops, structural_ops, crossover, executor,
+             budget: int) -> tuple[Archive, int]:
+    """One run from a fresh initialization, stopping early once it stalls."""
     rng = Random(seed)
     archive = Archive(config)
     for graph in _initial_graphs(args, seed, dataset, policy):
         score, descriptor = evaluator.describe(graph)
-        archive.insert(graph, _shaped(score, graph, args.node_penalty), descriptor)
+        archive.insert(
+            graph, _shaped(score, graph, args.node_penalty), descriptor,
+            _structure(graph, args),
+        )
 
     started = perf_counter()
     interval = args.progress or max(1, args.batches // 40)
@@ -197,11 +244,14 @@ def _search(args, seed, config, dataset, policy, evaluator, floor,
         f"{'batch':>7} {'best':>13} {'/floor':>8} {'held':>5} {'thresh':>7} "
         f"{'new':>4} {'tuned':>6} {'nodes':>6} {'elapsed':>8} {'eta':>8}"
     )
-    _report(archive, 0, args.batches, floor, 0, 0, 0.0)
-    for batch in range(1, args.batches + 1):
+    _report(archive, 0, budget, floor, 0, 0, 0.0)
+    immigrants = _immigrants(args, dataset, policy)
+    stalled_since = archive.best.score
+    stalled_for = 0
+    for batch in range(1, budget + 1):
         candidates = [
             _candidate(archive, rng, policy, parameter_ops, structural_ops,
-                       crossover, args)
+                       crossover, args, immigrants)
             for _ in range(args.batch)
         ]
         admitted = tuned = 0
@@ -209,18 +259,27 @@ def _search(args, seed, config, dataset, policy, evaluator, floor,
             candidates, _score(candidates, evaluator, executor)
         ):
             outcome = archive.insert(
-                graph, _shaped(score, graph, args.node_penalty), descriptor
+                graph, _shaped(score, graph, args.node_penalty), descriptor,
+                _structure(graph, args),
             )
             if outcome.reason == "novel":
                 admitted += 1
             elif outcome.reason in ("improved", "simplified"):
                 tuned += 1
-        if batch % interval == 0 or batch == args.batches:
+        if batch % interval == 0 or batch == budget:
             _report(
-                archive, batch, args.batches, floor, admitted, tuned,
+                archive, batch, budget, floor, admitted, tuned,
                 perf_counter() - started,
             )
-    return archive
+        if args.stall_patience:
+            if archive.best.score < stalled_since * (1.0 - args.stall_improvement):
+                stalled_since = archive.best.score
+                stalled_for = 0
+            else:
+                stalled_for += 1
+                if stalled_for >= args.stall_patience:
+                    return archive, batch
+    return archive, budget
 
 
 def _seed_table(results, floor: float, best_seed: int) -> None:
@@ -249,6 +308,39 @@ def _seed_table(results, floor: float, best_seed: int) -> None:
     )
 
 
+def _immigrants(args, dataset, policy):
+    """A source of fresh random graphs, or None when immigration is off.
+
+    Candidates are screened for executability on a short probe of the dataset,
+    the same way the initial archive is built. An immigrant that raises in the
+    simulator carries no descriptor, so the archive could only throw it away --
+    better to spend the attempts here than a slot in the batch.
+    """
+    if not args.immigrant_rate:
+        return None
+    generator = GraphGenerator(
+        policy,
+        GenerationConfig(
+            min_nodes=args.initial_nodes_min,
+            max_nodes=args.initial_nodes_max,
+            edge_probability=0.18,
+            attempts=500,
+        ),
+    )
+    scaffold = interface_scaffold(len(dataset.inputs[0]), len(dataset.outputs[0]))
+    probe = SignalEvaluator(Dataset(dataset.inputs[:30], dataset.outputs[:30]))
+
+    def generate(rng: Random) -> Graph | None:
+        try:
+            return generator.generate(
+                rng, scaffold, accept=lambda graph: isfinite(probe.evaluate(graph))
+            )
+        except (GraphGenerationError, GraphError, ValueError):
+            return None
+
+    return generate
+
+
 def _initial_graphs(args, seed: int, dataset, policy) -> list[Graph]:
     """Fill the archive from diverse executable architectures, or from the seed."""
     if args.initialization == "seed":
@@ -263,13 +355,24 @@ def _initial_graphs(args, seed: int, dataset, policy) -> list[Graph]:
     )
 
 
-def _candidate(archive, rng, policy, parameter_ops, structural_ops, crossover, args) -> Graph:
-    """Derive one candidate from the archive.
+def _candidate(archive, rng, policy, parameter_ops, structural_ops, crossover,
+               args, immigrants=None) -> Graph:
+    """Derive one candidate from the archive, or import an unrelated one.
 
     Parents are drawn uniformly, never by score. Biasing this toward the best
     member is exactly how the archive would collapse back onto the plateau it
     exists to escape.
+
+    Every other operator here descends from something the archive already
+    holds, so once its members stop offering new structure the search has no
+    way to invent any -- which is what a stalled run looks like. An immigrant
+    is generated from nothing and is almost certainly behaviourally distant, so
+    it enters as a new niche, takes probation, and is tuned in place from there.
     """
+    if immigrants is not None and rng.random() < args.immigrant_rate:
+        immigrant = immigrants(rng)
+        if immigrant is not None:
+            return immigrant
     members = archive.members
     parent = rng.choice(members)
     graph = parent.graph.copy()
@@ -285,6 +388,13 @@ def _candidate(archive, rng, policy, parameter_ops, structural_ops, crossover, a
         # will simply score the untouched copy and find it is not an
         # improvement on the parent it came from.
         return parent.graph.copy()
+
+
+def _structure(graph: Graph, args):
+    """What the graph is made of and how it is wired, or None when unused."""
+    if args.structure_rule == "off":
+        return None
+    return neighbourhood_profile(graph, args.structure_depth)
 
 
 def _shaped(score: float, graph: Graph, node_weight: float) -> float:
@@ -429,6 +539,30 @@ def _parser() -> argparse.ArgumentParser:
         "--no-local-competition", action="store_true",
         help="drop same-niche candidates instead of letting them replace their "
              "neighbour; ablates in-place tuning",
+    )
+    parser.add_argument(
+        "--structure-rule", choices=("off", "max", "mean", "only"), default="off",
+        help="also compare candidates by what they are made of, not only how "
+             "they fail; 'max' calls two things one idea only if both agree",
+    )
+    parser.add_argument(
+        "--structure-depth", type=int, default=1,
+        help="neighbourhood rounds in the structural label; 0 is a bag of "
+             "kinds, 2 over-discriminates on graphs this size",
+    )
+    parser.add_argument(
+        "--immigrant-rate", type=float, default=0.0,
+        help="share of candidates generated from scratch rather than derived "
+             "from an archive member; the only source of genuinely new structure",
+    )
+    parser.add_argument(
+        "--stall-patience", type=int, default=0,
+        help="abandon and restart a run whose best has not improved for this "
+             "many batches; a stalled run was measured never to recover",
+    )
+    parser.add_argument(
+        "--stall-improvement", type=float, default=1e-4,
+        help="relative gain that counts as progress against --stall-patience",
     )
     parser.add_argument(
         "--min-nodes", type=int, default=0,

@@ -5,7 +5,11 @@ from .archive import (
     ArchiveConfig,
     ArchiveMember,
     Insertion,
+    composition,
+    composition_distance,
     correlation_distance,
+    neighbourhood_profile,
+    profile_distance,
     rank_transform,
 )
 from .evaluation import OscillatingParsimony, ParsimoniousEvaluator, live_nodes, prune
@@ -47,7 +51,11 @@ __all__ = [
     "ArchiveConfig",
     "ArchiveMember",
     "Insertion",
+    "composition",
+    "composition_distance",
     "correlation_distance",
+    "neighbourhood_profile",
+    "profile_distance",
     "rank_transform",
     "live_nodes",
     "prune",

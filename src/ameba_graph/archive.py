@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from math import isfinite, sqrt
-from typing import Sequence
+from typing import Mapping, Sequence
 
 from .model import Graph
 
@@ -80,6 +80,92 @@ def correlation_distance(left: Sequence[float], right: Sequence[float]) -> float
     return 1.0 - covariance / spread
 
 
+def composition(graph: Graph, kinds: Sequence[str]) -> tuple[float, ...]:
+    """How much of each kind a graph is made of, plus how wired it is.
+
+    Deliberately counts rather than proportions. A rank or proportion profile
+    would call a four-node graph and a forty-node graph of the same mixture
+    identical, and size is the strongest single predictor of success measured
+    on these plants -- so the descriptor has to be able to see it.
+    """
+    counts = dict.fromkeys(kinds, 0.0)
+    for node in graph.nodes.values():
+        if node.kind in counts:
+            counts[node.kind] += 1.0
+    return tuple(counts[kind] for kind in kinds) + (float(len(graph.edges)),)
+
+
+def composition_distance(left: Sequence[float], right: Sequence[float]) -> float:
+    """Bray-Curtis dissimilarity: 0 for identical make-up, 1 for disjoint.
+
+    Note the range is half that of ``correlation_distance``, which reaches 2
+    on perfect anti-correlation. Both are 0 when identical, which is what the
+    same-idea test actually turns on.
+    """
+    if len(left) != len(right):
+        raise ValueError("Descriptors must have equal length")
+    total = sum(left) + sum(right)
+    if total == 0.0:
+        return 0.0
+    return sum(abs(a - b) for a, b in zip(left, right)) / total
+
+
+def neighbourhood_profile(graph: Graph, depth: int = 1) -> dict[str, float]:
+    """Weisfeiler-Lehman labels: what each node is, and what surrounds it.
+
+    Each node starts labelled by its kind, and each round replaces that label
+    with the kind plus the sorted labels of what feeds it and what it feeds.
+    Counting the resulting labels compares two graphs by their local wiring
+    without ever matching node against node -- the histogram does the work an
+    all-pairs assignment would, at a fraction of the cost, which matters when
+    an archive performs hundreds of thousands of comparisons per run.
+
+    Depth is a resolution dial. Depth 0 is a bag of kinds, blind to wiring.
+    Depth 2 makes almost every node unique on graphs this size, so every
+    candidate reads as new and local competition stops happening. Depth 1 is
+    the setting that distinguishes wiring while still merging near-relatives.
+
+    Predecessors and successors are kept apart, because a delay feeding a sum
+    is not a sum feeding a delay. Edge weights are deliberately excluded: a
+    retuned copy must stay structurally identical to its parent, or the
+    in-place tuning the archive runs on would break.
+    """
+    if depth < 0:
+        raise ValueError("depth cannot be negative")
+    labels = {node_id: node.kind for node_id, node in graph.nodes.items()}
+    counts: dict[str, float] = {}
+    for label in labels.values():
+        counts[label] = counts.get(label, 0.0) + 1.0
+    predecessors: dict[str, list[str]] = {node_id: [] for node_id in graph.nodes}
+    successors: dict[str, list[str]] = {node_id: [] for node_id in graph.nodes}
+    for edge in graph.edges.values():
+        if edge.source in graph.nodes and edge.target in graph.nodes:
+            predecessors[edge.target].append(edge.source)
+            successors[edge.source].append(edge.target)
+
+    for _ in range(depth):
+        relabelled = {}
+        for node_id in graph.nodes:
+            before = ",".join(sorted(labels[item] for item in predecessors[node_id]))
+            after = ",".join(sorted(labels[item] for item in successors[node_id]))
+            relabelled[node_id] = f"{labels[node_id]}<({before})>({after})"
+        labels = relabelled
+        for label in labels.values():
+            counts[label] = counts.get(label, 0.0) + 1.0
+    return counts
+
+
+def profile_distance(left: Mapping[str, float], right: Mapping[str, float]) -> float:
+    """Bray-Curtis over two label histograms that need not share a vocabulary."""
+    total = sum(left.values()) + sum(right.values())
+    if total == 0.0:
+        return 0.0
+    return sum(
+        abs(left.get(key, 0.0) - right.get(key, 0.0))
+        for key in set(left) | set(right)
+    ) / total
+
+
 @dataclass(frozen=True, slots=True)
 class ArchiveConfig:
     """Shape of the archive and the terms of its competition.
@@ -119,6 +205,21 @@ class ArchiveConfig:
     further nine thousand batches. Size is the search's working material rather
     than waste, so the useful guard is a lower bound, not a charge.
 
+    ``structure_rule`` adds a second axis to the same-idea test. Behaviour
+    alone has a measured blind spot: a graph generated from scratch, sharing no
+    structure with anything held, sat a median behavioural distance of 0.009
+    from its nearest member, because models that are bad are all bad the same
+    way. ``"max"`` requires two candidates to be close on *both* axes to count
+    as one idea. ``"mean"`` blends the two more softly.
+
+    ``"only"`` ignores behaviour for the same-idea test, which the measurements
+    favour: a retuned copy is structurally identical and so always meets its own
+    parent, while a structural mutant sits far enough away to earn its own slot
+    and the protection that comes with it. Under ``"max"`` a retuned copy whose
+    weights moved its residuals is thrown out of its own niche instead, and the
+    tuning the archive runs on stops happening. The cost of ``"only"`` is that
+    two different structures computing the same function each hold a slot.
+
     ``local_competition`` exists to be turned off. With it disabled a candidate
     that lands in an occupied niche is simply dropped, so members never improve
     in place and the archive advances only by admitting novel structures. That
@@ -135,6 +236,7 @@ class ArchiveConfig:
     size_tiebreak: float = 0.0
     local_competition: bool = True
     min_nodes: int = 0
+    structure_rule: str = "off"
 
     def __post_init__(self) -> None:
         if self.capacity < 1:
@@ -153,6 +255,8 @@ class ArchiveConfig:
             raise ValueError("probation must leave an evictable slot: at most capacity - 2")
         if self.threshold is not None and self.threshold < 0.0:
             raise ValueError("threshold cannot be negative")
+        if self.structure_rule not in {"off", "max", "mean", "only"}:
+            raise ValueError("structure_rule must be 'off', 'max', 'mean' or 'only'")
         if not 0.0 <= self.threshold_quantile <= 1.0:
             raise ValueError("threshold_quantile must be between zero and one")
         if self.threshold_min < 0.0 or self.threshold_max > 2.0:
@@ -168,6 +272,7 @@ class ArchiveMember:
     descriptor: tuple[float, ...]
     admitted: int
     improvements: int = 0
+    structure: Mapping[str, float] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -212,7 +317,7 @@ class Archive:
         if len(self.members) < 2:
             return 0.0
         distances = sorted(
-            correlation_distance(left.descriptor, right.descriptor)
+            self._distance(left.descriptor, left.structure, right)
             for index, left in enumerate(self.members)
             for right in self.members[index + 1 :]
         )
@@ -227,7 +332,11 @@ class Archive:
         )
 
     def insert(
-        self, graph: Graph, score: float, descriptor: Sequence[float] | None
+        self,
+        graph: Graph,
+        score: float,
+        descriptor: Sequence[float] | None,
+        structure: Mapping[str, float] | None = None,
     ) -> Insertion:
         """Offer one evaluated candidate to the archive."""
         self.insertions += 1
@@ -237,11 +346,12 @@ class Archive:
             return Insertion(False, "too small")
 
         vector = tuple(float(value) for value in descriptor)
+        shape = dict(structure) if structure else None
         if len(self.members) < self.config.capacity:
-            self._admit(graph, score, vector)
+            self._admit(graph, score, vector, shape)
             return Insertion(True, "filled")
 
-        distance, nearest = self._nearest(vector)
+        distance, nearest = self._nearest(vector, shape)
         if distance <= self.threshold():
             if not self.config.local_competition:
                 return Insertion(False, "no local competition", distance)
@@ -249,6 +359,7 @@ class Archive:
                 nearest.graph = graph
                 nearest.score = score
                 nearest.descriptor = vector
+                nearest.structure = shape
                 nearest.improvements += 1
                 return Insertion(True, "simplified", distance)
             if score < nearest.score:
@@ -258,11 +369,12 @@ class Archive:
                 nearest.graph = graph
                 nearest.score = score
                 nearest.descriptor = vector
+                nearest.structure = shape
                 nearest.improvements += 1
                 return Insertion(True, "improved", distance)
             return Insertion(False, "dominated", distance)
 
-        return self._admit_novel(graph, score, vector, distance)
+        return self._admit_novel(graph, score, vector, shape, distance)
 
     def _simplifies(
         self, graph: Graph, score: float, nearest: ArchiveMember
@@ -280,6 +392,7 @@ class Archive:
         graph: Graph,
         score: float,
         descriptor: tuple[float, ...],
+        structure: Mapping[str, float] | None,
         distance: float,
     ) -> Insertion:
         best = self.best
@@ -295,20 +408,46 @@ class Archive:
         if not self.config.novelty_admits and score >= victim.score:
             return Insertion(False, "worse than worst", distance)
         self.members.remove(victim)
-        self._admit(graph, score, descriptor)
+        self._admit(graph, score, descriptor, structure)
         return Insertion(True, "novel", distance, victim)
 
     def _admit(
-        self, graph: Graph, score: float, descriptor: tuple[float, ...]
+        self,
+        graph: Graph,
+        score: float,
+        descriptor: tuple[float, ...],
+        structure: Mapping[str, float] | None = None,
     ) -> None:
         self.members.append(
-            ArchiveMember(graph, score, descriptor, self.insertions)
+            ArchiveMember(graph, score, descriptor, self.insertions, structure=structure)
         )
 
-    def _nearest(self, descriptor: tuple[float, ...]) -> tuple[float, ArchiveMember]:
+    def _distance(
+        self,
+        descriptor: tuple[float, ...],
+        structure: Mapping[str, float] | None,
+        member: ArchiveMember,
+    ) -> float:
+        behaviour = correlation_distance(descriptor, member.descriptor)
+        if (
+            self.config.structure_rule == "off"
+            or structure is None
+            or member.structure is None
+        ):
+            return behaviour
+        shape = profile_distance(structure, member.structure)
+        if self.config.structure_rule == "only":
+            return shape
+        if self.config.structure_rule == "max":
+            return max(behaviour, shape)
+        return (behaviour + shape) / 2.0
+
+    def _nearest(
+        self, descriptor: tuple[float, ...], structure: Mapping[str, float] | None = None
+    ) -> tuple[float, ArchiveMember]:
         return min(
             (
-                (correlation_distance(descriptor, member.descriptor), member)
+                (self._distance(descriptor, structure, member), member)
                 for member in self.members
             ),
             key=lambda pair: pair[0],

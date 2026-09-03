@@ -4,8 +4,11 @@ from math import inf, nan
 from ameba_graph import (
     Archive,
     ArchiveConfig,
+    Edge,
     Graph,
     Node,
+    composition,
+    composition_distance,
     correlation_distance,
     rank_transform,
 )
@@ -212,6 +215,51 @@ class ArchiveTests(unittest.TestCase):
     def test_the_size_floor_is_off_by_default(self) -> None:
         archive = Archive(ArchiveConfig(capacity=3, probation=0))
         self.assertTrue(archive.insert(graph_of(1), 1.0, (1.0, 2.0, 3.0)).accepted)
+
+    def test_composition_counts_kinds_and_edges(self) -> None:
+        graph = Graph(
+            nodes=[Node("a", "add"), Node("b", "add"), Node("c", "delay")],
+            edges=[Edge("e", "a", "b")],
+        )
+        self.assertEqual(
+            composition(graph, ("add", "delay", "sin")), (2.0, 1.0, 0.0, 1.0)
+        )
+
+    def test_composition_distance_sees_size_not_only_proportion(self) -> None:
+        """A rank profile would call these identical; size is what predicts here."""
+        small = (2.0, 1.0, 0.0)
+        large = (20.0, 10.0, 0.0)
+        self.assertEqual(composition_distance(small, small), 0.0)
+        self.assertGreater(composition_distance(small, large), 0.7)
+        self.assertEqual(composition_distance((1.0, 0.0), (0.0, 1.0)), 1.0)
+
+    def test_structure_rule_makes_unrelated_shapes_read_as_novel(self) -> None:
+        """The measured blind spot: same behaviour, completely different graph."""
+        behaviour = (1.0, 2.0, 3.0, 4.0)
+        blind = Archive(ArchiveConfig(capacity=3, probation=0, threshold=0.5))
+        aware = Archive(ArchiveConfig(capacity=3, probation=0, threshold=0.5,
+                                      structure_rule="max"))
+        for archive in (blind, aware):
+            for score in (1.0, 2.0, 3.0):
+                archive.insert(graph_of(4), score, behaviour, {"add": 4.0})
+        self.assertEqual(blind.insert(graph_of(30), 9.0, behaviour, {"delay": 30.0}).reason,
+                         "dominated")
+        self.assertEqual(aware.insert(graph_of(30), 9.0, behaviour, {"delay": 30.0}).reason,
+                         "novel")
+
+    def test_structure_rule_leaves_in_place_tuning_intact(self) -> None:
+        """A retuned copy is structurally identical, so it still meets its parent."""
+        archive = Archive(ArchiveConfig(capacity=3, probation=0, threshold=0.5,
+                                        structure_rule="max"))
+        for score in (10.0, 20.0, 30.0):
+            archive.insert(graph_of(4), score, (1.0, 2.0, 3.0, 4.0), {"add": 4.0})
+        outcome = archive.insert(graph_of(4), 5.0, (1.0, 2.0, 3.0, 4.0), {"add": 4.0})
+        self.assertEqual(outcome.reason, "improved")
+        self.assertEqual(archive.best.score, 5.0)
+
+    def test_structure_rule_is_validated(self) -> None:
+        with self.assertRaises(ValueError):
+            ArchiveConfig(structure_rule="sideways")
 
     def test_threshold_bounds_are_validated(self) -> None:
         with self.assertRaises(ValueError):
