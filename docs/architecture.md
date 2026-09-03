@@ -99,6 +99,25 @@ destination evaluator, and crossover children always use the destination
 signal. Benchmark scores are normalized by each trajectory's memoryless floor
 before islands are compared.
 
+## Archive search
+
+`ameba_graph.Archive` is a second search method beside the evolution engine, for
+domains where structural innovation loses to tuned incumbents before it can be
+judged. It holds a fixed number of candidates that are *different from each
+other* by a domain-supplied descriptor, and compares a new candidate only
+against its nearest neighbour rather than against a ranking. A retuned copy is
+near its own parent, so it competes only with it and replaces it on improvement:
+parameter search becomes something the archive performs on itself over time
+rather than a refinement pass before selection.
+
+The layer stays domain-neutral in the same way the evaluator contract does. The
+archive never inspects a graph beyond counting its nodes; the descriptor decides
+what "different" means, and `ameba_signal` supplies one built from the residuals
+the evaluator already computes.
+
+See [archive-search.md](archive-search.md) for what has been measured about it,
+including the mechanisms that were tried and refuted.
+
 ## Core rule
 
 Evolution asks only for a numeric score:

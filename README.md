@@ -126,6 +126,20 @@ stalls exactly at the memoryless floor on the nonlinear one.
 See [docs/benchmarks.md](docs/benchmarks.md) for the plants, the pass criterion,
 and the standing results.
 
+A second search method, a behavioural archive, is provided alongside the
+population engine. It holds a fixed set of models that fail differently from one
+another and lets each compete only within its own neighbourhood, so a new
+structure is judged against its own kind rather than against a tuned incumbent.
+It reaches 0.1947 x the memoryless floor on the Narendra plant where the
+population engine reached 0.809:
+
+```shell
+python scripts/archive_search.py --benchmark narendra --batches 3000 --batch 16   --workers 12 --parameter-rate 0.3 --seeds 8 --immigrant-rate 0.1 --threshold-max 0.3
+```
+
+See [docs/archive-search.md](docs/archive-search.md) for the measured settings
+and for the mechanisms that were tried and refuted.
+
 To run one and see what it found:
 
 ```shell

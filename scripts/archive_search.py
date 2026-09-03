@@ -18,6 +18,7 @@ itself between batches.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from math import isfinite
@@ -30,6 +31,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from ameba.benchmarks import (  # noqa: E402
     DEFAULT_NODE_PENALTY,
+    PlantTrajectory,
     FULL_OPERATORS,
     benchmark_crossover,
     benchmark_policy,
@@ -59,6 +61,7 @@ from ameba_graph.model import GraphError  # noqa: E402
 from ameba_graph.mutation import MutationError  # noqa: E402
 from ameba_graph.serialization import graph_dumps  # noqa: E402
 from ameba_signal import Dataset, SignalEvaluator, interface_scaffold  # noqa: E402
+from ameba_signal.serialization import dataset_from_dict  # noqa: E402
 from ameba_signal.stateful import STATEFUL_KINDS  # noqa: E402
 
 BENCHMARKS = {
@@ -94,11 +97,15 @@ def main(argv: list[str] | None = None) -> int:
     if not 0.0 <= args.crossover_rate <= 1.0:
         _parser().error("--crossover-rate must be between zero and one")
 
-    trajectory_of, title = BENCHMARKS[args.benchmark]
-    controls = training_controls(args.steps, Random(args.data_seed), args.amplitude)
-    trajectory = trajectory_of(controls)
-    dataset = identification_dataset(trajectory)
-    floor = static_gain_floor(trajectory, args.criterion, args.time_step)
+    if args.dataset:
+        dataset, floor, title = _measured_problem(args)
+    else:
+        trajectory_of, title = BENCHMARKS[args.benchmark]
+        trajectory = trajectory_of(
+            training_controls(args.steps, Random(args.data_seed), args.amplitude)
+        )
+        dataset = identification_dataset(trajectory)
+        floor = static_gain_floor(trajectory, args.criterion, args.time_step)
     evaluator = SignalEvaluator(
         dataset, criterion=args.criterion, time_step=args.time_step
     )
@@ -122,7 +129,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     print(f"\n{title}  --  behavioural archive search")
-    print(f"  {args.steps} steps, {args.batches} batches x {args.batch} candidates")
+    print(f"  {len(dataset.inputs)} steps, {args.batches} batches x {args.batch} candidates")
     print(
         f"  archive: capacity {args.capacity}, probation {args.probation}, "
         + (
@@ -308,6 +315,32 @@ def _seed_table(results, floor: float, best_seed: int) -> None:
     )
 
 
+def _measured_problem(args):
+    """Identify a plant from recorded data rather than a simulated benchmark.
+
+    Everything downstream of here already works from a dataset, so pointing the
+    search at measured input/output rows needs nothing but the file. The pass
+    criterion travels with it: for a single-input, single-output record the
+    memoryless floor is computable directly from the rows, and a model only
+    demonstrates dynamics by scoring below it.
+
+    For a multi-output record there is no single such floor, so scores are
+    reported raw and the ratio column is meaningless.
+    """
+    dataset = dataset_from_dict(json.loads(Path(args.dataset).read_text()))
+    if not dataset.inputs or not dataset.outputs:
+        raise SystemExit(f"{args.dataset} contains no rows")
+    title = f"{Path(args.dataset).name}  ({len(dataset.inputs)} rows)"
+    if len(dataset.inputs[0]) == 1 and len(dataset.outputs[0]) == 1:
+        trajectory = PlantTrajectory(
+            tuple(row[0] for row in dataset.inputs),
+            tuple(row[0] for row in dataset.outputs),
+        )
+        return dataset, static_gain_floor(trajectory, args.criterion, args.time_step), title
+    print("  note: not single-input/single-output; no memoryless floor applies")
+    return dataset, 1.0, title
+
+
 def _immigrants(args, dataset, policy):
     """A source of fresh random graphs, or None when immigration is off.
 
@@ -475,6 +508,11 @@ def _summary(archive, floor: float, evaluator, seconds: float) -> None:
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--benchmark", choices=sorted(BENCHMARKS), default="narendra")
+    parser.add_argument(
+        "--dataset", default=None,
+        help="identify a plant from recorded input/output rows instead of a "
+             "simulated benchmark; overrides --benchmark",
+    )
     parser.add_argument("--batches", type=int, default=200)
     parser.add_argument(
         "--batch", type=int, default=16,
