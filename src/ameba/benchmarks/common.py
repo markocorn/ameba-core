@@ -243,6 +243,33 @@ def seed_graph() -> Graph:
     return add_output(graph, CONTROL_INPUT)
 
 
+def static_seed_graph(inputs: int = 1, outputs: int = 1) -> Graph:
+    """The uninformed starting point for any interface: a static map.
+
+    Every output is predicted from the inputs at the current step and nothing
+    else, which is precisely the model :func:`memoryless_floor` measures. The
+    search therefore begins on the boundary it has to beat, holding structure
+    that can reach the floor exactly once its weights are fitted, and needing
+    to discover state to go any further.
+
+    An output node accepts a single input, so with more than one input each
+    output is fed through a summing relay. The relay is unlocked, so mutation
+    is free to rebuild what feeds it; only the interface terminals are locked.
+    """
+    graph = interface_scaffold(inputs, outputs)
+    graph.add_node(Node("one", "constant", {"value": 1.0}))
+    for channel in range(outputs):
+        if inputs == 1:
+            graph.add_edge(Edge(f"e_u0_y{channel}", "u0", f"y{channel}"))
+            continue
+        relay = f"s{channel}"
+        graph.add_node(Node(relay, "add"))
+        for index in range(inputs):
+            graph.add_edge(Edge(f"e_u{index}_{relay}", f"u{index}", relay))
+        graph.add_edge(Edge(f"e_{relay}_y{channel}", relay, f"y{channel}"))
+    return graph
+
+
 def dynamic_population(
     dataset: Dataset,
     policy: SignalGraphPolicy,

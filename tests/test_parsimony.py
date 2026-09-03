@@ -232,3 +232,52 @@ class MemorylessFloorTests(unittest.TestCase):
         rows = [(1.0,), (0.0,), (1.0,), (0.0,)]
         outputs = [(0.0,), (1.0,), (0.0,), (1.0,)]   # depends on the previous input
         self.assertGreater(memoryless_floor(Dataset(tuple(rows), tuple(outputs))), 0.5)
+
+
+class StaticSeedGraphTests(unittest.TestCase):
+    """The uninformed starting point has to exist for any interface."""
+
+    def test_one_channel_keeps_the_original_shape(self) -> None:
+        from ameba.benchmarks import seed_graph, static_seed_graph
+        self.assertEqual(len(static_seed_graph().nodes), len(seed_graph().nodes))
+
+    def test_every_output_is_driven_and_every_input_is_used(self) -> None:
+        from ameba.benchmarks import static_seed_graph
+        graph = static_seed_graph(3, 2)
+        for channel in range(2):
+            self.assertTrue(graph.incoming(f"y{channel}"), f"y{channel} unconnected")
+        for index in range(3):
+            self.assertTrue(graph.outgoing(f"u{index}"), f"u{index} unused")
+
+    def test_the_interface_terminals_are_locked(self) -> None:
+        from ameba.benchmarks import static_seed_graph
+        graph = static_seed_graph(2, 2)
+        for node in graph.nodes.values():
+            if node.kind in {"input", "output"}:
+                self.assertTrue(node.locked, f"{node.id} must not be removable")
+            else:
+                self.assertFalse(node.locked, f"{node.id} should stay mutable")
+
+    def test_its_structure_reaches_the_memoryless_floor_exactly(self) -> None:
+        """The seed is the floor's own model, so fitted weights must land on it."""
+        from ameba.benchmarks import memoryless_floor, static_seed_graph
+        from ameba.benchmarks.common import _solve
+        from ameba_graph import Edge
+        from ameba_signal import Dataset, SignalEvaluator
+
+        rows = [(1.0, 0.5), (-0.5, 1.0), (0.25, -1.0), (2.0, 0.0), (-1.0, -0.5)]
+        outputs = [(1.5 * a - 0.5 * b, 0.25 * a + 2.0 * b) for a, b in rows]
+        data = Dataset(tuple(rows), tuple(outputs))
+
+        graph = static_seed_graph(2, 2)
+        gram = [[sum(r[i] * r[j] for r in rows) for j in range(2)] for i in range(2)]
+        for channel in range(2):
+            moment = [sum(r[i] * o[channel] for r, o in zip(rows, outputs)) for i in range(2)]
+            for index, gain in enumerate(_solve(gram, moment)):
+                edge = graph.edges[f"e_u{index}_s{channel}"]
+                graph.edges[edge.id] = Edge(
+                    edge.id, edge.source, edge.target, {"weight": gain}
+                )
+        self.assertAlmostEqual(
+            SignalEvaluator(data).evaluate(graph), memoryless_floor(data), places=9
+        )

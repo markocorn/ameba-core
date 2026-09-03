@@ -43,6 +43,7 @@ from ameba.benchmarks import (  # noqa: E402
     parameter_mutations,
     seed_graph,
     static_gain_floor,
+    static_seed_graph,
     step_controls,
     structural_mutations,
     training_controls,
@@ -371,12 +372,8 @@ def _immigrants(args, dataset, policy):
 def _initial_graphs(args, seed: int, dataset, policy) -> list[Graph]:
     """Fill the archive from diverse executable architectures, or from the seed."""
     if args.initialization == "seed":
-        if len(dataset.inputs[0]) != 1 or len(dataset.outputs[0]) != 1:
-            raise SystemExit(
-                "--initialization seed builds the single-input/single-output "
-                "starting graph; use the default 'dynamic' for other shapes"
-            )
-        return [seed_graph() for _ in range(args.capacity)]
+        interface = (len(dataset.inputs[0]), len(dataset.outputs[0]))
+        return [static_seed_graph(*interface) for _ in range(args.capacity)]
     return dynamic_population(
         dataset,
         policy,
