@@ -1,0 +1,347 @@
+{
+  "attributes": {},
+  "edges": [
+    {
+      "attributes": {
+        "weight": 0.776603056632851
+      },
+      "id": "e0",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "y0"
+    },
+    {
+      "attributes": {
+        "weight": 1.8345418489568504
+      },
+      "id": "e1",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n6",
+      "target": "n2"
+    },
+    {
+      "attributes": {
+        "weight": -0.29767735109264537
+      },
+      "id": "e10",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n9",
+      "target": "n6"
+    },
+    {
+      "attributes": {
+        "weight": 1.1933578125194058
+      },
+      "id": "e11",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n0",
+      "target": "n2"
+    },
+    {
+      "attributes": {
+        "weight": -0.5218183260040474
+      },
+      "id": "e12",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n3"
+    },
+    {
+      "attributes": {
+        "weight": -0.6882622834260879
+      },
+      "id": "e13",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n8",
+      "target": "n4"
+    },
+    {
+      "attributes": {
+        "weight": -0.3354127722428544
+      },
+      "id": "e14",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n9",
+      "target": "n5"
+    },
+    {
+      "attributes": {
+        "weight": 0.9614584186206478
+      },
+      "id": "e2",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n1",
+      "target": "n0"
+    },
+    {
+      "attributes": {
+        "weight": -1.2147495805652593
+      },
+      "id": "e3",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n2",
+      "target": "n10"
+    },
+    {
+      "attributes": {
+        "weight": 0.01976975568585404
+      },
+      "id": "e4",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n3",
+      "target": "n2"
+    },
+    {
+      "attributes": {
+        "weight": 1.0113225136501383
+      },
+      "id": "e5",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n8"
+    },
+    {
+      "attributes": {
+        "weight": -1.1245946003445297
+      },
+      "id": "e6",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n1"
+    },
+    {
+      "attributes": {
+        "weight": 1.887209855641378
+      },
+      "id": "e7",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n5",
+      "target": "n11"
+    },
+    {
+      "attributes": {
+        "weight": -1.7220406161962423
+      },
+      "id": "e8",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n8",
+      "target": "n9"
+    },
+    {
+      "attributes": {
+        "weight": 1.4496802251849146
+      },
+      "id": "e9",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n7"
+    }
+  ],
+  "nodes": [
+    {
+      "attributes": {
+        "alpha": 0.7098598953191384,
+        "initial": 0.0,
+        "initial_input": 0.0
+      },
+      "id": "n0",
+      "kind": "filter_hp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n1",
+      "kind": "exp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "initial": 3.9956095697441274,
+        "time_step": 0.5303933171285412
+      },
+      "id": "n10",
+      "kind": "derivative",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n11",
+      "kind": "abs",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n2",
+      "kind": "multiply",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n3",
+      "kind": "tanh",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "alpha": 0.7507729948431453,
+        "initial": 1.2471502547496467
+      },
+      "id": "n4",
+      "kind": "filter_lp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n5",
+      "kind": "reciprocal",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "alpha": 0.5,
+        "initial": 7.602554701842649
+      },
+      "id": "n6",
+      "kind": "filter_lp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n7",
+      "kind": "exp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n8",
+      "kind": "square",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n9",
+      "kind": "exp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "index": 0
+      },
+      "id": "u0",
+      "kind": "input",
+      "locks": {
+        "attributes": [],
+        "structure": true
+      }
+    },
+    {
+      "attributes": {
+        "index": 0
+      },
+      "id": "y0",
+      "kind": "output",
+      "locks": {
+        "attributes": [],
+        "structure": true
+      }
+    }
+  ],
+  "schema": "ameba.graph",
+  "version": 1
+}

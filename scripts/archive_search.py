@@ -73,6 +73,9 @@ def _describe_in_worker(graph: Graph):
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Redirected to a file, stdout would otherwise block-buffer and show
+    # nothing until the run ends -- useless for watching a long search.
+    sys.stdout.reconfigure(line_buffering=True)
     args = _parser().parse_args(argv)
     if args.capacity < 2:
         _parser().error("--capacity must be at least two")
@@ -95,15 +98,19 @@ def main(argv: list[str] | None = None) -> int:
     parameter_ops = parameter_mutations()
     structural_ops = structural_mutations()
     crossover = benchmark_crossover()
-    rng = Random(args.seed)
 
-    archive = Archive(ArchiveConfig(
+    config = ArchiveConfig(
         capacity=args.capacity,
         probation=args.probation,
         threshold=args.threshold,
         threshold_quantile=args.threshold_quantile,
+        threshold_min=args.threshold_min,
+        threshold_max=args.threshold_max,
         novelty_admits=not args.require_improvement,
-    ))
+        size_tiebreak=args.size_tiebreak,
+        local_competition=not args.no_local_competition,
+        min_nodes=args.min_nodes,
+    )
 
     print(f"\n{title}  --  behavioural archive search")
     print(f"  {args.steps} steps, {args.batches} batches x {args.batch} candidates")
@@ -127,7 +134,6 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  memoryless floor: {floor:.6g}  (a model must score below this)")
     print(f"  workers: {args.workers}\n")
 
-    seeds = _initial_graphs(args, dataset, policy)
     executor = (
         ProcessPoolExecutor(
             max_workers=args.workers,
@@ -138,45 +144,112 @@ def main(argv: list[str] | None = None) -> int:
         else None
     )
     started = perf_counter()
+    results: list[tuple[int, Archive]] = []
     try:
-        for graph in seeds:
-            score, descriptor = evaluator.describe(graph)
-            archive.insert(graph, _shaped(score, graph, args.node_penalty), descriptor)
-
-        interval = args.progress or max(1, args.batches // 20)
-        header = f"{'batch':>6}  {'best':>13}  {'/floor':>8}  {'held':>4}  {'thresh':>7}  {'new':>4}  {'tuned':>5}"
-        print(header)
-        _report(archive, 0, floor, 0, 0)
-        for batch in range(1, args.batches + 1):
-            candidates = [
-                _candidate(archive, rng, policy, parameter_ops, structural_ops,
-                           crossover, args)
-                for _ in range(args.batch)
-            ]
-            scored = _score(candidates, evaluator, executor)
-            admitted = tuned = 0
-            for graph, (score, descriptor) in zip(candidates, scored):
-                outcome = archive.insert(
-                    graph, _shaped(score, graph, args.node_penalty), descriptor
+        for index in range(args.seeds):
+            seed = args.seed + index
+            if args.seeds > 1:
+                print(f"\nSEED {seed}  ({index + 1}/{args.seeds})")
+            archive = _search(
+                args, seed, config, dataset, policy, evaluator, floor,
+                parameter_ops, structural_ops, crossover, executor,
+            )
+            results.append((seed, archive))
+            if args.seeds > 1:
+                member = archive.best
+                done = [item.best.score for _, item in results]
+                print(
+                    f"  seed {seed} done: {member.score:.6g} "
+                    f"({member.score / floor:.4f} x floor), "
+                    f"{len(member.graph.nodes)} nodes, "
+                    + ("below floor" if member.score < floor else "at/above floor")
+                    + f"  |  {sum(1 for s in done if s < floor)}/{len(done)} below so far, "
+                    f"best {min(done):.6g}, {_clock(perf_counter() - started)} elapsed"
                 )
-                if outcome.reason == "novel":
-                    admitted += 1
-                elif outcome.reason == "improved":
-                    tuned += 1
-            if batch % interval == 0 or batch == args.batches:
-                _report(archive, batch, floor, admitted, tuned)
     finally:
         if executor is not None:
             executor.shutdown()
 
-    _summary(archive, floor, evaluator, perf_counter() - started)
+    best_seed, best_archive = min(
+        results, key=lambda item: item[1].best.score
+    )
+    _summary(best_archive, floor, evaluator, perf_counter() - started)
+    if args.seeds > 1:
+        _seed_table(results, floor, best_seed)
     if args.save_graph:
-        Path(args.save_graph).write_text(graph_dumps(archive.best.graph))
+        Path(args.save_graph).write_text(graph_dumps(best_archive.best.graph))
         print(f"\n  best graph written to {args.save_graph}")
     return 0
 
 
-def _initial_graphs(args, dataset, policy) -> list[Graph]:
+def _search(args, seed, config, dataset, policy, evaluator, floor,
+            parameter_ops, structural_ops, crossover, executor) -> Archive:
+    """One complete independent run at ``seed``."""
+    rng = Random(seed)
+    archive = Archive(config)
+    for graph in _initial_graphs(args, seed, dataset, policy):
+        score, descriptor = evaluator.describe(graph)
+        archive.insert(graph, _shaped(score, graph, args.node_penalty), descriptor)
+
+    started = perf_counter()
+    interval = args.progress or max(1, args.batches // 40)
+    print(
+        f"{'batch':>7} {'best':>13} {'/floor':>8} {'held':>5} {'thresh':>7} "
+        f"{'new':>4} {'tuned':>6} {'nodes':>6} {'elapsed':>8} {'eta':>8}"
+    )
+    _report(archive, 0, args.batches, floor, 0, 0, 0.0)
+    for batch in range(1, args.batches + 1):
+        candidates = [
+            _candidate(archive, rng, policy, parameter_ops, structural_ops,
+                       crossover, args)
+            for _ in range(args.batch)
+        ]
+        admitted = tuned = 0
+        for graph, (score, descriptor) in zip(
+            candidates, _score(candidates, evaluator, executor)
+        ):
+            outcome = archive.insert(
+                graph, _shaped(score, graph, args.node_penalty), descriptor
+            )
+            if outcome.reason == "novel":
+                admitted += 1
+            elif outcome.reason in ("improved", "simplified"):
+                tuned += 1
+        if batch % interval == 0 or batch == args.batches:
+            _report(
+                archive, batch, args.batches, floor, admitted, tuned,
+                perf_counter() - started,
+            )
+    return archive
+
+
+def _seed_table(results, floor: float, best_seed: int) -> None:
+    """Per-seed outcomes, because the spread here is wider than most effects."""
+    scores = sorted(archive.best.score for _, archive in results)
+    middle = len(scores) // 2
+    median = (
+        scores[middle]
+        if len(scores) % 2
+        else (scores[middle - 1] + scores[middle]) / 2.0
+    )
+    print(f"\n  across {len(results)} seeds:")
+    print(f"    {'seed':>6}  {'best':>13}  {'/floor':>8}  {'nodes':>5}  verdict")
+    for seed, archive in results:
+        member = archive.best
+        print(
+            f"    {seed:>6}  {member.score:>13.6g}  {member.score / floor:>8.4f}  "
+            f"{len(member.graph.nodes):>5}  "
+            + ("below floor" if member.score < floor else "at/above floor")
+            + ("   <- best" if seed == best_seed else "")
+        )
+    below = sum(1 for _, archive in results if archive.best.score < floor)
+    print(
+        f"    median {median:.6g} ({median / floor:.4f} x floor); "
+        f"{below}/{len(results)} runs below the floor"
+    )
+
+
+def _initial_graphs(args, seed: int, dataset, policy) -> list[Graph]:
     """Fill the archive from diverse executable architectures, or from the seed."""
     if args.initialization == "seed":
         return [seed_graph() for _ in range(args.capacity)]
@@ -184,7 +257,7 @@ def _initial_graphs(args, dataset, policy) -> list[Graph]:
         dataset,
         policy,
         args.capacity,
-        args.seed + 1_000,
+        seed + 1_000,
         args.initial_nodes_min,
         args.initial_nodes_max,
     )
@@ -234,12 +307,25 @@ def _score(candidates, evaluator, executor):
     return list(executor.map(_describe_in_worker, candidates))
 
 
-def _report(archive, batch: int, floor: float, admitted: int, tuned: int) -> None:
+def _report(
+    archive, batch: int, total: int, floor: float,
+    admitted: int, tuned: int, elapsed: float,
+) -> None:
     best = archive.best
+    remaining = (elapsed / batch) * (total - batch) if batch else 0.0
     print(
-        f"{batch:>6}  {best.score:>13.6g}  {best.score / floor:>8.4f}  "
-        f"{len(archive):>4}  {archive.threshold():>7.4f}  {admitted:>4}  {tuned:>5}"
+        f"{batch:>7} {best.score:>13.6g} {best.score / floor:>8.4f} "
+        f"{len(archive):>5} {archive.threshold():>7.4f} {admitted:>4} {tuned:>6} "
+        f"{len(best.graph.nodes):>6} {_clock(elapsed):>8} {_clock(remaining):>8}"
     )
+
+
+def _clock(seconds: float) -> str:
+    if seconds < 60:
+        return f"{seconds:.0f}s"
+    if seconds < 3600:
+        return f"{int(seconds) // 60}m{int(seconds) % 60:02d}s"
+    return f"{int(seconds) // 3600}h{(int(seconds) % 3600) // 60:02d}m"
 
 
 def _summary(archive, floor: float, evaluator, seconds: float) -> None:
@@ -295,6 +381,16 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--threshold-quantile", type=float, default=0.25)
     parser.add_argument(
+        "--threshold-min", type=float, default=0.0,
+        help="floor under the adaptive threshold, so it cannot collapse until "
+             "every candidate reads as novel and no niche consolidates",
+    )
+    parser.add_argument(
+        "--threshold-max", type=float, default=2.0,
+        help="cap over the adaptive threshold, so it cannot pin high and admit "
+             "no new structure at all",
+    )
+    parser.add_argument(
         "--require-improvement", action="store_true",
         help="make novel candidates also beat the member they displace",
     )
@@ -318,6 +414,26 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--node-penalty", type=float, default=0.0,
         help="fraction of its score each node costs; measured harmful here, default off",
+    )
+    parser.add_argument(
+        "--seeds", type=int, default=1,
+        help="independent runs at consecutive seeds; the spread is wide, so "
+             "any config comparison needs several",
+    )
+    parser.add_argument(
+        "--size-tiebreak", type=float, default=0.0,
+        help="within a niche, prefer a smaller graph scoring within this "
+             "relative tolerance; parsimony that cannot reach the plateau",
+    )
+    parser.add_argument(
+        "--no-local-competition", action="store_true",
+        help="drop same-niche candidates instead of letting them replace their "
+             "neighbour; ablates in-place tuning",
+    )
+    parser.add_argument(
+        "--min-nodes", type=int, default=0,
+        help="refuse candidates smaller than this; size predicts success here, "
+             "so the useful guard is a floor rather than a penalty",
     )
     parser.add_argument(
         "--save-graph", default=None, help="write the best graph as JSON",

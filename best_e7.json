@@ -1,0 +1,360 @@
+{
+  "attributes": {},
+  "edges": [
+    {
+      "attributes": {
+        "weight": 1.7550396419021737
+      },
+      "id": "e0",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n1",
+      "target": "n4"
+    },
+    {
+      "attributes": {
+        "weight": -1.6469746459985877
+      },
+      "id": "e1",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n12",
+      "target": "n9"
+    },
+    {
+      "attributes": {
+        "weight": -1.7761623350666818
+      },
+      "id": "e10",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n11"
+    },
+    {
+      "attributes": {
+        "weight": -1.97705342712261
+      },
+      "id": "e11",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n12",
+      "target": "n8"
+    },
+    {
+      "attributes": {
+        "weight": 0.3639249606973798
+      },
+      "id": "e12",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n1",
+      "target": "n5"
+    },
+    {
+      "attributes": {
+        "weight": -0.546364636513347
+      },
+      "id": "e14",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n6"
+    },
+    {
+      "attributes": {
+        "weight": -1.2395665820270718
+      },
+      "id": "e15",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n10",
+      "target": "n0"
+    },
+    {
+      "attributes": {
+        "weight": 0.8166965866997392
+      },
+      "id": "e2",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n6",
+      "target": "n11"
+    },
+    {
+      "attributes": {
+        "weight": -0.4620969613755679
+      },
+      "id": "e3",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n1",
+      "target": "n2"
+    },
+    {
+      "attributes": {
+        "weight": -1.2018976920746778
+      },
+      "id": "e4",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n11",
+      "target": "n10"
+    },
+    {
+      "attributes": {
+        "weight": -0.7944094760885844
+      },
+      "id": "e5",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n5"
+    },
+    {
+      "attributes": {
+        "weight": 1.0526946791672276
+      },
+      "id": "e6",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n0",
+      "target": "n7"
+    },
+    {
+      "attributes": {
+        "weight": -0.9170411180068814
+      },
+      "id": "e7",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n7",
+      "target": "n1"
+    },
+    {
+      "attributes": {
+        "weight": -0.6732703596209744
+      },
+      "id": "e8",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n5",
+      "target": "y0"
+    },
+    {
+      "attributes": {
+        "weight": -0.07096767678451288
+      },
+      "id": "e9",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n3",
+      "target": "n12"
+    }
+  ],
+  "nodes": [
+    {
+      "attributes": {},
+      "id": "n0",
+      "kind": "exp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n1",
+      "kind": "abs",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "alpha": 0.7255909826386409,
+        "initial": -0.229923860911867,
+        "initial_input": -0.5141382140962039
+      },
+      "id": "n10",
+      "kind": "filter_hp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n11",
+      "kind": "multiply",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "phase": -2.2180637557701615
+      },
+      "id": "n12",
+      "kind": "sin",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n2",
+      "kind": "square",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "value": -23.5691104361946
+      },
+      "id": "n3",
+      "kind": "constant",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n4",
+      "kind": "sqrt",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n5",
+      "kind": "multiply",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "alpha": 0.6598893806039634,
+        "initial": 7.108393138613149
+      },
+      "id": "n6",
+      "kind": "filter_lp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "alpha": 1.0,
+        "initial": 5.772164442997222,
+        "initial_input": 2.789189354891097
+      },
+      "id": "n7",
+      "kind": "filter_hp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "phase": 0.20094484093788711
+      },
+      "id": "n8",
+      "kind": "sin",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n9",
+      "kind": "negate",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "index": 0
+      },
+      "id": "u0",
+      "kind": "input",
+      "locks": {
+        "attributes": [],
+        "structure": true
+      }
+    },
+    {
+      "attributes": {
+        "index": 0
+      },
+      "id": "y0",
+      "kind": "output",
+      "locks": {
+        "attributes": [],
+        "structure": true
+      }
+    }
+  ],
+  "schema": "ameba.graph",
+  "version": 1
+}

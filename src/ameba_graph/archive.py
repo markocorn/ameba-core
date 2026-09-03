@@ -99,19 +99,50 @@ class ArchiveConfig:
     member it displaces. Leaving it on is what keeps the door open for
     structures that are not yet tuned; turning it off makes the archive a
     stricter elite set and is the ablation worth measuring against.
+
+    ``size_tiebreak`` prefers, within a niche, a smaller graph scoring inside
+    this relative tolerance of its neighbour. It was built on the theory that
+    niche-scoped parsimony is safe where a flat node charge is not, and the
+    measurement refuted that: at a tolerance of 0.02 it collapsed six of eight
+    Narendra runs to a two-node graph sitting exactly on the memoryless floor,
+    against seven of eight below the floor with it off. The theory missed that
+    early on *every* poor model resembles the static one -- their residuals all
+    track the target -- so they share its niche and the tiebreak shrinks the
+    whole archive into it before any structure can grow. Left in place because
+    one seed did improve, but it is off by default and should stay off absent a
+    reason.
+
+    ``min_nodes`` refuses candidates below a size. Measured on the Narendra
+    plant, final graph size predicted the score with a rank correlation of
+    -0.86: every run that grew found dynamics, every run that shrank stalled at
+    the memoryless floor, and a run that had collapsed did not recover in a
+    further nine thousand batches. Size is the search's working material rather
+    than waste, so the useful guard is a lower bound, not a charge.
+
+    ``local_competition`` exists to be turned off. With it disabled a candidate
+    that lands in an occupied niche is simply dropped, so members never improve
+    in place and the archive advances only by admitting novel structures. That
+    isolates how much of the result comes from in-place tuning.
     """
 
     capacity: int = 10
     probation: int = 5
     threshold: float | None = None
     threshold_quantile: float = 0.25
+    threshold_min: float = 0.0
+    threshold_max: float = 2.0
     novelty_admits: bool = True
+    size_tiebreak: float = 0.0
+    local_competition: bool = True
+    min_nodes: int = 0
 
     def __post_init__(self) -> None:
         if self.capacity < 1:
             raise ValueError("capacity must be positive")
         if self.probation < 0:
             raise ValueError("probation cannot be negative")
+        if self.min_nodes < 0:
+            raise ValueError("min_nodes cannot be negative")
         if self.probation > self.capacity - 2:
             # At most one member is admitted per insertion, so at most
             # ``probation`` of them can be under protection at once. Holding
@@ -124,6 +155,10 @@ class ArchiveConfig:
             raise ValueError("threshold cannot be negative")
         if not 0.0 <= self.threshold_quantile <= 1.0:
             raise ValueError("threshold_quantile must be between zero and one")
+        if self.threshold_min < 0.0 or self.threshold_max > 2.0:
+            raise ValueError("threshold bounds must lie within the distance range")
+        if self.threshold_min > self.threshold_max:
+            raise ValueError("threshold_min cannot exceed threshold_max")
 
 
 @dataclass(slots=True)
@@ -182,7 +217,14 @@ class Archive:
             for right in self.members[index + 1 :]
         )
         position = int(self.config.threshold_quantile * (len(distances) - 1))
-        return distances[position]
+        # An unbounded quantile drifts to both useless extremes: pinned high it
+        # calls every candidate a variant of something and admits no new
+        # structure at all, collapsed to nearly zero it calls everything novel
+        # and never lets a niche consolidate. Both were observed stalling runs.
+        return min(
+            max(distances[position], self.config.threshold_min),
+            self.config.threshold_max,
+        )
 
     def insert(
         self, graph: Graph, score: float, descriptor: Sequence[float] | None
@@ -191,6 +233,8 @@ class Archive:
         self.insertions += 1
         if descriptor is None or not descriptor or not isfinite(score):
             return Insertion(False, "invalid")
+        if len(graph.nodes) < self.config.min_nodes:
+            return Insertion(False, "too small")
 
         vector = tuple(float(value) for value in descriptor)
         if len(self.members) < self.config.capacity:
@@ -199,6 +243,14 @@ class Archive:
 
         distance, nearest = self._nearest(vector)
         if distance <= self.threshold():
+            if not self.config.local_competition:
+                return Insertion(False, "no local competition", distance)
+            if self._simplifies(graph, score, nearest):
+                nearest.graph = graph
+                nearest.score = score
+                nearest.descriptor = vector
+                nearest.improvements += 1
+                return Insertion(True, "simplified", distance)
             if score < nearest.score:
                 # Same idea, tuned better: the variant takes its parent's slot
                 # and inherits its standing, so improving a member never
@@ -211,6 +263,17 @@ class Archive:
             return Insertion(False, "dominated", distance)
 
         return self._admit_novel(graph, score, vector, distance)
+
+    def _simplifies(
+        self, graph: Graph, score: float, nearest: ArchiveMember
+    ) -> bool:
+        """Is this the same idea said more briefly, at no meaningful cost?"""
+        if self.config.size_tiebreak <= 0.0:
+            return False
+        if len(graph.nodes) >= len(nearest.graph.nodes):
+            return False
+        allowed = abs(nearest.score) * self.config.size_tiebreak
+        return score <= nearest.score + allowed
 
     def _admit_novel(
         self,

@@ -1,0 +1,961 @@
+{
+  "attributes": {},
+  "edges": [
+    {
+      "attributes": {
+        "weight": -1.6838009513158871
+      },
+      "id": "e0",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n14",
+      "target": "n1"
+    },
+    {
+      "attributes": {
+        "weight": 1.8367825263396749
+      },
+      "id": "e1",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n5",
+      "target": "n14"
+    },
+    {
+      "attributes": {
+        "weight": -0.550310503347022
+      },
+      "id": "e10",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n14",
+      "target": "n21"
+    },
+    {
+      "attributes": {
+        "weight": 0.1690760328205469
+      },
+      "id": "e11",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n13",
+      "target": "n4"
+    },
+    {
+      "attributes": {
+        "weight": 0.5741982875334531
+      },
+      "id": "e12",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n3",
+      "target": "n8"
+    },
+    {
+      "attributes": {
+        "weight": 1.4642088594762015
+      },
+      "id": "e13",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n22",
+      "target": "n18"
+    },
+    {
+      "attributes": {
+        "weight": 1.380017917378343
+      },
+      "id": "e14",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n1",
+      "target": "n2"
+    },
+    {
+      "attributes": {
+        "weight": -1.185817190104121
+      },
+      "id": "e15",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n10",
+      "target": "n0"
+    },
+    {
+      "attributes": {
+        "weight": -1.5787708176392923
+      },
+      "id": "e16",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n17",
+      "target": "n16"
+    },
+    {
+      "attributes": {
+        "weight": 0.4446181535534306
+      },
+      "id": "e17",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n16",
+      "target": "n15"
+    },
+    {
+      "attributes": {
+        "weight": -1.3594078791163224
+      },
+      "id": "e18",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n15",
+      "target": "n5"
+    },
+    {
+      "attributes": {
+        "weight": -0.23241745994388507
+      },
+      "id": "e19",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n1",
+      "target": "n17"
+    },
+    {
+      "attributes": {
+        "weight": 0.6701491193866841
+      },
+      "id": "e2",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n2",
+      "target": "n7"
+    },
+    {
+      "attributes": {
+        "weight": -1.5353013509637772
+      },
+      "id": "e20",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n16",
+      "target": "n12"
+    },
+    {
+      "attributes": {
+        "weight": 0.7452576303125734
+      },
+      "id": "e21",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n7",
+      "target": "n19"
+    },
+    {
+      "attributes": {
+        "weight": 0.2988111597886247
+      },
+      "id": "e22",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n19",
+      "target": "n1"
+    },
+    {
+      "attributes": {
+        "weight": 1.8464893210621054
+      },
+      "id": "e23",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n11",
+      "target": "n24"
+    },
+    {
+      "attributes": {
+        "weight": 1.4820912567419222
+      },
+      "id": "e24",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n22",
+      "target": "n20"
+    },
+    {
+      "attributes": {
+        "weight": 1.2693770446765775
+      },
+      "id": "e25",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n22",
+      "target": "n1"
+    },
+    {
+      "attributes": {
+        "weight": 1.9061599535725495
+      },
+      "id": "e26",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n20",
+      "target": "n7"
+    },
+    {
+      "attributes": {
+        "weight": 2.0
+      },
+      "id": "e27",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n24",
+      "target": "n22"
+    },
+    {
+      "attributes": {
+        "weight": 0.816749101236653
+      },
+      "id": "e28",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n25",
+      "target": "n10"
+    },
+    {
+      "attributes": {
+        "weight": 0.6929808620620141
+      },
+      "id": "e29",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n25",
+      "target": "n31"
+    },
+    {
+      "attributes": {
+        "weight": 0.9172733228056276
+      },
+      "id": "e3",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n14",
+      "target": "n13"
+    },
+    {
+      "attributes": {
+        "weight": -0.48468869341533993
+      },
+      "id": "e30",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n24",
+      "target": "n13"
+    },
+    {
+      "attributes": {
+        "weight": -1.1103861849102517
+      },
+      "id": "e31",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n27",
+      "target": "n32"
+    },
+    {
+      "attributes": {
+        "weight": -0.7733069711095015
+      },
+      "id": "e32",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n26"
+    },
+    {
+      "attributes": {
+        "weight": 0.8419745518977424
+      },
+      "id": "e33",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n11",
+      "target": "n27"
+    },
+    {
+      "attributes": {
+        "weight": -0.07772286568956333
+      },
+      "id": "e34",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n26",
+      "target": "n1"
+    },
+    {
+      "attributes": {
+        "weight": 2.0
+      },
+      "id": "e35",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n21",
+      "target": "n30"
+    },
+    {
+      "attributes": {
+        "weight": -0.7468443324499914
+      },
+      "id": "e36",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n29",
+      "target": "n26"
+    },
+    {
+      "attributes": {
+        "weight": -2.0
+      },
+      "id": "e37",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n14",
+      "target": "n26"
+    },
+    {
+      "attributes": {
+        "weight": 0.3272238874103036
+      },
+      "id": "e38",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n30",
+      "target": "n25"
+    },
+    {
+      "attributes": {
+        "weight": -1.8448023261373807
+      },
+      "id": "e39",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n27",
+      "target": "n13"
+    },
+    {
+      "attributes": {
+        "weight": -2.0
+      },
+      "id": "e4",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n4",
+      "target": "n9"
+    },
+    {
+      "attributes": {
+        "weight": -1.6616143413713056
+      },
+      "id": "e40",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n31",
+      "target": "n29"
+    },
+    {
+      "attributes": {
+        "weight": 1.9804308770175925
+      },
+      "id": "e41",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n32",
+      "target": "n28"
+    },
+    {
+      "attributes": {
+        "weight": -1.499893139603767
+      },
+      "id": "e42",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n10",
+      "target": "n23"
+    },
+    {
+      "attributes": {
+        "weight": 0.036190197577064875
+      },
+      "id": "e43",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n22",
+      "target": "n13"
+    },
+    {
+      "attributes": {
+        "weight": -0.34966410974936635
+      },
+      "id": "e44",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n15",
+      "target": "n26"
+    },
+    {
+      "attributes": {
+        "weight": -1.1555656981274418
+      },
+      "id": "e45",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n23",
+      "target": "n26"
+    },
+    {
+      "attributes": {
+        "weight": -1.2599437279045391
+      },
+      "id": "e5",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n5"
+    },
+    {
+      "attributes": {
+        "weight": 1.6612383323193765
+      },
+      "id": "e6",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n9",
+      "target": "n24"
+    },
+    {
+      "attributes": {
+        "weight": -1.5242457288714943
+      },
+      "id": "e7",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n8",
+      "target": "n6"
+    },
+    {
+      "attributes": {
+        "weight": -0.6491982395112179
+      },
+      "id": "e8",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n5",
+      "target": "y0"
+    },
+    {
+      "attributes": {
+        "weight": -0.07096767678451288
+      },
+      "id": "e9",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n3",
+      "target": "n11"
+    }
+  ],
+  "nodes": [
+    {
+      "attributes": {
+        "phase": -5.196972588562266
+      },
+      "id": "n0",
+      "kind": "sin",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n1",
+      "kind": "add",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n10",
+      "kind": "square",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "alpha": 0.5,
+        "initial": -7.061134912045423
+      },
+      "id": "n11",
+      "kind": "filter_lp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n12",
+      "kind": "square",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n13",
+      "kind": "add",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "phase": -4.738272337608465
+      },
+      "id": "n14",
+      "kind": "sin",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "alpha": 0.7261345431272648,
+        "initial": -0.3524081847175786
+      },
+      "id": "n15",
+      "kind": "filter_lp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "initial": -2.2924684345350634,
+        "steps": 2
+      },
+      "id": "n16",
+      "kind": "delay",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n17",
+      "kind": "exp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "phase": 0.0
+      },
+      "id": "n18",
+      "kind": "sin",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "initial": -0.9070992421238513,
+        "steps": 1
+      },
+      "id": "n19",
+      "kind": "delay",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n2",
+      "kind": "abs",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "phase": -5.196972588562266
+      },
+      "id": "n20",
+      "kind": "sin",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n21",
+      "kind": "abs",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "phase": -4.568527487652166
+      },
+      "id": "n22",
+      "kind": "sin",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "initial": -8.353679003726079,
+        "time_step": 7.20758769336675
+      },
+      "id": "n23",
+      "kind": "derivative",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n24",
+      "kind": "add",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "phase": 0.5291863723839583
+      },
+      "id": "n25",
+      "kind": "sin",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n26",
+      "kind": "add",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n27",
+      "kind": "negate",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n28",
+      "kind": "sqrt",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n29",
+      "kind": "square",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "value": -2.1456549998766157
+      },
+      "id": "n3",
+      "kind": "constant",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n30",
+      "kind": "log",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n31",
+      "kind": "exp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n32",
+      "kind": "abs",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n4",
+      "kind": "negate",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n5",
+      "kind": "multiply",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n6",
+      "kind": "square",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n7",
+      "kind": "multiply",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "alpha": 0.36808321229129065,
+        "initial": -1.582627442370597
+      },
+      "id": "n8",
+      "kind": "filter_lp",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "initial": 0.0,
+        "steps": 1
+      },
+      "id": "n9",
+      "kind": "delay",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "index": 0
+      },
+      "id": "u0",
+      "kind": "input",
+      "locks": {
+        "attributes": [],
+        "structure": true
+      }
+    },
+    {
+      "attributes": {
+        "index": 0
+      },
+      "id": "y0",
+      "kind": "output",
+      "locks": {
+        "attributes": [],
+        "structure": true
+      }
+    }
+  ],
+  "schema": "ameba.graph",
+  "version": 1
+}
