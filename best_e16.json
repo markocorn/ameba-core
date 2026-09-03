@@ -1,0 +1,165 @@
+{
+  "attributes": {},
+  "edges": [
+    {
+      "attributes": {
+        "weight": -0.5813250592775625
+      },
+      "id": "e0",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n12"
+    },
+    {
+      "attributes": {
+        "weight": 0.9803051821017763
+      },
+      "id": "e1",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n2"
+    },
+    {
+      "attributes": {
+        "weight": -1.9836250224028422
+      },
+      "id": "e18",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n13"
+    },
+    {
+      "attributes": {
+        "weight": 0.023430072925812784
+      },
+      "id": "e2",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "n1"
+    },
+    {
+      "attributes": {
+        "weight": 0.7589788341004986
+      },
+      "id": "e3",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "u0",
+      "target": "y0"
+    },
+    {
+      "attributes": {
+        "weight": 0.7661644549604398
+      },
+      "id": "e4",
+      "locks": {
+        "attributes": [],
+        "source": false,
+        "target": false
+      },
+      "source": "n2",
+      "target": "n0"
+    }
+  ],
+  "nodes": [
+    {
+      "attributes": {
+        "gain": -2.1693750451786293,
+        "initial": 1.837471437121776
+      },
+      "id": "n0",
+      "kind": "integral",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "gain": -2.439370821946465,
+        "initial": 0.0
+      },
+      "id": "n1",
+      "kind": "integral",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "phase": -6.147225511385695
+      },
+      "id": "n12",
+      "kind": "sin",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "initial": 6.730174878968867,
+        "time_step": 1.4209130372737235
+      },
+      "id": "n13",
+      "kind": "derivative",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {},
+      "id": "n2",
+      "kind": "reciprocal",
+      "locks": {
+        "attributes": [],
+        "structure": false
+      }
+    },
+    {
+      "attributes": {
+        "index": 0
+      },
+      "id": "u0",
+      "kind": "input",
+      "locks": {
+        "attributes": [],
+        "structure": true
+      }
+    },
+    {
+      "attributes": {
+        "index": 0
+      },
+      "id": "y0",
+      "kind": "output",
+      "locks": {
+        "attributes": [],
+        "structure": true
+      }
+    }
+  ],
+  "schema": "ameba.graph",
+  "version": 1
+}
