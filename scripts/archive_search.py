@@ -38,6 +38,7 @@ from ameba.benchmarks import (  # noqa: E402
     dynamic_population,
     identification_dataset,
     linear,
+    memoryless_floor,
     narendra,
     parameter_mutations,
     seed_graph,
@@ -319,26 +320,19 @@ def _measured_problem(args):
     """Identify a plant from recorded data rather than a simulated benchmark.
 
     Everything downstream of here already works from a dataset, so pointing the
-    search at measured input/output rows needs nothing but the file. The pass
-    criterion travels with it: for a single-input, single-output record the
-    memoryless floor is computable directly from the rows, and a model only
-    demonstrates dynamics by scoring below it.
-
-    For a multi-output record there is no single such floor, so scores are
-    reported raw and the ratio column is meaningless.
+    search at measured input/output rows needs nothing but the file, at any
+    number of channels. The pass criterion travels with it: the memoryless
+    floor is the best static linear map from the inputs at one step to the
+    outputs at the next, so a model only demonstrates dynamics by beating it.
     """
     dataset = dataset_from_dict(json.loads(Path(args.dataset).read_text()))
     if not dataset.inputs or not dataset.outputs:
         raise SystemExit(f"{args.dataset} contains no rows")
-    title = f"{Path(args.dataset).name}  ({len(dataset.inputs)} rows)"
-    if len(dataset.inputs[0]) == 1 and len(dataset.outputs[0]) == 1:
-        trajectory = PlantTrajectory(
-            tuple(row[0] for row in dataset.inputs),
-            tuple(row[0] for row in dataset.outputs),
-        )
-        return dataset, static_gain_floor(trajectory, args.criterion, args.time_step), title
-    print("  note: not single-input/single-output; no memoryless floor applies")
-    return dataset, 1.0, title
+    title = (
+        f"{Path(args.dataset).name}  ({len(dataset.inputs)} rows, "
+        f"{len(dataset.inputs[0])} in / {len(dataset.outputs[0])} out)"
+    )
+    return dataset, memoryless_floor(dataset, args.criterion, args.time_step), title
 
 
 def _immigrants(args, dataset, policy):
@@ -377,6 +371,11 @@ def _immigrants(args, dataset, policy):
 def _initial_graphs(args, seed: int, dataset, policy) -> list[Graph]:
     """Fill the archive from diverse executable architectures, or from the seed."""
     if args.initialization == "seed":
+        if len(dataset.inputs[0]) != 1 or len(dataset.outputs[0]) != 1:
+            raise SystemExit(
+                "--initialization seed builds the single-input/single-output "
+                "starting graph; use the default 'dynamic' for other shapes"
+            )
         return [seed_graph() for _ in range(args.capacity)]
     return dynamic_population(
         dataset,

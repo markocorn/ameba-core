@@ -200,3 +200,35 @@ class PruningTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MemorylessFloorTests(unittest.TestCase):
+    """The pass criterion has to travel to problems with several channels."""
+
+    def test_it_matches_the_single_gain_floor_for_one_channel(self) -> None:
+        from random import Random
+        from ameba.benchmarks import (identification_dataset, memoryless_floor,
+                                      narendra, static_gain_floor, training_controls)
+        trajectory = narendra.narendra_trajectory(training_controls(80, Random(3)))
+        self.assertAlmostEqual(
+            memoryless_floor(identification_dataset(trajectory)),
+            static_gain_floor(trajectory),
+            places=12,
+        )
+
+    def test_a_static_map_is_fitted_exactly_and_scores_zero(self) -> None:
+        """Two outputs, each an exact linear mix of two inputs: nothing is left."""
+        from ameba.benchmarks import memoryless_floor
+        from ameba_signal import Dataset
+        rows = [(1.0, 0.0), (0.0, 1.0), (1.0, 1.0), (2.0, -1.0), (-1.0, 0.5)]
+        outputs = [(2.0 * a - 3.0 * b, 0.5 * a + 4.0 * b) for a, b in rows]
+        self.assertAlmostEqual(
+            memoryless_floor(Dataset(tuple(rows), tuple(outputs))), 0.0, places=9
+        )
+
+    def test_state_the_map_cannot_reach_leaves_error_behind(self) -> None:
+        from ameba.benchmarks import memoryless_floor
+        from ameba_signal import Dataset
+        rows = [(1.0,), (0.0,), (1.0,), (0.0,)]
+        outputs = [(0.0,), (1.0,), (0.0,), (1.0,)]   # depends on the previous input
+        self.assertGreater(memoryless_floor(Dataset(tuple(rows), tuple(outputs))), 0.5)

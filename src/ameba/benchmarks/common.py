@@ -156,6 +156,78 @@ def static_gain_floor(
     return total * time_step
 
 
+def memoryless_floor(
+    dataset: Dataset, criterion: str = "ise", time_step: float = 1.0
+) -> float:
+    """The best score attainable without state, for any number of channels.
+
+    The single-input form fits one gain to ``y(k+1) = c u(k)``. With several
+    inputs and outputs the same idea is a static linear map: each output is
+    fitted from every input at the current step by least squares, which is
+    exactly optimal for ISE. Because the plants here are driven by independent
+    zero-mean controls, the best predictor of y(k+1) from u(k) alone *is*
+    linear, so this remains the boundary between fitting a static map and
+    representing dynamics.
+
+    Reduces to :func:`static_gain_floor` when there is one input and one
+    output; a MIMO score is only evidence of dynamics when it falls below this.
+    """
+    rows = len(dataset.inputs)
+    if rows == 0:
+        raise ValueError("Cannot fit a static map to an empty dataset")
+    width = len(dataset.inputs[0])
+    contribution = CRITERIA[criterion]
+
+    # Normal equations, one shared Gram matrix for every output channel.
+    gram = [
+        [
+            sum(row[i] * row[j] for row in dataset.inputs)
+            for j in range(width)
+        ]
+        for i in range(width)
+    ]
+    total = 0.0
+    for channel in range(len(dataset.outputs[0])):
+        moment = [
+            sum(row[i] * out[channel] for row, out in zip(dataset.inputs, dataset.outputs))
+            for i in range(width)
+        ]
+        gains = _solve(gram, moment)
+        total += sum(
+            contribution(
+                out[channel] - sum(g * value for g, value in zip(gains, row)),
+                step * time_step,
+            )
+            for step, (row, out) in enumerate(zip(dataset.inputs, dataset.outputs))
+        )
+    return total * time_step
+
+
+def _solve(matrix: Sequence[Sequence[float]], vector: Sequence[float]) -> list[float]:
+    """Gaussian elimination with partial pivoting; the systems here are tiny.
+
+    A singular system means an input carries no independent information, so the
+    corresponding gain is simply left at zero rather than treated as an error.
+    """
+    size = len(vector)
+    rows = [list(row) + [value] for row, value in zip(matrix, vector)]
+    for column in range(size):
+        pivot = max(range(column, size), key=lambda r: abs(rows[r][column]))
+        if abs(rows[pivot][column]) < 1e-12:
+            continue
+        rows[column], rows[pivot] = rows[pivot], rows[column]
+        for target in range(size):
+            if target == column:
+                continue
+            factor = rows[target][column] / rows[column][column]
+            for position in range(column, size + 1):
+                rows[target][position] -= factor * rows[column][position]
+    return [
+        rows[index][size] / rows[index][index] if abs(rows[index][index]) > 1e-12 else 0.0
+        for index in range(size)
+    ]
+
+
 def seed_graph() -> Graph:
     """The uninformed starting point: y(k+1) predicted as u(k).
 
