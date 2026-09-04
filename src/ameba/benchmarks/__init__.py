@@ -16,7 +16,7 @@ A method that fails ``linear`` has a search or delay-handling problem. A method
 that passes ``linear`` and fails ``narendra`` has a structural-search problem.
 """
 
-from . import linear, narendra
+from . import linear, narendra, quadruple_tank
 from .common import (
     BASIC_OPERATORS,
     DEFAULT_NODE_PENALTY,
@@ -63,6 +63,7 @@ __all__ = [
     "linear",
     "parameter_mutations",
     "narendra",
+    "quadruple_tank",
     "seed_graph",
     "static_seed_graph",
     "static_gain_floor",
