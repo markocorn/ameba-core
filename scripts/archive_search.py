@@ -49,6 +49,7 @@ from ameba.benchmarks import (  # noqa: E402
     training_controls,
 )
 from ameba.equations import format_equations  # noqa: E402
+from ameba.plotting import draw_graph  # noqa: E402
 from ameba_graph import (  # noqa: E402
     Archive,
     ArchiveConfig,
@@ -62,7 +63,12 @@ from ameba_graph.crossover import CrossoverError  # noqa: E402
 from ameba_graph.model import GraphError  # noqa: E402
 from ameba_graph.mutation import MutationError  # noqa: E402
 from ameba_graph.serialization import graph_dumps  # noqa: E402
-from ameba_signal import Dataset, SignalEvaluator, interface_scaffold  # noqa: E402
+from ameba_signal import (  # noqa: E402
+    Dataset,
+    SignalEvaluator,
+    SignalSimulator,
+    interface_scaffold,
+)
 from ameba_signal.serialization import dataset_from_dict  # noqa: E402
 from ameba_signal.stateful import STATEFUL_KINDS  # noqa: E402
 
@@ -162,20 +168,20 @@ def main(argv: list[str] | None = None) -> int:
         else None
     )
     started = perf_counter()
-    results: list[tuple[int, Archive]] = []
+    results: list[tuple[int, Archive, list[float]]] = []
     try:
         for index in range(args.seeds):
             seed = args.seed + index
             if args.seeds > 1:
                 print(f"\nSEED {seed}  ({index + 1}/{args.seeds})")
-            archive = _search(
+            archive, history = _search(
                 args, seed, config, dataset, policy, evaluator, floor,
                 parameter_ops, structural_ops, crossover, executor,
             )
-            results.append((seed, archive))
+            results.append((seed, archive, history))
             if args.seeds > 1:
                 member = archive.best
-                done = [item.best.score for _, item in results]
+                done = [item.best.score for _, item, _ in results]
                 print(
                     f"  seed {seed} done: {member.score:.6g} "
                     f"({member.score / floor:.4f} x floor), "
@@ -188,7 +194,7 @@ def main(argv: list[str] | None = None) -> int:
         if executor is not None:
             executor.shutdown()
 
-    best_seed, best_archive = min(
+    best_seed, best_archive, best_history = min(
         results, key=lambda item: item[1].best.score
     )
     _summary(best_archive, floor, evaluator, perf_counter() - started)
@@ -197,6 +203,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.save_graph:
         Path(args.save_graph).write_text(graph_dumps(best_archive.best.graph))
         print(f"\n  best graph written to {args.save_graph}")
+    if args.figure:
+        _render(args.figure, best_archive.best.graph, dataset, best_history,
+                floor, evaluator, title)
     return 0
 
 
@@ -212,15 +221,16 @@ def _search(args, seed, config, dataset, policy, evaluator, floor,
     longer wait on a dead one.
     """
     best: Archive | None = None
+    best_history: list[float] = []
     remaining = args.batches
     attempt = 0
     while remaining > 0:
-        archive, used = _attempt(
+        archive, used, history = _attempt(
             args, seed + attempt * 100_003, config, dataset, policy, evaluator,
             floor, parameter_ops, structural_ops, crossover, executor, remaining,
         )
         if best is None or archive.best.score < best.best.score:
-            best = archive
+            best, best_history = archive, history
         remaining -= used
         attempt += 1
         if attempt > 1 or used < args.batches:
@@ -231,12 +241,12 @@ def _search(args, seed, config, dataset, policy, evaluator, floor,
         if not args.stall_patience:
             break
     assert best is not None
-    return best
+    return best, best_history
 
 
 def _attempt(args, seed, config, dataset, policy, evaluator, floor,
              parameter_ops, structural_ops, crossover, executor,
-             budget: int) -> tuple[Archive, int]:
+             budget: int) -> tuple[Archive, int, list[float]]:
     """One run from a fresh initialization, stopping early once it stalls."""
     rng = Random(seed)
     archive = Archive(config)
@@ -257,6 +267,7 @@ def _attempt(args, seed, config, dataset, policy, evaluator, floor,
     immigrants = _immigrants(args, dataset, policy)
     stalled_since = archive.best.score
     stalled_for = 0
+    history = [archive.best.score]
     for batch in range(1, budget + 1):
         candidates = [
             _candidate(archive, rng, policy, parameter_ops, structural_ops,
@@ -275,6 +286,7 @@ def _attempt(args, seed, config, dataset, policy, evaluator, floor,
                 admitted += 1
             elif outcome.reason in ("improved", "simplified"):
                 tuned += 1
+        history.append(archive.best.score)
         if batch % interval == 0 or batch == budget:
             _report(
                 archive, batch, budget, floor, admitted, tuned,
@@ -287,13 +299,13 @@ def _attempt(args, seed, config, dataset, policy, evaluator, floor,
             else:
                 stalled_for += 1
                 if stalled_for >= args.stall_patience:
-                    return archive, batch
-    return archive, budget
+                    return archive, batch, history
+    return archive, budget, history
 
 
 def _seed_table(results, floor: float, best_seed: int) -> None:
     """Per-seed outcomes, because the spread here is wider than most effects."""
-    scores = sorted(archive.best.score for _, archive in results)
+    scores = sorted(archive.best.score for _, archive, _ in results)
     middle = len(scores) // 2
     median = (
         scores[middle]
@@ -302,7 +314,7 @@ def _seed_table(results, floor: float, best_seed: int) -> None:
     )
     print(f"\n  across {len(results)} seeds:")
     print(f"    {'seed':>6}  {'best':>13}  {'/floor':>8}  {'nodes':>5}  verdict")
-    for seed, archive in results:
+    for seed, archive, _ in results:
         member = archive.best
         print(
             f"    {seed:>6}  {member.score:>13.6g}  {member.score / floor:>8.4f}  "
@@ -310,11 +322,74 @@ def _seed_table(results, floor: float, best_seed: int) -> None:
             + ("below floor" if member.score < floor else "at/above floor")
             + ("   <- best" if seed == best_seed else "")
         )
-    below = sum(1 for _, archive in results if archive.best.score < floor)
+    below = sum(1 for _, archive, _ in results if archive.best.score < floor)
     print(
         f"    median {median:.6g} ({median / floor:.4f} x floor); "
         f"{below}/{len(results)} runs below the floor"
     )
+
+
+def _render(path, graph, dataset, history, floor, evaluator, title) -> None:
+    """Draw the winning model beside what it actually predicts.
+
+    One panel per output channel, because a coupled plant is only judged
+    honestly channel by channel: a model can track one output well and leave
+    another untouched, and a single summed score hides that entirely.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    session = SignalSimulator().start(graph)
+    modelled = [session.step(row) for row in dataset.inputs]
+    channels = len(dataset.outputs[0])
+
+    figure = plt.figure(figsize=(17, 3.0 * max(channels + 1, 3)))
+    grid = figure.add_gridspec(channels + 1, 2, width_ratios=(1.15, 1.0))
+
+    axes = figure.add_subplot(grid[:, 0])
+    draw_graph(axes, graph)
+    axes.set_title(
+        f"{len(graph.nodes)} nodes, "
+        f"{sum(1 for n in graph.nodes.values() if n.kind in STATEFUL_KINDS)} stateful",
+        fontsize=10,
+    )
+    axes.axis("off")
+
+    steps = range(len(dataset.inputs))
+    for channel in range(channels):
+        panel = figure.add_subplot(grid[channel, 1])
+        measured = [row[channel] for row in dataset.outputs]
+        predicted = [row[channel] for row in modelled]
+        panel.plot(steps, measured, linewidth=1.4, label="plant")
+        panel.plot(steps, predicted, linewidth=1.1, linestyle="--", label="model")
+        panel.plot(
+            steps, [m - p for m, p in zip(measured, predicted)],
+            linewidth=0.8, alpha=0.55, label="error",
+        )
+        panel.axhline(0.0, linewidth=0.5, color="0.6")
+        panel.set_ylabel(f"y{channel}", fontsize=9)
+        panel.legend(fontsize=7, ncol=3, loc="upper right")
+        panel.tick_params(labelsize=8)
+        if channel == 0:
+            panel.set_title(title, fontsize=10)
+
+    progress = figure.add_subplot(grid[channels, 1])
+    progress.plot(range(len(history)), history, linewidth=1.2)
+    progress.axhline(floor, linestyle=":", linewidth=1.0, color="crimson")
+    progress.set_yscale("log")
+    progress.set_xlabel("batch", fontsize=9)
+    progress.set_ylabel("best score", fontsize=9)
+    progress.set_title(
+        f"final {evaluator.evaluate(graph):.6g} against memoryless floor "
+        f"{floor:.6g} (dotted)", fontsize=9,
+    )
+    progress.tick_params(labelsize=8)
+
+    figure.tight_layout()
+    figure.savefig(path, dpi=120)
+    plt.close(figure)
+    print(f"\n  figure written to {path}")
 
 
 def _measured_problem(args):
@@ -605,6 +680,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--save-graph", default=None, help="write the best graph as JSON",
+    )
+    parser.add_argument(
+        "--figure", default=None,
+        help="write a PNG showing the winning model, its prediction per output "
+             "channel, and the search progress",
     )
     parser.add_argument("--progress", type=int, default=0)
     return parser
