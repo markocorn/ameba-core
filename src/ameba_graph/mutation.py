@@ -178,7 +178,72 @@ class MutateEdgeAttributes:
         raise MutationError("No edge has mutable attributes accepted by the graph policy")
 
 
+class ReplaceEdge:
+    """Swap an edge for a freshly drawn one between the same two nodes.
+
+    The parameter arrives with its carrier instead of drifting on its own: the
+    weight is drawn anew by the policy, where ``MutateEdgeAttributes`` nudges
+    the one already there. This is the replacement counterpart of a parameter
+    mutation -- a new allele at the same locus -- which is what a search that
+    will not tune parameters in place needs in order to reach a weight at all.
+    The two differ only in the draw: a nudge moves by a tenth of the range, a
+    replacement redraws the whole of it.
+
+    Identity is preserved on purpose. The edge keeps its identifier, its
+    endpoints and its locks, so the topology is unchanged and the lineage's
+    age continues to run rather than restarting. Keeping the identifier also
+    keeps aligned attribute crossover able to recognise the same edge in two
+    parents, which renumbering would silently break.
+
+    Because the locus does not move, only attribute locks can stop a
+    replacement: a locked endpoint is irrelevant, and an edge whose weight is
+    locked simply offers nothing to replace, because restoring the lock leaves
+    the attributes identical. A graph with no replaceable edge raises.
+    """
+
+    def mutate(self, graph: Graph, policy: GraphPolicy, rng: Random) -> Graph:
+        candidates = sorted(edge.id for edge in graph.edges.values())
+        rng.shuffle(candidates)
+        for edge_id in candidates:
+            child = graph.copy()
+            original = child.remove_edge(edge_id)
+            proposed = policy.create_edge(original.source, original.target, rng)
+            attributes = deepcopy(proposed.attributes)
+            for name in original.locked_attributes:
+                if name in original.attributes:
+                    attributes[name] = original.attributes[name]
+            if all(
+                attributes.get(name) == original.attributes.get(name)
+                for name in set(attributes) | set(original.attributes)
+            ):
+                continue
+            child.add_edge(
+                Edge(
+                    original.id,
+                    original.source,
+                    original.target,
+                    attributes,
+                    original.source_locked,
+                    original.target_locked,
+                    original.locked_attributes,
+                )
+            )
+            return _validated(child, policy)
+        raise MutationError("No edge can be replaced without changing a locked attribute")
+
+
 class MoveEdgeSource:
+    """Reattach an edge to a different source node.
+
+    The weight travels with the edge. Moving a connection changes where the
+    signal comes from, not how strongly it arrives, and an edge carries its
+    own parameter -- so this is the one structural change that leaves the
+    values around it alone. Note the consequence for identity: the edge keeps
+    its identifier, so it is still the same edge to the lineage age, but its
+    endpoints move, so aligned attribute crossover no longer treats it as the
+    same locus in two parents (see ``CrossEdgeAttributes``).
+    """
+
     def mutate(self, graph: Graph, policy: GraphPolicy, rng: Random) -> Graph:
         edge_ids = sorted(edge.id for edge in graph.edges.values() if not edge.source_locked)
         rng.shuffle(edge_ids)
@@ -201,6 +266,13 @@ class MoveEdgeSource:
 
 
 class MoveEdgeTarget:
+    """Reattach an edge to a different target node, carrying its weight.
+
+    The target-side counterpart of ``MoveEdgeSource``, with the same contract:
+    the parameter belongs to the edge, not to the pair of nodes it currently
+    joins, so it survives the move.
+    """
+
     def mutate(self, graph: Graph, policy: GraphPolicy, rng: Random) -> Graph:
         edge_ids = sorted(edge.id for edge in graph.edges.values() if not edge.target_locked)
         rng.shuffle(edge_ids)

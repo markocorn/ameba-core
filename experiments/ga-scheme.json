@@ -1,0 +1,75 @@
+{
+ "dir": "results/ga-scheme",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 16,
+ "common": [
+  "--method",
+  "A-base",
+  "--generations",
+  "3000",
+  "--population",
+  "300"
+ ],
+ "title": "GA: zamenjava generacij",
+ "eyebrow": "AMEBA · nastavljanje GA · 3. korak",
+ "h1": "Kako nova generacija zamenja staro",
+ "lede": "Kodiranje je zamrznjeno na A-base. Narendra, populacija 300, 3000 generacij, 16 semen, nevtralni drift. Vse sheme porabijo enak proračun na generacijo (300 otrok); (μ,λ) z razmerjem 2 jih porabi dvakrat toliko, zato teče pol generacij.",
+ "cards_h2": "Pet shem zamenjave",
+ "series": [
+  {
+   "key": "s-generational",
+   "args": [
+    "--scheme",
+    "generational:2"
+   ],
+   "label": "generacijski + elita 2",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Dosedanja nastavitev. Kontrola."
+  },
+  {
+   "key": "s-steady",
+   "args": [
+    "--scheme",
+    "steady:30"
+   ],
+   "label": "stacionarni",
+   "color": "var(--s1)",
+   "desc": "Otroci prihajajo po 30, vsak zamenja trenutno najslabšega, če ni slabši."
+  },
+  {
+   "key": "s-plus",
+   "args": [
+    "--scheme",
+    "plus"
+   ],
+   "label": "(μ + λ)",
+   "color": "var(--s2)",
+   "desc": "Preživi najboljših 300 izmed staršev in otrok skupaj."
+  },
+  {
+   "key": "s-comma",
+   "args": [
+    "--scheme",
+    "comma:2:2",
+    "--generations",
+    "1500"
+   ],
+   "label": "(μ, λ) z elito 2",
+   "color": "var(--s3)",
+   "desc": "600 otrok, preživi najboljših 298 otrok + 2 najboljša starša; pol generacij za enak proračun."
+  },
+  {
+   "key": "s-crowding",
+   "args": [
+    "--scheme",
+    "crowding"
+   ],
+   "label": "crowding",
+   "color": "var(--s4)",
+   "desc": "Vsak genom ima enega otroka, ki tekmuje samo z njim; lokalna tekma kot v arhivu."
+  }
+ ]
+}

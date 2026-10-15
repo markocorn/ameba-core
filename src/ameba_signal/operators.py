@@ -87,6 +87,88 @@ def _single(values: Sequence[float], operator: str) -> float:
     return values[0]
 
 
+# --- Soft operators -----------------------------------------------------------
+#
+# Every soft node sums its weighted inputs and a bias, z = sum + bias, and
+# answers within +-1 (or 0..1) through a smooth limit it approaches but never
+# reaches: a cocoon around the node. Inside the cocoon each has a familiar
+# shape -- linear, square, bump, exponential, logarithm, root, sine -- and
+# outside it settles to a plateau instead of exploding or leaving its domain,
+# so a small change of a weight is always a small change of behaviour. They
+# are defined for every real input, so none of them can invalidate a model.
+
+
+def _soft_z(values: Sequence[float], attributes: dict[str, object]) -> float:
+    return sum(values) + float(attributes.get("bias", 0.0))
+
+
+def _soft_lin(values, attributes):
+    return math.tanh(_soft_z(values, attributes))
+
+
+def _soft_mul(values, attributes):
+    product = 1.0
+    for value in values:
+        product *= value
+    return math.tanh(product + float(attributes.get("bias", 0.0)))
+
+
+def _soft_sq(values, attributes):
+    z = _soft_z(values, attributes)
+    return z * z / (1.0 + z * z)
+
+
+def _soft_bump(values, attributes):
+    z = _soft_z(values, attributes)
+    return 1.0 / (1.0 + z * z)
+
+
+def _soft_exp(values, attributes):
+    return math.tanh(math.expm1(min(_soft_z(values, attributes), 40.0)))
+
+
+def _soft_log(values, attributes):
+    z = _soft_z(values, attributes)
+    return math.tanh(math.copysign(math.log1p(abs(z)), z))
+
+
+def _soft_alog(values, attributes):
+    return math.tanh(math.log1p(abs(_soft_z(values, attributes))))
+
+
+def _soft_sqrt(values, attributes):
+    z = _soft_z(values, attributes)
+    return math.tanh(math.copysign(math.sqrt(1.0 + abs(z)) - 1.0, z))
+
+
+def _soft_asqrt(values, attributes):
+    return math.tanh(math.sqrt(1.0 + abs(_soft_z(values, attributes))) - 1.0)
+
+
+def _soft_sin(values, attributes):
+    return math.sin(_soft_z(values, attributes))
+
+
+def _soft_abs(values, attributes):
+    return math.tanh(abs(_soft_z(values, attributes)))
+
+
+#: The soft family, in a fixed order.
+SOFT_OPERATORS: dict[str, Operator] = {
+    "soft_lin": _soft_lin,
+    "soft_mul": _soft_mul,
+    "soft_sq": _soft_sq,
+    "soft_bump": _soft_bump,
+    "soft_exp": _soft_exp,
+    "soft_log": _soft_log,
+    "soft_alog": _soft_alog,
+    "soft_sqrt": _soft_sqrt,
+    "soft_asqrt": _soft_asqrt,
+    "soft_sin": _soft_sin,
+    "soft_abs": _soft_abs,
+}
+
+
 STATELESS_OPERATORS: dict[str, Operator] = {
     "abs": _absolute,
     "add": _add,
@@ -101,6 +183,7 @@ STATELESS_OPERATORS: dict[str, Operator] = {
     "sqrt": _sqrt,
     "square": _square,
     "tanh": _tanh,
+    **SOFT_OPERATORS,
 }
 
 # Minimum and maximum incoming edge counts. ``None`` means unbounded.
@@ -118,6 +201,7 @@ OPERATOR_ARITY: dict[str, tuple[int, int | None]] = {
     "sqrt": (1, 1),
     "square": (1, 1),
     "tanh": (1, 1),
+    **{kind: (1, None) for kind in SOFT_OPERATORS},
     "delay": (1, 1),
     "derivative": (1, 1),
     "filter_hp": (1, 1),
@@ -138,6 +222,10 @@ OPERATOR_GROUPS: dict[str, tuple[str, ...]] = {
     # Sources and sinks. Inputs and outputs are the fixed model interface and
     # are never evolvable; a constant is a source the search may introduce.
     "terminal": ("input", "output", "constant"),
+    # Smooth, bounded nodes: each sums its inputs and a bias, then answers
+    # within +-1 through a soft limit. Not part of EVOLVABLE_OPERATORS, so a
+    # search uses them only when it asks for them.
+    "soft": tuple(SOFT_OPERATORS),
 }
 
 #: Every operator evolution may create: everything except the fixed interface.

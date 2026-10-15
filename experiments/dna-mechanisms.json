@@ -1,0 +1,130 @@
+{
+ "dir": "results/dna-mechanisms",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 16,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "octaves",
+  "--node-penalty",
+  "0.003"
+ ],
+ "title": "DNK mehanizmi",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Mehanizmi DNK na genomu z materinskim mitohondrijem",
+ "lede": "Vse različice imajo materinsko dedovanje in vhode na koncu abecede; spreminja se samo, kako genom mutira: hitrost strukturnih mutacij, podvajanje genov, sinonimni kodoni in vroče točke na ponovitvah. Noben mehanizem ne ve, kaj gen pomeni. Trdi vozli, podatki in test kot pri »Oktave«, 16 semen.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-maternal",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}"
+   ],
+   "label": "materinski (izhodišče)",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Kot v preizkusu »Dedovanje«."
+  },
+  {
+   "key": "E-struct05",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"structural_rate\":0.5}"
+   ],
+   "label": "redkejše vstavljanje/brisanje",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "Zapisi se vstavljajo in brišejo pol tako pogosto (5 % namesto 10 % vsake)."
+  },
+  {
+   "key": "E-struct2",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"structural_rate\":2.0}"
+   ],
+   "label": "pogostejše vstavljanje/brisanje",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "Zapisi se vstavljajo in brišejo dvakrat pogosteje."
+  },
+  {
+   "key": "E-dup",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"duplication\":0.1}"
+   ],
+   "label": "podvajanje genov",
+   "color": "var(--s3)",
+   "dash": "",
+   "desc": "Nova mutacija: zapis se prepiše tik za samega sebe in nato lahko mutira v nekaj novega."
+  },
+  {
+   "key": "E-syn2",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"redundancy\":2}"
+   ],
+   "label": "sinonimni kodoni ×2",
+   "color": "var(--s4)",
+   "dash": "",
+   "desc": "Vsaka vrednost ima dve zaporedni številki, zato je približno polovica korakov ±1 tihih."
+  },
+  {
+   "key": "E-syn4",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"redundancy\":4}"
+   ],
+   "label": "sinonimni kodoni ×4",
+   "color": "var(--ref2)",
+   "dash": "",
+   "desc": "Štiri številke na vrednost: večina korakov ±1 je tihih, populacija nevtralno tava."
+  },
+  {
+   "key": "E-hot1",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"hotspot\":1.0}"
+   ],
+   "label": "vroče točke ×2",
+   "color": "var(--s5)",
+   "dash": "",
+   "desc": "Mesto, enako sosedu, mutira 2-krat pogosteje za vsakega takega soseda (zdrs na ponovitvah)."
+  },
+  {
+   "key": "E-hot3",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"hotspot\":3.0}"
+   ],
+   "label": "vroče točke ×4",
+   "color": "var(--s6)",
+   "dash": "",
+   "desc": "Kot prejšnja, a 4-krat pogosteje."
+  }
+ ]
+}

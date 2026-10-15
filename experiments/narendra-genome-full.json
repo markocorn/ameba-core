@@ -1,0 +1,104 @@
+{
+ "dir": "results/narendra-genome",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "3000",
+  "--population",
+  "300",
+  "--progress",
+  "50"
+ ],
+ "title": "Narendra: različice genoma (polno)",
+ "eyebrow": "AMEBA · razvoj genoma · Narendra",
+ "h1": "Katero kodiranje grafa najlaže zapusti Narendrin plato",
+ "lede": "Narendra–Parthasarathyjev nelinearni obrat (SISO, 150 korakov). Točen referenčni graf ga reproducira do 10⁻³¹; dosedanji najboljši rezultati: populacijski pogon 0,809× meje, arhiv 0,195×. GA je za vse enak (generacijski, turnir 3, elita 2, križanje 0,5, nevtralni drift); spreminja se samo kodiranje. Polna nastavitev: populacija 300, 3000 generacij, 12 semen.",
+ "cards_h2": "Osem kodiranj",
+ "series": [
+  {
+   "key": "A-base",
+   "args": [
+    "--method",
+    "A-base"
+   ],
+   "label": "A-base",
+   "color": "var(--s1)",
+   "desc": "Fiksen zapis vozla [tip, parameter, vir, utež, vir, utež]; vsako mesto ima toliko vrednosti, kolikor simbolov. ±1 je sosednji simbol."
+  },
+  {
+   "key": "A-runs",
+   "args": [
+    "--method",
+    "A-runs"
+   ],
+   "label": "A-runs",
+   "color": "var(--s2)",
+   "desc": "Fiksen zapis, vsako mesto 0–998, simboli v strnjenih nizih sinonimov. ±1 je večinoma nevtralen."
+  },
+  {
+   "key": "A-shuffle",
+   "args": [
+    "--method",
+    "A-shuffle"
+   ],
+   "label": "A-shuffle",
+   "color": "var(--s3)",
+   "desc": "Fiksen zapis, vsako mesto 0–998, sinonimi pomešani. ±1 da naključen simbol iste vloge."
+  },
+  {
+   "key": "A-mixed",
+   "args": [
+    "--method",
+    "A-mixed"
+   ],
+   "label": "A-mixed",
+   "color": "var(--s4)",
+   "desc": "Tip in vir pomešana, parametri v nizih, uteži na fini mreži 999 nivojev od −2 do +2."
+  },
+  {
+   "key": "B-redundant",
+   "args": [
+    "--method",
+    "B-redundant"
+   ],
+   "label": "B-redundant",
+   "color": "var(--s5)",
+   "desc": "Prosto zaporedje; vsaka vloga ima enak blok 240 številk s sinonimi. Slepa ±1."
+  },
+  {
+   "key": "C-two-level",
+   "args": [
+    "--method",
+    "C-two-level"
+   ],
+   "label": "C-two-level",
+   "color": "var(--s6)",
+   "desc": "Prosto zaporedje; mutacija najprej enakomerno izbere vlogo, nato gen v njej."
+  },
+  {
+   "key": "ref-dense",
+   "args": [
+    "--method",
+    "ref-dense"
+   ],
+   "label": "ref · dense ±1",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Prosto zaporedje, številke brez lukenj, slepa ±1."
+  },
+  {
+   "key": "ref-context",
+   "args": [
+    "--method",
+    "ref-context"
+   ],
+   "label": "ref · kontekstna",
+   "color": "var(--ref2)",
+   "dash": "2 3",
+   "desc": "Prosto zaporedje, nov gen izbran med tistimi, ki bi se na mestu izrazili."
+  }
+ ]
+}

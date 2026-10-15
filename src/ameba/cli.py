@@ -26,6 +26,7 @@ from ameba_graph.mutation import (
     RemoveEdge,
     RemoveNode,
     RemoveNodeBypass,
+    ReplaceEdge,
     ReplaceNode,
     SplitEdge,
 )
@@ -175,6 +176,7 @@ def _engine(config: AppConfig, dataset: Dataset) -> EvolutionEngine:
                     RemoveEdge(),
                     MoveEdgeSource(),
                     MoveEdgeTarget(),
+                    ReplaceEdge(),
                     ReplaceNode(),
                     RemoveNodeBypass(),
                     RemoveNode(),

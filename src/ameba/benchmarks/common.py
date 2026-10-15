@@ -1,8 +1,10 @@
-"""Shared machinery for single-input/single-output identification benchmarks.
+"""Shared machinery for identification benchmarks.
 
-Every benchmark here uses the same setup: a plant is driven by a scalar control
-sequence u(k) and the model sees only u(k). The model must carry its own state
-through delay nodes, so its prediction error feeds back into the next step.
+Every benchmark here uses the same setup: a plant is driven by a control
+sequence u(k) and the model sees only u(k). It may have any number of input and
+output channels; the single-input benchmarks are simply the one-channel case.
+The model must carry its own state through delay nodes, so its prediction error
+feeds back into the next step.
 
 This is deliberately the only setup offered. The alternative — supplying
 measured plant history as extra model inputs — turns identification into
@@ -13,9 +15,9 @@ system's dynamics at all.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from math import isfinite, pi, sin
+from math import cos, isfinite, pi, sin
 from random import Random
-from typing import Sequence
+from typing import Callable, Sequence
 
 from ameba_graph import (
     Edge,
@@ -23,6 +25,7 @@ from ameba_graph import (
     EvolutionEngine,
     GenerationConfig,
     Graph,
+    GraphCrossover,
     GraphGenerator,
     GraphMutation,
     Node,
@@ -49,6 +52,7 @@ from ameba_graph.mutation import (
     RemoveEdge,
     RemoveNode,
     RemoveNodeBypass,
+    ReplaceEdge,
     ReplaceNode,
     SplitEdge,
 )
@@ -97,6 +101,57 @@ class PlantTrajectory:
     responses: tuple[float, ...]
 
 
+@dataclass(frozen=True, slots=True)
+class MultiChannelTrajectory:
+    """One simulated plant run with several inputs and several outputs.
+
+    ``controls[k]`` is u(k) and ``responses[k]`` is y(k+1), each a tuple holding
+    one entry per channel. This is the multi-channel counterpart of
+    :class:`PlantTrajectory`, which stays scalar so the single-input benchmarks
+    and the floors they were measured against are left untouched.
+
+    Rows are validated here rather than left to :class:`Dataset` because the
+    divergence guard and the report's channel summaries both read a trajectory
+    before any dataset exists, and a plant that produced a ragged or non-finite
+    run should say so in its own terms.
+    """
+
+    controls: tuple[tuple[float, ...], ...]
+    responses: tuple[tuple[float, ...], ...]
+
+    def __post_init__(self) -> None:
+        if not self.controls or not self.responses:
+            raise ValueError("A trajectory needs at least one sample")
+        if len(self.controls) != len(self.responses):
+            raise ValueError(
+                "controls and responses must have matched row counts, got "
+                f"{len(self.controls)} and {len(self.responses)}"
+            )
+        if not self.controls[0] or not self.responses[0]:
+            raise ValueError("Every row needs at least one channel")
+
+        inputs = len(self.controls[0])
+        outputs = len(self.responses[0])
+        if any(len(row) != inputs for row in self.controls):
+            raise ValueError("Every control row must have the same channel count")
+        if any(len(row) != outputs for row in self.responses):
+            raise ValueError("Every response row must have the same channel count")
+        if any(not isfinite(value) for row in self.controls for value in row):
+            raise ValueError("Control values must be finite")
+        if any(not isfinite(value) for row in self.responses for value in row):
+            raise ValueError("Response values must be finite")
+
+    @property
+    def inputs(self) -> int:
+        """How many control channels the plant is driven by."""
+        return len(self.controls[0])
+
+    @property
+    def outputs(self) -> int:
+        """How many measured channels the plant reports."""
+        return len(self.responses[0])
+
+
 def training_controls(count: int, rng: Random, amplitude: float = 1.0) -> tuple[float, ...]:
     """Uniform excitation in [-amplitude, amplitude], the usual identification input.
 
@@ -112,10 +167,111 @@ def evaluation_controls(count: int, amplitude: float = 1.0, period: int = 250) -
     return tuple(amplitude * sin(2.0 * pi * step / period) for step in range(count))
 
 
+def multisine_controls(
+    count: int, low: float, high: float, rng: Random, amplitude: float = 1.0
+) -> tuple[float, ...]:
+    """A random-phase multisine confined to one frequency band.
+
+    Every DFT frequency of a ``count``-sample record between ``low`` and
+    ``high`` (cycles per sample, Nyquist 0.5) gets a unit cosine with a random
+    phase, and the sum is scaled so its peak is ``amplitude``. Confining the
+    excitation to a band is what lets an error be attributed to a part of the
+    spectrum; scaling by the peak rather than the RMS keeps every band inside
+    the amplitude range a model was trained on, which matters for a nonlinear
+    plant, where amplitude and frequency would otherwise be confounded.
+    """
+    if not 0.0 <= low < high <= 0.5:
+        raise ValueError("band must satisfy 0 <= low < high <= 0.5")
+    first = max(1, int(-(-low * count // 1)))
+    last = min(int(high * count), (count - 1) // 2)
+    bins = list(range(first, last + 1)) or [max(1, round((low + high) / 2 * count))]
+    phases = [rng.uniform(0.0, 2.0 * pi) for _ in bins]
+    values = [sum(cos(2.0 * pi * k * n / count + phase) for k, phase in zip(bins, phases))
+              for n in range(count)]
+    peak = max(abs(value) for value in values) or 1.0
+    return tuple(amplitude * value / peak for value in values)
+
+
 def step_controls(count: int, hold: int = 10, amplitude: float = 1.0) -> tuple[float, ...]:
     """A piecewise-constant input that exposes settling behaviour."""
     return tuple(
         amplitude if (step // hold) % 2 == 0 else -amplitude for step in range(count)
+    )
+
+
+def channel_training_controls(
+    count: int,
+    channels: int,
+    rng: Random,
+    amplitude: float = 1.0,
+    hold: int = 1,
+) -> tuple[tuple[float, ...], ...]:
+    """Uniform excitation per channel, optionally held for several samples.
+
+    A ``hold`` of one is the white noise the single-input benchmarks use. A
+    plant whose slowest mode is far slower than the sample time needs its input
+    to persist instead: sample-to-sample noise is filtered out almost entirely
+    by such a plant, so the data would carry no information about the dynamics
+    worth identifying.
+    """
+    if channels < 1:
+        raise ValueError("channels must be at least one")
+    if hold < 1:
+        raise ValueError("hold must be at least one sample")
+    rows: list[tuple[float, ...]] = []
+    current = tuple(0.0 for _ in range(channels))
+    for step in range(count):
+        if step % hold == 0:
+            current = tuple(
+                rng.uniform(-amplitude, amplitude) for _ in range(channels)
+            )
+        rows.append(current)
+    return tuple(rows)
+
+
+def channel_evaluation_controls(
+    count: int, channels: int, amplitude: float = 1.0, period: int = 250
+) -> tuple[tuple[float, ...], ...]:
+    """A slow sinusoid per channel, each at its own period.
+
+    Distinct periods are the point rather than a detail. Channels driven by the
+    same trajectory cannot separate a plant's cross-coupling from its direct
+    paths, so a shared input would hide exactly the structure a MIMO benchmark
+    exists to expose.
+    """
+    if channels < 1:
+        raise ValueError("channels must be at least one")
+    if period < 1:
+        raise ValueError("period must be at least one")
+    return tuple(
+        tuple(
+            amplitude * sin(2.0 * pi * step / (period * (channel + 1)))
+            for channel in range(channels)
+        )
+        for step in range(count)
+    )
+
+
+def channel_step_controls(
+    count: int, channels: int, hold: int = 10, amplitude: float = 1.0
+) -> tuple[tuple[float, ...], ...]:
+    """A piecewise-constant input per channel, each switching at its own rate.
+
+    The channels switch on different schedules, measured in multiples of
+    ``hold``, so a model cannot fit one channel's response to another's.
+    """
+    if channels < 1:
+        raise ValueError("channels must be at least one")
+    if hold < 1:
+        raise ValueError("hold must be at least one sample")
+    return tuple(
+        tuple(
+            amplitude
+            if ((step // (hold * (channel + 1))) + channel) % 2 == 0
+            else -amplitude
+            for channel in range(channels)
+        )
+        for step in range(count)
     )
 
 
@@ -125,6 +281,16 @@ def identification_dataset(trajectory: PlantTrajectory) -> Dataset:
         tuple((control,) for control in trajectory.controls),
         tuple((response,) for response in trajectory.responses),
     )
+
+
+def multi_channel_dataset(trajectory: MultiChannelTrajectory) -> Dataset:
+    """Score a multi-channel model driven only by u(k), per channel.
+
+    Rows pass through untouched: the simulator reads each input by its channel
+    index and the evaluator sums the criterion over every output, so a wider
+    interface needs no adaptation here.
+    """
+    return Dataset(trajectory.controls, trajectory.responses)
 
 
 def static_gain_floor(
@@ -171,6 +337,10 @@ def memoryless_floor(
 
     Reduces to :func:`static_gain_floor` when there is one input and one
     output; a MIMO score is only evidence of dynamics when it falls below this.
+
+    Both conditions that make the linear fit optimal are assumed rather than
+    checked, so a caller must confirm they hold for its plant. See
+    :func:`multi_channel_floor` for what happens when they do not.
     """
     rows = len(dataset.inputs)
     if rows == 0:
@@ -201,6 +371,119 @@ def memoryless_floor(
             for step, (row, out) in enumerate(zip(dataset.inputs, dataset.outputs))
         )
     return total * time_step
+
+
+def multi_channel_floor(
+    trajectory: MultiChannelTrajectory, criterion: str = "ise", time_step: float = 1.0
+) -> float:
+    """The best score attainable without state, for a multi-channel plant.
+
+    The static map of :func:`memoryless_floor` is the same idea as the scalar
+    gain, fitted from every input channel to every output channel, and it is
+    exactly optimal for ISE.
+
+    It is a weaker bar than the scalar floor, and measurably so. Least squares
+    is the best *linear* memoryless predictor, and it is the best memoryless
+    predictor outright only when the controls are independent *and* the plant's
+    static relation is linear. A multi-channel rung that needs a held input for
+    identifiability breaks the first condition, and a genuinely nonlinear plant
+    breaks the second. On the quadruple tank a search restricted to stateless
+    operators reaches **0.62** of this floor on the minimum-phase setting and
+    **0.31** on the non-minimum-phase one, over seeds 1--3; the measurement
+    lives in ``tests/test_mimo_benchmark.py``.
+
+    On such a rung this number is a reference rather than a pass criterion:
+    scoring below it does not by itself demonstrate that the model carries
+    state. :func:`stateless_floor` is what replaces it, and the report scripts
+    take the stricter of the two wherever :attr:`Benchmark.linear_floor_is_strict`
+    is False.
+    """
+    return memoryless_floor(multi_channel_dataset(trajectory), criterion, time_step)
+
+
+#: Either trajectory flavour. A scalar trajectory is the one-channel case.
+Trajectory = PlantTrajectory | MultiChannelTrajectory
+
+
+@dataclass(frozen=True, slots=True)
+class Benchmark:
+    """One rung of the ladder, in the terms a report needs.
+
+    ``build`` turns a control sequence into a plant trajectory, so a
+    multi-channel rung is declared exactly like a single-channel one and a
+    caller reads the interface off the trajectory rather than branching on a
+    benchmark's name. ``channels`` is the one thing that cannot be read off,
+    because the controls have to be generated before any trajectory exists.
+
+    ``reference_of`` is absent for the quadruple tank: no graph reproduces that
+    plant yet, so there are no reference equations to compare against and
+    nothing for a reference-graph figure to draw.
+
+    ``linear_floor_is_strict`` records whether the closed-form memoryless floor
+    is a valid pass criterion on this rung. False means a memoryless model has
+    been *measured* to beat that floor by far more than estimator noise, which
+    makes falling below it no evidence that state was used. It is a judgement
+    backed by :func:`stateless_floor` rather than a computed property, because
+    the measurement carries sampling error of its own: on the linear rung a
+    memoryless search also undercuts the closed form, by 0.93x, and that is the
+    search fitting the sample rather than the closed form having the wrong
+    shape.
+    """
+
+    title: str
+    build: Callable[..., Trajectory]
+    reference_of: Callable[[], Graph] | None = None
+    initialization: str = "seed"
+    channels: int = 1
+    time_step: float = 1.0
+    linear_floor_is_strict: bool = True
+
+
+def trajectory_dataset(trajectory: Trajectory) -> Dataset:
+    """Build the scoring dataset for either trajectory flavour.
+
+    Kept as a dispatch rather than a widened constructor so the single-input
+    path is byte-for-byte what it always was.
+    """
+    if isinstance(trajectory, MultiChannelTrajectory):
+        return multi_channel_dataset(trajectory)
+    return identification_dataset(trajectory)
+
+
+def trajectory_floor(
+    trajectory: Trajectory, criterion: str = "ise", time_step: float = 1.0
+) -> float:
+    """The memoryless floor for either trajectory flavour.
+
+    One input and one output reduce to :func:`static_gain_floor` exactly, so
+    the benchmarks measured against it keep the same number.
+    """
+    if isinstance(trajectory, MultiChannelTrajectory):
+        return multi_channel_floor(trajectory, criterion, time_step)
+    return static_gain_floor(trajectory, criterion, time_step)
+
+
+def trajectory_interface(trajectory: Trajectory) -> tuple[int, int]:
+    """How many control and measured channels the trajectory carries."""
+    if isinstance(trajectory, MultiChannelTrajectory):
+        return trajectory.inputs, trajectory.outputs
+    return 1, 1
+
+
+def trajectory_rows(
+    trajectory: Trajectory,
+) -> tuple[tuple[tuple[float, ...], ...], tuple[tuple[float, ...], ...]]:
+    """Control and response rows as nested tuples, whatever the flavour.
+
+    A scalar trajectory reads as a one-channel one, so a channel-aware caller
+    — the report's signal extraction and figures — needs no branch of its own.
+    """
+    if isinstance(trajectory, MultiChannelTrajectory):
+        return trajectory.controls, trajectory.responses
+    return (
+        tuple((control,) for control in trajectory.controls),
+        tuple((response,) for response in trajectory.responses),
+    )
 
 
 def _solve(matrix: Sequence[Sequence[float]], vector: Sequence[float]) -> list[float]:
@@ -374,7 +657,16 @@ def parameter_mutations() -> tuple[GraphMutation, ...]:
 
 
 def structural_mutations() -> tuple[GraphMutation, ...]:
-    """Operations that change what a graph is, not merely how it is tuned."""
+    """Operations that change what a graph is, not merely how it is tuned.
+
+    ``ReplaceEdge`` belongs here despite leaving the shape untouched. The
+    parameter set is reserved for moves that keep a candidate inside its
+    parent's behavioural neighbourhood, which is what makes them local search
+    for an archive; a replacement redraws the whole weight range, so it
+    explores even though the topology comes out identical. It is the one
+    operator that fits neither group, which is the shape/parameter boundary
+    showing through.
+    """
     return (
         SplitEdge(),
         AddNode(),
@@ -382,10 +674,25 @@ def structural_mutations() -> tuple[GraphMutation, ...]:
         RemoveEdge(),
         MoveEdgeSource(),
         MoveEdgeTarget(),
+        ReplaceEdge(),
         ReplaceNode(),
         RemoveNodeBypass(),
         RemoveNode(),
     )
+
+
+def tuner_mutations() -> tuple[GraphMutation, ...]:
+    """The operations refinement tunes with.
+
+    Refinement is parameter mutation run as local search, so this is the set an
+    exclusion has to reach for "no parameter mutation" to mean what it says.
+    """
+    return (MutateEdgeAttributes(), MutateNodeAttributes())
+
+
+def tuner_names() -> tuple[str, ...]:
+    """The tuner's operators by class name, for reporting and exclusions."""
+    return tuple(type(operator).__name__ for operator in tuner_mutations())
 
 
 def benchmark_crossover() -> CrossoverPortfolio:
@@ -398,6 +705,64 @@ def benchmark_crossover() -> CrossoverPortfolio:
             UniformGraphCrossover(),
         ]
     )
+
+
+def mutation_names() -> tuple[str, ...]:
+    """Every mutation a search may be told to leave out, by class name.
+
+    Derived from the canonical sets rather than written out again, so the list
+    cannot drift away from what the portfolios actually contain.
+    """
+    return tuple(
+        type(operator).__name__
+        for operator in parameter_mutations() + structural_mutations()
+    )
+
+
+def crossover_names() -> tuple[str, ...]:
+    """Every crossover a search may be told to leave out, by class name."""
+    return tuple(
+        type(operator).__name__ for operator in benchmark_crossover().crossovers
+    )
+
+
+def leave_out(
+    operators: Sequence[GraphMutation] | Sequence[GraphCrossover],
+    excluded: Sequence[str],
+) -> tuple:
+    """Drop operators by class name.
+
+    Naming is the whole interface. An operator is excluded by its class name,
+    which keeps the filter meaningful when the portfolios are regrouped -- the
+    question "is this a parameter move or a structural one" stops being
+    something a run has to answer -- and it is the same name the command line
+    takes.
+
+    A name absent from one particular list is a no-op rather than an error, so
+    a single exclusion list can govern the mutation portfolio and the tuner
+    together: excluding ``MutateEdgeAttributes`` has to remove it from both, or
+    the operator keeps running inside refinement and the exclusion is a lie.
+    Whether a name is *known* at all is settled once, before any of this, by
+    ``_require_known``.
+    """
+    dropped = set(excluded)
+    return tuple(
+        operator for operator in operators if type(operator).__name__ not in dropped
+    )
+
+
+def _require_known(names: Sequence[str], known: Sequence[str], what: str) -> None:
+    """Reject an exclusion name nothing answers to.
+
+    A typo that silently excludes nothing is worse than one that stops the run,
+    because the experiment still produces a number and the number looks fine.
+    """
+    unknown = sorted({name for name in names if name not in set(known)})
+    if unknown:
+        raise ValueError(
+            f"Unknown {what}: {', '.join(unknown)}; known {what}: "
+            + ", ".join(sorted(known))
+        )
 
 
 def benchmark_engine(
@@ -421,8 +786,29 @@ def benchmark_engine(
     island_score_scales: Sequence[float] | None = None,
     complexity_schedule: OscillatingParsimony | None = None,
     island_exchange: str = "migration",
+    excluded_mutations: Sequence[str] = (),
+    excluded_crossovers: Sequence[str] = (),
 ) -> EvolutionEngine:
-    """The full default operator portfolio, wired for benchmark runs."""
+    """The full default operator portfolio, wired for benchmark runs.
+
+    ``excluded_mutations`` and ``excluded_crossovers`` name reproduction
+    operators to leave out, so a run can pose a narrower question without a
+    second definition of the portfolio. Excluding ``MutateNodeAttributes`` and
+    ``MutateEdgeAttributes`` is the way to ask whether structure alone can write
+    the parameters: it removes the tuner's operators as well, which is why the
+    filter is applied to both.
+    """
+    _require_known(excluded_mutations, mutation_names(), "mutation")
+    _require_known(excluded_crossovers, crossover_names(), "crossover")
+    mutations = leave_out(
+        parameter_mutations() + structural_mutations(), excluded_mutations
+    )
+    if not mutations:
+        raise ValueError("At least one mutation must remain to reproduce anything")
+    crossovers = leave_out(benchmark_crossover().crossovers, excluded_crossovers)
+    # Refinement is parameter mutation run as local search, so an exclusion that
+    # removes its operators leaves nothing for it to do.
+    tuners = leave_out(tuner_mutations(), excluded_mutations)
     if island_score_scales is not None and (
         island_datasets is None or len(island_score_scales) != len(island_datasets)
     ):
@@ -437,8 +823,10 @@ def benchmark_engine(
     return EvolutionEngine(
         evaluator=evaluator,
         policy=policy or benchmark_policy(),
-        mutations=[MutationPortfolio(list(parameter_mutations() + structural_mutations()))],
-        crossover=benchmark_crossover(),
+        mutations=[MutationPortfolio(list(mutations))],
+        crossover=(
+            CrossoverPortfolio(list(crossovers)) if crossovers else None
+        ),
         config=EvolutionConfig(
             population_size=population_size,
             elite_size=2,
@@ -455,10 +843,8 @@ def benchmark_engine(
         ),
         seed=seed,
         refiner=(
-            ParameterRefiner(
-                [MutateEdgeAttributes(), MutateNodeAttributes()], refine
-            )
-            if refine is not None
+            ParameterRefiner(list(tuners), refine)
+            if refine is not None and tuners
             else None
         ),
         simulation_workers=simulation_workers,
@@ -482,3 +868,111 @@ def benchmark_engine(
         ),
         fitness_shaper=fitness_shaper,
     )
+
+
+#: The budget :func:`stateless_floor` uses when a caller does not say otherwise:
+#: small enough to sit beside a real run rather than dwarf it. A caller wanting
+#: the baseline to match its own search should pass its own budget instead.
+STATELESS_BASELINE_POPULATION = 12
+STATELESS_BASELINE_GENERATIONS = 20
+
+#: How many independent seeds the baseline searches before keeping the best.
+STATELESS_BASELINE_ROUNDS = 3
+
+
+def stateless_operators(kinds: Sequence[str] = FULL_OPERATORS) -> tuple[str, ...]:
+    """The kinds in ``kinds`` that carry nothing between one sample and the next.
+
+    Whatever score a model built from these alone reaches, it reached without
+    remembering anything — which is exactly the bar a memoryless floor exists
+    to draw.
+    """
+    return tuple(kind for kind in kinds if kind not in STATEFUL_KINDS)
+
+
+def stateless_floor(
+    dataset: Dataset,
+    criterion: str = "ise",
+    time_step: float = 1.0,
+    population_size: int = STATELESS_BASELINE_POPULATION,
+    generations: int = STATELESS_BASELINE_GENERATIONS,
+    seed: int = 1,
+    rounds: int = STATELESS_BASELINE_ROUNDS,
+) -> float:
+    """The best score a model with no state at all can reach, found by search.
+
+    :func:`memoryless_floor` fits the best *linear* static map, which is the
+    best memoryless predictor only when the controls are independent and the
+    plant's static relation is linear. Where either condition fails, that bar
+    is beaten easily by a memoryless model: on the quadruple tank, which breaks
+    both, this search reaches 0.31 to 0.62 of the linear floor. A model scoring
+    below the linear floor there has therefore demonstrated nothing about
+    carrying state.
+
+    This establishes the bar by search instead. Evolution is restricted to
+    :func:`stateless_operators`, and the best score it reaches *is* the floor.
+    Nothing is assumed about the plant, and the engine, dataset, criterion, and
+    time step are the ones the judged run used, so the two are comparable.
+
+    Three properties are worth stating plainly.
+
+    * The result is a *lower bound* on what memoryless models can reach, so it
+      is a conservative bar: beating it is evidence of state, and failing it
+      proves nothing.
+    * It moves with the budget and the seed. ``rounds`` independent seeds are
+      searched and the best kept, which raises the bar and so errs toward *not*
+      claiming dynamics. A caller comparing against this must say which budget
+      it used.
+    * The node penalty is zero throughout, because the baseline is an accuracy
+      figure and a size penalty would stop it being comparable with the
+      unpenalised error the verdict is taken from.
+
+    Measured with the defaults below on the registered rungs:
+
+    ===================  ===========  ==========  =====
+    benchmark            closed form  baseline    ratio
+    ===================  ===========  ==========  =====
+    ``linear``                9.1994      8.5724   0.93
+    ``narendra``              1.2603      1.2621   1.00
+    ``tank-minphase``       132.4007     81.8809   0.62
+    ``tank-nonminphase``    117.3226     36.8379   0.31
+    ===================  ===========  ==========  =====
+
+    Both numbers are in-sample on the same data, so this compares two
+    estimators rather than measuring either against a held-out truth. That is
+    what the small gaps mean: least squares is optimal among *linear* maps, but
+    a flexible search can still fit the sample better, so a few percent below
+    the closed form on an independent white-noise input is the search
+    overfitting rather than the closed form having the wrong shape. The tank
+    gaps are an order of magnitude larger, which is why
+    :attr:`Benchmark.linear_floor_is_strict` is False there and True on the two
+    single-input rungs.
+    """
+    if population_size < 3:
+        raise ValueError("A stateless baseline needs at least three candidates")
+    if generations < 1:
+        raise ValueError("generations must be positive")
+    if rounds < 1:
+        raise ValueError("rounds must be positive")
+    interface = (len(dataset.inputs[0]), len(dataset.outputs[0]))
+    policy = benchmark_policy(stateless_operators())
+    best = float("inf")
+    for index in range(rounds):
+        engine = benchmark_engine(
+            dataset,
+            seed=seed + index,
+            population_size=population_size,
+            policy=policy,
+            criterion=criterion,
+            time_step=time_step,
+            node_penalty=0.0,
+        )
+        try:
+            population = [
+                static_seed_graph(*interface) for _ in range(population_size)
+            ]
+            result = engine.run(population, generations)
+        finally:
+            engine.close()
+        best = min(best, min(item.score for item in result.population))
+    return best

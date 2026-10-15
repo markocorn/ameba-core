@@ -1,0 +1,89 @@
+{
+ "dir": "results/soft-nodes",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "3000",
+  "--population",
+  "300",
+  "--progress",
+  "100"
+ ],
+ "title": "Mehki vozli",
+ "eyebrow": "AMEBA · razvoj genoma · Narendra",
+ "h1": "Vozli v kokonu: vsak odziv mehko omejen na ±1",
+ "lede": "Vsak mehki vozel sešteje utežene vhode in premik b, nato odda vrednost znotraj ±1 z mehko mejo: linearni (tanh), kvadratni (Hill), zvon, eksponentni, logaritemski in korenski (s predznakom ali absolutni), sinusni, absolutni in produkt. Definirani so za vsak vhod, zato model nikoli ni neveljaven. Isto kodiranje in GA kot pri primerjanih; spreminja se le nabor vozlov. Narendra, populacija 300, 3000 generacij, 12 semen.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-soft-sum",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--kinds",
+    "soft"
+   ],
+   "label": "endosimbioza + vsota, mehki vozli",
+   "color": "var(--s1)",
+   "desc": "Najboljše dosedanje kodiranje, vsi vozli mehki. Dinamika samo v ožičenju stanj (vsako stanje je zakasnitev)."
+  },
+  {
+   "key": "E-soft-delay-sum",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--kinds",
+    "soft,delay"
+   ],
+   "label": "… + delay v stanjih",
+   "color": "var(--s2)",
+   "desc": "Kot zgoraj, stanja smejo uporabiti tudi daljšo zakasnitev."
+  },
+  {
+   "key": "A-soft",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{}",
+    "--kinds",
+    "soft"
+   ],
+   "label": "A-base, mehki vozli",
+   "color": "var(--s3)",
+   "desc": "Dosedanje osnovno kodiranje, vsi vozli mehki (brez spomina razen tistega v grafu)."
+  },
+  {
+   "key": "E-static-sum",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}"
+   ],
+   "label": "ref · endosimbioza + vsota, dosedanji vozli",
+   "color": "var(--ref2)",
+   "dash": "2 3",
+   "desc": "Najboljše dosedanje kodiranje z dosedanjimi operatorji (mediana 0,669×)."
+  },
+  {
+   "key": "A-base",
+   "args": [
+    "--method",
+    "A-base"
+   ],
+   "label": "ref · A-base",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Dosedanja osnova z dosedanjimi operatorji."
+  }
+ ],
+ "findings": "\n    <li><strong>Najpomembnejše: modeli ne posplošujejo.</strong> Najboljše modele vseh petih različic sem ocenil na signalih, ki jih GA ni videl (dve novi naključni zaporedji, sinusoida, stopnice). V mediani so vse metode na vseh štirih novih naborih <em>nad</em> spodnjo mejo, torej slabše od statičnega modela <code>y = c·u</code>; pri endosimbiozi z mehkimi vozli npr. 1,02–1,26× proti 0,73× na učnih podatkih. Pravi model ima povsod 10⁻³¹. Rezultati »pod mejo« so torej večinoma prileganje točno tem 150 učnim korakom, ne identifikacija sistema. To velja tudi za vse prejšnje preizkuse, ki so merili le na učnih podatkih.</li>\n    <li><strong>Mehki vozli ekstrapolirajo krotkeje.</strong> Na sinusoidi (počasen signal, drugačen od učnega šuma) ima endosimbioza s trdimi vozli mediano 2,79×, z mehkimi 1,26×, z mehkimi in zakasnitvami 1,16×. Kokon prepreči, da bi model izven učnega območja »eksplodiral«, kar je pomembno za uporabo v zaprti zanki.</li>\n    <li><strong>Na učnih podatkih:</strong> endosimbioza + vsota z mehkimi vozli 12/12 pod mejo, mediana 0,730× (s trdimi 0,669×; razlika ni značilna, p = 0,86). Najboljši posamezen model 0,208×, a na novih podatkih tudi ta ne posploši.</li>\n    <li><strong>A-base z mehkimi vozli odpove</strong> (2/12): mehki vozli pomagajo le v kodiranju s stanji, kjer je linearna dinamika v ožičenju stanj.</li>\n    <li><strong>Mehki modeli so gosti »rezervoarji«:</strong> najboljši ima 16 med seboj prepletenih sinusnih stanj. Berljiv je vsak vozel posebej, model kot celota pa ne.</li>\n    <li><strong>Kaj to pomeni za naprej:</strong> vsak preizkus mora meriti napako na novih podatkih; GA se mora učiti na daljših in raznolikejših signalih (več zaporedij, stopnice, sinusoide), da se ne more prilegati enemu zaporedju; končni model naj se izbere po napaki na ločenih podatkih; in kazen za velikost oziroma poenostavljanje, ker so modeli s ~20 vozli za ta sistem (pravi ima 5) preveliki.</li>\n    <li><em>Opomba:</em> 9 zagonov se je ob prvem teku zrušilo zaradi pomanjkanja pomnilnika (neomejen predpomnilnik ocen). Predpomnilnik je zdaj omejen; ocene so deterministične, zato so ponovljeni zagoni enaki, kot bi bili brez zrušitve.</li>\n"
+}

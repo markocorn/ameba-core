@@ -1,0 +1,1355 @@
+{
+ "dir": "results/weekend-encodings",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "3000",
+  "--population",
+  "300",
+  "--progress",
+  "100"
+ ],
+ "title": "Sto kodiranj",
+ "eyebrow": "AMEBA · razvoj genoma · Narendra · vikend",
+ "h1": "Sto načinov, kako zapisati graf v števila",
+ "lede": "108 kodiranj fiksne vloge in 3 reference na Narendri (SISO, 150 korakov). GA je za vse enak (generacijski, turnir 3, elita 2, križanje 0,5, nevtralni drift); populacija 300, 3000 generacij, 12 semen. Kodiranja se razlikujejo v preslikavi števila v pomen, v mutacijskih operatorjih, obliki zapisa in naslavljanju; ena skupina posnema mehanizme iz narave.",
+ "cards_h2": "Katalog",
+ "series": [
+  {
+   "key": "t-runs64",
+   "group": "preslikave števil",
+   "label": "nizi, širina 64",
+   "desc": "Vsako mesto 0–63 v nizih sinonimov: malo nevtralnosti.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"width\":64}"
+   ]
+  },
+  {
+   "key": "t-runs256",
+   "group": "preslikave števil",
+   "label": "nizi, širina 256",
+   "desc": "Vsako mesto 0–255 v nizih.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"width\":256}"
+   ]
+  },
+  {
+   "key": "t-runs4096",
+   "group": "preslikave števil",
+   "label": "nizi, širina 4096",
+   "desc": "Vsako mesto 0–4095 v nizih: zelo nevtralno.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"width\":4096}"
+   ]
+  },
+  {
+   "key": "t-shuffle64",
+   "group": "preslikave števil",
+   "label": "mešano, širina 64",
+   "desc": "Pomešani sinonimi, malo jih je.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"shuffle\",\"parameter\":\"shuffle\",\"source\":\"shuffle\",\"weight\":\"shuffle\"},\"width\":64}"
+   ]
+  },
+  {
+   "key": "t-xor21",
+   "group": "preslikave števil",
+   "label": "XOR 21",
+   "desc": "Število XOR 21, nato nizi (širina 1024).",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"xor:21\",\"parameter\":\"xor:21\",\"source\":\"xor:21\",\"weight\":\"xor:21\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "t-xor341",
+   "group": "preslikave števil",
+   "label": "XOR 341",
+   "desc": "Število XOR 341 (izmenični biti).",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"xor:341\",\"parameter\":\"xor:341\",\"source\":\"xor:341\",\"weight\":\"xor:341\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "t-xor1023",
+   "group": "preslikave števil",
+   "label": "XOR 1023",
+   "desc": "Vsi biti obrnjeni: zrcalna slika.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"xor:1023\",\"parameter\":\"xor:1023\",\"source\":\"xor:1023\",\"weight\":\"xor:1023\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "t-mul7",
+   "group": "preslikave števil",
+   "label": "množenje ×7",
+   "desc": "n·7 mod 1024: koraki po 7 nizov.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"mul:7\",\"parameter\":\"mul:7\",\"source\":\"mul:7\",\"weight\":\"mul:7\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "t-mul333",
+   "group": "preslikave števil",
+   "label": "množenje ×333",
+   "desc": "n·333 mod 1024: grobo premešano s strukturo.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"mul:333\",\"parameter\":\"mul:333\",\"source\":\"mul:333\",\"weight\":\"mul:333\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "t-gray",
+   "group": "preslikave števil",
+   "label": "Grayeva koda",
+   "desc": "Grayevo dekodiranje, mutacija ±1.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"gray\",\"parameter\":\"gray\",\"source\":\"gray\",\"weight\":\"gray\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "t-gray-bits",
+   "group": "preslikave števil",
+   "label": "Gray + preklop bita",
+   "desc": "Boolovo polje v Grayevi kodi, mutacija preklopi bit.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"gray\",\"parameter\":\"gray\",\"source\":\"gray\",\"weight\":\"gray\"},\"width\":1024,\"mutation\":{\"bitflip\":0.5,\"reset\":0.3,\"insert_record\":0.1,\"remove_record\":0.1}}"
+   ]
+  },
+  {
+   "key": "t-binary-bits",
+   "group": "preslikave števil",
+   "label": "binarno + preklop bita",
+   "desc": "Navadna binarna koda, mutacija preklopi bit.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"width\":1024,\"mutation\":{\"bitflip\":0.5,\"reset\":0.3,\"insert_record\":0.1,\"remove_record\":0.1}}"
+   ]
+  },
+  {
+   "key": "t-sin001",
+   "group": "preslikave števil",
+   "label": "sinus, C=0,01",
+   "desc": "Počasen sinus: gladka, a ponavljajoča se preslikava.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"sin:0.01\",\"parameter\":\"sin:0.01\",\"source\":\"sin:0.01\",\"weight\":\"sin:0.01\"},\"width\":1000}"
+   ]
+  },
+  {
+   "key": "t-sin01",
+   "group": "preslikave števil",
+   "label": "sinus, C=0,1",
+   "desc": "Hitrejši sinus: kratke periode.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"sin:0.1\",\"parameter\":\"sin:0.1\",\"source\":\"sin:0.1\",\"weight\":\"sin:0.1\"},\"width\":1000}"
+   ]
+  },
+  {
+   "key": "t-sin1",
+   "group": "preslikave števil",
+   "label": "sinus, C=1",
+   "desc": "Sinus z eno radiansko periodo na korak: skoraj naključno.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"sin:1\",\"parameter\":\"sin:1\",\"source\":\"sin:1\",\"weight\":\"sin:1\"},\"width\":1000}"
+   ]
+  },
+  {
+   "key": "t-sin37",
+   "group": "preslikave števil",
+   "label": "sinus, C=37",
+   "desc": "Kaotičen sinus.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"sin:37\",\"parameter\":\"sin:37\",\"source\":\"sin:37\",\"weight\":\"sin:37\"},\"width\":1000}"
+   ]
+  },
+  {
+   "key": "t-square",
+   "group": "preslikave števil",
+   "label": "kvadrat mod",
+   "desc": "n² mod 1024: nelinearna, ne-bijektivna.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"sq\",\"parameter\":\"sq\",\"source\":\"sq\",\"weight\":\"sq\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "t-logistic36",
+   "group": "preslikave števil",
+   "label": "logistična 3,6",
+   "desc": "20 korakov logistične preslikave pri r=3,6: na robu kaosa.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"logistic:3.6\",\"parameter\":\"logistic:3.6\",\"source\":\"logistic:3.6\",\"weight\":\"logistic:3.6\"},\"width\":1000}"
+   ]
+  },
+  {
+   "key": "t-logistic399",
+   "group": "preslikave števil",
+   "label": "logistična 3,99",
+   "desc": "Logistična preslikava v polnem kaosu.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"logistic:3.99\",\"parameter\":\"logistic:3.99\",\"source\":\"logistic:3.99\",\"weight\":\"logistic:3.99\"},\"width\":1000}"
+   ]
+  },
+  {
+   "key": "t-popcount-bits",
+   "group": "preslikave števil",
+   "label": "popcount + preklop bita",
+   "desc": "Simbol = število enic; preklop bita ga spremeni za ±1.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"popcount\",\"parameter\":\"popcount\",\"source\":\"popcount\",\"weight\":\"popcount\"},\"width\":1024,\"mutation\":{\"bitflip\":0.5,\"reset\":0.3,\"insert_record\":0.1,\"remove_record\":0.1}}"
+   ]
+  },
+  {
+   "key": "t-popcount",
+   "group": "preslikave števil",
+   "label": "popcount + ±1",
+   "desc": "Simbol = število enic, mutacija ±1.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"popcount\",\"parameter\":\"popcount\",\"source\":\"popcount\",\"weight\":\"popcount\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "t-digits",
+   "group": "preslikave števil",
+   "label": "vsota števk",
+   "desc": "Simbol = vsota desetiških števk mod abeceda.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"digits\",\"parameter\":\"digits\",\"source\":\"digits\",\"weight\":\"digits\"},\"width\":1000}"
+   ]
+  },
+  {
+   "key": "t-collatz",
+   "group": "preslikave števil",
+   "label": "Collatz",
+   "desc": "Simbol = Collatzovo število korakov: skoraj kaotično.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"collatz\",\"parameter\":\"collatz\",\"source\":\"collatz\",\"weight\":\"collatz\"},\"width\":1000}"
+   ]
+  },
+  {
+   "key": "t-integral",
+   "group": "preslikave števil",
+   "label": "integral, vse vloge",
+   "desc": "Simbol = tekoča vsota vseh prejšnjih mest iste vloge.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"cumulative\",\"parameter\":\"cumulative\",\"source\":\"cumulative\",\"weight\":\"cumulative\"}}"
+   ]
+  },
+  {
+   "key": "t-integral-struct",
+   "group": "preslikave števil",
+   "label": "integral, struktura",
+   "desc": "Tekoča vsota samo za tip in vir.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"cumulative\",\"parameter\":\"runs\",\"source\":\"cumulative\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "t-integral-values",
+   "group": "preslikave števil",
+   "label": "integral, vrednosti",
+   "desc": "Tekoča vsota samo za parametre in uteži.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"cumulative\",\"source\":\"runs\",\"weight\":\"cumulative\"}}"
+   ]
+  },
+  {
+   "key": "t-derivative",
+   "group": "preslikave števil",
+   "label": "diferenca, vse vloge",
+   "desc": "Simbol = razlika do prejšnjega mesta iste vloge.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"difference\",\"parameter\":\"difference\",\"source\":\"difference\",\"weight\":\"difference\"}}"
+   ]
+  },
+  {
+   "key": "t-derivative-struct",
+   "group": "preslikave števil",
+   "label": "diferenca, struktura",
+   "desc": "Diferenca samo za tip in vir.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"difference\",\"parameter\":\"runs\",\"source\":\"difference\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "t-golden",
+   "group": "preslikave števil",
+   "label": "zlati rez, 1000",
+   "desc": "Branje z zlatim rezom (Weylovo zaporedje).",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"golden\",\"parameter\":\"golden\",\"source\":\"golden\",\"weight\":\"golden\"},\"width\":1000}"
+   ]
+  },
+  {
+   "key": "t-golden4096",
+   "group": "preslikave števil",
+   "label": "zlati rez, 4096",
+   "desc": "Zlati rez na širšem prostoru.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"golden\",\"parameter\":\"golden\",\"source\":\"golden\",\"weight\":\"golden\"},\"width\":4096}"
+   ]
+  },
+  {
+   "key": "t-gradient1",
+   "group": "preslikave števil",
+   "label": "gradient 1",
+   "desc": "Pomen se premakne za 1 z vsakim zapisom.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"gradient:1\",\"parameter\":\"gradient:1\",\"source\":\"gradient:1\",\"weight\":\"gradient:1\"}}"
+   ]
+  },
+  {
+   "key": "t-gradient37",
+   "group": "preslikave števil",
+   "label": "gradient 37",
+   "desc": "Pomen se premakne za 37 z vsakim zapisom.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"gradient:37\",\"parameter\":\"gradient:37\",\"source\":\"gradient:37\",\"weight\":\"gradient:37\"}}"
+   ]
+  },
+  {
+   "key": "t-gradient-kind",
+   "group": "preslikave števil",
+   "label": "gradient samo tip",
+   "desc": "Gradient samo na tipu vozla.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"gradient:13\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "m-shuffle-log",
+   "group": "mešanice po vlogah",
+   "label": "tip mešan, uteži log",
+   "desc": "Tip pomešan, vir in parameter v nizih, uteži logaritemsko.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"shuffle\",\"source\":\"runs\",\"parameter\":\"runs\",\"weight\":\"log\"}}"
+   ]
+  },
+  {
+   "key": "m-gray-fine",
+   "group": "mešanice po vlogah",
+   "label": "tip Gray, uteži fine",
+   "desc": "Tip v Grayevi kodi, ostalo v nizih, fine uteži.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"gray\",\"source\":\"runs\",\"parameter\":\"runs\",\"weight\":\"fine\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "m-sin-kind",
+   "group": "mešanice po vlogah",
+   "label": "tip kaotičen sinus",
+   "desc": "Kaotičen sinus samo za tip, ostalo v nizih.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"sin:37\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "m-xor-source",
+   "group": "mešanice po vlogah",
+   "label": "vir XOR",
+   "desc": "XOR samo za vir, ostalo v nizih.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"xor:341\",\"weight\":\"runs\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "m-golden-source",
+   "group": "mešanice po vlogah",
+   "label": "vir zlati rez",
+   "desc": "Zlati rez samo za vir.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"golden\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "m-base-log",
+   "group": "mešanice po vlogah",
+   "label": "base + log uteži",
+   "desc": "Kot A-base, a uteži na logaritemski lestvici.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"direct\",\"parameter\":\"direct\",\"source\":\"direct\",\"weight\":\"log\"}}"
+   ]
+  },
+  {
+   "key": "m-base-fine",
+   "group": "mešanice po vlogah",
+   "label": "base + fine uteži",
+   "desc": "Kot A-base, a fine linearne uteži.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"direct\",\"parameter\":\"direct\",\"source\":\"direct\",\"weight\":\"fine\"}}"
+   ]
+  },
+  {
+   "key": "m-runs-log",
+   "group": "mešanice po vlogah",
+   "label": "nizi + log uteži",
+   "desc": "Kot A-runs, a logaritemske uteži.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"log\"}}"
+   ]
+  },
+  {
+   "key": "m-runs-log4096",
+   "group": "mešanice po vlogah",
+   "label": "nizi 4096 + log uteži",
+   "desc": "Široki nizi in logaritemske uteži.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"log\"},\"width\":4096}"
+   ]
+  },
+  {
+   "key": "m-integral-kind",
+   "group": "mešanice po vlogah",
+   "label": "integral samo tip",
+   "desc": "Tekoča vsota samo za tip, ostalo neposredno.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"cumulative\",\"parameter\":\"direct\",\"source\":\"direct\",\"weight\":\"direct\"}}"
+   ]
+  },
+  {
+   "key": "m-derivative-weight",
+   "group": "mešanice po vlogah",
+   "label": "diferenca samo uteži",
+   "desc": "Uteži kot razlika do prejšnje uteži.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"difference\"}}"
+   ]
+  },
+  {
+   "key": "n-codon-base",
+   "group": "analogije iz narave",
+   "label": "genetski kod + točkovne",
+   "desc": "Vsako mesto je kodon; mutacija spremeni bazo, tranzicije 2×.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"codon\",\"parameter\":\"codon\",\"source\":\"codon\",\"weight\":\"codon\"},\"mutation\":{\"base\":0.5,\"reset\":0.2,\"insert_record\":0.15,\"remove_record\":0.15}}"
+   ]
+  },
+  {
+   "key": "n-codon-creep",
+   "group": "analogije iz narave",
+   "label": "genetski kod + ±1",
+   "desc": "Kodoni, a mutacija ±1 po indeksu kodona.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"codon\",\"parameter\":\"codon\",\"source\":\"codon\",\"weight\":\"codon\"}}"
+   ]
+  },
+  {
+   "key": "n-codon-kind",
+   "group": "analogije iz narave",
+   "label": "kodon samo za tip",
+   "desc": "Tip je kodon (stop utiša vozel), ostalo v nizih.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"codon\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"mutation\":{\"base\":0.3,\"creep\":0.3,\"reset\":0.2,\"insert_record\":0.1,\"remove_record\":0.1}}"
+   ]
+  },
+  {
+   "key": "n-codon-structure",
+   "group": "analogije iz narave",
+   "label": "kodon za strukturo, log uteži",
+   "desc": "Tip in vir sta kodona, uteži logaritemske.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"codon\",\"source\":\"codon\",\"parameter\":\"runs\",\"weight\":\"log\"},\"mutation\":{\"base\":0.4,\"creep\":0.2,\"reset\":0.2,\"insert_record\":0.1,\"remove_record\":0.1}}"
+   ]
+  },
+  {
+   "key": "n-diploid",
+   "group": "analogije iz narave",
+   "label": "diploidno, dominanca",
+   "desc": "Dva alela na mesto, izrazi se večji. Recesivne mutacije so skrite.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"diploid:32\",\"parameter\":\"diploid:32\",\"source\":\"diploid:32\",\"weight\":\"diploid:32\"}}"
+   ]
+  },
+  {
+   "key": "n-diploid-bits",
+   "group": "analogije iz narave",
+   "label": "diploidno + preklop bita",
+   "desc": "Diploidno, mutacija preklopi bit enega alela.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"diploid:32\",\"parameter\":\"diploid:32\",\"source\":\"diploid:32\",\"weight\":\"diploid:32\"},\"mutation\":{\"bitflip\":0.5,\"reset\":0.3,\"insert_record\":0.1,\"remove_record\":0.1}}"
+   ]
+  },
+  {
+   "key": "n-codominant",
+   "group": "analogije iz narave",
+   "label": "kodominanca",
+   "desc": "Dva alela, izrazi se povprečje.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"codominant:32\",\"parameter\":\"codominant:32\",\"source\":\"codominant:32\",\"weight\":\"codominant:32\"}}"
+   ]
+  },
+  {
+   "key": "n-diploid-structure",
+   "group": "analogije iz narave",
+   "label": "diploidna struktura, fine uteži",
+   "desc": "Diploiden tip in vir, fine uteži.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"diploid:32\",\"source\":\"diploid:32\",\"parameter\":\"runs\",\"weight\":\"fine\"}}"
+   ]
+  },
+  {
+   "key": "n-majority10",
+   "group": "analogije iz narave",
+   "label": "kanalizacija, 3 kopije po 10",
+   "desc": "Tri kopije na mesto, izrazi se večina.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"majority:10\",\"parameter\":\"majority:10\",\"source\":\"majority:10\",\"weight\":\"majority:10\"}}"
+   ]
+  },
+  {
+   "key": "n-majority6",
+   "group": "analogije iz narave",
+   "label": "kanalizacija, 3 kopije po 6",
+   "desc": "Manjša abeceda kopij.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"majority:6\",\"parameter\":\"majority:6\",\"source\":\"majority:6\",\"weight\":\"majority:6\"}}"
+   ]
+  },
+  {
+   "key": "n-majority-kind",
+   "group": "analogije iz narave",
+   "label": "kanalizacija samo tip",
+   "desc": "Tip robusten z večino, ostalo v nizih.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"majority:10\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "n-epigenetic",
+   "group": "analogije iz narave",
+   "label": "epigenetsko utišanje",
+   "desc": "Polovica vrednosti tipa vozel utiša (metilacija).",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"epigenetic\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "n-epigenetic-log",
+   "group": "analogije iz narave",
+   "label": "utišanje + log uteži",
+   "desc": "Epigenetsko utišanje in logaritemske uteži.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"epigenetic\",\"source\":\"runs\",\"parameter\":\"runs\",\"weight\":\"log\"}}"
+   ]
+  },
+  {
+   "key": "n-tag",
+   "group": "analogije iz narave",
+   "label": "ključ in ključavnica",
+   "desc": "Vir se veže na prejšnji vozel z najbližjo oznako.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"tag\"}"
+   ]
+  },
+  {
+   "key": "n-tag-runs",
+   "group": "analogije iz narave",
+   "label": "ključ in ključavnica, nizi",
+   "desc": "Vezava po oznakah, mesta v nizih.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"tag\",\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\",\"tag\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "n-tag-3",
+   "group": "analogije iz narave",
+   "label": "vezava, 3 viri",
+   "desc": "Vezava po oznakah, trije viri na vozel.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"tag\",\"sources\":3}"
+   ]
+  },
+  {
+   "key": "n-tag-sum",
+   "group": "analogije iz narave",
+   "label": "vezava, izhod vsota",
+   "desc": "Vezava po oznakah, izhod sešteje dva vira.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"tag\",\"output_sources\":2}"
+   ]
+  },
+  {
+   "key": "n-sunflower-morphogen",
+   "group": "analogije iz narave",
+   "label": "sončnica + morfogen",
+   "desc": "Tip z zlatim rezom, vir z gradientom.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"golden\",\"source\":\"gradient:7\",\"parameter\":\"runs\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "o-duplicate",
+   "group": "mutacijski operatorji",
+   "label": "podvojitev gena",
+   "desc": "A-base z mutacijo, ki kopira zapis.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"mutation\":{\"creep\":0.4,\"reset\":0.25,\"insert_record\":0.1,\"remove_record\":0.1,\"duplicate_record\":0.15}}"
+   ]
+  },
+  {
+   "key": "o-duplicate-runs",
+   "group": "mutacijski operatorji",
+   "label": "podvojitev gena, nizi",
+   "desc": "A-runs s podvojitvijo zapisov.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"mutation\":{\"creep\":0.4,\"reset\":0.25,\"insert_record\":0.1,\"remove_record\":0.1,\"duplicate_record\":0.15}}"
+   ]
+  },
+  {
+   "key": "o-transpose",
+   "group": "mutacijski operatorji",
+   "label": "skakajoči geni",
+   "desc": "A-base s premikom zapisov.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"mutation\":{\"creep\":0.4,\"reset\":0.25,\"insert_record\":0.1,\"remove_record\":0.1,\"transpose\":0.15}}"
+   ]
+  },
+  {
+   "key": "o-invert",
+   "group": "mutacijski operatorji",
+   "label": "inverzija",
+   "desc": "A-base z obratom bloka zapisov.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"mutation\":{\"creep\":0.4,\"reset\":0.25,\"insert_record\":0.1,\"remove_record\":0.1,\"invert\":0.15}}"
+   ]
+  },
+  {
+   "key": "o-burst",
+   "group": "mutacijski operatorji",
+   "label": "sevanje",
+   "desc": "A-base z izbruhi več mutacij.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"mutation\":{\"creep\":0.4,\"reset\":0.25,\"insert_record\":0.1,\"remove_record\":0.1,\"burst\":0.15}}"
+   ]
+  },
+  {
+   "key": "o-burst-runs",
+   "group": "mutacijski operatorji",
+   "label": "sevanje, nizi",
+   "desc": "A-runs z izbruhi.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"mutation\":{\"creep\":0.4,\"reset\":0.25,\"insert_record\":0.1,\"remove_record\":0.1,\"burst\":0.15}}"
+   ]
+  },
+  {
+   "key": "o-nature",
+   "group": "mutacijski operatorji",
+   "label": "vsi naravni operatorji",
+   "desc": "A-base z vsemi naravnimi mutacijami.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"mutation\":{\"creep\":0.35,\"reset\":0.2,\"insert_record\":0.1,\"remove_record\":0.1,\"duplicate_record\":0.1,\"transpose\":0.05,\"invert\":0.05,\"burst\":0.05}}"
+   ]
+  },
+  {
+   "key": "o-nature-runs",
+   "group": "mutacijski operatorji",
+   "label": "vsi naravni operatorji, nizi",
+   "desc": "A-runs z vsemi naravnimi mutacijami.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"mutation\":{\"creep\":0.35,\"reset\":0.2,\"insert_record\":0.1,\"remove_record\":0.1,\"duplicate_record\":0.1,\"transpose\":0.05,\"invert\":0.05,\"burst\":0.05}}"
+   ]
+  },
+  {
+   "key": "o-hot-weight",
+   "group": "mutacijski operatorji",
+   "label": "vroča točka: uteži",
+   "desc": "Uteži mutirajo 5× pogosteje.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"role_rates\":{\"kind\":1,\"parameter\":1,\"source\":1,\"weight\":5}}"
+   ]
+  },
+  {
+   "key": "o-hot-kind",
+   "group": "mutacijski operatorji",
+   "label": "vroča točka: tip",
+   "desc": "Tip vozla mutira 5× pogosteje.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"role_rates\":{\"kind\":5,\"parameter\":1,\"source\":1,\"weight\":1}}"
+   ]
+  },
+  {
+   "key": "o-hot-source",
+   "group": "mutacijski operatorji",
+   "label": "vroča točka: vir, nizi",
+   "desc": "Viri mutirajo 5× pogosteje, A-runs.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"role_rates\":{\"kind\":1,\"parameter\":1,\"source\":5,\"weight\":1}}"
+   ]
+  },
+  {
+   "key": "o-creep-only",
+   "group": "mutacijski operatorji",
+   "label": "samo ±1",
+   "desc": "A-base, brez naključnih zamenjav.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"mutation\":{\"creep\":0.8,\"insert_record\":0.1,\"remove_record\":0.1}}"
+   ]
+  },
+  {
+   "key": "o-reset-only",
+   "group": "mutacijski operatorji",
+   "label": "samo zamenjava",
+   "desc": "A-base, brez ±1.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"mutation\":{\"reset\":0.8,\"insert_record\":0.1,\"remove_record\":0.1}}"
+   ]
+  },
+  {
+   "key": "o-geometric",
+   "group": "mutacijski operatorji",
+   "label": "geometrijski koraki",
+   "desc": "A-runs, korak ±1 z daljšim repom (p=0,5).",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"step\":\"geometric:0.5\"}"
+   ]
+  },
+  {
+   "key": "o-uniform20",
+   "group": "mutacijski operatorji",
+   "label": "koraki do 20",
+   "desc": "A-runs, korak enakomerno 1–20.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"step\":\"uniform:20\"}"
+   ]
+  },
+  {
+   "key": "o-uniform100",
+   "group": "mutacijski operatorji",
+   "label": "koraki do 100",
+   "desc": "A-runs, korak enakomerno 1–100.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"step\":\"uniform:100\"}"
+   ]
+  },
+  {
+   "key": "o-bitflip-only",
+   "group": "mutacijski operatorji",
+   "label": "samo preklop bita",
+   "desc": "Binarna koda, mutacija samo preklop bita.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"width\":1024,\"mutation\":{\"bitflip\":0.8,\"insert_record\":0.1,\"remove_record\":0.1}}"
+   ]
+  },
+  {
+   "key": "o-gray-mixed",
+   "group": "mutacijski operatorji",
+   "label": "Gray: bit + ±1",
+   "desc": "Grayeva koda, preklop bita in ±1 skupaj.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"gray\",\"parameter\":\"gray\",\"source\":\"gray\",\"weight\":\"gray\"},\"width\":1024,\"mutation\":{\"bitflip\":0.3,\"creep\":0.3,\"reset\":0.2,\"insert_record\":0.1,\"remove_record\":0.1}}"
+   ]
+  },
+  {
+   "key": "o-structural",
+   "group": "mutacijski operatorji",
+   "label": "strukturno bogat",
+   "desc": "Več dodajanja in odstranjevanja zapisov.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"mutation\":{\"creep\":0.3,\"reset\":0.2,\"insert_record\":0.25,\"remove_record\":0.25}}"
+   ]
+  },
+  {
+   "key": "s-sources1",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "1 vir na vozel",
+   "desc": "Vsak vozel ima en sam vir.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"sources\":1}"
+   ]
+  },
+  {
+   "key": "s-sources3",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "3 viri na vozel",
+   "desc": "Do trije viri na vozel.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"sources\":3}"
+   ]
+  },
+  {
+   "key": "s-sources3-runs",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "3 viri, nizi",
+   "desc": "Trije viri, mesta v nizih.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"sources\":3,\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "s-outsum",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "izhod vsota",
+   "desc": "Izhod sešteje dva vira.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"output_sources\":2}"
+   ]
+  },
+  {
+   "key": "s-outsum-runs",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "izhod vsota, nizi",
+   "desc": "Izhod sešteje dva vira, nizi.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"output_sources\":2,\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "s-reach2",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "doseg 2",
+   "desc": "Relativni viri sežejo le 2 zapisa daleč.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"reach\":2}"
+   ]
+  },
+  {
+   "key": "s-reach4",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "doseg 4",
+   "desc": "Doseg 4.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"reach\":4}"
+   ]
+  },
+  {
+   "key": "s-reach16",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "doseg 16",
+   "desc": "Doseg 16.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"reach\":16}"
+   ]
+  },
+  {
+   "key": "s-reach32",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "doseg 32",
+   "desc": "Doseg 32.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"reach\":32}"
+   ]
+  },
+  {
+   "key": "s-absolute",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "absolutno naslavljanje",
+   "desc": "Vir je indeks vozla od začetka genoma.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"absolute\"}"
+   ]
+  },
+  {
+   "key": "s-absolute-runs",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "absolutno, nizi",
+   "desc": "Absolutno naslavljanje, nizi.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"absolute\",\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"}}"
+   ]
+  },
+  {
+   "key": "s-absolute-gray",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "absolutno, Gray",
+   "desc": "Absolutno naslavljanje, Grayeva koda.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"absolute\",\"layouts\":{\"kind\":\"gray\",\"parameter\":\"gray\",\"source\":\"gray\",\"weight\":\"gray\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "s-init-small",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "majhni začetni genomi",
+   "desc": "Začetek z 1–3 vozli.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"init_nodes\":[1,3]}"
+   ]
+  },
+  {
+   "key": "s-init-large",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "veliki začetni genomi",
+   "desc": "Začetek z 10–20 vozli.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"init_nodes\":[10,20]}"
+   ]
+  },
+  {
+   "key": "s-init-huge",
+   "group": "oblika zapisa in naslavljanje",
+   "label": "zelo veliki začetni genomi",
+   "desc": "Začetek z 20–30 vozli.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"},\"init_nodes\":[20,30]}"
+   ]
+  },
+  {
+   "key": "c-transfer",
+   "group": "himere in prenos genov",
+   "label": "horizontalni prenos",
+   "desc": "A-base, križanje vstavi en zapis drugega starša.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{}",
+    "--crossover",
+    "transfer"
+   ]
+  },
+  {
+   "key": "c-transfer-runs",
+   "group": "himere in prenos genov",
+   "label": "horizontalni prenos, nizi",
+   "desc": "A-runs s horizontalnim prenosom.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\"}}",
+    "--crossover",
+    "transfer"
+   ]
+  },
+  {
+   "key": "c-chimera",
+   "group": "himere in prenos genov",
+   "label": "himera",
+   "desc": "Kodon za tip, diploiden vir, log uteži, vezava po oznakah.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"tag\",\"layouts\":{\"kind\":\"codon\",\"source\":\"diploid:32\",\"parameter\":\"runs\",\"weight\":\"log\"},\"mutation\":{\"base\":0.3,\"creep\":0.3,\"reset\":0.15,\"insert_record\":0.1,\"remove_record\":0.05,\"duplicate_record\":0.05,\"transpose\":0.05}}"
+   ]
+  },
+  {
+   "key": "c-all-nature",
+   "group": "himere in prenos genov",
+   "label": "vsa narava",
+   "desc": "Vezava po oznakah, kodon, kanalizacija, log uteži, naravne mutacije, prenos genov.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"tag\",\"layouts\":{\"kind\":\"codon\",\"source\":\"runs\",\"parameter\":\"majority:10\",\"weight\":\"log\",\"tag\":\"runs\"},\"mutation\":{\"creep\":0.35,\"reset\":0.2,\"insert_record\":0.1,\"remove_record\":0.1,\"duplicate_record\":0.1,\"transpose\":0.05,\"invert\":0.05,\"burst\":0.05}}",
+    "--crossover",
+    "transfer"
+   ]
+  },
+  {
+   "key": "c-chaos",
+   "group": "himere in prenos genov",
+   "label": "kaos",
+   "desc": "Kaotična preslikava za vsako vlogo: logistična, sinus, Collatz, zlati rez.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"logistic:3.99\",\"source\":\"sin:37\",\"parameter\":\"collatz\",\"weight\":\"golden\"}}"
+   ]
+  },
+  {
+   "key": "c-smooth",
+   "group": "himere in prenos genov",
+   "label": "gladko",
+   "desc": "Vse vloge v širokih nizih, fine uteži, geometrijski koraki.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"runs\",\"source\":\"runs\",\"parameter\":\"runs\",\"weight\":\"fine\"},\"width\":4096,\"step\":\"geometric:0.7\"}"
+   ]
+  },
+  {
+   "key": "c-diploid-tag",
+   "group": "himere in prenos genov",
+   "label": "diploidna vezava",
+   "desc": "Vezava po oznakah, diploidne oznake in viri.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"tag\",\"layouts\":{\"kind\":\"diploid:32\",\"source\":\"diploid:32\",\"parameter\":\"runs\",\"weight\":\"log\",\"tag\":\"diploid:32\"}}"
+   ]
+  },
+  {
+   "key": "c-integral-tag",
+   "group": "himere in prenos genov",
+   "label": "integral + vezava",
+   "desc": "Vezava po oznakah, oznake kot tekoča vsota.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"tag\",\"layouts\":{\"kind\":\"runs\",\"parameter\":\"runs\",\"source\":\"runs\",\"weight\":\"runs\",\"tag\":\"cumulative\"}}"
+   ]
+  },
+  {
+   "key": "c-codon-burst",
+   "group": "himere in prenos genov",
+   "label": "kodon + sevanje",
+   "desc": "Kodoni z izbruhi in podvojitvami.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"codon\",\"parameter\":\"codon\",\"source\":\"codon\",\"weight\":\"codon\"},\"mutation\":{\"base\":0.4,\"reset\":0.1,\"insert_record\":0.1,\"remove_record\":0.1,\"burst\":0.15,\"duplicate_record\":0.15}}"
+   ]
+  },
+  {
+   "key": "c-majority-gray",
+   "group": "himere in prenos genov",
+   "label": "kanalizacija + Gray tip",
+   "desc": "Tip v Grayevi kodi, parametri in uteži z večino.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"gray\",\"source\":\"runs\",\"parameter\":\"majority:10\",\"weight\":\"majority:10\"},\"width\":1024}"
+   ]
+  },
+  {
+   "key": "c-epigenetic-diploid",
+   "group": "himere in prenos genov",
+   "label": "utišanje + diploidnost",
+   "desc": "Epigenetski tip, diploidni viri in uteži.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"epigenetic\",\"source\":\"diploid:32\",\"parameter\":\"runs\",\"weight\":\"diploid:32\"}}"
+   ]
+  },
+  {
+   "key": "c-golden-log-outsum",
+   "group": "himere in prenos genov",
+   "label": "zlati rez + log + vsota",
+   "desc": "Zlati rez za strukturo, log uteži, izhod vsota.",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"layouts\":{\"kind\":\"golden\",\"source\":\"golden\",\"parameter\":\"runs\",\"weight\":\"log\"},\"output_sources\":2}"
+   ]
+  },
+  {
+   "key": "A-base",
+   "group": "reference",
+   "label": "ref · A-base",
+   "desc": "Dosedanja fiksna vloga, neposredno.",
+   "args": [
+    "--method",
+    "A-base"
+   ]
+  },
+  {
+   "key": "A-runs",
+   "group": "reference",
+   "label": "ref · A-runs",
+   "desc": "Dosedanja fiksna vloga v nizih: najboljša doslej.",
+   "args": [
+    "--method",
+    "A-runs"
+   ]
+  },
+  {
+   "key": "ref-context",
+   "group": "reference",
+   "label": "ref · kontekstna",
+   "desc": "Prosto zaporedje, kontekstna izbira gena.",
+   "args": [
+    "--method",
+    "ref-context"
+   ]
+  }
+ ],
+ "findings": "\n    <li><strong>Vseh 1332 zagonov je uspelo.</strong> Mediane kodiranj so med 0,725× in 1,003× meje. Reference: A-base 0,849×, A-runs 0,865×, kontekstna 0,925×.</li>\n    <li><strong>Posamezne razlike večinoma niso značilne.</strong> Pri 12 semenih in 110 primerjavah z A-base po Holmovem popravku ostane značilna le ena: logistična preslikava 3,6, ki je pokvarjena (vse vrednosti se zgostijo v nekaj simbolov, 0 od 12 pod mejo). Zgornjih ~30 kodiranj (mediane 0,72–0,82) je v okviru šuma; vrstni red med njimi ni zanesljiv.</li>\n    <li><strong>Močan vzorec: izhod kot vsota dveh virov.</strong> Vsa štiri kodiranja s to lastnostjo so prišla pod mejo v 48 od 48 zagonov (mediana 0,790×), ostala v 64 % (mediana 0,889×); p ≈ 3·10⁻⁹. Razlaga: z enim virom mora vsaka nova struktura izpodriniti statično pot <code>y = 0,75·u</code> naenkrat; z vsoto se lahko dinamična veja doda <em>poleg</em> nje in se postopoma izboljšuje. To je isti mehanizem, zaradi katerega je arhiv pobegnil s platoja.</li>\n    <li><strong>Vezava po oznakah (ključ–ključavnica) pomaga.</strong> 82 od 96 zagonov pod mejo (mediana 0,819×, p ≈ 4·10⁻⁵ proti ostalim). Najboljši posamezen model celega vikenda je vezava po oznakah z izhodom kot vsoto: <strong>0,265×</strong>, najboljši rezultat genomskega GA doslej (arhiv: 0,195×).</li>\n    <li><strong>Kontekstne preslikave škodijo.</strong> Integral, diferenca in gradient: le 64 od 144 zagonov pod mejo (mediana 1,003×). Ko sprememba enega mesta premakne pomen vseh naslednjih, se iskanje ne more postopoma izboljševati.</li>\n    <li><strong>Logaritemske uteži v kombinaciji z nizi obstanejo nad mejo</strong> (mediana 1,02×): na log lestvici ni vrednosti, ki bi natančno zadela statično ojačanje, zato niti plato ni dosežen čisto.</li>\n    <li><strong>Narava:</strong> vsi naravni mutacijski operatorji skupaj imajo najboljšo mediano (0,725×, 11/12), a razlika ni značilna. Kanalizacija (3 kopije) s 6 vrednostmi in popcount sta pobegnila v 12 od 12, a ostaneta blizu meje (mediana 0,86–0,90×): robustnost ohrani pobeg, ne pomaga pa ga izboljšati.</li>\n    <li><strong>Kaj modeli najdejo.</strong> Najboljši modeli so oblike <code>y ≈ ojačanje · u(k) · (1 + popravek iz zakasnjenih vhodov)</code>. Nobeden ne uporablja povratne zanke lastnega izhoda, ki je jedro pravega modela (y(k), y(k−1), y(k−2) v imenovalcu). Vsi so torej napredni modeli brez povratne zveze; to je verjetno naslednja meja.</li>\n    <li><strong>Za naslednjo različico genoma</strong> predlagam kombinacijo dveh lastnosti, ki sta se izkazali: izhod kot vsota in vezava po oznakah. Ob tem pa lastnost, ki bi olajšala povratno zanko izhoda.</li>\n"
+}

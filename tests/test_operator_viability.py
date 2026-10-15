@@ -20,6 +20,8 @@ from random import Random
 from ameba_graph import GenerationConfig, GraphGenerator
 from ameba_graph.crossover import (
     AlignedAttributeCrossover,
+    CrossEdgeAttributes,
+    CrossNodeAttributes,
     CrossoverError,
     CrossoverPortfolio,
     InducedSubgraphInsertionCrossover,
@@ -39,6 +41,7 @@ from ameba_graph.mutation import (
     RemoveEdge,
     RemoveNode,
     RemoveNodeBypass,
+    ReplaceEdge,
     ReplaceNode,
     SplitEdge,
 )
@@ -61,6 +64,7 @@ MUTATIONS = (
     SplitEdge,
     MutateNodeAttributes,
     MutateEdgeAttributes,
+    ReplaceEdge,
     MoveEdgeSource,
     MoveEdgeTarget,
     ReplaceNode,
@@ -69,6 +73,8 @@ MUTATIONS = (
 CROSSOVERS = (
     UniformGraphCrossover,
     AlignedAttributeCrossover,
+    CrossNodeAttributes,
+    CrossEdgeAttributes,
     InducedSubgraphInsertionCrossover,
     TypedSubgraphReplacementCrossover,
 )

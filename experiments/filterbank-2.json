@@ -1,0 +1,145 @@
+{
+ "dir": "results/filterbank-2",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "octaves",
+  "--node-penalty",
+  "0.003"
+ ],
+ "title": "Filtrska banka 2",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Izboljšane banke: normirane, ostrejše, manj filtrov",
+ "lede": "Nadaljevanje preizkusa »Filtrska banka«, ki je pokazal, da nenormirani filtri drugega reda škodijo. Tu so izhodi normirani (pri belem šumu enak RMS kot vhod), filtri ostrejši (4. red), banke manjše (samo pasovi 3–5 ali samo pas 4), Laguerrova banka pa s poli 0,3 in 0,8. Model vidi u0 in izhode filtrov u1…; obrat in spodnja meja vidita le u. Trdi vozli, podatki in test kot pri »Oktave«, kazen za velikost, 12 semen.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-hard",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}"
+   ],
+   "label": "brez banke",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Izhodišče iz preizkusa »Oktave«."
+  },
+  {
+   "key": "E-hard-oct",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "octaves"
+   ],
+   "label": "prejšnja oktavna banka",
+   "color": "var(--ref2)",
+   "dash": "2 3",
+   "desc": "6 pasovnih filtrov 2. reda, nenormirani (izhodi 14–65 % RMS vhoda)."
+  },
+  {
+   "key": "E-hard-norm2",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "bands:2:1,2,3,4,5,6:norm"
+   ],
+   "label": "6 pasov, 2. red, normirani",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "Kot prejšnja, a vsak izhod normiran na RMS vhoda pri belem šumu."
+  },
+  {
+   "key": "E-hard-norm4",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "bands:4:1,2,3,4,5,6:norm"
+   ],
+   "label": "6 pasov, 4. red, normirani",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "Ostrejši filtri (dva zaporedna biquada), normirani."
+  },
+  {
+   "key": "E-hard-mid",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "bands:4:3,4,5:norm"
+   ],
+   "label": "pasovi 3–5, 4. red, normirani",
+   "color": "var(--s3)",
+   "dash": "",
+   "desc": "Samo trije filtri okoli težavnega območja."
+  },
+  {
+   "key": "E-hard-b4",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "bands:4:4:norm"
+   ],
+   "label": "samo pas 4, 4. red, normiran",
+   "color": "var(--s4)",
+   "dash": "",
+   "desc": "En sam filter na pasu, kjer so modeli najslabši."
+  },
+  {
+   "key": "E-hard-lag3",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "laguerre:0.3:4"
+   ],
+   "label": "Laguerre, pol 0,3, 4 filtri",
+   "color": "var(--s5)",
+   "dash": "",
+   "desc": "Hitrejši Laguerrovi filtri."
+  },
+  {
+   "key": "E-hard-lag8",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "laguerre:0.8:4"
+   ],
+   "label": "Laguerre, pol 0,8, 4 filtri",
+   "color": "var(--s6)",
+   "dash": "",
+   "desc": "Počasnejši Laguerrovi filtri."
+  }
+ ],
+ "findings": "\n    <li><strong>Nobena izboljšana banka ne pomaga.</strong> Testna napaka je pri vseh šestih novih bankah slabša kot brez banke (0,572×): normirani 6 pasov 0,655× (2. red) in 0,661× (4. red), pasovi 3–5 0,680×, samo pas 4 0,740× (p = 0,050), Laguerre 0,642× (pol 0,3) in 0,695× (pol 0,8). Pas 4 je pri vseh nad mejo (1,01–1,21×), brez banke 0,91×.</li>\n    <li><strong>Normiranje, ostrejši filtri in manjše banke ne spremenijo slike.</strong> Normiranje ne izboljša prejšnje oktavne banke (0,625× → 0,655×), 4. red ne izboljša 2. reda, manjša banka ni boljša od večje.</li>\n    <li><strong>Najpomembnejše: že en sam dodaten vhod poslabša učno napako</strong> (samo pas 4: 0,620× → 0,857×). Filter, ki modelu ponudi točno tisto informacijo, ki mu manjka, iskanju škodi že na učnih podatkih. To kaže, da težava ni v informaciji, ampak v tem, kako dodaten vhod spremeni iskanje.</li>\n    <li><strong>Dve možni razlagi, ki ju je treba ločiti:</strong> (1) <em>učinek kodiranja</em>: z dodatnim vhodom se spremeni abeceda virov (koda 0 je u0, koda 1 postane filter namesto stanja x0 …), zato mutacija ±1 in naključni začetni viri drugače porazdelijo povezave, npr. manj povezav na u0 in na stanja; (2) <em>zavajajoča bližnjica</em>: filter da takojšnjo izboljšavo, iskanje se nanj oprime in obtiči v slabši dolini.</li>\n    <li><strong>Predlagani kontrolni preizkus:</strong> dodaten vhod brez informacije (ničelni ali naključni signal). Če tudi ta poslabša učno napako, gre za učinek kodiranja in ne za banko samo; takrat bi bilo treba kodiranje virov spremeniti, preden banke sploh primerjamo pošteno.</li>\n"
+}

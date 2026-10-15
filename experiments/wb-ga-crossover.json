@@ -1,0 +1,93 @@
+{
+ "dir": "results/wb-ga-crossover",
+ "benchmarks": [
+  "wood-berry"
+ ],
+ "seeds": 16,
+ "common": [
+  "--method",
+  "A-base",
+  "--generations",
+  "3000",
+  "--population",
+  "300",
+  "--steps",
+  "300",
+  "--hold",
+  "10"
+ ],
+ "title": "Wood–Berry GA: križanje",
+ "eyebrow": "AMEBA · nastavljanje GA · 1. korak",
+ "h1": "Kaj prispeva križanje",
+ "lede": "Kodiranje je zamrznjeno na A-base. Wood–Berryjeva kolona (2 vhoda, 2 izhoda, 300 korakov, vhod zadržan 10 vzorcev), populacija 300, 3000 generacij, 16 semen, nevtralni drift. Spreminja se samo vrsta križanja, pri eni različici pa še meja velikosti genoma.",
+ "cards_h2": "Pet vrst križanja in višja meja velikosti",
+ "series": [
+  {
+   "key": "x-none",
+   "args": [
+    "--crossover",
+    "none"
+   ],
+   "label": "brez križanja",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Verjetnost križanja 0, samo mutacija. Kontrola."
+  },
+  {
+   "key": "x-one_point",
+   "args": [
+    "--crossover",
+    "one_point"
+   ],
+   "label": "enotočkovno",
+   "color": "var(--s1)",
+   "desc": "Rez na meji zapisa, v vsakem staršu posebej. Dosedanja nastavitev.",
+   "example": "[A1 A2 A3 | A4] + [B1 | B2 B3] → [A1 A2 A3 B2 B3]"
+  },
+  {
+   "key": "x-two_point",
+   "args": [
+    "--crossover",
+    "two_point"
+   ],
+   "label": "dvotočkovno",
+   "color": "var(--s2)",
+   "desc": "Blok zapisov drugega starša zamenja blok prvega; otrok lahko zraste ali se skrči.",
+   "example": "[A1 | A2 A3 | A4] + [B1 | B2 | B3] → [A1 B2 A4]"
+  },
+  {
+   "key": "x-uniform_record",
+   "args": [
+    "--crossover",
+    "uniform_record"
+   ],
+   "label": "enakomerno po zapisih",
+   "color": "var(--s3)",
+   "desc": "Vsak vozel na mestu k od enega ali drugega starša.",
+   "example": "[A1 B2 A3 B4]"
+  },
+  {
+   "key": "x-uniform_locus",
+   "args": [
+    "--crossover",
+    "uniform_locus"
+   ],
+   "label": "enakomerno po mestih",
+   "color": "var(--s4)",
+   "desc": "Vsako mesto v zapisu posebej od enega ali drugega starša.",
+   "example": "tip A, vir B, utež A …"
+  },
+  {
+   "key": "x-one_point-cap64",
+   "args": [
+    "--crossover",
+    "one_point",
+    "--max-records",
+    "64"
+   ],
+   "label": "enotočkovno, meja 64",
+   "color": "var(--s5)",
+   "desc": "Enotočkovno z mejo 64 zapisov namesto 200 genov (≈33 zapisov)."
+  }
+ ]
+}

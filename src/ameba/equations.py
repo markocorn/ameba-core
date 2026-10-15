@@ -177,6 +177,12 @@ def _combine(
         return f"sin({inner})", _ATOM
     if kind == "output":
         return terms[0]
+    if kind.startswith("soft_"):
+        bias = float(attributes.get("bias", 0.0))
+        inner = _product(terms)[0] if kind == "soft_mul" else _sum(texts)
+        if bias:
+            inner = _sum([inner, _number(bias)])
+        return f"{kind[5:]}~({inner})", _ATOM
     return f"{kind}({', '.join(texts)})", _ATOM
 
 

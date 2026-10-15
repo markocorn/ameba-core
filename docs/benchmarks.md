@@ -2,10 +2,12 @@
 
 ## The setup
 
-Every benchmark is single-input/single-output. A plant is driven by a scalar
-control sequence u(k), and the model is scored on predicting y(k+1) while
-seeing **only u(k)**. The model must carry its own state through delay or filter
-nodes, so its prediction error feeds back into the next step.
+A plant is driven by a control sequence u(k) and the model is scored on
+predicting y(k+1) while seeing **only u(k)**. The model must carry its own state
+through delay or filter nodes, so its prediction error feeds back into the next
+step. Most rungs are single-input/single-output; the quadruple tank is
+two-input/two-output, and nothing else about the setup changes at that width —
+one dataset, one evaluator, one score summed over the output channels.
 
 This is deliberately the only setup offered. The common alternative — supplying
 measured plant history as extra model inputs — turns identification into fitting
@@ -51,6 +53,69 @@ function of u(k) alone beats the fitted gain. Scoring below the floor is
 therefore not reachable without representing state. That single number separates
 dynamic identification from gain fitting.
 
+### The multi-channel form, and where it stops working
+
+For several inputs and outputs the same idea is `memoryless_floor(dataset)`: a
+static linear map fitted from every input at one step to every output at the
+next, which is exactly optimal for ISE. It reduces to the single gain when there
+is one channel each.
+
+It is a **weaker bar**, because two conditions that make the linear fit optimal
+are assumed rather than checked:
+
+* the controls must be independent, and
+* the plant's static relation must be linear.
+
+The tank breaks both. Its input is deliberately held for ten samples, so it is
+autocorrelated, and its level varies as the square of flow. Measured over seeds
+1–3 at 150 steps, 12 candidates and 20 generations, a search restricted to
+stateless operators reaches **0.62** of the floor on the minimum-phase setting
+and **0.31** on the non-minimum-phase one. A memoryless model therefore gets a
+third to two thirds of the way to the floor on this plant, so scoring below it
+does **not** demonstrate that state was used. The measurement is pinned by
+`tests/test_mimo_benchmark.py::MemorylessStrictnessTests`.
+
+### Where the closed form fails, search for the baseline
+
+`stateless_floor(dataset, …)` establishes the memoryless bar by search instead of
+by assumption: evolution is restricted to operators that carry no state, and the
+best score it reaches *is* the floor. Nothing is assumed about the plant, and the
+engine, dataset, criterion and time step are the ones the judged run used, so the
+two are comparable. Three independent seeds are searched and the best kept, which
+raises the bar and so errs toward *not* claiming dynamics.
+
+Each `Benchmark` says which bar applies through `linear_floor_is_strict`. Where
+it is `False` the report scripts take the **stricter of the two**, because a
+closed-form optimum is itself reachable without state and so remains a legitimate
+memoryless score — a search that fails to reach it is under-searched rather than
+reassuring. `--no-stateless-baseline` in `benchmark_report.py` falls back to the
+closed form; in `archive_search.py` the baseline is automatic for a benchmark
+that needs it and is requested explicitly with `--stateless-baseline` for
+`--dataset`, where no benchmark record exists to say so.
+
+Measured with the baseline defaults on every registered rung:
+
+| benchmark | closed form | memoryless search | ratio | criterion |
+|---|---|---|---|---|
+| `linear` | 9.1994 | 8.5724 | 0.93 | closed form |
+| `narendra` | 1.2603 | 1.2621 | 1.00 | closed form |
+| `tank-minphase` | 132.4007 | 81.8809 | 0.62 | **memoryless search** |
+| `tank-nonminphase` | 117.3226 | 36.8379 | 0.31 | **memoryless search** |
+
+Both numbers are in-sample on the same data, so this compares two estimators
+rather than measuring either against a held-out truth. That is what the small
+gaps mean: least squares is optimal among *linear* maps, but a flexible search
+can still fit its sample better, so a few percent below the closed form on an
+independent white-noise input is the search overfitting rather than the closed
+form having the wrong shape. Narendra's 1.00 is the control case, where the
+search finds nothing better at all. The tank's factor of two is not that.
+
+The change alters verdicts rather than decoration. On `tank-nonminphase` at 150
+steps, 20 generations and 12 candidates, the evolved model scores 358.8 — below
+the closed-form floor of 453.99, which the old criterion would have called
+dynamics identified, and well above the memoryless baseline of 181.24, which is
+the correct answer.
+
 ## The ladder
 
 ### Rung 1 — third-order linear (`benchmarks.linear`)
@@ -82,6 +147,39 @@ Parameter tuning alone cannot reach this. It needs a five-way product, a
 division, and three steps of output history, so it measures structural search
 rather than weight convergence.
 
+### Rung 3 — quadruple tank (`benchmarks.quadruple_tank`)
+
+Johansson's quadruple-tank process: two pumps, four tanks, two measured levels.
+Each pump reaches each measured level by two routes — one fast and direct, one
+slow and over the top — and the valve split decides which dominates. Outflow goes
+as the square root of level, so this is not a linear system wearing a MIMO shape.
+
+Two valve settings are registered:
+
+| benchmark | split | transmission zero | character |
+|---|---|---|---|
+| `tank-minphase` | g₁ + g₂ = 1.30 | left half plane | each output moves straight to where its pump drives it |
+| `tank-nonminphase` | g₁ + g₂ = 0.77 | right half plane | each output first moves *away* from where its pump drives it |
+
+The non-minimum-phase setting is the point of the rung. Its inverse response
+cannot be produced by a smoothed gain: it needs two routes with different delays,
+which is the structure identification is supposed to find.
+
+Neither setting has a reference graph. The linear and Narendra rungs have one
+that reproduces its plant to floating-point noise, and that is the strongest
+evidence available for those rungs; an exact tank model would need the
+square-root outflow fed back through an integrator. Until that exists the plant
+is evidenced by its own physics, which `tests/test_quadruple_tank.py` checks
+directly: the equilibrium is a fixed point, tank 3 drains exactly what pump 2
+routes over the top, integration has converged, and the non-minimum-phase
+configuration shows the inverse response its zero predicts.
+
+**No standing search result exists for this rung.** It is registered, tested, and
+reproducible from `scripts/make_mimo_dataset.py --plant tank-minphase` (or
+`tank-nonminphase`); it has not yet been measured. Its pass criterion is the
+memoryless search baseline rather than the closed-form floor — see "Where the
+closed form fails, search for the baseline" above.
+
 ## Standing results
 
 Both reference graphs reproduce their plant to floating-point noise (~1e-30 SSE)
@@ -92,6 +190,12 @@ that delay-based feedback is implemented correctly.
 |---|---|---|---|---|
 | Linear 3rd order | 40.93 | 9.20 | 0.02 – 0.70 | **solved** |
 | Narendra | 4.25 | 1.2603 | 1.2603 | **open** |
+
+The tank rungs are registered and tested but not yet measured, so they do not
+appear above. Their closed-form floors at the recorded settings — 300 steps,
+dt 3.0 — are 223.24 for `tank-minphase` and 188.86 for `tank-nonminphase`, but
+the criterion on those rungs is the memoryless search baseline rather than the
+form, and no run has been scored against that yet.
 
 **Rung 1 passes, and not the way the reference graph does it.** Evolution does
 not rediscover the delay chain. It converges instead on three cascaded

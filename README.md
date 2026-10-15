@@ -112,19 +112,25 @@ legacy Java reliability review and the explicit migration status of each idea.
 
 ## Benchmarks
 
-`ameba.benchmarks` provides single-input/single-output identification tasks. The
-model sees only `u(k)` and must carry its own state through delay nodes, so it
-has to represent the plant's dynamics rather than fit a static map. A model is
-credited only when it scores below the *memoryless floor*, the best result
-attainable by `y(k+1) = c·u(k)`, which is unreachable without state.
+`ameba.benchmarks` provides identification tasks. The model sees only `u(k)` and
+must carry its own state through delay nodes, so it has to represent the plant's
+dynamics rather than fit a static map. A model is credited only when it scores
+below the *memoryless floor*, the best result attainable without state, which
+static fitting cannot reach.
 
-Two rungs are provided: a third-order linear plant, and the Narendra–Parthasarathy
-nonlinear plant. Evolution currently solves the linear rung — converging on
-three cascaded low-pass sections rather than the reference delay chain — and
-stalls exactly at the memoryless floor on the nonlinear one.
+Three rungs are provided: a third-order linear plant, the Narendra–Parthasarathy
+nonlinear plant, and Johansson's quadruple tank as a two-input/two-output rung,
+registered twice as `tank-minphase` and `tank-nonminphase`. Evolution currently
+solves the linear rung — converging on three cascaded low-pass sections rather
+than the reference delay chain — and stalls exactly at the memoryless floor on
+the nonlinear one.
 
-See [docs/benchmarks.md](docs/benchmarks.md) for the plants, the pass criterion,
-and the standing results.
+The tank rungs are registered and tested but not yet measured. Their closed-form
+floor is not a valid pass criterion — the plant is nonlinear and its input is
+held, so a memoryless model reaches 0.31–0.62 of it — and each `Benchmark`
+records which rungs need the memoryless *search* baseline instead, which the
+report scripts then use. See [docs/benchmarks.md](docs/benchmarks.md) for the
+plants, the pass criterion, that measurement, and the standing results.
 
 A second search method, a behavioural archive, is provided alongside the
 population engine. It holds a fixed set of models that fail differently from one
@@ -139,6 +145,18 @@ python scripts/archive_search.py --benchmark narendra --batches 3000 --batch 16 
 
 See [docs/archive-search.md](docs/archive-search.md) for the measured settings
 and for the mechanisms that were tried and refuted.
+
+A third method, `ameba_genome`, is a research stage. It writes a model as a flat
+sequence of integer genes, each a key into a fixed, append-only gene
+dictionary. A total, deterministic decoder turns any such sequence into a valid
+graph, and a classical GA searches over the integers:
+
+```shell
+python scripts/genome_search.py --benchmark narendra --generations 2000 --population 100 --runs 4 --neutral-drift
+```
+
+See [docs/genome-encoding.md](docs/genome-encoding.md) for the encoding rules,
+the dictionary, and the first measurements.
 
 To run one and see what it found:
 

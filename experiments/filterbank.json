@@ -1,0 +1,119 @@
+{
+ "dir": "results/filterbank",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "octaves",
+  "--node-penalty",
+  "0.003"
+ ],
+ "title": "Filtrska banka",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Vhod, razdeljen na frekvenčne dele",
+ "lede": "Pred modelom je fiksna banka filtrov: model vidi surovi vhod u0 in šest izhodov filtrov u1–u6. Oktavna banka: pasovni filter drugega reda na vsako testno oktavo (u1 najnižji pas … u6 najvišji). Laguerrova banka: šest ortonormiranih Laguerrovih filtrov s polom 0,5 (u1 nizkoprepustni, u2–u6 vse bolj zakasnjeni). Obrat in spodnja meja vidita le u. Podatki in test kot pri preizkusu »Oktave«, kazen za velikost; izhodišče brez banke je iz tega preizkusa.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-hard",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}"
+   ],
+   "label": "trdi vozli · brez banke",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Endosimbioza + vsota z dosedanjimi operatorji; najboljša testna mediana doslej."
+  },
+  {
+   "key": "E-hard-oct",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "octaves"
+   ],
+   "label": "trdi vozli · oktavna banka",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "Endosimbioza + vsota z dosedanjimi operatorji; najboljša testna mediana doslej."
+  },
+  {
+   "key": "E-hard-lag",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "laguerre"
+   ],
+   "label": "trdi vozli · Laguerrova banka",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "Endosimbioza + vsota z dosedanjimi operatorji; najboljša testna mediana doslej."
+  },
+  {
+   "key": "E-mixed",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--kinds",
+    "soft,add"
+   ],
+   "label": "linearna hrbtenica + mehke nelinearnosti · brez banke",
+   "color": "var(--ref2)",
+   "dash": "2 3",
+   "desc": "Stanja in izhod smejo biti linearna (add, neomejena) ali mehka: poli linearnega dela so neomejeni in berljivi, nelinearnosti krotke."
+  },
+  {
+   "key": "E-mixed-oct",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--kinds",
+    "soft,add",
+    "--filterbank",
+    "octaves"
+   ],
+   "label": "linearna hrbtenica + mehke nelinearnosti · oktavna banka",
+   "color": "var(--s3)",
+   "dash": "",
+   "desc": "Stanja in izhod smejo biti linearna (add, neomejena) ali mehka: poli linearnega dela so neomejeni in berljivi, nelinearnosti krotke."
+  },
+  {
+   "key": "E-mixed-lag",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--kinds",
+    "soft,add",
+    "--filterbank",
+    "laguerre"
+   ],
+   "label": "linearna hrbtenica + mehke nelinearnosti · Laguerrova banka",
+   "color": "var(--s4)",
+   "dash": "",
+   "desc": "Stanja in izhod smejo biti linearna (add, neomejena) ali mehka: poli linearnega dela so neomejeni in berljivi, nelinearnosti krotke."
+  }
+ ],
+ "findings": "\n    <li><strong>Filtrska banka v tej obliki škodi.</strong> Testna napaka se poslabša pri obeh metodah in obeh bankah: trdi vozli 0,572× → 0,625× (oktavna) oziroma 0,724× (Laguerrova, p = 0,050); mešani 0,634× → 0,774× (oktavna) oziroma 0,767× (Laguerrova). Pas 4 se ne izboljša, ampak poslabša (0,90× → 1,03–1,09×, nad mejo).</li>\n    <li><strong>Poslabša se že učna napaka</strong> (trdi 0,620× → 0,725× in 0,818×; mešani 0,687× → 0,781× in 0,793×). Težava torej ni pretirano prileganje, ampak da iskanje z banko najde slabše modele.</li>\n    <li><strong>Verjetni razlogi:</strong> (1) model ima sedem vhodov namesto enega, zato je prostor iskanja večji in naključni viri pogosteje kažejo na filtrske izhode, ki posamič malo povedo; (2) izhodi ozkopasovnih filtrov so pri širokopasovnem vzbujanju majhni, uteži pa so omejene na ±2, zato jih model težko ojača; (3) filtri drugega reda se močno prekrivajo (ojačanje ~0,4 na sosednjih pasovih), zato pasovi niso čisto ločeni; (4) vzročni filtri vnesejo fazni zamik, ki ga mora model kompenzirati.</li>\n    <li><strong>Sklep:</strong> vnaprej razdeljen vhod sam po sebi ne olajša iskanja; prednost »dinamike zastonj« prevlada večji, manj usmerjen prostor iskanja. Če bi ideji dala še eno priložnost: manj filtrov samo okoli pasu 4, izhodi normirani na enotsko RMS, in uteži z večjim razponom.</li>\n"
+}

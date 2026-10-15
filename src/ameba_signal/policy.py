@@ -5,11 +5,11 @@ from __future__ import annotations
 import math
 from copy import deepcopy
 from random import Random
-from typing import Collection, Hashable, Sequence
+from typing import Collection, Hashable, Mapping, Sequence
 
 from ameba_graph import Edge, Graph, GraphError, Node
 
-from .operators import EVOLVABLE_OPERATORS, OPERATOR_ARITY
+from .operators import EVOLVABLE_OPERATORS, OPERATOR_ARITY, SOFT_OPERATORS
 from .stateful import CYCLE_BREAKER_KINDS, STATEFUL_KINDS, create_state
 
 _ParameterSpec = tuple[float, float, bool, float]
@@ -37,6 +37,54 @@ _NODE_PARAMETERS: dict[str, dict[str, _ParameterSpec]] = {
         "gain": (-10.0, 10.0, False, 1.0),
         "initial": (-10.0, 10.0, False, 0.0),
     },
+    **{kind: {"bias": (-10.0, 10.0, False, 0.0)} for kind in SOFT_OPERATORS},
+}
+
+
+def _parameters_by_name() -> dict[str, _ParameterSpec]:
+    """Index the per-kind parameter specs by name.
+
+    Names are shared across kinds wherever the meaning is shared -- ``initial``
+    on every stateful kind, ``alpha`` on both filters -- and each shared name
+    carries one range. An alphabet is therefore declared per *name*, so a
+    single declaration covers every kind that uses that parameter.
+    """
+    merged: dict[str, _ParameterSpec] = {}
+    for specs in _NODE_PARAMETERS.values():
+        for name, spec in specs.items():
+            existing = merged.get(name)
+            if existing is not None and existing[:3] != spec[:3]:
+                raise ValueError(
+                    f"Parameter {name!r} has conflicting limits across node kinds"
+                )
+            merged[name] = spec
+    return merged
+
+
+_NODE_PARAMETERS_BY_NAME = _parameters_by_name()
+
+#: A coarse alphabet for every signal parameter, for runs where a parameter is a
+#: symbol rather than a point on a continuum. Size is the whole point: with six
+#: weights a redraw lands on any given one time in five, which mutation and
+#: selection can search, while a continuum of values makes a redraw a lottery
+#: that almost never lands. ``initial`` and ``phase`` are single-valued because
+#: they are starting offsets rather than dynamics; leaving them free would add
+#: loci that a replacement can only disrupt.
+COARSE_ALLELES: dict[str, tuple[float | int, ...]] = {
+    "weight": (-2.0, -1.0, -0.5, 0.5, 1.0, 2.0),
+    "alpha": (0.1, 0.25, 0.5, 0.75, 0.9),
+    "initial": (0.0,),
+    "initial_input": (0.0,),
+    "gain": (-2.0, -1.0, 1.0, 2.0),
+    "value": (-1.0, 0.0, 1.0),
+    "phase": (0.0,),
+    "steps": (1, 2, 4, 8),
+    "time_step": (0.1, 1.0, 10.0),
+}
+
+#: The named alphabets ``--parameter-alphabet`` can select.
+PARAMETER_ALPHABETS: dict[str, dict[str, tuple[float | int, ...]]] = {
+    "coarse": COARSE_ALLELES,
 }
 
 
@@ -62,10 +110,18 @@ def interface_scaffold(inputs: int = 1, outputs: int = 1) -> Graph:
 class SignalGraphPolicy:
     """Interpretation rules supplied to the generic evolutionary layer."""
 
+    #: Parameter alphabet per name; empty means continuous values. Declared
+    #: here as well as set in ``__init__`` so an instance restored from state
+    #: that predates the field still resolves it. A policy crosses the
+    #: process-pool boundary as a pickle, and a worker that unpickles older
+    #: state has no such key in it.
+    alleles: Mapping[str, tuple[float | int, ...]] = {}
+
     def __init__(
         self,
         evolvable_kinds: tuple[str, ...] = EVOLVABLE_OPERATORS,
         weight_range: tuple[float, float] = (-2.0, 2.0),
+        alleles: Mapping[str, Sequence[float | int]] | None = None,
         required_kind_groups: Sequence[Collection[str]] = (),
         forbidden_kinds: Collection[str] = (),
     ) -> None:
@@ -76,6 +132,7 @@ class SignalGraphPolicy:
             raise ValueError("At least one evolvable signal operator is required")
         if weight_range[0] > weight_range[1]:
             raise ValueError("Invalid edge weight range")
+        alphabets = _validate_alleles(alleles, weight_range)
         groups = tuple(frozenset(group) for group in required_kind_groups)
         if any(not group for group in groups):
             raise ValueError("Required node-kind groups cannot be empty")
@@ -87,23 +144,28 @@ class SignalGraphPolicy:
             )
         self.evolvable_kinds = evolvable_kinds
         self.weight_range = weight_range
+        self.alleles = alphabets
         self.required_kind_groups = groups
         self.forbidden_kinds = frozenset(forbidden_kinds)
 
     def create_node(self, rng: Random) -> Node:
         kind = rng.choice(self.evolvable_kinds)
         attributes = {
-            name: _random_parameter(spec, rng)
+            name: self._draw(name, spec, rng)
             for name, spec in _NODE_PARAMETERS.get(kind, {}).items()
         }
         return Node("ignored", kind, attributes)
 
     def create_edge(self, source: str, target: str, rng: Random) -> Edge:
+        alphabet = self.alleles.get("weight")
+        weight = (
+            rng.uniform(*self.weight_range) if alphabet is None else rng.choice(alphabet)
+        )
         return Edge(
             "ignored",
             source,
             target,
-            {"weight": rng.uniform(*self.weight_range)},
+            {"weight": weight},
         )
 
     def can_connect(self, graph: Graph, source: str, target: str) -> bool:
@@ -188,12 +250,15 @@ class SignalGraphPolicy:
         name = rng.choice(mutable)
         lower, upper, integer, default = specs[name]
         current = float(node.attributes.get(name, default))
+        mutated = deepcopy(node)
+        if name in self.alleles:
+            mutated.attributes[name] = self._substitute(name, current, rng)
+            return mutated
         if integer:
             delta = rng.choice((-1, 1))
             value: float | int = int(_clamp(round(current) + delta, lower, upper))
         else:
             value = _clamp(current + rng.uniform(-0.1, 0.1) * (upper - lower), lower, upper)
-        mutated = deepcopy(node)
         mutated.attributes[name] = value
         return mutated
 
@@ -203,6 +268,9 @@ class SignalGraphPolicy:
         lower, upper = self.weight_range
         current = float(edge.attributes.get("weight", 1.0))
         mutated = deepcopy(edge)
+        if "weight" in self.alleles:
+            mutated.attributes["weight"] = self._substitute("weight", current, rng)
+            return mutated
         mutated.attributes["weight"] = _clamp(
             current + rng.uniform(-0.1, 0.1) * (upper - lower), lower, upper
         )
@@ -217,8 +285,13 @@ class SignalGraphPolicy:
             raise ValueError(f"Node kind {left.kind} has no crossable parameters")
         name = rng.choice(mutable)
         lower, upper, integer, default = specs[name]
-        value = (float(left.attributes.get(name, default)) + float(right.attributes.get(name, default))) / 2.0
+        left_value = float(left.attributes.get(name, default))
+        right_value = float(right.attributes.get(name, default))
         crossed = deepcopy(left)
+        if name in self.alleles:
+            crossed.attributes[name] = self._segregate(name, left_value, right_value, rng)
+            return crossed
+        value = (left_value + right_value) / 2.0
         crossed.attributes[name] = int(round(_clamp(value, lower, upper))) if integer else _clamp(value, lower, upper)
         return crossed
 
@@ -226,11 +299,52 @@ class SignalGraphPolicy:
         if "weight" in left.locked_attributes:
             raise ValueError("Edge weight is locked")
         crossed = deepcopy(left)
+        left_weight = float(left.attributes.get("weight", 1.0))
+        right_weight = float(right.attributes.get("weight", 1.0))
+        if "weight" in self.alleles:
+            crossed.attributes["weight"] = self._segregate(
+                "weight", left_weight, right_weight, rng
+            )
+            return crossed
         crossed.attributes["weight"] = _clamp(
-            (float(left.attributes.get("weight", 1.0)) + float(right.attributes.get("weight", 1.0))) / 2.0,
+            (left_weight + right_weight) / 2.0,
             *self.weight_range,
         )
         return crossed
+
+    def _draw(self, name: str, spec: _ParameterSpec, rng: Random) -> float | int:
+        """A fresh value for a new carrier: an allele, or the whole range."""
+        alphabet = self.alleles.get(name)
+        return _random_parameter(spec, rng) if alphabet is None else rng.choice(alphabet)
+
+    def _substitute(self, name: str, current: float | int, rng: Random) -> float | int:
+        """A different value from ``name``'s alphabet: a substitution.
+
+        Never the value already there, because a substitution that returns its
+        own allele is a wasted mutation. Unlike a nudge, which moves by a
+        tenth of the range, this redraws the locus from its alphabet.
+        """
+        alphabet = self.alleles[name]
+        alternatives = tuple(value for value in alphabet if value != current)
+        if not alternatives:
+            raise ValueError(f"Parameter alphabet {name!r} offers no alternative value")
+        return rng.choice(alternatives)
+
+    def _segregate(
+        self, name: str, left: float, right: float, rng: Random
+    ) -> float | int:
+        """Give the child one parent's value for ``name``, placed back on the alphabet.
+
+        Segregation rather than averaging: with a finite alphabet the midpoint
+        of two alleles is usually not an allele, and always rounding it the
+        same way makes the operator predictable instead of combinatorial. The
+        child therefore inherits, and only mutation can invent. A parent value
+        that is off the alphabet -- an imported graph, say -- is repaired onto
+        it rather than propagated.
+        """
+        chosen = rng.choice((left, right))
+        alphabet = self.alleles[name]
+        return min(alphabet, key=lambda allele: (abs(float(allele) - chosen), float(allele)))
 
     @staticmethod
     def requires_more_inputs(graph: Graph, node_id: str) -> bool:
@@ -318,6 +432,57 @@ class SignalGraphPolicy:
                 if graph.nodes[edge.target].kind not in CYCLE_BREAKER_KINDS
             )
         return False
+
+
+def _validate_alleles(
+    alleles: Mapping[str, Sequence[float | int]] | None,
+    weight_range: tuple[float, float],
+) -> dict[str, tuple[float | int, ...]]:
+    """Normalise a parameter alphabet into sorted, deduplicated tuples.
+
+    ``None`` keeps the continuous behaviour, where a value is drawn uniformly
+    over its range. Supplying an alphabet makes every created, mutated and
+    crossed value a choice between the listed values, so a parameter becomes a
+    symbol from a finite set rather than a point on a continuum -- which is
+    what makes replacing a carrier a sensible event rather than a lottery.
+
+    A value must already lie inside the parameter's own limits: an alphabet
+    narrows a range, it does not widen one. Membership is deliberately not
+    enforced on values already in a graph, so an imported model carrying an
+    off-alphabet weight still validates; the alphabet governs what search may
+    create, not what a loaded model may contain.
+    """
+    if alleles is None:
+        return {}
+    known = ", ".join(sorted({"weight"} | set(_NODE_PARAMETERS_BY_NAME)))
+    normalised: dict[str, tuple[float | int, ...]] = {}
+    for name, values in alleles.items():
+        if name == "weight":
+            lower, upper, integer = weight_range[0], weight_range[1], False
+        else:
+            spec = _NODE_PARAMETERS_BY_NAME.get(name)
+            if spec is None:
+                raise ValueError(
+                    f"Unknown parameter alphabet {name!r}; known parameters: {known}"
+                )
+            lower, upper, integer, _ = spec
+        entries = list(values)
+        if not entries:
+            raise ValueError(f"Parameter alphabet {name!r} cannot be empty")
+        cleaned: list[float | int] = []
+        for value in entries:
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ValueError(f"Parameter alphabet {name!r} must hold numbers")
+            numeric = float(value)
+            if not math.isfinite(numeric) or not lower <= numeric <= upper:
+                raise ValueError(
+                    f"Parameter alphabet {name!r} value {value!r} is outside {lower}..{upper}"
+                )
+            if integer and numeric != int(numeric):
+                raise ValueError(f"Parameter alphabet {name!r} must hold integers")
+            cleaned.append(int(numeric) if integer else numeric)
+        normalised[name] = tuple(sorted(set(cleaned)))
+    return normalised
 
 
 def _random_parameter(spec: _ParameterSpec, rng: Random) -> float | int:

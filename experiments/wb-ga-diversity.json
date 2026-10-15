@@ -1,0 +1,84 @@
+{
+ "dir": "results/wb-ga-diversity",
+ "benchmarks": [
+  "wood-berry"
+ ],
+ "seeds": 16,
+ "common": [
+  "--method",
+  "A-base",
+  "--generations",
+  "3000",
+  "--population",
+  "300",
+  "--steps",
+  "300",
+  "--hold",
+  "10"
+ ],
+ "title": "Wood–Berry GA: raznolikost",
+ "eyebrow": "AMEBA · nastavljanje GA · 2. korak",
+ "h1": "Ali ohranjanje raznolikosti prepreči zrušitev v klone",
+ "lede": "Kodiranje je zamrznjeno na A-base. Wood–Berryjeva kolona (2 vhoda, 2 izhoda, 300 korakov, vhod zadržan 10 vzorcev), populacija 300, 3000 generacij, 16 semen, nevtralni drift. Križanje enotočkovno; če je 1. korak pokazal boljše, ga zamenjaj v polju common.",
+ "cards_h2": "Načini ohranjanja raznolikosti",
+ "series": [
+  {
+   "key": "d-none",
+   "args": [],
+   "label": "brez",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Generacijski GA brez dodatkov. Kontrola."
+  },
+  {
+   "key": "d-clearing",
+   "args": [
+    "--clearing"
+   ],
+   "label": "odstranjevanje klonov",
+   "color": "var(--s1)",
+   "desc": "Kopije istega fenotipa se razvrstijo za vse različne modele."
+  },
+  {
+   "key": "d-islands",
+   "args": [
+    "--islands",
+    "6:50:2"
+   ],
+   "label": "otoki 6 × 50",
+   "color": "var(--s2)",
+   "desc": "6 otokov po 50 genomov v obroču; vsakih 50 generacij 2 najboljša k sosedu."
+  },
+  {
+   "key": "d-immigrants",
+   "args": [
+    "--immigrants",
+    "0.05"
+   ],
+   "label": "priseljenci 5 %",
+   "color": "var(--s3)",
+   "desc": "Vsako generacijo 5 % najslabših zamenjajo novi naključni genomi."
+  },
+  {
+   "key": "d-restart",
+   "args": [
+    "--restart",
+    "300:2"
+   ],
+   "label": "ponovni zagon",
+   "color": "var(--s4)",
+   "desc": "Po 300 generacijah brez izboljšanja ostaneta 2 najboljša, ostalo na novo."
+  },
+  {
+   "key": "d-islands-clearing",
+   "args": [
+    "--islands",
+    "6:50:2",
+    "--clearing"
+   ],
+   "label": "otoki + kloni",
+   "color": "var(--s5)",
+   "desc": "Otoki in odstranjevanje klonov skupaj."
+  }
+ ]
+}

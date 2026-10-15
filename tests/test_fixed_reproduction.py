@@ -7,6 +7,8 @@ from ameba_graph.crossover import (
     AlignedAttributeCrossover,
     CrossoverPortfolio,
     CrossoverError,
+    CrossEdgeAttributes,
+    CrossNodeAttributes,
     InducedSubgraphInsertionCrossover,
     TypedSubgraphReplacementCrossover,
     UniformGraphCrossover,
@@ -21,6 +23,7 @@ from ameba_graph.mutation import (
     MutationPortfolio,
     RemoveEdge,
     RemoveNodeBypass,
+    ReplaceEdge,
     ReplaceNode,
     SplitEdge,
 )
@@ -129,6 +132,22 @@ class FixedReproductionTests(unittest.TestCase):
         with self.assertRaises(MutationError):
             MoveEdgeSource().mutate(graph, self.policy, Random(2))
 
+    def test_a_moved_edge_carries_its_weight_to_the_new_endpoint(self) -> None:
+        graph = Graph(
+            nodes=[Node(name, "kind") for name in ("a", "b", "c", "d")],
+            edges=[Edge("e", "a", "b", {"weight": 3.5})],
+        )
+        moved_source = MoveEdgeSource().mutate(graph, self.policy, Random(2))
+        moved_target = MoveEdgeTarget().mutate(graph, self.policy, Random(2))
+        for moved, endpoint in ((moved_source, "source"), (moved_target, "target")):
+            with self.subTest(endpoint=endpoint):
+                edge = moved.edges["e"]
+                self.assertEqual(3.5, edge.attributes["weight"])
+                self.assertEqual("e", edge.id)
+        # The locus did move, so the two parents no longer share it.
+        self.assertNotEqual("a", moved_source.edges["e"].source)
+        self.assertNotEqual("b", moved_target.edges["e"].target)
+
     def test_node_replace_and_bypass_preserve_parent(self) -> None:
         graph = Graph(
             nodes=[Node("a", "kind"), Node("b", "old"), Node("c", "kind")],
@@ -171,6 +190,101 @@ class FixedReproductionTests(unittest.TestCase):
             self.assertIn("locked", child.edges)
             self.assertIn("a", child.nodes)
             self.assertIn("b", child.nodes)
+
+    def test_edge_replacement_redraws_the_weight_and_keeps_the_locus(self) -> None:
+        graph = Graph(
+            nodes=[Node(name, "kind") for name in ("a", "b")],
+            edges=[Edge("e", "a", "b", {"weight": 5.0})],
+        )
+        original = graph_dumps(graph)
+        replaced = ReplaceEdge().mutate(graph, self.policy, Random(11))
+        edge = replaced.edges["e"]
+        self.assertEqual(("e", "a", "b"), (edge.id, edge.source, edge.target))
+        self.assertNotEqual(5.0, edge.attributes["weight"])
+        self.assertTrue(0.0 <= edge.attributes["weight"] < 1.0)
+        self.assertEqual(original, graph_dumps(graph))
+
+    def test_edge_replacement_carries_locked_attributes_across(self) -> None:
+        graph = Graph(
+            nodes=[Node("a", "kind"), Node("b", "kind")],
+            edges=[
+                Edge(
+                    "e",
+                    "a",
+                    "b",
+                    {"weight": 1.0, "tag": 7.0},
+                    False,
+                    False,
+                    frozenset({"tag"}),
+                )
+            ],
+        )
+        replaced = ReplaceEdge().mutate(graph, self.policy, Random(5))
+        edge = replaced.edges["e"]
+        self.assertEqual(7.0, edge.attributes["tag"])
+        self.assertNotEqual(1.0, edge.attributes["weight"])
+
+    def test_edge_replacement_needs_a_replaceable_weight(self) -> None:
+        weight_locked = Graph(
+            nodes=[Node("a", "kind"), Node("b", "kind")],
+            edges=[
+                Edge("e", "a", "b", {"weight": 1.0}, False, False, frozenset({"weight"}))
+            ],
+        )
+        with self.assertRaises(MutationError):
+            ReplaceEdge().mutate(weight_locked, self.policy, Random(1))
+
+        # A locked endpoint does not block a replacement, because the locus
+        # does not move: only the weight is redrawn, and the lock carries over.
+        endpoint_locked = Graph(
+            nodes=[Node("a", "kind"), Node("b", "kind")],
+            edges=[Edge("e", "a", "b", {"weight": 1.0}, source_locked=True)],
+        )
+        replaced = ReplaceEdge().mutate(endpoint_locked, self.policy, Random(1))
+        self.assertNotEqual(1.0, replaced.edges["e"].attributes["weight"])
+        self.assertTrue(replaced.edges["e"].source_locked)
+
+    def test_dedicated_attribute_crossovers_touch_only_their_own_world(self) -> None:
+        node_left = Graph(nodes=[Node("a", "kind", {"value": 0.0})])
+        node_right = Graph(nodes=[Node("a", "kind", {"value": 10.0})])
+        node_before = (graph_dumps(node_left), graph_dumps(node_right))
+        node_child = CrossNodeAttributes().cross(
+            node_left, node_right, self.policy, Random(1)
+        )
+        self.assertEqual(5.0, node_child.nodes["a"].attributes["value"])
+        self.assertEqual(node_before, (graph_dumps(node_left), graph_dumps(node_right)))
+
+        edge_left = Graph(
+            nodes=[Node("a", "kind", {"value": 0.0}), Node("b", "kind")],
+            edges=[Edge("e", "a", "b", {"weight": 2.0})],
+        )
+        edge_right = Graph(
+            nodes=[Node("a", "kind", {"value": 10.0}), Node("b", "kind")],
+            edges=[Edge("e", "a", "b", {"weight": 6.0})],
+        )
+        edge_before = (graph_dumps(edge_left), graph_dumps(edge_right))
+        edge_child = CrossEdgeAttributes().cross(
+            edge_left, edge_right, self.policy, Random(1)
+        )
+        self.assertEqual(4.0, edge_child.edges["e"].attributes["weight"])
+        self.assertEqual(0.0, edge_child.nodes["a"].attributes["value"])
+        self.assertEqual(edge_before, (graph_dumps(edge_left), graph_dumps(edge_right)))
+
+    def test_edge_attribute_crossover_requires_the_same_endpoints(self) -> None:
+        left = Graph(
+            nodes=[Node(name, "kind") for name in ("a", "b", "c")],
+            edges=[Edge("e", "a", "b", {"weight": 2.0})],
+        )
+        rewired = left.copy()
+        rewired.edges["e"].target = "c"
+        with self.assertRaises(CrossoverError):
+            CrossEdgeAttributes().cross(left, rewired, self.policy, Random(1))
+
+    def test_node_attribute_crossover_requires_the_same_kind(self) -> None:
+        left = Graph(nodes=[Node("n", "kind", {"value": 0.0})])
+        right = Graph(nodes=[Node("n", "other", {"value": 10.0})])
+        with self.assertRaises(CrossoverError):
+            CrossNodeAttributes().cross(left, right, self.policy, Random(1))
 
     def test_portfolios_are_bounded_and_repeatable(self) -> None:
         graph = Graph(

@@ -1,0 +1,476 @@
+<title>/*TITLE*/</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: en stolpec laboratorijskega zapisa; preklop stopnje nad grafi, vsak graf ena mera, ena os */
+:root {
+  --bg: #f5f6f4; --surface: #fcfcfb; --fg: #1d2421; --muted: #5d6a64; --rule: #d8ddd9; --grid: #e7ebe8;
+  --accent: #2f6f5e;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #c98a00; --s5: #e87ba4; --s6: #4a3aa7; --ref1: #7d8782; --ref2: #1d2421;
+  --good: #2f7d4f; --same: #c9cfcc; --equal: #98a29d; --worse: #c77c12; --bad: #b2452f;
+  --display: "Newsreader", Georgia, "Times New Roman", serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141917; --surface: #1a1f1d; --fg: #e3e8e5; --muted: #9aa7a1; --rule: #2e3833; --grid: #252d29; --accent: #6cc1a6;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #9085e9; --ref1: #8d9893; --ref2: #e3e8e5;
+  --good: #6fcf94; --same: #3a443f; --equal: #5f6a65; --worse: #e0a24a; --bad: #f08b73; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #141917; --surface: #1a1f1d; --fg: #e3e8e5; --muted: #9aa7a1; --rule: #2e3833; --grid: #252d29; --accent: #6cc1a6;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #9085e9; --ref1: #8d9893; --ref2: #e3e8e5;
+  --good: #6fcf94; --same: #3a443f; --equal: #5f6a65; --worse: #e0a24a; --bad: #f08b73; color-scheme: dark }
+
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 20px; padding-block: 48px 72px; display: grid; gap: 52px; }
+section { display: grid; gap: 16px; min-width: 0; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 2.8rem); }
+h2 { font-size: 1.55rem; }
+h3 { font-size: 1.1rem; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 1.12rem; color: var(--muted); }
+.meta { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+code { font-family: var(--mono); font-size: 0.88em; }
+
+.methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.method { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.method .key { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-weight: 600; font-size: 0.9rem; }
+.swatch { width: 22px; height: 0; border-top: 3px solid var(--c); flex: none; }
+.swatch.dash { border-top-style: dashed; }
+.swatch.dot { border-top-style: dotted; }
+.method p { font-size: 0.93rem; }
+.mut { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); overflow-x: auto; white-space: nowrap; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); padding-block: 10px; z-index: 2; border-bottom: 1px solid var(--rule); }
+.controls span { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); margin-right: 4px; }
+.seg { font: 600 0.88rem var(--body); padding: 6px 14px; border: 1px solid var(--rule); background: var(--surface); color: var(--fg); border-radius: 6px; cursor: pointer; }
+.seg[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.seg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.85rem; }
+.legend .item { display: inline-flex; align-items: center; gap: 8px; }
+.chart { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 14px 8px; position: relative; overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.chart svg text { fill: var(--muted); font-family: var(--mono); font-size: 11px; }
+.chart .title { font-family: var(--body); font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
+.chart .sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 6px; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 8px 10px; font-size: 0.8rem; box-shadow: 0 4px 14px rgba(0,0,0,0.12); min-width: 170px; }
+.tip .row { display: flex; align-items: center; gap: 8px; justify-content: space-between; font-family: var(--mono); }
+.tip .row b { font-weight: 400; display: inline-flex; gap: 6px; align-items: center; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; }
+.grid2 > * { min-width: 0; }
+
+.tablewrap { overflow-x: auto; min-width: 0; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td { text-align: left; padding: 7px 12px 7px 0; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+th.num { text-align: right; }
+ul.plain { margin: 0; padding-left: 1.1em; display: grid; gap: 10px; max-width: 68ch; }
+.caption { font-size: 0.86rem; color: var(--muted); }
+@media (max-width: 560px) { .wrap { padding-inline: 16px; } .grid2 { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+<header style="display:grid;gap:14px">
+  <div class="eyebrow">/*EYEBROW*/</div>
+  <h1>/*H1*/</h1>
+  <p class="lede">/*LEDE*/</p>
+  <div class="meta" id="meta"></div>
+</header>
+
+<section>
+  <div class="eyebrow">Metode</div>
+  <h2>/*CARDS_H2*/</h2>
+  <div class="methods">/*CARDS*/</div>
+</section>
+
+<div class="controls" role="group" aria-label="Izbira stopnje">
+  <span>stopnja</span>
+  <button class="seg" type="button" id="btn-narendra" data-bench="narendra" aria-pressed="true">Narendra</button>
+  <button class="seg" type="button" id="btn-linear" data-bench="linear" aria-pressed="false">linearna</button>
+</div>
+
+<section>
+  <div class="eyebrow">Napredek</div>
+  <h2>Kako hitro pada rezultat</h2>
+  <div class="legend" id="legend"></div>
+  <div class="chart" id="c-best"></div>
+  <div class="chart" id="c-median"></div>
+  <p class="caption" id="cap-progress"></p>
+</section>
+
+<section>
+  <div class="eyebrow">Populacija</div>
+  <h2>Raznolikost in rast genomov</h2>
+  <div class="chart" id="c-unique"></div>
+  <div class="grid2">
+    <div class="chart" id="c-length"></div>
+    <div class="chart" id="c-nodes"></div>
+  </div>
+  <div class="chart" id="c-cap"></div>
+</section>
+
+<section>
+  <div class="eyebrow">Mutacije</div>
+  <h2>Kaj otroku naredi križanje in kaj mutacija</h2>
+  <p>»Otrok skupaj« primerja končnega otroka s prvim staršem. »Samo križanje« primerja križanca pred mutacijo s prvim staršem, le pri otrocih, ki so bili križani. »Samo mutacija« primerja otroka z genomom tik pred mutacijo. »Isti fenotip« pomeni, da se je spremenil le neizražen del.</p>
+  <div class="controls" style="position:static;border:0;padding:0" role="group" aria-label="Obdobje">
+    <span>obdobje</span>
+    <button class="seg" type="button" id="per-all" data-period="outcomes" aria-pressed="true">ves zagon</button>
+    <button class="seg" type="button" id="per-early" data-period="outcomesEarly" aria-pressed="false">prvih 10 %</button>
+    <button class="seg" type="button" id="per-late" data-period="outcomesLate" aria-pressed="false">druga polovica</button>
+  </div>
+  <div class="controls" style="position:static;border:0;padding:0" role="group" aria-label="Vir spremembe">
+    <span>vir</span>
+    <button class="seg" type="button" id="src-all" data-source="" aria-pressed="true">otrok skupaj</button>
+    <button class="seg" type="button" id="src-cross" data-source="crossover" aria-pressed="false">samo križanje</button>
+    <button class="seg" type="button" id="src-mut" data-source="mutation" aria-pressed="false">samo mutacija</button>
+  </div>
+  <div class="legend" id="legend-outcomes"></div>
+  <div class="chart" id="c-outcomes"></div>
+</section>
+
+<section>
+  <div class="eyebrow">Povzetek</div>
+  <h2>Stanje ob koncu</h2>
+  <div class="tablewrap"><table id="t-summary"></table></div>
+  <p class="caption">Razmerje je najboljši rezultat deljen s spodnjo mejo brez stanja; pod 1 pomeni, da model premaga statično ojačanje. »Pod mejo«, mediana in najboljše so na <strong>učnih</strong> podatkih. »Test« je povprečno razmerje na podatkih, ki jih iskanje ni nikoli videlo (nov šum, sinusoida, stopnice), za najboljši model po učni napaki in za model, izbran po validaciji; v oklepaju koliko zagonov je na testu pod mejo. Raznolikost je delež različnih fenotipov v populaciji.</p>
+</section>
+
+<section id="spectrum-section">
+  <div class="eyebrow">Spekter</div>
+  <h2>Napaka po frekvenčnih pasovih</h2>
+  <p>Vsak testni signal je multisinus v enem oktavnem pasu, z enakim vrhom (±1). Točka je mediana razmerja do spodnje meje pri modelih, izbranih po validaciji; pod 1 pomeni, da model v tem pasu premaga statično ojačanje. Vrednosti nad grafom so odrezane.</p>
+  <div class="legend" id="legend-spectrum"></div>
+  <div class="chart" id="c-spectrum"></div>
+</section>
+
+<section id="ts-section">
+  <div class="eyebrow">Odziv v času</div>
+  <h2>Pravi obrat in model, korak za korakom</h2>
+  <p>Odziv pravega obrata (polna črta) in modela (črtkano) na učnem šumu in na štirih testnih signalih, ki jih iskanje ni nikoli videlo. Za vsako kodiranje sta na voljo reprezentativni zagon (mediana testne napake) in najboljši. Pod grafi so enačbe prikazanega modela.</p>
+  <div class="controls" style="position:static;border:0;padding:0" role="group" aria-label="Kodiranje" id="ts-models"></div>
+  <div class="controls" style="position:static;border:0;padding:0" role="group" aria-label="Zagon">
+    <span>zagon</span>
+    <button class="seg" type="button" id="ts-median" data-run="median" aria-pressed="true">reprezentativni (mediana)</button>
+    <button class="seg" type="button" id="ts-best" data-run="best" aria-pressed="false">najboljši</button>
+  </div>
+  <div class="caption" id="ts-meta"></div>
+  <div id="ts-panels" style="display:grid;gap:14px"></div>
+  <div class="chart" style="padding:14px"><div class="title">Enačbe modela</div><pre id="ts-eq" style="margin:6px 0 0;font-family:var(--mono);font-size:12px;white-space:pre;overflow-x:auto"></pre></div>
+</section>
+
+<section>
+  <div class="eyebrow">Ugotovitve</div>
+  <h2>Kaj se dogaja</h2>
+  <ul class="plain" id="findings">
+    <li><strong>Na Narendri je A-base najzanesljivejša.</strong> 7 od 8 semen pod mejo, mediana 0,803×, najboljše 0,620×. Kontekstna referenca pri istem proračunu in enako velikih začetnih genomih: 4 od 8, mediana 0,952×, najboljše 0,730×. Slepa ±1 na prostem zaporedju (dense): 0 od 8.</li>
+    <li><strong>Mehanizem je ohranjena raznolikost.</strong> A-base drži 65–78 % različnih fenotipov ves zagon. Obe referenci in A-shuffle padeta na 2–4 % že v prvih ~10 % zagona. Kontekstna se na ~35 % vrne šele v semenih, ki pobegnejo s platoja.</li>
+    <li><strong>Mešanje sinonimov (A-shuffle) uniči prednost fiksne vloge.</strong> Ko ±1 da naključen simbol, ni več majhnih korakov, in populacija se zruši v klone kot pri slepih referencah: 3 od 8, raznolikost 3 %. Odloča lokalnost koraka, ne redundanca. Najboljši posamezen rezultat 0,513× je eno samo seme.</li>
+    <li><strong>Nizi (A-runs) so najbolj nevtralni:</strong> 95 % mutacij ne spremeni fenotipa. Iskanje je zato počasnejše, a je dalo najboljši rezultat z zanesljivostjo 6 od 8 (0,535×).</li>
+    <li><strong>Fine uteži (A-mixed) še izboljšujejo ob koncu.</strong> Delež mutacij, ki izboljšajo starša, je v drugi polovici zagona 2,8 %, pri ostalih pod 0,5 %. Krivulja ob generaciji 3000 še pada, zato bi verjetno pridobila z daljšim zagonom.</li>
+    <li><strong>Na linearni stopnji so reference natančnejše.</strong> Vse dosežejo 6 od 6, a mediana referenc je 0,005–0,007×, različic A pa 0,05–0,08×. Fiksni zapis z največ dvema viroma na vozel in 16 utežmi slabše fino nastavi lahek problem. A-mixed s finimi utežmi doseže najboljše 0,0005×.</li>
+    <li><strong>Popravek.</strong> V prejšnjem poročilu so reference začele z manjšimi naključnimi genomi (3–8 zapisov) kot A (3–10), zato so bile tam podcenjene. Tu so velikosti enake. Kontekstna se je s tem izboljšala z 0 od 8 na 4 od 8, kar kaže, kako občutljiv je pobeg na začetno stanje. Osem semen loči samo velike razlike.</li>
+
+  </ul>
+</section>
+
+
+</div>
+
+<script>
+const DATA = /*DATA*/null;
+const NS = "http://www.w3.org/2000/svg";
+const SERIES = DATA.series;
+const OUTCOMES = [
+  { key: "better", label: "boljši", color: "var(--good)" },
+  { key: "same", label: "isti fenotip", color: "var(--same)" },
+  { key: "equal", label: "enak rezultat", color: "var(--equal)" },
+  { key: "worse", label: "slabši", color: "var(--worse)" },
+  { key: "invalid", label: "neveljaven", color: "var(--bad)" },
+];
+let bench = DATA.default || "narendra", period = "outcomes", source = "";
+
+function el(parent, name, attrs, text) {
+  const n = document.createElementNS(NS, name);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (text !== undefined) n.textContent = text;
+  parent.appendChild(n);
+  return n;
+}
+const fmt = (v, d = 3) => v == null ? "—" : Number(v).toLocaleString("sl-SI", { maximumFractionDigits: d, minimumFractionDigits: 0 });
+
+function lineChart(id, title, sub, key, opts) {
+  const box = document.getElementById(id);
+  box.innerHTML = "";
+  const head = document.createElement("div"); head.className = "title"; head.textContent = title; box.appendChild(head);
+  const s = document.createElement("div"); s.className = "sub"; s.textContent = sub; box.appendChild(s);
+  const block = DATA[bench];
+  const series = SERIES.filter(m => block.methods[m.key]).map(m => ({ ...m, x: block.methods[m.key].x, y: block.methods[m.key][key] }));
+  const W = 760, H = opts.height || 260, L = 58, R = 16, T = 12, B = 34;
+  const svg = el(box, "svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": title });
+  const xs = series[0].x, xMax = xs[xs.length - 1];
+  const all = series.flatMap(m => m.y).filter(v => v != null && (!opts.log || v > 0));
+  let lo = opts.min != null ? opts.min : Math.min(...all), hi = opts.max != null ? opts.max : Math.max(...all);
+  if (opts.log) { lo = Math.log10(lo); hi = Math.log10(hi); const pad = (hi - lo) * 0.06 || 0.1; lo -= pad; hi += pad; }
+  else if (opts.min == null) { const pad = (hi - lo) * 0.08 || 1; lo = Math.max(0, lo - pad); hi += pad; }
+  if (!(hi > lo)) hi = lo + (opts.log ? 1 : (lo === 0 ? 0.01 : Math.abs(lo) * 0.1));
+  const fx = g => L + g / xMax * (W - L - R);
+  const fy = v => { const t = opts.log ? Math.log10(v) : v; return T + (1 - (t - lo) / (hi - lo)) * (H - T - B); };
+  // grid + y ticks
+  let ticks = [];
+  if (opts.log) {
+    for (let e = Math.floor(lo); e <= Math.ceil(hi); e++) for (const m of [1, 2, 5]) { const v = m * Math.pow(10, e); const t = Math.log10(v); if (t >= lo && t <= hi) ticks.push(v); }
+    if (ticks.length > 7) ticks = ticks.filter(v => Math.abs(Math.log10(v) % 1) < 1e-9 || ticks.length < 8);
+  } else { const step = (hi - lo) / 4; for (let i = 0; i <= 4; i++) ticks.push(lo + i * step); }
+  ticks.forEach(v => {
+    el(svg, "line", { x1: L, x2: W - R, y1: fy(v), y2: fy(v), stroke: "var(--grid)" });
+    el(svg, "text", { x: L - 8, y: fy(v) + 4, "text-anchor": "end" }, fmt(v, v < 0.01 ? 4 : 2));
+  });
+  [0, 0.25, 0.5, 0.75, 1].forEach(f => { const g = Math.round(xMax * f); el(svg, "text", { x: fx(g), y: H - 12, "text-anchor": "middle" }, String(g)); });
+  el(svg, "line", { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: "var(--rule)" });
+  if (opts.floor) {
+    el(svg, "line", { x1: L, x2: W - R, y1: fy(1), y2: fy(1), stroke: "var(--bad)", "stroke-dasharray": "4 3" });
+    el(svg, "text", { x: W - R - 4, y: fy(1) - 5, "text-anchor": "end" }, "spodnja meja");
+  }
+  series.forEach(m => {
+    const pts = m.x.map((g, i) => m.y[i] == null ? null : `${fx(g).toFixed(1)},${fy(m.y[i]).toFixed(1)}`).filter(Boolean).join(" ");
+    el(svg, "polyline", { points: pts, fill: "none", stroke: m.color, "stroke-width": 2, "stroke-dasharray": m.dash, "stroke-linejoin": "round" });
+  });
+  // hover
+  const cross = el(svg, "line", { x1: 0, x2: 0, y1: T, y2: H - B, stroke: "var(--muted)", "stroke-width": 1, visibility: "hidden" });
+  const dots = series.map(m => el(svg, "circle", { r: 4.5, fill: m.color, stroke: "var(--surface)", "stroke-width": 2, visibility: "hidden" }));
+  const tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; box.appendChild(tip);
+  const hit = el(svg, "rect", { x: L, y: T, width: W - L - R, height: H - T - B, fill: "transparent" });
+  hit.addEventListener("mousemove", ev => {
+    const r = svg.getBoundingClientRect();
+    const gx = (ev.clientX - r.left) / r.width * W;
+    let i = 0, best = Infinity;
+    xs.forEach((g, j) => { const d = Math.abs(fx(g) - gx); if (d < best) { best = d; i = j; } });
+    cross.setAttribute("x1", fx(xs[i])); cross.setAttribute("x2", fx(xs[i])); cross.setAttribute("visibility", "visible");
+    tip.innerHTML = `<div style="font-weight:700;margin-bottom:4px">generacija ${xs[i]}</div>` + series.map((m, k) => {
+      const v = m.y[i];
+      if (v != null) { dots[k].setAttribute("cx", fx(xs[i])); dots[k].setAttribute("cy", fy(v)); dots[k].setAttribute("visibility", "visible"); }
+      return `<div class="row"><b><span class="swatch${m.dash ? (m.dash === "6 4" ? " dash" : " dot") : ""}" style="--c:${m.color}"></span>${m.label}</b><span>${fmt(v, opts.digits || 4)}</span></div>`;
+    }).join("");
+    tip.hidden = false;
+    const bx = box.getBoundingClientRect();
+    let left = ev.clientX - bx.left + 14; if (left + 220 > bx.width) left = ev.clientX - bx.left - 230;
+    tip.style.left = Math.max(4, left) + "px"; tip.style.top = (ev.clientY - bx.top + 10) + "px";
+  });
+  hit.addEventListener("mouseleave", () => { tip.hidden = true; cross.setAttribute("visibility", "hidden"); dots.forEach(d => d.setAttribute("visibility", "hidden")); });
+}
+
+function legend() {
+  const box = document.getElementById("legend");
+  box.innerHTML = SERIES.filter(m => DATA[bench].methods[m.key]).map(m =>
+    `<span class="item"><span class="swatch${m.dash ? (m.dash === "6 4" ? " dash" : " dot") : ""}" style="--c:${m.color}"></span>${m.label}</span>`).join("");
+  document.getElementById("legend-outcomes").innerHTML = OUTCOMES.map(o =>
+    `<span class="item"><span style="width:12px;height:12px;border-radius:3px;background:${o.color};display:inline-block"></span>${o.label}</span>`).join("");
+}
+
+function outcomes() {
+  const box = document.getElementById("c-outcomes");
+  box.innerHTML = "";
+  const block = DATA[bench];
+  const rows = SERIES.filter(m => block.methods[m.key]);
+  const W = 760, rowH = 34, L = 150, R = 16, T = 8, H = T + rows.length * rowH + 26;
+  const svg = el(box, "svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Učinek mutacij po metodah" });
+  const fx = f => L + f * (W - L - R);
+  [0, 0.25, 0.5, 0.75, 1].forEach(f => { el(svg, "line", { x1: fx(f), x2: fx(f), y1: T, y2: H - 22, stroke: "var(--grid)" }); el(svg, "text", { x: fx(f), y: H - 6, "text-anchor": "middle" }, Math.round(f * 100) + " %"); });
+  const tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; box.appendChild(tip);
+  rows.forEach((m, i) => {
+    const y = T + i * rowH + 6, shares = block.methods[m.key][(source ? source + "_" : "") + period];
+    el(svg, "text", { x: L - 10, y: y + 15, "text-anchor": "end", style: "font-family:var(--body);font-size:12.5px;fill:var(--fg)" }, m.label);
+    let acc = 0;
+    OUTCOMES.forEach(o => {
+      const w = shares[o.key] * (W - L - R);
+      if (w > 0.5) {
+        const r = el(svg, "rect", { x: fx(acc) + 1, y, width: Math.max(0.5, w - 2), height: 22, rx: 3, fill: o.color });
+        r.addEventListener("mousemove", ev => {
+          const bx = box.getBoundingClientRect();
+          tip.innerHTML = `<div style="font-weight:700">${m.label}</div><div class="row"><b>${o.label}</b><span>${fmt(shares[o.key] * 100, 1)} %</span></div>`;
+          tip.hidden = false; tip.style.left = Math.min(bx.width - 200, ev.clientX - bx.left + 12) + "px"; tip.style.top = (ev.clientY - bx.top + 10) + "px";
+        });
+        r.addEventListener("mouseleave", () => { tip.hidden = true; });
+        if (shares[o.key] > 0.07) el(svg, "text", { x: fx(acc) + w / 2, y: y + 15, "text-anchor": "middle", style: `fill:${o.key === "same" || o.key === "equal" ? "var(--fg)" : "var(--surface)"};font-size:11px` }, Math.round(shares[o.key] * 100) + "%");
+      }
+      acc += shares[o.key];
+    });
+  });
+}
+
+function summary() {
+  const block = DATA[bench];
+  const rowsOf = DATA.table || SERIES;
+  const grouped = rowsOf.some(r => r.group);
+  const head = `<thead><tr><th>#</th><th>metoda</th>${grouped ? "<th>skupina</th>" : ""}<th class="num">pod mejo</th><th class="num">najboljše</th><th class="num">mediana</th><th class="num">raznolikost</th><th class="num">dolžina</th><th class="num">vozli</th><th class="num">simulacij</th><th class="num">čas / seme</th><th class="num">test · najboljši</th><th class="num">test · izbran</th></tr></thead>`;
+  const body = rowsOf.filter(m => block.methods[m.key]).map((m, i) => {
+    const s = block.methods[m.key].summary;
+    return `<tr><td class="num">${i + 1}</td><td>${m.label}</td>${grouped ? `<td>${m.group || ""}</td>` : ""}<td class="num">${s.below}/${s.seeds}</td><td class="num">${fmt(s.best, 4)}×</td><td class="num">${fmt(s.median, 4)}×</td><td class="num">${fmt(s.unique * 100, 0)} %</td><td class="num">${fmt(s.length, 0)}</td><td class="num">${fmt(s.nodes, 1)}</td><td class="num">${fmt(s.sims, 0)}</td><td class="num">${fmt(s.seconds, 0)} s</td><td class="num">${s.test == null ? "—" : fmt(s.test, 3) + "× (" + s.test_below + "/" + s.seeds + ")"}</td><td class="num">${s.test_selected == null ? "—" : fmt(s.test_selected, 3) + "× (" + s.test_selected_below + "/" + s.seeds + ")"}</td></tr>`;
+  }).join("");
+  document.getElementById("t-summary").innerHTML = head + `<tbody>${body}</tbody>`;
+  document.getElementById("meta").innerHTML =
+    `<span>${({"narendra": "Narendra", "linear": "linearna stopnja", "wood-berry": "Wood–Berryjeva kolona"})[bench] || bench}</span><span>${block.generations} generacij × ${block.population}</span><span>${Object.values(block.methods)[0].summary.seeds} semen na različico</span><span>ISE</span>`;
+  document.getElementById("cap-progress").textContent = `Mediana čez semena. Logaritemska os, razmerje do analitične spodnje meje.`;
+}
+
+
+function render() {
+  legend();
+  lineChart("c-best", "Najboljši v populaciji", "razmerje do spodnje meje, mediana čez semena", "best", { log: true, floor: true });
+  lineChart("c-median", "Mediana populacije", "razmerje do spodnje meje, mediana čez semena", "median", { log: true, floor: true });
+  lineChart("c-unique", "Raznolikost", "delež različnih fenotipov v populaciji", "unique", { min: 0, max: 1, digits: 2, height: 230 });
+  lineChart("c-length", "Dolžina genoma", "povprečno število genov", "length", { digits: 0, height: 230 });
+  lineChart("c-nodes", "Izraženi vozli", "povprečno na model", "nodes", { digits: 1, height: 230 });
+  lineChart("c-cap", "Otroci nad mejo velikosti", "delež otrok na generacijo, ki bi presegli mejo", "cap", { min: 0, digits: 3, height: 200 });
+  outcomes();
+  summary();
+}
+document.querySelectorAll("[data-bench]").forEach(b => b.addEventListener("click", () => {
+  bench = b.dataset.bench;
+  document.querySelectorAll("[data-bench]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  render();
+}));
+document.querySelectorAll("[data-source]").forEach(b => b.addEventListener("click", () => {
+  source = b.dataset.source;
+  document.querySelectorAll("[data-source]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  outcomes();
+}));
+document.querySelectorAll("[data-period]").forEach(b => b.addEventListener("click", () => {
+  period = b.dataset.period;
+  document.querySelectorAll("[data-period]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  outcomes();
+}));
+function spectrum() {
+  const section = document.getElementById("spectrum-section");
+  const block = DATA[bench];
+  const methods = SERIES.filter(m => block.methods[m.key] && block.methods[m.key].summary.test_by_signal);
+  const labels = methods.length ? Object.keys(methods[0] && block.methods[methods[0].key].summary.test_by_signal).filter(l => l.startsWith("band-")) : [];
+  if (!labels.length) { section.hidden = true; return; }
+  section.hidden = false;
+  document.getElementById("legend-spectrum").innerHTML = methods.map(m =>
+    `<span class="item"><span class="swatch${m.dash ? (m.dash === "6 4" ? " dash" : " dot") : ""}" style="--c:${m.color}"></span>${m.label}</span>`).join("");
+  const box = document.getElementById("c-spectrum"); box.innerHTML = "";
+  const head = document.createElement("div"); head.className = "title"; head.textContent = "Razmerje do spodnje meje po pasu"; box.appendChild(head);
+  const sub = document.createElement("div"); sub.className = "sub"; sub.textContent = "od skoraj statičnega (levo) do Nyquistove frekvence (desno)"; box.appendChild(sub);
+  const W = 760, H = 290, L = 52, R = 16, T = 12, B = 46;
+  const svg = el(box, "svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Napaka po frekvenčnih pasovih" });
+  const values = methods.flatMap(m => labels.map(l => block.methods[m.key].summary.test_by_signal[l])).filter(v => isFinite(v));
+  const hi = Math.min(3, Math.max(1.2, ...values) * 1.08), lo = 0;
+  const fx = i => L + (i + 0.5) / labels.length * (W - L - R);
+  const fy = v => T + (1 - (Math.min(hi, Math.max(lo, v)) - lo) / (hi - lo)) * (H - T - B);
+  for (let i = 0; i <= 5; i++) {
+    const v = lo + (hi - lo) * i / 5;
+    el(svg, "line", { x1: L, x2: W - R, y1: fy(v), y2: fy(v), stroke: "var(--grid)" });
+    el(svg, "text", { x: L - 8, y: fy(v) + 4, "text-anchor": "end" }, fmt(v, 2));
+  }
+  el(svg, "line", { x1: L, x2: W - R, y1: fy(1), y2: fy(1), stroke: "var(--bad)", "stroke-dasharray": "4 3" });
+  el(svg, "text", { x: W - R - 4, y: fy(1) - 5, "text-anchor": "end" }, "spodnja meja");
+  const names = ["0,004–0,01", "0,01–0,025", "0,025–0,06", "0,06–0,15", "0,15–0,3", "0,3–0,5"];
+  labels.forEach((l, i) => {
+    el(svg, "text", { x: fx(i), y: H - 26, "text-anchor": "middle" }, `pas ${i + 1}`);
+    el(svg, "text", { x: fx(i), y: H - 12, "text-anchor": "middle" }, names[i] || "");
+  });
+  const tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; box.appendChild(tip);
+  methods.forEach(m => {
+    const pts = labels.map((l, i) => [fx(i), fy(block.methods[m.key].summary.test_by_signal[l])]);
+    el(svg, "polyline", { points: pts.map(p => p.join(",")).join(" "), fill: "none", stroke: m.color, "stroke-width": 2, "stroke-dasharray": m.dash });
+    pts.forEach((p, i) => {
+      const value = block.methods[m.key].summary.test_by_signal[labels[i]];
+      const dot = el(svg, "circle", { cx: p[0], cy: p[1], r: 5, fill: m.color, stroke: "var(--surface)", "stroke-width": 2 });
+      dot.addEventListener("mousemove", ev => {
+        const bx = box.getBoundingClientRect();
+        tip.innerHTML = `<div style="font-weight:700">${m.label}</div><div class="row"><b>pas ${i + 1} (${names[i] || ""})</b><span>${isFinite(value) ? fmt(value, 3) + "×" : "podivja"}</span></div>`;
+        tip.hidden = false; tip.style.left = Math.min(bx.width - 230, ev.clientX - bx.left + 12) + "px"; tip.style.top = (ev.clientY - bx.top + 10) + "px";
+      });
+      dot.addEventListener("mouseleave", () => { tip.hidden = true; });
+    });
+  });
+}
+let tsKey = null, tsRun = "median";
+function tsRender() {
+  const TS = DATA.timeseries;
+  const section = document.getElementById("ts-section");
+  if (!TS) { section.hidden = true; return; }
+  const keys = SERIES.filter(m => TS.models[m.key]).map(m => m.key);
+  if (!tsKey || !TS.models[tsKey]) tsKey = keys[0];
+  const meta = SERIES.find(m => m.key === tsKey);
+  document.getElementById("ts-models").innerHTML = '<span>kodiranje</span>' + keys.map(k => {
+    const m = SERIES.find(x => x.key === k);
+    return `<button class="seg" type="button" id="ts-k-${k}" data-tskey="${k}" aria-pressed="${k === tsKey}">${m.label}</button>`;
+  }).join("");
+  document.querySelectorAll("[data-tskey]").forEach(b => b.addEventListener("click", () => { tsKey = b.dataset.tskey; tsRender(); }));
+  const model = TS.models[tsKey][tsRun];
+  document.getElementById("ts-meta").textContent =
+    `seme ${model.seed} · ${model.nodes} vozlov · povprečna testna napaka ${model.test_mean == null ? "model podivja" : fmt(model.test_mean, 3) + "× meja"}`;
+  document.getElementById("ts-eq").textContent = model.equations || "(enačbe niso shranjene)";
+  const panels = document.getElementById("ts-panels");
+  panels.innerHTML = "";
+  TS.signals.forEach((signal, i) => {
+    const out = model.outputs[i];
+    signal.plant.forEach((plant, c) => {
+      const box = document.createElement("div"); box.className = "chart"; panels.appendChild(box);
+      const ratio = signal.kind === "test" ? model.test[signal.label] : null;
+      const head = document.createElement("div"); head.className = "title";
+      head.textContent = signal.label + (signal.plant.length > 1 ? ` · izhod ${c}` : "") + (signal.kind === "train" ? " · učni" : " · test");
+      box.appendChild(head);
+      const sub = document.createElement("div"); sub.className = "sub";
+      sub.textContent = out == null ? "model na tem signalu podivja (simulacija se ustavi)" :
+        (ratio == null ? "" : `razmerje do spodnje meje ${fmt(ratio, 3)}×`);
+      box.appendChild(sub);
+      if (out == null) return;
+      tsChart(box, plant, out[c], meta.color, signal.label);
+    });
+  });
+}
+function tsChart(box, plant, model, color, label) {
+  const W = 760, H = 210, L = 46, R = 12, T = 10, B = 26, n = plant.length;
+  const all = plant.concat(model.filter(v => isFinite(v)));
+  let lo = Math.min(...plant), hi = Math.max(...plant);
+  const span = (hi - lo) || 1;
+  lo -= span * 0.6; hi += span * 0.6;  // room for a model that overshoots, clipped beyond
+  const svg = el(box, "svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": label });
+  const fx = k => L + k / (n - 1) * (W - L - R);
+  const fy = v => T + (1 - (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo)) * (H - T - B);
+  for (let i = 0; i <= 4; i++) {
+    const v = lo + (hi - lo) * i / 4;
+    el(svg, "line", { x1: L, x2: W - R, y1: fy(v), y2: fy(v), stroke: "var(--grid)" });
+    el(svg, "text", { x: L - 6, y: fy(v) + 4, "text-anchor": "end" }, fmt(v, 2));
+  }
+  [0, 0.25, 0.5, 0.75, 1].forEach(f => el(svg, "text", { x: fx(Math.round((n - 1) * f)), y: H - 8, "text-anchor": "middle" }, String(Math.round((n - 1) * f))));
+  const path = values => values.map((v, k) => `${fx(k).toFixed(1)},${fy(v).toFixed(1)}`).join(" ");
+  el(svg, "polyline", { points: path(plant), fill: "none", stroke: "var(--fg)", "stroke-width": 1.6 });
+  el(svg, "polyline", { points: path(model), fill: "none", stroke: color, "stroke-width": 1.6, "stroke-dasharray": "5 3" });
+  const cross = el(svg, "line", { x1: 0, x2: 0, y1: T, y2: H - B, stroke: "var(--muted)", visibility: "hidden" });
+  const tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; box.appendChild(tip);
+  const hit = el(svg, "rect", { x: L, y: T, width: W - L - R, height: H - T - B, fill: "transparent" });
+  hit.addEventListener("mousemove", ev => {
+    const r = svg.getBoundingClientRect();
+    const k = Math.max(0, Math.min(n - 1, Math.round(((ev.clientX - r.left) / r.width * W - L) / (W - L - R) * (n - 1))));
+    cross.setAttribute("x1", fx(k)); cross.setAttribute("x2", fx(k)); cross.setAttribute("visibility", "visible");
+    tip.innerHTML = `<div style="font-weight:700">korak ${k}</div><div class="row"><b>obrat</b><span>${fmt(plant[k], 4)}</span></div>` +
+      `<div class="row"><b>model</b><span>${fmt(model[k], 4)}</span></div><div class="row"><b>napaka</b><span>${fmt(model[k] - plant[k], 4)}</span></div>`;
+    tip.hidden = false;
+    const bx = box.getBoundingClientRect();
+    let left = ev.clientX - bx.left + 14; if (left + 190 > bx.width) left = ev.clientX - bx.left - 200;
+    tip.style.left = Math.max(4, left) + "px"; tip.style.top = (ev.clientY - bx.top + 10) + "px";
+  });
+  hit.addEventListener("mouseleave", () => { tip.hidden = true; cross.setAttribute("visibility", "hidden"); });
+}
+document.querySelectorAll("[data-run]").forEach(b => b.addEventListener("click", () => {
+  tsRun = b.dataset.run;
+  document.querySelectorAll("[data-run]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  tsRender();
+}));
+tsRender();
+spectrum();
+if (!DATA.linear) document.getElementById("btn-linear").hidden = true;
+if (!DATA.narendra) document.getElementById("btn-narendra").hidden = true;
+render();
+</script>

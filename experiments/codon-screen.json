@@ -1,0 +1,130 @@
+{
+ "dir": "results/codon-screen",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "1000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "octaves",
+  "--node-penalty",
+  "0.003"
+ ],
+ "title": "Start kodon: sito",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Zapisi, najdeni po start kodonu namesto po mestu",
+ "lede": "Prva stopnja: 12 semen × 1000 generacij. Kot v DNK se zapis začne s start kodonom in prebere naslednjih šest števil; vse drugo se preskoči. Tako so možne točkovne insercije in delecije (frameshift ostane lokalen), križanje lahko reže kjerkoli, geni pa se lahko rodijo iz neprebranih števil. Vse ostalo kot izhodišče: materinski mitohondrij, vhodi na koncu abecede, trdi vozli. Meja dolžine genoma je za kodonski zapis 233 namesto 200 (sedem števil na zapis namesto šest). Podatki in test kot pri »Oktave«.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-base",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}"
+   ],
+   "label": "fiksni zapisi (izhodišče)",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Zapisi po šest števil na fiksnih mestih; vstavljajo in brišejo se le celi zapisi. Zagoni prevzeti iz »Banke: sito«."
+  },
+  {
+   "key": "C-record",
+   "args": [
+    "--method",
+    "E-codon",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"codon\":{\"indels\":\"record\"}}"
+   ],
+   "label": "start kodon, celi zapisi",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "Vsak zapis se začne s start kodonom; vstavljajo in brišejo se celi zapisi kot v izhodišču. Loči učinek branja in križanja kjerkoli."
+  },
+  {
+   "key": "C-point",
+   "args": [
+    "--method",
+    "E-codon",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"codon\":{\"indels\":\"point\"}}"
+   ],
+   "label": "start kodon, točkovne indel",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "Vstavljajo in brišejo se posamezna števila: frameshift pokvari en ali dva zapisa, nato se branje poravna."
+  },
+  {
+   "key": "C-both",
+   "args": [
+    "--method",
+    "E-codon",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"codon\":{\"indels\":\"both\"}}"
+   ],
+   "label": "start kodon, oboje",
+   "color": "var(--s3)",
+   "dash": "",
+   "desc": "Točkovne in zapisne insercije/delecije, pol-pol."
+  },
+  {
+   "key": "C-record-junk",
+   "args": [
+    "--method",
+    "E-codon",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"codon\":{\"indels\":\"record\",\"junk\":3}}"
+   ],
+   "label": "celi zapisi + introni",
+   "color": "var(--s4)",
+   "dash": "2 3",
+   "desc": "Kot »celi zapisi«, a začetni genomi imajo pred vsakim zapisom 0–3 neprebrana števila."
+  },
+  {
+   "key": "C-point-junk",
+   "args": [
+    "--method",
+    "E-codon",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"codon\":{\"indels\":\"point\",\"junk\":3}}"
+   ],
+   "label": "točkovne indel + introni",
+   "color": "var(--s5)",
+   "dash": "2 3",
+   "desc": "Kot »točkovne indel«, z 0–3 neprebranimi števili pred vsakim zapisom: iz njih se lahko rodijo novi geni."
+  },
+  {
+   "key": "C-both-junk",
+   "args": [
+    "--method",
+    "E-codon",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"codon\":{\"indels\":\"both\",\"junk\":3}}"
+   ],
+   "label": "oboje + introni",
+   "color": "var(--s6)",
+   "dash": "2 3",
+   "desc": "Oboje, z introni."
+  },
+  {
+   "key": "C-point-junk-a64",
+   "args": [
+    "--method",
+    "E-codon",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"codon\":{\"indels\":\"point\",\"junk\":3,\"alphabet\":64}}"
+   ],
+   "label": "točkovne indel + introni, abeceda 64",
+   "color": "var(--ref2)",
+   "dash": "2 3",
+   "desc": "Abeceda 64 namesto 32: start kodon je v naključnih številih pol redkejši, geni se rojevajo redkeje."
+  }
+ ]
+}

@@ -13,13 +13,18 @@ from random import Random
 from ameba.benchmarks import memoryless_floor
 from ameba.benchmarks.quadruple_tank import (
     GRAVITY,
+    HOLD,
     MINIMUM_PHASE,
     NON_MINIMUM_PHASE,
+    TIME_STEP,
+    TRAJECTORIES,
     TankParameters,
     derivatives,
     equilibrium,
     excitation,
     identification_dataset,
+    minimum_phase_trajectory,
+    non_minimum_phase_trajectory,
     simulate,
 )
 
@@ -157,6 +162,48 @@ class IdentificationDatasetTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             TankParameters((28.0, 32.0, 28.0, -1.0), (0.071, 0.057, 0.071, 0.057),
                            (3.33, 3.35), (0.7, 0.6), (3.0, 3.0))
+
+
+class RegisteredTrajectoryTests(unittest.TestCase):
+    """The benchmark-facing builders, which the report scripts select by name."""
+
+    def test_both_variants_are_registered(self) -> None:
+        self.assertEqual(
+            sorted(TRAJECTORIES), ["tank-minphase", "tank-nonminphase"]
+        )
+
+    def test_a_trajectory_carries_the_same_response_as_the_plant(self) -> None:
+        controls = excitation(40, Random(3))
+        self.assertEqual(
+            minimum_phase_trajectory(controls).responses,
+            simulate(controls, MINIMUM_PHASE, TIME_STEP),
+        )
+        self.assertEqual(
+            non_minimum_phase_trajectory(controls).responses,
+            simulate(controls, NON_MINIMUM_PHASE, TIME_STEP),
+        )
+
+    def test_the_two_variants_are_not_the_same_plant(self) -> None:
+        controls = excitation(40, Random(3))
+        self.assertNotEqual(
+            minimum_phase_trajectory(controls).responses,
+            non_minimum_phase_trajectory(controls).responses,
+        )
+
+    def test_the_default_dataset_is_the_one_committed_to_examples(self) -> None:
+        """The defaults are the settings ``examples/tank-*.dataset.json`` holds.
+
+        Regenerating those files is only meaningful while these agree, so the
+        hold, the amplitude, and the sample time are all pinned through them.
+        """
+        data = identification_dataset()
+        expected = excitation(300, Random(7), 0.5, HOLD)
+        self.assertEqual(len(data.inputs), 300)
+        self.assertEqual(data.inputs, expected)
+        # One step is independent of later ones, so replaying the first input
+        # from rest must reproduce the first recorded response exactly.
+        self.assertEqual(data.outputs[0], simulate(data.inputs[:1], MINIMUM_PHASE)[0])
+        self.assertEqual((TIME_STEP, HOLD), (3.0, 10))
 
 
 if __name__ == "__main__":

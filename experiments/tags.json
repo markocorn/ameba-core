@@ -1,0 +1,78 @@
+{
+ "dir": "results/tags",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 24,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "octaves",
+  "--node-penalty",
+  "0.003"
+ ],
+ "title": "Oznake: potrditev",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Naslavljanje po oznakah: potrditev s 24 semeni",
+ "lede": "Druga stopnja po »Oznake: sito«. Vsak zapis nosi oznako, vir se veže na zapis z najbližjo oznako; izguba ali rojstvo zapisa tako ne prevrže ostalih povezav. V situ so bile oznake vsaj enako dobre kot položaji, s 32 oznakami najboljše, populacija pa je bila opazno bolj raznolika. 24 semen × 2000 generacij; materinski mitohondrij, vhodi na koncu abecede, trdi vozli, podatki in test kot pri »Oktave«.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-maternal",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}"
+   ],
+   "label": "položaji (izhodišče)",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Viri naslavljajo po položaju. Zagoni prevzeti iz »Podvajanje genov« (enake nastavitve, 24 semen × 2000 generacij)."
+  },
+  {
+   "key": "T-16",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":16}"
+   ],
+   "label": "oznake (16)",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "Vir se veže na zapis z najbližjo oznako 0–15."
+  },
+  {
+   "key": "T-32",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}"
+   ],
+   "label": "oznake (32)",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "Najboljša različica sita: oznake 0–31."
+  },
+  {
+   "key": "T-64",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":64}"
+   ],
+   "label": "oznake (64)",
+   "color": "var(--s3)",
+   "dash": "",
+   "desc": "V situ je bilo z več oznakami vedno bolje (8 → 16 → 32): ali trend drži."
+  }
+ ]
+}

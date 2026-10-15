@@ -1,0 +1,78 @@
+{
+ "dir": "results/two-genomes",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 8,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "octaves",
+  "--node-penalty",
+  "0.003"
+ ],
+ "title": "Dva genoma",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Jedro in mitohondrij: ločeno dedovanje kromosomov",
+ "lede": "Kromosom izhoda je jedrna DNK, kromosom stanj mitohondrijska. Primerjamo, ali je bolje, da se mitohondrij deduje cel od matere (kot v naravi), in ali pomaga, da mutira hitreje. Trdi vozli, vhodi na koncu abecede, podatki in test kot pri »Oktave«, 8 semen.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-mixed",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\"}"
+   ],
+   "label": "obe zmešani (kot doslej)",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Izhodišče: pri križanju se režeta oba kromosoma. Vhodi na koncu abecede, nevtralno."
+  },
+  {
+   "key": "E-maternal",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}"
+   ],
+   "label": "materinski mitohondrij",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "Jedro (izhodni kromosom) se rekombinira, stanja (mitohondrij) otrok dobi cela od matere."
+  },
+  {
+   "key": "E-maternal-fast",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"state_rate\":3.0}"
+   ],
+   "label": "materinski + hitrejši mitohondrij",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "Kot materinski, a mesta stanj točkovno mutirajo 3-krat pogosteje kot mesta jedra."
+  },
+  {
+   "key": "E-mixed-fast",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"state_rate\":3.0}"
+   ],
+   "label": "zmešani + hitrejši mitohondrij",
+   "color": "var(--s3)",
+   "dash": "2 3",
+   "desc": "Samo hitrejše mutiranje stanj, križanje kot doslej: loči učinek hitrosti od dedovanja."
+  }
+ ]
+}

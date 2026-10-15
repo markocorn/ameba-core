@@ -33,6 +33,17 @@ COVERED = {
     "sqrt",
     "square",
     "tanh",
+    "soft_lin",
+    "soft_mul",
+    "soft_sq",
+    "soft_bump",
+    "soft_exp",
+    "soft_log",
+    "soft_alog",
+    "soft_sqrt",
+    "soft_asqrt",
+    "soft_sin",
+    "soft_abs",
 }
 
 
@@ -334,6 +345,61 @@ class StatefulOperatorSignalTests(unittest.TestCase):
 
         self.assertLess(_rms(_difference(low[window], slow_reference)), 0.25)
         self.assertLess(_rms(_difference(high[window], fast_reference)), 0.25)
+
+
+class SoftOperatorTests(unittest.TestCase):
+    """The soft family: each behaves like its namesake near zero, stays within
+    +-1 everywhere, and is shifted by its bias."""
+
+    SHAPES = {
+        "soft_lin": lambda z: math.tanh(z),
+        "soft_sq": lambda z: z * z / (1 + z * z),
+        "soft_bump": lambda z: 1 / (1 + z * z),
+        "soft_exp": lambda z: math.tanh(math.expm1(z)),
+        "soft_log": lambda z: math.tanh(math.copysign(math.log1p(abs(z)), z)),
+        "soft_alog": lambda z: math.tanh(math.log1p(abs(z))),
+        "soft_sqrt": lambda z: math.tanh(math.copysign(math.sqrt(1 + abs(z)) - 1, z)),
+        "soft_asqrt": lambda z: math.tanh(math.sqrt(1 + abs(z)) - 1),
+        "soft_sin": lambda z: math.sin(z),
+        "soft_abs": lambda z: math.tanh(abs(z)),
+    }
+
+    def test_each_shape_matches_its_formula_through_the_simulator(self) -> None:
+        signal = [-3.0, -0.4, 0.0, 0.25, 2.0]
+        for kind, shape in self.SHAPES.items():
+            got = drive(unary(kind, {"bias": 0.0}), signal)
+            for value, z in zip(got, signal):
+                self.assertAlmostEqual(shape(z), value, places=12, msg=kind)
+
+    def test_bias_shifts_the_shape(self) -> None:
+        for kind, shape in self.SHAPES.items():
+            (value,) = drive(unary(kind, {"bias": 0.5}), [0.25])
+            self.assertAlmostEqual(shape(0.75), value, places=12, msg=kind)
+
+    def test_every_soft_kind_stays_within_one_for_any_input(self) -> None:
+        signal = [-1e6, -50.0, -1.0, 0.0, 1.0, 50.0, 1e6]
+        for kind in [*self.SHAPES, "soft_mul"]:
+            for value in drive(unary(kind, {"bias": 1.5}), signal):
+                self.assertTrue(math.isfinite(value) and -1.0 <= value <= 1.0, kind)
+
+    def test_soft_mul_is_a_squashed_product(self) -> None:
+        graph = Graph(
+            nodes=[
+                Node("a", "input", {"index": 0}),
+                Node("b", "input", {"index": 1}),
+                Node("op", "soft_mul", {"bias": 0.0}),
+                Node("out", "output", {"index": 0}),
+            ],
+            edges=[Edge("e1", "a", "op"), Edge("e2", "b", "op"), Edge("e3", "op", "out")],
+        )
+        ((value,),) = SignalSimulator().run_series(graph, [(0.5, -0.8)])
+        self.assertAlmostEqual(math.tanh(-0.4), value, places=12)
+
+    def test_square_and_root_shapes_match_their_namesakes_near_zero(self) -> None:
+        (sq,) = drive(unary("soft_sq", {"bias": 0.0}), [0.01])
+        (root,) = drive(unary("soft_sqrt", {"bias": 0.0}), [0.01])
+        self.assertAlmostEqual(0.0001, sq, places=7)  # z^2 for small z
+        self.assertAlmostEqual(0.005, root, places=4)  # ~z/2 for small z: no cusp
 
 
 class RegistryCoverageTests(unittest.TestCase):

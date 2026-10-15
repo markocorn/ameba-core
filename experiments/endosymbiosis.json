@@ -1,0 +1,80 @@
+{
+ "dir": "results/endosymbiosis",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "3000",
+  "--population",
+  "300",
+  "--progress",
+  "100"
+ ],
+ "title": "Endosimbioza",
+ "eyebrow": "AMEBA · razvoj genoma · Narendra",
+ "h1": "Ločitev stanja in izhoda: dva kromosoma v enem genomu",
+ "lede": "Genom v prostoru stanj: kromosom stanj (vsak vozel zakasnjen za en korak, poljubne zanke, povratna zanka izhoda je en vir) in kromosom izhoda (takojšen, brez zank). Zapisi, abecede, mutacije in GA so enaki kot pri A-base; razlikuje se samo graf, ki ga zapisi zgradijo. Pravi Narendrin model je v tem kodiranju zapisljiv s 111 geni in ga simulator reproducira do 10⁻³¹. Narendra, populacija 300, 3000 generacij, 12 semen.",
+ "cards_h2": "Kodiranja",
+ "series": [
+  {
+   "key": "E-statespace",
+   "args": [
+    "--method",
+    "E-statespace"
+   ],
+   "label": "endosimbioza",
+   "color": "var(--s1)",
+   "desc": "Kromosom stanj in kromosom izhoda; enotočkovno križanje znotraj vsakega kromosoma."
+  },
+  {
+   "key": "E-organelle",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--crossover",
+    "organelle"
+   ],
+   "label": "endosimbioza + prenos organela",
+   "color": "var(--s2)",
+   "desc": "Križanje vzame kromosom stanj enega starša in kromosom izhoda drugega."
+  },
+  {
+   "key": "A-base",
+   "args": [
+    "--method",
+    "A-base"
+   ],
+   "label": "ref · A-base",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Dosedanja fiksna vloga: en graf, zakasnitve so posebni vozli."
+  },
+  {
+   "key": "s-outsum",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"output_sources\":2}"
+   ],
+   "label": "ref · izhod vsota",
+   "color": "var(--s3)",
+   "desc": "Najmočnejša lastnost z vikenda: izhod sešteje dva vira (48/48 pod mejo)."
+  },
+  {
+   "key": "n-tag-sum",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"addressing\":\"tag\",\"output_sources\":2}"
+   ],
+   "label": "ref · vezava + vsota",
+   "color": "var(--s4)",
+   "desc": "Najboljši posamezen model z vikenda (0,265×): vezava po oznakah in izhod kot vsota."
+  }
+ ],
+ "findings": "\n    <li><strong>Endosimbioza zanesljivo zapusti plato:</strong> 12 od 12 semen pod mejo, A-base 7 od 12 (Fisherjev test p = 0,037). Mediana pa ostane enaka (0,848× proti 0,849×). Ločitev stanja in izhoda torej pomaga priti s platoja, ne pa priti dlje.</li>\n    <li><strong>Povratna zanka izhoda se zdaj pojavi.</strong> V 5 od 12 najboljših modelov stanje bere vozel, ki napaja izhod (npr. <code>x7(k) = |−2·h23(k−1)|</code>, kjer je h23 izhod). Pri dosedanjih kodiranjih tega nismo videli nikoli. Kodiranje je naredilo zanko dosegljivo; iskanje pa je še ne izkoristi tako kot pravi model.</li>\n    <li><strong>Prenos organela škodi:</strong> 7 od 12 (p = 0,037 proti navadni endosimbiozi), raznolikost pade na 19 %. Stanja enega starša in izhod drugega se ne ujemata, ker izhod »ve«, kaj pomeni vsako stanje: tesna sklopljenost, kot sva pričakovala pri pravi simbiozi.</li>\n    <li><strong>Izhod kot vsota ostaja najmočnejši:</strong> mediani 0,762× in 0,782× proti 0,848× endosimbioze. Najboljši posamezen model endosimbioze je 0,363×, z vikenda 0,265×.</li>\n    <li><strong>Ločitev ni čista.</strong> Kromosom izhoda lahko vsebuje vozle s stanjem (filtri, integral, zakasnitve), zato se dinamika »pretaka« v izhodni del: najboljši model ima v izhodu verigo desetih nizkoprepustnih filtrov. Modeli zato še niso berljivi v obliki stanje + izhod.</li>\n    <li><strong>Naslednji koraki:</strong> (1) v kromosomu izhoda dovoliti samo vozle brez stanja, da je vsa dinamika v stanjih; (2) združiti endosimbiozo z izhodom kot vsoto; (3) dodati majhno kazen za velikost, da modeli ostanejo kratki in berljivi.</li>\n"
+}

@@ -1,0 +1,115 @@
+{
+ "dir": "results/input-control",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "octaves",
+  "--node-penalty",
+  "0.003"
+ ],
+ "title": "Kontrola vhodov",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Ali škodi informacija ali le dodaten vhod",
+ "lede": "Kontrola za preizkus »Filtrska banka 2«, kjer je že en sam dodaten filter poslabšal učno napako. Tu dobi model dodatne vhode brez informacije (ničle ali neodvisen šum). Če tudi ti poslabšajo učenje, je vzrok v kodiranju (dodaten vhod zamakne abecedo virov v genomu), ne v banki. Trdi vozli, podatki in test kot pri »Oktave«, 12 semen.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-hard",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}"
+   ],
+   "label": "brez dodatnih vhodov",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Izhodišče iz preizkusa »Oktave«."
+  },
+  {
+   "key": "E-hard-zero1",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "dummy:zero:1"
+   ],
+   "label": "+1 ničelni vhod",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "En dodaten vhod, ki je vedno 0: nobene informacije, nobenega signala."
+  },
+  {
+   "key": "E-hard-noise1",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "dummy:noise:1"
+   ],
+   "label": "+1 naključni vhod",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "En dodaten vhod z neodvisnim naključnim šumom: signal brez informacije o obratu."
+  },
+  {
+   "key": "E-hard-zero6",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "dummy:zero:6"
+   ],
+   "label": "+6 ničelnih vhodov",
+   "color": "var(--s3)",
+   "dash": "",
+   "desc": "Šest ničelnih vhodov, toliko kot ima oktavna banka."
+  },
+  {
+   "key": "E-hard-b4",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "bands:4:4:norm"
+   ],
+   "label": "+1 informativni vhod (filter pasu 4)",
+   "color": "var(--ref2)",
+   "dash": "2 3",
+   "desc": "En sam filter na pasu, kjer so modeli najslabši."
+  },
+  {
+   "key": "E-hard-norm2",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--filterbank",
+    "bands:2:1,2,3,4,5,6:norm"
+   ],
+   "label": "+6 informativnih vhodov (normirana banka)",
+   "color": "var(--s4)",
+   "dash": "2 3",
+   "desc": "Kot prejšnja, a vsak izhod normiran na RMS vhoda pri belem šumu."
+  }
+ ],
+ "findings": "\n    <li><strong>Že dodaten vhod brez informacije poslabša iskanje približno tako kot filtri.</strong> En ničelni vhod: učna napaka 0,620× → 0,800× (p = 0,073), test 0,572× → 0,694× (p = 0,050), pas 4 0,91× → 1,13×. Šest ničelnih vhodov: 0,759× in 0,684×. Naključni vhod: 0,738× in 0,655×. Informativni filtri so v istem razponu (učno 0,75–0,86×, test 0,66–0,74×).</li>\n    <li><strong>Končni modeli dodatnega vhoda sploh ne uporabljajo:</strong> v 0 od 12 modelov z ničelnim ali naključnim vhodom ni povezave z njim (pri šestih ničelnih v 1 od 12). Škoda torej ne pride iz signala, ampak iz tega, kako dodaten vhod spremeni genom in iskanje.</li>\n    <li><strong>Vzrok je v kodiranju virov.</strong> V genomu so vhodi kodirani pred stanji (koda 0 = u0, 1 = u1, nato stanja). Dodaten vhod (a) zamakne vse kode stanj, zato mutacija ±1 iz u0 ne vodi več na stanje x0, ampak na nekoristen vhod; (b) pri naključnih začetnih genomih se verjetnost »vhod« razdeli med vse vhode, zato surovi u dobi manj povezav. Posamezne razlike so mejno značilne (p = 0,05–0,07), a vseh pet različic z dodatnimi vhodi gre v isto smer.</li>\n    <li><strong>Posledica:</strong> filtrske banke v prejšnjih preizkusih niso bile primerjane pošteno, ker je bila njihova morebitna korist prekrita z učinkom kodiranja. Informativni filtri niso bistveno slabši od ničelnih vhodov, torej njihova informacija verjetno ne škodi, koristi pa ni bilo mogoče videti. To velja tudi za MIMO sisteme z več vhodi.</li>\n    <li><strong>Predlagani popravek:</strong> kodiranje virov, neobčutljivo na število vhodov: stanja in izhodi na fiksnih kodah, vhodi na koncu abecede (dodaten vhod ne zamakne ničesar), pri naključnih genomih pa najprej izbira vrste vira (vhod, stanje, izhod) in šele nato kateri. Nato ponoviti kontrolo in banke.</li>\n"
+}

@@ -116,6 +116,85 @@ class AlignedAttributeCrossover:
         raise CrossoverError("No aligned attributes can be crossed under the graph policy")
 
 
+class CrossNodeAttributes:
+    """Average parameters across parents that share a node identity.
+
+    The node half of ``AlignedAttributeCrossover``, available on its own so a
+    search can choose how often parameters are crossed separately from how
+    often wiring is. The combined operator picks one candidate from a list of
+    nodes and edges together, which makes the chance of crossing a parameter
+    depend on how many edges the parents happen to share.
+
+    A shared locus means the same identifier *and* the same kind: the
+    parameters a policy knows about are named per kind, so two nodes of
+    different kinds have nothing comparable to average. A node either parent
+    locks is not a locus the two share either.
+    """
+
+    def cross(self, left: Graph, right: Graph, policy: GraphPolicy, rng: Random) -> Graph:
+        shared = [
+            node_id
+            for node_id in sorted(set(left.nodes) & set(right.nodes))
+            if left.nodes[node_id].kind == right.nodes[node_id].kind
+            and not left.nodes[node_id].locked
+        ]
+        rng.shuffle(shared)
+        for node_id in shared:
+            candidate = left.copy()
+            original = left.nodes[node_id]
+            try:
+                proposed = policy.cross_node(
+                    deepcopy(original), deepcopy(right.nodes[node_id]), rng
+                )
+                _require_node_contract(original, proposed)
+                candidate.nodes[node_id] = proposed
+                policy.validate(candidate)
+                return candidate
+            except (GraphError, ValueError):
+                continue
+        raise CrossoverError(
+            "No aligned node attributes can be crossed under the graph policy"
+        )
+
+
+class CrossEdgeAttributes:
+    """Average weights across parents that share an edge identity.
+
+    The edge half of ``AlignedAttributeCrossover``, available on its own. A
+    shared locus means the same identifier *and* the same endpoints: an edge
+    that was rewired between the two parents is a different locus, so its
+    weights do not describe the same connection and are not averaged. A locked
+    edge is skipped rather than rejected one attempt at a time, since a policy
+    refuses to cross a locked weight anyway.
+    """
+
+    def cross(self, left: Graph, right: Graph, policy: GraphPolicy, rng: Random) -> Graph:
+        shared = [
+            edge_id
+            for edge_id in sorted(set(left.edges) & set(right.edges))
+            if (left.edges[edge_id].source, left.edges[edge_id].target)
+            == (right.edges[edge_id].source, right.edges[edge_id].target)
+            and not left.edges[edge_id].locked
+        ]
+        rng.shuffle(shared)
+        for edge_id in shared:
+            candidate = left.copy()
+            original = left.edges[edge_id]
+            try:
+                proposed = policy.cross_edge(
+                    deepcopy(original), deepcopy(right.edges[edge_id]), rng
+                )
+                _require_edge_contract(original, proposed)
+                candidate.edges[edge_id] = proposed
+                policy.validate(candidate)
+                return candidate
+            except (GraphError, ValueError):
+                continue
+        raise CrossoverError(
+            "No aligned edge attributes can be crossed under the graph policy"
+        )
+
+
 class CrossoverPortfolio:
     """Try crossover operators in seeded random order with a finite budget."""
 

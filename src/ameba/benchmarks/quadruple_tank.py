@@ -29,6 +29,28 @@ delays, which is precisely the structure identification is supposed to find.
 
 The dynamics are also genuinely nonlinear -- outflow goes as the square root of
 level -- so this is not a linear plant wearing a MIMO shape.
+
+Both valve settings are registered as benchmarks, ``tank-minphase`` and
+``tank-nonminphase``. Neither has a reference graph. The linear and Narendra
+rungs have one that reproduces its plant to floating-point noise, and that is
+the strongest evidence available for those rungs; an exact tank model would
+need the square-root outflow fed back through an integrator, so until that
+exists these rungs are evidenced by the plant's physics instead -- which
+``tests/test_quadruple_tank.py`` checks directly.
+
+The closed-form memoryless floor does not work on this plant. That floor is the
+best *linear* static map, and it is optimal only for independent controls and a
+linear static relation; this plant is driven by a held input and its level
+varies as the square of flow, so it breaks both. A search restricted to
+stateless operators reaches **0.62** of that floor on the minimum-phase setting
+and **0.31** on the non-minimum-phase one, so a score below it demonstrates
+nothing about carrying state.
+
+Both rungs are therefore registered with ``linear_floor_is_strict=False``, and
+the report scripts judge them against the best score a memoryless *search* can
+reach -- 81.88 and 36.84 respectively at the baseline defaults. The stricter of
+that and the closed form is used, so the criterion is never weaker than the form
+alone.
 """
 
 from __future__ import annotations
@@ -36,11 +58,21 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import sqrt
 from random import Random
-from typing import Sequence
+from typing import Callable, Sequence
 
 from ameba_signal import Dataset
 
+from .common import MultiChannelTrajectory
+
 GRAVITY = 981.0  # cm/s^2
+
+#: The sample time the plant is integrated at, in seconds. One control row is
+#: held for this long, so it is also the natural weight for the error integral.
+TIME_STEP = 3.0
+
+#: How many samples each control level is held for. :func:`excitation` explains
+#: why this plant cannot be identified from white noise.
+HOLD = 10
 
 
 @dataclass(frozen=True, slots=True)
@@ -136,7 +168,7 @@ def derivatives(
 def simulate(
     controls: Sequence[Sequence[float]],
     parameters: TankParameters = MINIMUM_PHASE,
-    time_step: float = 3.0,
+    time_step: float = TIME_STEP,
     substeps: int = 10,
 ) -> tuple[tuple[float, float], ...]:
     """Run from rest, returning the measured level deviation after each input.
@@ -208,9 +240,54 @@ def identification_dataset(
     parameters: TankParameters = MINIMUM_PHASE,
     seed: int = 7,
     amplitude: float = 0.5,
-    hold: int = 10,
-    time_step: float = 3.0,
+    hold: int = HOLD,
+    time_step: float = TIME_STEP,
 ) -> Dataset:
     """Pump-voltage deviations in, measured level deviations one step later."""
     controls = excitation(steps, Random(seed), amplitude, hold)
     return Dataset(controls, simulate(controls, parameters, time_step))
+
+
+def trajectory(
+    controls: Sequence[Sequence[float]],
+    parameters: TankParameters = MINIMUM_PHASE,
+) -> MultiChannelTrajectory:
+    """Run one valve setting over the supplied pump-voltage deviations.
+
+    This is the benchmark-facing form of :func:`simulate`: the same response,
+    carried as a trajectory so the report's floor, divergence guard, and
+    per-channel summaries treat it exactly as they treat a single-input plant.
+    """
+    return MultiChannelTrajectory(
+        tuple(tuple(float(value) for value in row) for row in controls),
+        simulate(controls, parameters, TIME_STEP),
+    )
+
+
+def minimum_phase_trajectory(
+    controls: Sequence[Sequence[float]],
+) -> MultiChannelTrajectory:
+    """The minimum-phase valve setting's response to a control sequence."""
+    return trajectory(controls, MINIMUM_PHASE)
+
+
+def non_minimum_phase_trajectory(
+    controls: Sequence[Sequence[float]],
+) -> MultiChannelTrajectory:
+    """The non-minimum-phase valve setting's response to a control sequence.
+
+    The one worth the effort. Its transmission zero sits in the right half
+    plane, so each output first moves away from where its pump is driving it,
+    and reproducing that needs two routes with different delays rather than a
+    smoothed gain.
+    """
+    return trajectory(controls, NON_MINIMUM_PHASE)
+
+
+#: The registered benchmark names, mapped to the builder each one reports with.
+TRAJECTORIES: dict[
+    str, Callable[[Sequence[Sequence[float]]], MultiChannelTrajectory]
+] = {
+    "tank-minphase": minimum_phase_trajectory,
+    "tank-nonminphase": non_minimum_phase_trajectory,
+}

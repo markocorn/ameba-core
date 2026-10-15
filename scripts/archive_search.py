@@ -30,23 +30,24 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
 from ameba.benchmarks import (  # noqa: E402
+    BENCHMARKS,
     DEFAULT_NODE_PENALTY,
     PlantTrajectory,
     FULL_OPERATORS,
     benchmark_crossover,
     benchmark_policy,
+    channel_training_controls,
     dynamic_population,
-    identification_dataset,
-    linear,
     memoryless_floor,
-    narendra,
     parameter_mutations,
     seed_graph,
-    static_gain_floor,
     static_seed_graph,
+    stateless_floor,
     step_controls,
     structural_mutations,
     training_controls,
+    trajectory_dataset,
+    trajectory_floor,
 )
 from ameba.equations import format_equations  # noqa: E402
 from ameba.plotting import draw_graph  # noqa: E402
@@ -71,11 +72,6 @@ from ameba_signal import (  # noqa: E402
 )
 from ameba_signal.serialization import dataset_from_dict  # noqa: E402
 from ameba_signal.stateful import STATEFUL_KINDS  # noqa: E402
-
-BENCHMARKS = {
-    "linear": (linear.linear_trajectory, "Third-order linear plant"),
-    "narendra": (narendra.narendra_trajectory, "Narendra plant"),
-}
 
 _WORKER_EVALUATOR: SignalEvaluator | None = None
 
@@ -105,15 +101,33 @@ def main(argv: list[str] | None = None) -> int:
     if not 0.0 <= args.crossover_rate <= 1.0:
         _parser().error("--crossover-rate must be between zero and one")
 
+    if args.time_step is None:
+        args.time_step = BENCHMARKS[args.benchmark].time_step
     if args.dataset:
-        dataset, floor, title = _measured_problem(args)
+        dataset, closed_form, title = _measured_problem(args)
+        needs_baseline = args.stateless_baseline
     else:
-        trajectory_of, title = BENCHMARKS[args.benchmark]
-        trajectory = trajectory_of(
-            training_controls(args.steps, Random(args.data_seed), args.amplitude)
+        benchmark = BENCHMARKS[args.benchmark]
+        title = benchmark.title
+        trajectory = benchmark.build(_benchmark_controls(args, benchmark.channels))
+        dataset = trajectory_dataset(trajectory)
+        closed_form = trajectory_floor(trajectory, args.criterion, args.time_step)
+        needs_baseline = not benchmark.linear_floor_is_strict
+    # A closed-form optimum is itself reachable with no state, so it is a
+    # legitimate memoryless score, and a search that fails to reach it is
+    # under-searched rather than reassuring. The stricter of the two is the bar.
+    baseline = (
+        stateless_floor(
+            dataset,
+            args.criterion,
+            args.time_step,
+            population_size=args.batch,
+            generations=args.batches,
         )
-        dataset = identification_dataset(trajectory)
-        floor = static_gain_floor(trajectory, args.criterion, args.time_step)
+        if needs_baseline
+        else None
+    )
+    floor = closed_form if baseline is None else min(closed_form, baseline)
     evaluator = SignalEvaluator(
         dataset, criterion=args.criterion, time_step=args.time_step
     )
@@ -155,7 +169,15 @@ def main(argv: list[str] | None = None) -> int:
         f"{args.crossover_rate:.0%} crossover of the rest"
     )
     print(f"  node penalty: {args.node_penalty:g} of score per node")
-    print(f"  memoryless floor: {floor:.6g}  (a model must score below this)")
+    if baseline is None:
+        print(f"  memoryless floor: {floor:.6g}  (a model must score below this)")
+    else:
+        print(f"  pass criterion: {floor:.6g}  (a model must score below this)")
+        print(
+            f"    closed-form floor {closed_form:.6g}; a memoryless search at this "
+            f"budget reached {baseline:.6g} "
+            f"({baseline / closed_form:.2f}x the form)"
+        )
     print(f"  workers: {args.workers}\n")
 
     executor = (
@@ -392,6 +414,21 @@ def _render(path, graph, dataset, history, floor, evaluator, title) -> None:
     print(f"\n  figure written to {path}")
 
 
+def _benchmark_controls(args, channels: int):
+    """The excitation the search trains on, for either width of interface.
+
+    A multi-channel benchmark gets a held input (``--hold``). The plants with
+    more than one channel are the slow ones, and such a plant filters
+    sample-to-sample noise out almost entirely, so an unheld sequence would
+    carry no dynamics worth identifying.
+    """
+    if channels == 1:
+        return training_controls(args.steps, Random(args.data_seed), args.amplitude)
+    return channel_training_controls(
+        args.steps, channels, Random(args.data_seed), args.amplitude, args.hold
+    )
+
+
 def _measured_problem(args):
     """Identify a plant from recorded data rather than a simulated benchmark.
 
@@ -578,7 +615,18 @@ def _summary(archive, floor: float, evaluator, seconds: float) -> None:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--benchmark", choices=sorted(BENCHMARKS), default="narendra")
+    parser.add_argument(
+        "--benchmark", choices=sorted(BENCHMARKS), default="narendra"
+    )
+    parser.add_argument(
+        "--stateless-baseline",
+        action="store_true",
+        help=(
+            "find the pass criterion by memoryless search as well as closed "
+            "form; automatic for a benchmark whose closed-form floor is known "
+            "not to hold, and needed explicitly for --dataset"
+        ),
+    )
     parser.add_argument(
         "--dataset", default=None,
         help="identify a plant from recorded input/output rows instead of a "
@@ -625,8 +673,19 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--initial-nodes-max", type=int, default=14)
     parser.add_argument("--steps", type=int, default=150, help="simulated time steps; matches benchmark_report")
     parser.add_argument("--amplitude", type=float, default=1.0)
+    parser.add_argument(
+        "--hold",
+        type=int,
+        default=10,
+        help="samples each level is held, for multi-channel benchmarks",
+    )
     parser.add_argument("--criterion", default="ise")
-    parser.add_argument("--time-step", type=float, default=1.0)
+    parser.add_argument(
+        "--time-step",
+        type=float,
+        default=None,
+        help="sample time dt (default: the benchmark's own sample time)",
+    )
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--data-seed", type=int, default=7)
     parser.add_argument("--workers", type=int, default=1)

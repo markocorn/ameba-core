@@ -1,0 +1,91 @@
+{
+ "dir": "results/duplication",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 24,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "octaves",
+  "--node-penalty",
+  "0.003"
+ ],
+ "title": "Podvajanje genov",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Ali podvajanje genov drži in koliko ga je prav",
+ "lede": "Potrditev najboljšega mehanizma iz »DNK mehanizmi« s 24 semeni. Zapis se prepiše tik za samega sebe in nato lahko mutira v nekaj novega. Vse različice imajo materinski mitohondrij in vhode na koncu abecede; spreminja se samo pogostost podvajanja. Semena 1–16 izhodišča in podvajanja 0,1 so prevzeta iz »DNK mehanizmi« (izračun je determinističen). Trdi vozli, podatki in test kot pri »Oktave«.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-maternal",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}"
+   ],
+   "label": "brez podvajanja (izhodišče)",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Materinski mitohondrij, vhodi na koncu abecede: izhodišče po »Dedovanje«."
+  },
+  {
+   "key": "E-dup005",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"duplication\":0.05}"
+   ],
+   "label": "podvajanje 0,05",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "Podvajanje zapisa ima utež 0,05 ob točkovnih mutacijah 0,8 in strukturnih 0,2."
+  },
+  {
+   "key": "E-dup010",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"duplication\":0.1}"
+   ],
+   "label": "podvajanje 0,1",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "Kot v »DNK mehanizmi«, kjer je bilo najboljše."
+  },
+  {
+   "key": "E-dup020",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"duplication\":0.2}"
+   ],
+   "label": "podvajanje 0,2",
+   "color": "var(--s3)",
+   "dash": "",
+   "desc": "Dvakrat pogostejše podvajanje."
+  },
+  {
+   "key": "E-dup040",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"duplication\":0.4}"
+   ],
+   "label": "podvajanje 0,4",
+   "color": "var(--s4)",
+   "dash": "",
+   "desc": "Štirikrat pogostejše: ali preveč podvajanja izpodrine točkovne mutacije."
+  }
+ ]
+}

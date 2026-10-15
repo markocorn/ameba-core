@@ -1,0 +1,92 @@
+{
+ "dir": "results/generalization",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "diverse"
+ ],
+ "title": "Posploševanje",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Ali model opiše sistem ali le učne podatke",
+ "lede": "GA se uči na treh signalih hkrati (šum, stopnice, sinusoida, vsak od mirovanja), končni model se izbere po ločenem validacijskem naboru, ocena pa je na testnem naboru, ki ga iskanje nikoli ne vidi (nov šum, počasna sinusoida, dolge stopnice). Pravi model ima povsod 10⁻³¹. Razmerje je povprečno razmerje do spodnje meje brez stanja; pod 1 pomeni, da model premaga statično ojačanje. Narendra, populacija 300, 2000 generacij, 12 semen.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-hard",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}"
+   ],
+   "label": "endosimbioza + vsota, trdi vozli",
+   "color": "var(--s1)",
+   "desc": "Najboljše kodiranje na učnih podatkih doslej, dosedanji operatorji."
+  },
+  {
+   "key": "E-soft",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--kinds",
+    "soft"
+   ],
+   "label": "endosimbioza + vsota, mehki vozli",
+   "color": "var(--s2)",
+   "desc": "Isto kodiranje, vsi vozli mehki (±1)."
+  },
+  {
+   "key": "E-hard-pen",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--node-penalty",
+    "0.003"
+   ],
+   "label": "trdi + kazen za velikost",
+   "color": "var(--s3)",
+   "desc": "Vsak vozel stane 0,3 % napake: model mora vsak vozel upravičiti."
+  },
+  {
+   "key": "E-soft-pen",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--kinds",
+    "soft",
+    "--node-penalty",
+    "0.003"
+   ],
+   "label": "mehki + kazen za velikost",
+   "color": "var(--s4)",
+   "desc": "Mehki vozli in kazen za velikost."
+  },
+  {
+   "key": "A-base",
+   "args": [
+    "--method",
+    "A-base"
+   ],
+   "label": "ref · A-base",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Dosedanja osnova, z istimi raznolikimi učnimi podatki."
+  }
+ ],
+ "findings": "\n    <li><strong>Učenje na raznolikih podatkih odpravi najhujše pretirano prileganje.</strong> Testna napaka (podatki, ki jih iskanje ni videlo) je zdaj pri vseh različicah pod mejo: mediane 0,68–0,76×, pod mejo 9–12 od 12 zagonov. Prej, pri učenju na enem zaporedju, so bile vse nad mejo (1,02–2,79×).</li>\n    <li><strong>A model posploši le delno.</strong> Po signalih: na počasni sinusoidi 0,13–0,31×, na dolgih stopnicah 0,33–0,58×, na novem belem šumu pa 1,00–1,18×, torej ne bolje od statičnega ojačanja. Modeli zajamejo počasno dinamiko (ojačanje, časovne konstante, ustaljena stanja), hitre nelinearne dinamike Narendrinega sistema pa ne. Pravi model ima na vseh signalih 10⁻³¹.</li>\n    <li><strong>Kazen za velikost razpolovi modele brez izgube natančnosti:</strong> trdi vozli 11,5 namesto 20,5 vozla (test 0,677× proti 0,716×), mehki 12 namesto 29 (0,737× proti 0,761×). Razlike v natančnosti niso značilne (p = 0,37 in 0,95), manjši modeli pa so berljivejši.</li>\n    <li><strong>Mehki vozli nikoli ne podivjajo.</strong> Pri trdih vozlih sta dva izbrana modela na testnih signalih divergirala (neskončna napaka na sinusoidi in stopnicah); pri mehkih je vseh 24 modelov končnih in pod mejo (12/12 v obeh različicah). Za uporabo v zaprti zanki je to pomembna lastnost. Po mediani so trdi vozli nekoliko boljši, a razlika ni značilna (p = 0,15).</li>\n    <li><strong>Izbira po validaciji skoraj nič ne spremeni</strong>, ker je najboljši učni model večinoma tudi najboljši validacijski.</li>\n    <li><strong>Primer berljivega modela</strong> (trdi vozli s kazenjo, 13 vozlov, test 0,555×): izhod je statično ojačanje <code>0,75·u(k)</code> minus kvadratni popravek iz filtriranega vhoda in povratne zanke izhoda <code>x2(k) = sin(−1,5·y(k−1) − π/2) = −cos(1,5·y(k−1))</code>. Struktura je razumljiva, a ni struktura pravega sistema.</li>\n    <li><strong>Kaj naprej:</strong> učni nabor ima premalo hitrega vzbujanja, da bi iskanje moralo zajeti hitro nelinearno dinamiko; večji delež šuma (več zaporedij, različne amplitude) ali utež, ki šum poudari. Kazen za velikost ohraniti kot privzeto.</li>\n"
+}

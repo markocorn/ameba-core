@@ -1,0 +1,67 @@
+{
+ "dir": "results/octaves",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "octaves",
+  "--node-penalty",
+  "0.003"
+ ],
+ "title": "Oktave",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Učenje na vseh oktavah enakomerno",
+ "lede": "Kot preizkus »Spekter«, le da učni in validacijski nabor vsebujeta beli šum in vseh šest oktavnih pasov testa (z drugimi fazami), vsakega kot svoj signal z enako utežjo v oceni. Testni nabor je enak kot pri preizkusu »Spekter«, zato sta preizkusa neposredno primerljiva. Vse metode imajo kazen za velikost (0,3 % na vozel). Narendra, populacija 300, 2000 generacij, 12 semen.",
+ "cards_h2": "Tri metode",
+ "series": [
+  {
+   "key": "E-hard",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}"
+   ],
+   "label": "trdi vozli",
+   "color": "var(--s1)",
+   "desc": "Endosimbioza + vsota z dosedanjimi operatorji; najboljša testna mediana doslej."
+  },
+  {
+   "key": "E-soft",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--kinds",
+    "soft"
+   ],
+   "label": "mehki vozli",
+   "color": "var(--s2)",
+   "desc": "Vsi vozli mehki (±1): nikoli ne podivja."
+  },
+  {
+   "key": "E-mixed",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}",
+    "--kinds",
+    "soft,add"
+   ],
+   "label": "linearna hrbtenica + mehke nelinearnosti",
+   "color": "var(--s3)",
+   "desc": "Stanja in izhod smejo biti linearna (add, neomejena) ali mehka: poli linearnega dela so neomejeni in berljivi, nelinearnosti krotke."
+  }
+ ],
+ "findings": "\n    <li><strong>Enakomerna zastopanost oktav pri učenju ne spremeni bistveno ničesar.</strong> Primerjava s preizkusom »Spekter« (isti testni nabor, iste metode): testne mediane 0,572× proti 0,630× (trdi), 0,627× proti 0,556× (mehki), 0,634× proti 0,538× (mešani); nobena razlika ni značilna (p = 0,64–0,95).</li>\n    <li><strong>Zanesljivost se rahlo izboljša:</strong> vse tri metode imajo zdaj 12 od 12 modelov pod mejo na testu (prej 11 od 12).</li>\n    <li><strong>Pas 4 (0,06–0,15 cikla na vzorec) ostaja najtežji:</strong> 0,90–0,94× pri vseh metodah, le 6–7 od 12 pod mejo. Pas 3 se pri trdih in mehkih vozlih izboljša (0,52→0,30 in 0,47→0,34), pas 5 se rahlo poslabša.</li>\n    <li><strong>Sklep:</strong> težava v pasu 4 ni v tem, da bi bil premalo zastopan v učnih podatkih, saj ima zdaj enako težo kot vsak drug pas. Omejitev je drugje: v tem, kar model zmore izraziti, ali v tem, kar iskanje najde. Kandidati: kaljenje, več proračuna, konstanta oziroma premik na izhodu.</li>\n    <li>Zagoni so trajali ~1–2 uri (učni nabor 1200 korakov, dvakrat daljši kot prej).</li>\n"
+}

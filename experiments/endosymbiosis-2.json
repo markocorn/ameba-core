@@ -1,0 +1,105 @@
+{
+ "dir": "results/endosymbiosis-2",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "3000",
+  "--population",
+  "300",
+  "--progress",
+  "100"
+ ],
+ "title": "Endosimbioza 2",
+ "eyebrow": "AMEBA · razvoj genoma · Narendra",
+ "h1": "Čista ločitev: dinamika samo v stanjih",
+ "lede": "Nadgradnja endosimbioze. Kromosom izhoda sme vsebovati samo vozle brez spomina, zato je vsa dinamika v kromosomu stanj. Stanja imajo pri »memory3« za spomin samo zakasnitev, integral in odvod (brez filtrov). Izhod je lahko vsota dveh virov. Zapisi, abecede, mutacije in GA so enaki kot pri A-base. Narendra, populacija 300, 3000 generacij, 12 semen.",
+ "cards_h2": "Stopnjevane različice",
+ "series": [
+  {
+   "key": "E-statespace",
+   "args": [
+    "--method",
+    "E-statespace"
+   ],
+   "label": "endosimbioza (prej)",
+   "color": "var(--ref2)",
+   "dash": "2 3",
+   "desc": "Prva različica: oba kromosoma smeta vsebovati vse vozle."
+  },
+  {
+   "key": "E-static",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\"}"
+   ],
+   "label": "izhod brez spomina",
+   "color": "var(--s1)",
+   "desc": "Kromosom izhoda samo z vozli brez spomina; vsa dinamika v stanjih."
+  },
+  {
+   "key": "E-static-sum",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2}"
+   ],
+   "label": "izhod brez spomina + vsota",
+   "color": "var(--s2)",
+   "desc": "Kot zgoraj, izhod pa sešteje dva vira."
+  },
+  {
+   "key": "E-mem3",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"state_kinds\":\"memory3\",\"output_kinds\":\"static\"}"
+   ],
+   "label": "+ spomin samo delay/integral/odvod",
+   "color": "var(--s3)",
+   "desc": "Izhod brez spomina; stanja imajo za spomin le zakasnitev, integral in odvod."
+  },
+  {
+   "key": "E-mem3-sum",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"state_kinds\":\"memory3\",\"output_kinds\":\"static\",\"output_sources\":2}"
+   ],
+   "label": "+ spomin omejen + vsota",
+   "color": "var(--s4)",
+   "desc": "Najstrožja ločitev in izhod kot vsota."
+  },
+  {
+   "key": "A-base",
+   "args": [
+    "--method",
+    "A-base"
+   ],
+   "label": "ref · A-base",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Dosedanja osnova."
+  },
+  {
+   "key": "s-outsum",
+   "args": [
+    "--method",
+    "A-custom",
+    "--encoding",
+    "{\"output_sources\":2}"
+   ],
+   "label": "ref · izhod vsota",
+   "color": "var(--s5)",
+   "desc": "Najmočnejša lastnost z vikenda."
+  }
+ ],
+ "findings": "\n    <li><strong>Izhod brez spomina + vsota je najboljše kodiranje doslej po mediani:</strong> 0,669× meje, 12 od 12 semen pod mejo (A-base 0,849×, 7 od 12; p = 0,028 proti A-base). Najboljši posamezen model 0,285×. Je tudi hitrejše: ~31 min na zagon proti 39–56 min pri referencah.</li>\n    <li><strong>Razlike med novimi različicami pa niso značilne.</strong> Izhod brez spomina + vsota proti izhodu-vsoti z vikenda: p = 0,86; proti endosimbiozi brez omejitev: p = 0,065. Smer je dosledna (vsaka stopnja izboljša mediano), dokaz pa pri 12 semenih še ni trden.</li>\n    <li><strong>Omejitev spomina na zakasnitev, integral in odvod ne škodi in ne pomaga:</strong> 0,813× proti 0,801× brez vsote (p = 0,98), 0,799× proti 0,669× z vsoto (p = 0,69). Filtri niso potrebni: v modelih se pojavijo kot lastne zanke stanj, npr. <code>x4(k) = −0,1·u(k−1) + 0,75·x4(k−1)</code>, kar je nizkoprepustni filter, zapisan z navadnim stanjem.</li>\n    <li><strong>Povratna zanka izhoda je zdaj pogosta:</strong> v 8–11 od 12 najboljših modelov endosimbioze stanje bere izhod; pri A-base in izhodu-vsoti v 0 od 12. (Popravek: v prejšnjem poročilu sem za endosimbiozo navedel 5 od 12 zaradi napake v štetju; pravilno je 8 od 12.)</li>\n    <li><strong>Modeli so zdaj v obliki stanja + izhod,</strong> kot je bil namen: stanja so zakasnitve, produkti in kvadrati preteklih vrednosti, izhod je utežena kombinacija. Še vedno pa so dolgi (~20 vozlov) in polni verig uteži (npr. <code>0,5·1,5·0,75</code>), zato še niso berljivi kot pravi model.</li>\n    <li><strong>Naslednji koraki:</strong> (1) vzeti »izhod brez spomina + vsota« kot novo izhodišče; (2) preveriti z več semeni; (3) poenostavljanje enačb po iskanju (združiti verige uteži, odstraniti ničelne člene), ki izboljša berljivost brez spremembe iskanja; (4) preizkusiti stanja brez vozlov s spominom (vsa dinamika v ožičenju).</li>\n"
+}

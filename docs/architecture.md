@@ -118,6 +118,16 @@ the evaluator already computes.
 See [archive-search.md](archive-search.md) for what has been measured about it,
 including the mechanisms that were tried and refuted.
 
+## Genome encoding
+
+`ameba_genome` is a third search method and sits beside `ameba` in the
+dependency graph: it imports `ameba_graph` and `ameba_signal`, and nothing
+imports it. A model is a flat sequence of integer genes, and the signal-specific
+decoder turns it into an ordinary `Graph`. Variation never touches a graph, and
+validity comes from the decoder rather than from a policy check. Its GA module
+is domain-neutral in the way the evolution engine is: it sees integer tuples, a
+breeding function, and a score. See [genome-encoding.md](genome-encoding.md).
+
 ## Core rule
 
 Evolution asks only for a numeric score:

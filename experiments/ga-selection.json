@@ -1,0 +1,73 @@
+{
+ "dir": "results/ga-selection",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 16,
+ "common": [
+  "--method",
+  "A-base",
+  "--generations",
+  "3000",
+  "--population",
+  "300"
+ ],
+ "title": "GA: selekcija",
+ "eyebrow": "AMEBA · nastavljanje GA · 4. korak",
+ "h1": "Kako močan naj bo selekcijski pritisk",
+ "lede": "Kodiranje je zamrznjeno na A-base. Narendra, populacija 300, 3000 generacij, 16 semen, nevtralni drift. Spreminja se samo izbira staršev.",
+ "cards_h2": "Pet načinov selekcije",
+ "series": [
+  {
+   "key": "p-tournament3",
+   "args": [
+    "--selection",
+    "tournament:3"
+   ],
+   "label": "turnir 3",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Dosedanja nastavitev. Kontrola."
+  },
+  {
+   "key": "p-tournament7",
+   "args": [
+    "--selection",
+    "tournament:7"
+   ],
+   "label": "turnir 7",
+   "color": "var(--s1)",
+   "desc": "Močnejši pritisk."
+  },
+  {
+   "key": "p-truncation",
+   "args": [
+    "--selection",
+    "truncation:0.2"
+   ],
+   "label": "rezanje 20 %",
+   "color": "var(--s2)",
+   "desc": "Enakomerno izmed najboljših 20 %."
+  },
+  {
+   "key": "p-ranking",
+   "args": [
+    "--selection",
+    "ranking:1.7"
+   ],
+   "label": "rangiranje 1,7",
+   "color": "var(--s3)",
+   "desc": "Verjetnost pada linearno z rangom."
+  },
+  {
+   "key": "p-roulette",
+   "args": [
+    "--selection",
+    "roulette"
+   ],
+   "label": "ruleta",
+   "color": "var(--s4)",
+   "desc": "Sorazmerno z 1 / (1 + rezultat − najboljši)."
+  }
+ ]
+}

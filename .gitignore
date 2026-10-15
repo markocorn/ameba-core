@@ -11,3 +11,6 @@ dist/
 coverage.xml
 .coverage
 
+
+# Experiment results (scripts/run_experiments.py)
+results/

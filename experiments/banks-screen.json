@@ -1,0 +1,205 @@
+{
+ "dir": "results/banks-screen",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 12,
+ "common": [
+  "--generations",
+  "1000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--data",
+  "octaves",
+  "--node-penalty",
+  "0.003"
+ ],
+ "title": "Banke: sito",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Dodatni vhodi in filtrske banke na novem izhodišču (sito)",
+ "lede": "Prva stopnja: 12 semen × 1000 generacij, samo za izločanje jasno slabih različic. Ponovitev preizkusov »Kontrola vhodov« in »Filtrska banka 2« z nevtralnim kodiranjem (vhodi na koncu abecede, začetni genomi berejo vse vhode enako) in materinskim mitohondrijem. Vprašanji: ali dodaten vhod brez informacije še škodi in ali filtri zdaj pomagajo pri pasu 4. Obetavne različice gredo v potrditev s 24 semeni × 2000 generacij.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "E-base",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}"
+   ],
+   "label": "brez dodatnih vhodov",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Novo izhodišče: vhodi na koncu abecede, materinski mitohondrij."
+  },
+  {
+   "key": "E-zero1",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "dummy:zero:1"
+   ],
+   "label": "+1 ničelni vhod",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "Kontrola: vhod, ki je vedno 0."
+  },
+  {
+   "key": "E-noise1",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "dummy:noise:1"
+   ],
+   "label": "+1 naključni vhod",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "Kontrola: neodvisen šum brez informacije."
+  },
+  {
+   "key": "E-zero6",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "dummy:zero:6"
+   ],
+   "label": "+6 ničelnih vhodov",
+   "color": "var(--s3)",
+   "dash": "",
+   "desc": "Kontrola: toliko vhodov kot oktavna banka."
+  },
+  {
+   "key": "E-zero6-plant",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "dummy:zero:6",
+    "--init-plant-inputs"
+   ],
+   "label": "+6 ničelnih, začetek bere le u",
+   "color": "var(--s4)",
+   "dash": "",
+   "desc": "Diagnostika, ne predlog: začetni genomi berejo samo vhod obrata. Pokaže, ali preostanek škode pride iz začetka."
+  },
+  {
+   "key": "E-b4",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "bands:4:4:norm"
+   ],
+   "label": "filter pasu 4",
+   "color": "var(--s5)",
+   "dash": "",
+   "desc": "En filter na najtežjem pasu, 4. red, normiran."
+  },
+  {
+   "key": "E-mid",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "bands:4:3,4,5:norm"
+   ],
+   "label": "pasovi 3–5",
+   "color": "var(--s6)",
+   "dash": "",
+   "desc": "Trije srednji pasovi, 4. red, normirani."
+  },
+  {
+   "key": "E-norm2",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "bands:2:1,2,3,4,5,6:norm"
+   ],
+   "label": "6 pasov, 2. red",
+   "color": "var(--ref2)",
+   "dash": "",
+   "desc": "Vseh šest oktav, 2. red, normirani."
+  },
+  {
+   "key": "E-norm4",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "bands:4:1,2,3,4,5,6:norm"
+   ],
+   "label": "6 pasov, 4. red",
+   "color": "var(--s1)",
+   "dash": "2 3",
+   "desc": "Vseh šest oktav, 4. red, normirani."
+  },
+  {
+   "key": "E-oct",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "octaves"
+   ],
+   "label": "oktavna banka",
+   "color": "var(--s2)",
+   "dash": "2 3",
+   "desc": "Prvotna oktavna banka, nenormirana."
+  },
+  {
+   "key": "E-lag3",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "laguerre:0.3:4"
+   ],
+   "label": "Laguerre 0,3",
+   "color": "var(--s3)",
+   "dash": "2 3",
+   "desc": "Štirje Laguerrovi filtri s polom 0,3."
+  },
+  {
+   "key": "E-lag8",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--filterbank",
+    "laguerre:0.8:4"
+   ],
+   "label": "Laguerre 0,8",
+   "color": "var(--s4)",
+   "dash": "2 3",
+   "desc": "Štirje Laguerrovi filtri s polom 0,8."
+  }
+ ]
+}
