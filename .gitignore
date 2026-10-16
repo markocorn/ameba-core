@@ -14,3 +14,6 @@ coverage.xml
 
 # Experiment results (scripts/run_experiments.py)
 results/
+
+# Local credentials (VM access)
+.env
