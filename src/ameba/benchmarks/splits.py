@@ -53,14 +53,14 @@ BANDS: tuple[tuple[float, float], ...] = (
 
 
 def _controls(channels: int, kind: str, steps: int, seed: int = 0, hold: int = 10, period: int = 250,
-              band: tuple[float, float] | None = None):
+              band: tuple[float, float] | None = None, amplitude: float = 1.0):
     if kind == "band":
         rngs = [Random(seed * 101 + channel) for channel in range(channels)]
-        columns = [multisine_controls(steps, band[0], band[1], rng) for rng in rngs]
+        columns = [multisine_controls(steps, band[0], band[1], rng, amplitude) for rng in rngs]
         return columns[0] if channels == 1 else tuple(zip(*columns))
     if channels == 1:
         if kind == "noise":
-            return training_controls(steps, Random(seed))
+            return training_controls(steps, Random(seed), amplitude)
         if kind == "steps":
             return step_controls(steps, hold=hold)
         return evaluation_controls(steps, period=period)
@@ -129,6 +129,37 @@ OCTAVES: dict[str, tuple[tuple, ...]] = {
 }
 
 
+def _scaled(members, amplitude: float = 1.0, length: float = 1.0, drop_noise: bool = False):
+    """Spectral-style members with every amplitude and length scaled."""
+    return tuple((label, kind, round(steps * length), seed, hold, band, amplitude)
+                 for label, kind, steps, seed, hold, band in members if not (drop_noise and kind == "noise"))
+
+
+_FULL = (0.004, 0.5)
+
+#: Excitation families for asking *what* to train on. Members are (label,
+#: kind, steps, seed, hold, band, amplitude); every family is tested on the
+#: six octave bands, so families compare on the same signals. Seeds stay
+#: clear of the test's 301-306.
+EXCITATIONS: dict[str, dict[str, tuple[tuple, ...]]] = {
+    # White noise at a lower amplitude: RMS 0.29 and 0.14 instead of 0.58,
+    # the first about that of the test multisines.
+    "noise-a05": {"train": (("noise", "noise", 1500, 7, 10, None, 0.5),),
+                  "validation": (("noise", "noise", 600, 31, 10, None, 0.5),)},
+    "noise-a025": {"train": (("noise", "noise", 1500, 7, 10, None, 0.25),),
+                   "validation": (("noise", "noise", 600, 31, 10, None, 0.25),)},
+    # One multisine over the whole band: as broad as noise, shaped like the test.
+    "broadband": {"train": (("band-full", "band", 600, 401, 0, _FULL, 1.0),),
+                  "validation": (("band-full", "band", 600, 501, 0, _FULL, 1.0),)},
+    "broadband-noise": {"train": (("noise", "noise", 150, 7, 10, None, 1.0), ("band-full", "band", 600, 401, 0, _FULL, 1.0)),
+                        "validation": (("noise", "noise", 150, 31, 10, None, 1.0), ("band-full", "band", 600, 501, 0, _FULL, 1.0))},
+    # The spectral family with one thing changed.
+    "spectral-nonoise": {split: _scaled(SPECTRAL[split], drop_noise=True) for split in ("train", "validation")},
+    "spectral-a05": {split: _scaled(SPECTRAL[split], amplitude=0.5) for split in ("train", "validation")},
+    "spectral-long": {split: _scaled(SPECTRAL[split], length=2.0) for split in ("train", "validation")},
+}
+
+
 @dataclass
 class Suite:
     """Several trajectories scored together as mean ratio to their floors."""
@@ -152,23 +183,29 @@ def suite(benchmark: Benchmark, split: str, hold: int = 10, criterion: str = "is
     ``hold`` overrides the noise hold of a multi-channel rung, whose slow
     plant needs a held input; a single-channel rung's noise is white.
     ``family`` picks the signals: ``diverse`` (noise, steps, sinusoids),
-    ``spectral`` (noise and three broad multisines) or ``octaves`` (noise and
-    all six test octaves, equally weighted).
+    ``spectral`` (noise and three broad multisines), ``octaves`` (noise and
+    all six test octaves, equally weighted) or one of :data:`EXCITATIONS`,
+    whose test set is always the six octaves.
     ``bank`` is an optional :class:`~ameba.benchmarks.filterbank.FilterBank`:
     the model then sees the raw input and every filter output, while the
     plant and the floor still see the raw input alone.
     """
     members = []
-    if family in ("spectral", "octaves"):
+    if family in EXCITATIONS:
+        table = EXCITATIONS[family]
+        rows = table[split] if split in table else _scaled(SPECTRAL["test"])
+        specs = [(label, kind, steps, seed, hold, 0, band, amplitude)
+                 for label, kind, steps, seed, _, band, amplitude in rows]
+    elif family in ("spectral", "octaves"):
         table = SPECTRAL if family == "spectral" else OCTAVES
-        specs = [(label, kind, steps, seed, hold, 0, band) for label, kind, steps, seed, _, band in table[split]]
+        specs = [(label, kind, steps, seed, hold, 0, band, 1.0) for label, kind, steps, seed, _, band in table[split]]
     else:
-        specs = [(label, kind, steps, seed, kind_hold, period, None)
+        specs = [(label, kind, steps, seed, kind_hold, period, None, 1.0)
                  for label, kind, steps, seed, kind_hold, period in SPLITS[split]]
-    for label, kind, steps, seed, kind_hold, period, band in specs:
+    for label, kind, steps, seed, kind_hold, period, band, amplitude in specs:
         noise_hold = hold if kind == "noise" else kind_hold
         trajectory = benchmark.build(
-            _controls(benchmark.channels, kind, steps, seed, noise_hold, period, band))
+            _controls(benchmark.channels, kind, steps, seed, noise_hold, period, band, amplitude))
         dataset = trajectory_dataset(trajectory)
         if bank is not None:
             dataset = Dataset(bank.augment(dataset.inputs), dataset.outputs)

@@ -1,0 +1,218 @@
+{
+ "dir": "results/data-families",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 24,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--node-penalty",
+  "0.003",
+  "--test-family",
+  "octaves"
+ ],
+ "title": "Učni podatki",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Na čem učiti: šum, raznoliki signali ali oktave",
+ "lede": "Vse različice imajo najboljše kodiranje (materinski mitohondrij, vhodi na koncu abecede, trdi vozli), s položaji ali z oznakami 32. Spreminjajo se samo učni podatki: en trajektorij belega šuma (150, 600 ali 1500 korakov), raznoliki signali, spektralni ali oktave. Test je za vse enak: šest oktavnih pasov, ki jih iskanje nikoli ne vidi, zato je primerjava poštena. 24 semen × 2000 generacij.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "P-noise150",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--data",
+    "single",
+    "--steps",
+    "150"
+   ],
+   "label": "šum 150 · položaji",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "En sam trajektorij belega šuma, 150 korakov: najbolj neposredno vzbujanje, kot v prvih poskusih."
+  },
+  {
+   "key": "P-noise600",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--data",
+    "single",
+    "--steps",
+    "600"
+   ],
+   "label": "šum 600 · položaji",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "En trajektorij belega šuma, 600 korakov: ali več šuma odpravi preučenje."
+  },
+  {
+   "key": "P-noise1500",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--data",
+    "single",
+    "--steps",
+    "1500"
+   ],
+   "label": "šum 1500 · položaji",
+   "color": "var(--s3)",
+   "dash": "",
+   "desc": "En trajektorij belega šuma, 1500 korakov: toliko vzorcev kot vsi oktavni učni signali skupaj in več."
+  },
+  {
+   "key": "P-diverse",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--data",
+    "diverse"
+   ],
+   "label": "raznoliki · položaji",
+   "color": "var(--s4)",
+   "dash": "",
+   "desc": "Šum, stopnice in sinus, vsak od mirovanja."
+  },
+  {
+   "key": "P-spectral",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--data",
+    "spectral"
+   ],
+   "label": "spektralni · položaji",
+   "color": "var(--s5)",
+   "dash": "",
+   "desc": "Šum in trije široki pasovi multisinusov."
+  },
+  {
+   "key": "P-octaves",
+   "args": [
+    "--method",
+    "E-statespace",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\"}",
+    "--data",
+    "octaves"
+   ],
+   "label": "oktave · položaji",
+   "color": "var(--ref1)",
+   "dash": "",
+   "desc": "Šum in vseh šest oktav, enakomerno: dosedanje izhodišče. Zagoni prevzeti iz »Oznake: potrditev«."
+  },
+  {
+   "key": "T-noise150",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "single",
+    "--steps",
+    "150"
+   ],
+   "label": "šum 150 · oznake 32",
+   "color": "var(--s1)",
+   "dash": "6 4",
+   "desc": "En sam trajektorij belega šuma, 150 korakov: najbolj neposredno vzbujanje, kot v prvih poskusih."
+  },
+  {
+   "key": "T-noise600",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "single",
+    "--steps",
+    "600"
+   ],
+   "label": "šum 600 · oznake 32",
+   "color": "var(--s2)",
+   "dash": "6 4",
+   "desc": "En trajektorij belega šuma, 600 korakov: ali več šuma odpravi preučenje."
+  },
+  {
+   "key": "T-noise1500",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "single",
+    "--steps",
+    "1500"
+   ],
+   "label": "šum 1500 · oznake 32",
+   "color": "var(--s3)",
+   "dash": "6 4",
+   "desc": "En trajektorij belega šuma, 1500 korakov: toliko vzorcev kot vsi oktavni učni signali skupaj in več."
+  },
+  {
+   "key": "T-diverse",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "diverse"
+   ],
+   "label": "raznoliki · oznake 32",
+   "color": "var(--s4)",
+   "dash": "6 4",
+   "desc": "Šum, stopnice in sinus, vsak od mirovanja."
+  },
+  {
+   "key": "T-spectral",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "spectral"
+   ],
+   "label": "spektralni · oznake 32",
+   "color": "var(--s5)",
+   "dash": "6 4",
+   "desc": "Šum in trije široki pasovi multisinusov."
+  },
+  {
+   "key": "T-octaves",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "octaves"
+   ],
+   "label": "oktave · oznake 32",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Šum in vseh šest oktav, enakomerno: dosedanje izhodišče. Zagoni prevzeti iz »Oznake: potrditev«."
+  }
+ ]
+}

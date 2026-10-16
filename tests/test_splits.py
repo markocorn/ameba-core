@@ -94,5 +94,38 @@ class SpectralTests(unittest.TestCase):
         self.assertEqual([f"band-{i}" for i in range(1, 7)], [label for label, _, _ in test.members])
 
 
+class ExcitationTests(unittest.TestCase):
+    def test_every_family_is_exact_for_the_true_model_and_tests_on_octaves(self) -> None:
+        from ameba.benchmarks.splits import EXCITATIONS
+
+        reference = narendra.reference_graph()
+        for family in EXCITATIONS:
+            for split in ("train", "validation", "test"):
+                self.assertLess(suite(BENCHMARKS["narendra"], split, family=family).evaluate(reference), 1e-20,
+                                (family, split))
+            test = suite(BENCHMARKS["narendra"], "test", family=family)
+            self.assertEqual([f"band-{i}" for i in range(1, 7)], [label for label, _, _ in test.members])
+
+    def test_amplitudes_and_lengths_are_what_the_family_says(self) -> None:
+        from ameba.benchmarks.splits import suite as build
+
+        plain = build(BENCHMARKS["narendra"], "train", family="spectral")
+        half = build(BENCHMARKS["narendra"], "train", family="spectral-a05")
+        long = build(BENCHMARKS["narendra"], "train", family="spectral-long")
+        for (_, a, _), (_, b, _), (_, c, _) in zip(plain.members, half.members, long.members):
+            u, v = [row[0] for row in a.dataset.inputs], [row[0] for row in b.dataset.inputs]
+            self.assertAlmostEqual(0.5 * max(map(abs, u)), max(map(abs, v)), places=12)
+            self.assertEqual(2 * len(u), len(c.dataset.inputs))
+        self.assertNotIn("noise", [label for label, _, _ in build(BENCHMARKS["narendra"], "train", family="spectral-nonoise").members])
+
+    def test_training_seeds_never_meet_the_test_seeds(self) -> None:
+        from ameba.benchmarks.splits import EXCITATIONS, SPECTRAL
+
+        test_seeds = {member[3] for member in SPECTRAL["test"]}
+        for family in EXCITATIONS.values():
+            for split in ("train", "validation"):
+                self.assertFalse(test_seeds & {member[3] for member in family[split]})
+
+
 if __name__ == "__main__":
     unittest.main()

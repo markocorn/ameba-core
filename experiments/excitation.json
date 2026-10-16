@@ -1,0 +1,163 @@
+{
+ "dir": "results/excitation",
+ "benchmarks": [
+  "narendra"
+ ],
+ "seeds": 24,
+ "common": [
+  "--generations",
+  "2000",
+  "--population",
+  "300",
+  "--progress",
+  "100",
+  "--node-penalty",
+  "0.003",
+  "--test-family",
+  "octaves"
+ ],
+ "title": "Vzbujanje",
+ "eyebrow": "AMEBA · identifikacija · Narendra",
+ "h1": "Zakaj šum odpove in zakaj so spektralni signali najboljši",
+ "lede": "Nadaljevanje preizkusa »Učni podatki«, kjer je učenje samo na belem šumu odpovedalo (test slabši od statičnega ojačanja), spektralni signali pa so bili najboljši. Tu spreminjamo po eno lastnost vzbujanja: amplitudo šuma, obliko (šum ali širokopasovni multisinus), prisotnost šuma ob pasovih, amplitudo in dolžino spektralnih signalov. Vse z oznakami 32, materinskim mitohondrijem in vhodi na koncu abecede; test so za vse enaki oktavni pasovi. 24 semen × 2000 generacij.",
+ "cards_h2": "Različice",
+ "series": [
+  {
+   "key": "T-spectral",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "spectral"
+   ],
+   "label": "spektralni (izhodišče)",
+   "color": "var(--ref1)",
+   "dash": "6 4",
+   "desc": "Šum in trije široki pasovi multisinusov. Zagoni prevzeti iz »Učni podatki«."
+  },
+  {
+   "key": "T-noise1500",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "single",
+    "--steps",
+    "1500"
+   ],
+   "label": "šum 1500, amplituda 1",
+   "color": "var(--ref2)",
+   "dash": "6 4",
+   "desc": "Beli šum v [−1, 1], RMS 0,58. Odpove (test 1,37). Zagoni prevzeti iz »Učni podatki«."
+  },
+  {
+   "key": "T-noise-a05",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "noise-a05"
+   ],
+   "label": "šum 1500, amplituda 0,5",
+   "color": "var(--s1)",
+   "dash": "",
+   "desc": "Beli šum v [−0,5, 0,5], RMS 0,29, približno kot testni multisinusi. Če deluje, je šum prej odpovedal zaradi amplitude."
+  },
+  {
+   "key": "T-noise-a025",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "noise-a025"
+   ],
+   "label": "šum 1500, amplituda 0,25",
+   "color": "var(--s2)",
+   "dash": "",
+   "desc": "Še šibkejši šum, RMS 0,14: sistem ostane blizu linearnega."
+  },
+  {
+   "key": "T-broadband",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "broadband"
+   ],
+   "label": "en širokopasovni multisinus",
+   "color": "var(--s3)",
+   "dash": "",
+   "desc": "En multisinus čez ves pas (0,004–0,5), 600 korakov: širok kot šum, oblikovan kot test."
+  },
+  {
+   "key": "T-broadband-noise",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "broadband-noise"
+   ],
+   "label": "šum 150 + širokopasovni multisinus",
+   "color": "var(--s4)",
+   "dash": "",
+   "desc": "Kot spektralni, a namesto treh pasov en sam širok."
+  },
+  {
+   "key": "T-spectral-nonoise",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "spectral-nonoise"
+   ],
+   "label": "spektralni brez šuma",
+   "color": "var(--s5)",
+   "dash": "",
+   "desc": "Samo trije pasovi multisinusov: ali šum v učnih podatkih pomaga ali škodi."
+  },
+  {
+   "key": "T-spectral-a05",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "spectral-a05"
+   ],
+   "label": "spektralni, amplituda 0,5",
+   "color": "var(--s6)",
+   "dash": "",
+   "desc": "Vsi učni signali s pol manjšo amplitudo; test ostane enak: ali se model nauči manjšega območja in zato pade na testu."
+  },
+  {
+   "key": "T-spectral-long",
+   "args": [
+    "--method",
+    "E-tag",
+    "--encoding",
+    "{\"output_kinds\":\"static\",\"output_sources\":2,\"source_layout\":\"inputs-last\",\"inheritance\":\"maternal\",\"tags\":32}",
+    "--data",
+    "spectral-long"
+   ],
+   "label": "spektralni, 2× daljši",
+   "color": "var(--s1)",
+   "dash": "2 3",
+   "desc": "Vsi učni signali dvakrat daljši: ali več podatkov iste vrste pomaga."
+  }
+ ]
+}
