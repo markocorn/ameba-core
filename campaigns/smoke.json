@@ -1,0 +1,144 @@
+{
+ "name": "smoke",
+ "benchmarks": [
+  "narendra",
+  "wood-berry",
+  "tank-nonminphase"
+ ],
+ "base": {
+  "addressing": "tags32",
+  "codon": "no",
+  "output_sources": 2,
+  "output_kinds": "static",
+  "state_kinds": "all",
+  "kinds": "all",
+  "bank": "none",
+  "inheritance": "maternal",
+  "population": 30,
+  "selection": "tournament:3",
+  "scheme": "generational:2",
+  "islands": "none",
+  "clearing": "no",
+  "immigrants": 0.0,
+  "restart": "none",
+  "crossover_rate": 0.5,
+  "node_penalty": 0.003,
+  "data": "spectral",
+  "cells": "1"
+ },
+ "axes": {
+  "addressing": [
+   "positions",
+   "tags16",
+   "tags32",
+   "tags48"
+  ],
+  "codon": [
+   "no",
+   "records"
+  ],
+  "output_sources": [
+   1,
+   2
+  ],
+  "output_kinds": [
+   "static",
+   "all"
+  ],
+  "state_kinds": [
+   "all",
+   "memory3"
+  ],
+  "kinds": [
+   "all",
+   "linear",
+   "arithmetic",
+   "polynomial",
+   "saturating",
+   "trigonometric",
+   "power",
+   "memoryless",
+   "soft",
+   "soft-mixed"
+  ],
+  "bank": [
+   "none",
+   "laguerre:0.8:4",
+   "bands:4:3,4,5:norm"
+  ],
+  "inheritance": [
+   "maternal",
+   "mixed"
+  ],
+  "population": [
+   30,
+   60
+  ],
+  "selection": [
+   "tournament:2",
+   "tournament:3",
+   "tournament:5",
+   "ranking:1.7"
+  ],
+  "scheme": [
+   "generational:2",
+   "steady:1",
+   "plus",
+   "crowding"
+  ],
+  "islands": [
+   "none",
+   "3:5:2",
+   "6:5:2"
+  ],
+  "clearing": [
+   "no",
+   "yes"
+  ],
+  "immigrants": [
+   0.0,
+   0.05
+  ],
+  "restart": [
+   "none",
+   "5:2"
+  ],
+  "crossover_rate": [
+   0.3,
+   0.5,
+   0.7
+  ],
+  "node_penalty": [
+   0.0,
+   0.001,
+   0.003,
+   0.01
+  ],
+  "data": [
+   "spectral",
+   "octaves",
+   "spectral-long",
+   "spectral-nonoise",
+   "broadband-noise"
+  ],
+  "cells": [
+   "1",
+   "sum2",
+   "sum3",
+   "chain2",
+   "chain3"
+  ]
+ },
+ "screen": {
+  "configs": 40,
+  "seeds": 1,
+  "budget": 600
+ },
+ "confirm": {
+  "top": 2,
+  "seeds": 2,
+  "budget": 600
+ },
+ "prune_holm": 0.01,
+ "adopt_p": 0.05
+}
