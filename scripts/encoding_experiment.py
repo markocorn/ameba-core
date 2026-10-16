@@ -58,6 +58,7 @@ from ameba_genome.codebook import gene_groups, redundant  # noqa: E402
 from ameba_genome.fixed import FixedConfig, FixedEncoding  # noqa: E402
 from ameba_genome.codon import CodonConfig, CodonEncoding  # noqa: E402
 from ameba_genome.tags import TagEncoding  # noqa: E402
+from ameba_genome.colony import ColonyEncoding  # noqa: E402
 from ameba_genome.statespace import WIDTH, StateSpaceConfig, StateSpaceEncoding  # noqa: E402
 from ameba_genome.ga import (  # noqa: E402
     CommaSelection,
@@ -74,7 +75,7 @@ from ameba_genome.ga import (  # noqa: E402
 )
 from ameba_genome.numeric import TwoLevelMutation  # noqa: E402
 from ameba.benchmarks.filterbank import bank_from_spec  # noqa: E402
-from ameba.benchmarks.splits import suite  # noqa: E402
+from ameba.benchmarks.splits import EXCITATIONS, suite  # noqa: E402
 from ameba_signal import Dataset  # noqa: E402
 from ameba.equations import format_equations  # noqa: E402
 from ameba_genome.dictionary import label as gene_label  # noqa: E402
@@ -131,24 +132,32 @@ def build(method: str, grammar: Grammar, crossover: str = "one_point", encoding:
     ``crossover`` selects among the fixed encoding's operators; the free
     encodings each have one and ignore it.
     """
-    if method == "E-tag":
-        # A StateSpaceConfig, with the number of tags under "tags".
+    if method in ("E-statespace", "E-tag", "E-codon"):
+        # A StateSpaceConfig; "tags" (E-tag) or "codon" (E-codon) hold the
+        # encoding's own settings, and "cells" -- {"count": K, "mode": "sum"
+        # or "chain"} -- makes the model a colony of K such cells.
         settings = dict(encoding or {})
-        tags = settings.pop("tags", 16)
-        tagged = TagEncoding(grammar, StateSpaceConfig.from_dict(settings), tags, primary_inputs)
-        return tagged, tagged.random_genome, tagged.mutate, tagged.crossover
-    if method == "E-codon":
-        # A StateSpaceConfig, with the codon settings under "codon".
-        settings = dict(encoding or {})
-        codon_settings = CodonConfig.from_dict(settings.pop("codon", {}))
-        codon = CodonEncoding(grammar, StateSpaceConfig.from_dict(settings), codon_settings, primary_inputs)
-        return codon, codon.random_genome, codon.mutate, codon.crossover
-    if method == "E-statespace":
-        statespace = StateSpaceEncoding(
-            grammar, config=StateSpaceConfig.from_dict(encoding) if encoding else None,
-            primary_inputs=primary_inputs)
-        operator = statespace.organelle if crossover == "organelle" else statespace.crossover
-        return statespace, statespace.random_genome, statespace.mutate, operator
+        colony = settings.pop("cells", None)
+
+        def make(cell_grammar: Grammar, primary=primary_inputs):
+            own = dict(settings)
+            if method == "E-tag":
+                tags = own.pop("tags", 16)
+                return TagEncoding(cell_grammar, StateSpaceConfig.from_dict(own), tags, primary)
+            if method == "E-codon":
+                codon_settings = CodonConfig.from_dict(own.pop("codon", {}))
+                return CodonEncoding(cell_grammar, StateSpaceConfig.from_dict(own), codon_settings, primary)
+            return StateSpaceEncoding(cell_grammar, config=StateSpaceConfig.from_dict(own) if own else None,
+                                      primary_inputs=primary)
+
+        if colony:
+            # Chain cells have more inputs than the plant; their extra ones are
+            # other cells' outputs, read as alike as the plant's.
+            made = ColonyEncoding(grammar, lambda g: make(g, primary_inputs), **colony)
+        else:
+            made = make(grammar)
+        operator = made.organelle if crossover == "organelle" and hasattr(made, "organelle") else made.crossover
+        return made, made.random_genome, made.mutate, operator
     if method == "A-custom":
         fixed = FixedEncoding(grammar, config=FixedConfig.from_dict(encoding or {}))
         name = "crossover" if crossover in ("one_point", "none") else crossover
@@ -180,7 +189,8 @@ def run(method: str, benchmark_name: str, seed: int, generations: int, populatio
         max_records: int | None = None, ga_parts: dict | None = None,
         steps: int = 150, hold: int = 10, progress: int = 0, encoding: dict | None = None,
         kinds: tuple[str, ...] | None = None, data: str = "single", node_penalty: float = 0.0,
-        shortlist: int = 30, filterbank: str | None = None, init_plant_inputs: bool = False) -> dict:
+        shortlist: int = 30, filterbank: str | None = None, init_plant_inputs: bool = False,
+        test_family: str | None = None) -> dict:
     benchmark = BENCHMARKS[benchmark_name]
     # The multi-channel rungs are slow plants, so their input is held for
     # ``hold`` samples; white noise would be filtered out almost entirely.
@@ -206,23 +216,25 @@ def run(method: str, benchmark_name: str, seed: int, generations: int, populatio
     # "single": the one trajectory every earlier run used. "diverse": the
     # benchmark's training suite -- noise, steps and a sinusoid, each from
     # rest -- scored as the mean ratio to their floors, so the floor is one.
-    family = data if data in ("spectral", "octaves") else "diverse"
+    family = data if data in ("spectral", "octaves", *EXCITATIONS) else "diverse"
     training = (suite(benchmark, "train", hold, family=family, bank=bank) if data != "single"
                 else SignalEvaluator(dataset))
     if data != "single":
         floor = 1.0
     fitness = GenomeFitness(training, grammar, codebook=translator, node_penalty=node_penalty)
     validation = suite(benchmark, "validation", hold, family=family, bank=bank)
-    test = suite(benchmark, "test", hold, family=family, bank=bank)
+    # The test set may come from another family than the training data, so
+    # that models trained on different signals are judged on the same ones.
+    test = suite(benchmark, "test", hold, family=test_family or family, bank=bank)
     if crossover == "none":
         crossover_rate = 0.0
     max_genes = 200
-    if method in ("E-codon", "E-tag"):
+    if method in ("E-codon", "E-tag", "E-statespace"):
         # A start codon or a tag makes a record longer than the state-space
-        # encoding's six numbers; the cap grows with it, so every encoding can
-        # hold as many records.
+        # encoding's six numbers, and a colony holds several cells; the cap
+        # grows with both, so every encoding can hold as many records per cell.
         width = translator.width + (1 if method == "E-codon" else 0)
-        max_genes = 200 * width // WIDTH
+        max_genes = 200 * width // WIDTH * getattr(translator, "count", 1)
     if max_records is not None:
         if not method.startswith("A-"):
             raise SystemExit("--max-records applies to the fixed encodings only")
@@ -395,10 +407,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--steps", type=int, default=150, help="simulated time steps")
     parser.add_argument("--kinds", default=None,
                         help="node kinds: operator groups or names, comma-separated (e.g. soft or soft,delay)")
-    parser.add_argument("--data", choices=("single", "diverse", "spectral", "octaves"), default="single",
+    parser.add_argument("--data", choices=("single", "diverse", "spectral", "octaves", *EXCITATIONS), default="single",
                         help="single: one noise trajectory (as before); diverse: noise, steps and a sinusoid; "
                              "spectral: noise and band-limited multisines, tested on six octave bands; "
                              "octaves: like spectral, but training covers all six octaves equally")
+    parser.add_argument("--test-family", choices=("diverse", "spectral", "octaves"), default=None,
+                        help="test signals regardless of --data (default: the training family's own test set)")
     parser.add_argument("--filterbank", default=None,
                         help="fixed filters in front of the model: octaves, laguerre or laguerre:POLE:COUNT")
     parser.add_argument("--init-plant-inputs", action="store_true",
@@ -448,7 +462,7 @@ def main(argv: list[str] | None = None) -> int:
                      json.loads(args.encoding) if args.encoding else None,
                      operators_in(*args.kinds.split(",")) if args.kinds else None,
                      args.data, args.node_penalty, filterbank=args.filterbank,
-                     init_plant_inputs=args.init_plant_inputs)
+                     init_plant_inputs=args.init_plant_inputs, test_family=args.test_family)
         test_mean = sum(result["best_model"]["test"].values()) / len(result["best_model"]["test"])
         picked = sum(result["selected_model"]["test"].values()) / len(result["selected_model"]["test"])
         print(f"{args.method} {args.benchmark} seed {seed}: train {result['best'][-1]:.4f} x floor, "
@@ -461,7 +475,7 @@ def main(argv: list[str] | None = None) -> int:
         "crossover": args.crossover, "max_records": args.max_records,
         "encoding": json.loads(args.encoding) if args.encoding else None,
         "kinds": args.kinds, "data": args.data, "node_penalty": args.node_penalty,
-        "filterbank": args.filterbank, "init_plant_inputs": args.init_plant_inputs,
+        "filterbank": args.filterbank, "init_plant_inputs": args.init_plant_inputs, "test_family": args.test_family,
         "selection": args.selection, "scheme": args.scheme, "islands": args.islands,
         "clearing": args.clearing, "immigrants": args.immigrants, "restart": args.restart,
         "generations": args.generations, "population": args.population, "runs": runs,

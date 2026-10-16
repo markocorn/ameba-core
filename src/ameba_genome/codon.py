@@ -33,7 +33,7 @@ end and are read modulo their sizes too.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from random import Random
 
 from ameba_graph import Graph
@@ -61,7 +61,7 @@ class CodonConfig:
     instead of by position, with this many tags; None keeps positions.
     """
 
-    alphabet: int = 32
+    alphabet: int = 32  # 0: the smallest power of two that holds every role
     start: int | None = None  # default: the last value of the alphabet
     indels: str = "point"
     junk: int = 0
@@ -69,6 +69,8 @@ class CodonConfig:
     tags: int | None = None
 
     def __post_init__(self) -> None:
+        if self.alphabet == 0:
+            return  # sized by the encoding, which then sets the start codon
         if self.start is None:
             self.start = self.alphabet - 1
         if not 0 <= self.start < self.alphabet:
@@ -101,6 +103,11 @@ class CodonEncoding:
         self.width = self.inner.width
         largest = max(*self.inner.record_sizes("state"), *self.inner.record_sizes("output"),
                       *self.inner.terminal_sizes())
+        if self.codon.alphabet == 0:
+            size = 32
+            while size < largest + 1:
+                size *= 2
+            self.codon = replace(self.codon, alphabet=size)
         if self.codon.alphabet < largest:
             raise ValueError(f"alphabet must hold at least {largest} values")
         structural = {"point": ("insert_number", "delete_number"),
